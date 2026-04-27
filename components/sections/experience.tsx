@@ -90,15 +90,19 @@ export default function Experience() {
 
 function OrgBadge({ org }: { org: Organization }) {
   return (
-    <div className="flex items-center justify-center px-8 py-5 bg-slate-700/50 border border-slate-600/40 hover:border-slate-500 hover:bg-slate-700/80 transition-all duration-300 shrink-0 select-none">
+    <div className="relative flex items-center justify-center px-8 py-5 bg-slate-700/50 border border-slate-600/40 hover:border-slate-500 hover:bg-slate-700/80 transition-all duration-300 shrink-0 select-none group">
       <div className="relative w-24 h-24">
         <Image
           src={org.logo}
           alt={org.name}
           fill
-          className="object-contain"
+          className="object-contain transition-opacity duration-300 group-hover:opacity-30"
         />
       </div>
+      {/* Name label on hover */}
+      <span className="absolute inset-0 flex items-center justify-center text-sm font-semibold text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 px-3 text-center leading-snug">
+        {org.name}
+      </span>
     </div>
   );
 }

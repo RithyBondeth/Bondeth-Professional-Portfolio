@@ -65,6 +65,16 @@ export const skillGroups: SkillGroup[] = [
     ],
   },
   {
+    category: "Mobile",
+    skills: [
+      { name: "Flutter", icon: "SiFlutter", color: "#54C5F8" },
+      { name: "Dart", icon: "SiDart", color: "#0175C2" },
+      { name: "Firebase", icon: "SiFirebase", color: "#FFCA28" },
+      { name: "Android", icon: "SiAndroid", color: "#3DDC84" },
+      { name: "Xcode", icon: "SiXcode", color: "#147EFB" },
+    ],
+  },
+  {
     category: "Tools & DevOps",
     skills: [
       { name: "Git", icon: "SiGit", color: "#F05032" },
@@ -78,9 +88,17 @@ export const skillGroups: SkillGroup[] = [
 
 export const experiences: Experience[] = [
   {
+    role: "Software Engineer",
+    company: "Digital Economy and Business Committee",
+    period: "2025 – Present",
+    description:
+      "Working as a Software Engineer, specializing in web and mobile app development. Building and maintaining production applications.",
+    tags: ["Next.js", "NestJS", "PostgreSQL", "Flutter", "FastAPI", "Docker"],
+  },
+  {
     role: "Full Stack Developer",
     company: "Mango-Byte",
-    period: "2024 – Present",
+    period: "2024 – 2025",
     description:
       "Working as a junior Full Stack Developer, specializing in web and mobile app development. Building and maintaining production applications across the full stack.",
     tags: ["React", "Next.js", "NestJS", "PostgreSQL", "Flutter"],
@@ -142,43 +160,80 @@ export const trainingCourses: TrainingCourse[] = [
 ];
 
 export const organizations: Organization[] = [
-  { name: "Mango-Byte",               logo: "/organizations/mango-byte-logo.png" },
-  { name: "CADT",                     logo: "/organizations/cadt-logo.png" },
-  { name: "ALLWEB IT",                logo: "/organizations/allweb-logo.png" },
-  { name: "Pailin Province Hall",     logo: "/organizations/pailin-province-hall-logo.jpg" },
-  { name: "Apsara",                   logo: "/organizations/apsara-logo.svg" },
-  { name: "DEBC",                     logo: "/organizations/debc-logo.png" },
-  { name: "MEF",                      logo: "/organizations/mef-logo.png" },
+  { name: "Mango-Byte Co., Ltd", logo: "/organizations/mango-byte-logo.png" },
+  {
+    name: "Cambodia Academy of Digital Technology",
+    logo: "/organizations/cadt-logo.png",
+  },
+  { name: "Allweb Company Co., Ltd", logo: "/organizations/allweb-logo.png" },
+  {
+    name: "Pailin Province Hall",
+    logo: "/organizations/pailin-province-hall-logo.png",
+  },
+  { name: "Apsara Talent", logo: "/organizations/apsara-logo.svg" },
+  {
+    name: "Digital Economy and Business Committee",
+    logo: "/organizations/debc-logo.png",
+  },
+  {
+    name: "Ministry of Economy and Finance",
+    logo: "/organizations/mef-logo.png",
+  },
 ];
 
 export const projects: Project[] = [
   {
-    title: "Project Alpha",
+    title: "Apsara Talent",
     description:
-      "A full-stack web application that helps teams collaborate more effectively. Features real-time updates, role-based access control, and an intuitive dashboard.",
-    tags: ["Next.js", "TypeScript", "PostgreSQL", "Tailwind CSS"],
-    github: "https://github.com",
-    live: "https://example.com",
+      "The Apsara Talent platform is designed to address the challenges of the recruitment process by simplifying and improving job matching for freelancers and employers.",
+    tags: [
+      "Next.js",
+      "Nest.js",
+      "Python",
+      "PostgreSQL",
+      "Redis",
+      "MongoDB",
+      "Docker",
+      "RabbitMQ",
+    ],
+    github: "https://github.com/apsara-talent/apsara-talent",
+    live: "https://apsaratalent.com",
     image: null,
-    gradient: "from-blue-600/20 via-cyan-500/10 to-slate-800",
+    gradient: "from-blue-600/20 via-cyan-50`0/10 to-slate-800",
   },
   {
-    title: "Project Beta",
+    title: "Apsara Assistant",
     description:
-      "An open-source developer tool that automates repetitive tasks in CI/CD pipelines. Used by 500+ developers on GitHub.",
-    tags: ["Node.js", "Docker", "GitHub Actions"],
-    github: "https://github.com",
+      "Apsara Assistant is an AI-powered sales assistant designed for Cambodian online sellers. It helps businesses automatically reply to customer messages, manage conversations, and increase sales — all in Khmer and English.",
+    tags: [
+      "Next.js",
+      "FastAPI",
+      "PostgreSQL",
+      "Redis",
+      "MongoDB",
+      "OpenAI",
+      "Antrophic",
+    ],
+    github: "https://github.com/apsara-assistant/apsara-assistant",
     live: null,
     image: null,
     gradient: "from-violet-600/20 via-purple-500/10 to-slate-800",
   },
   {
-    title: "Project Gamma",
+    title: "Apsara Agentic",
     description:
-      "A mobile-first e-commerce experience with seamless checkout flow, inventory management, and analytics dashboard.",
-    tags: ["React", "Python", "AWS", "Stripe"],
-    github: "https://github.com",
-    live: "https://example.com",
+      "Apsara Agentic is a production-ready backend system for building an AI-powered agentic coding platform. It explores how modern AI agents can understand tasks, reason through problems, and generate code using large language models.",
+    tags: [
+      "Next.js",
+      "FastAPI",
+      "PostgreSQL",
+      "Redis",
+      "MongoDB",
+      "OpenAI",
+      "Antrophic",
+    ],
+    github: "https://github.com/apsara-agentic/apsara-agentic",
+    live: null,
     image: null,
     gradient: "from-emerald-600/20 via-teal-500/10 to-slate-800",
   },

@@ -6,6 +6,7 @@ import {
   SiReact, SiNextdotjs, SiTypescript, SiTailwindcss, SiHtml5,
   SiPython, SiNodedotjs, SiPostgresql, SiGraphql, SiFastapi,
   SiPytorch, SiTensorflow, SiOpenai, SiLangchain, SiHuggingface,
+  SiFlutter, SiDart, SiFirebase, SiAndroid, SiXcode,
   SiGit, SiDocker, SiGithub, SiVercel, SiLinux,
 } from "react-icons/si";
 import type { IconType } from "react-icons";
@@ -14,6 +15,7 @@ const ICON_MAP: Record<string, IconType> = {
   SiReact, SiNextdotjs, SiTypescript, SiTailwindcss, SiHtml5,
   SiPython, SiNodedotjs, SiPostgresql, SiGraphql, SiFastapi,
   SiPytorch, SiTensorflow, SiOpenai, SiLangchain, SiHuggingface,
+  SiFlutter, SiDart, SiFirebase, SiAndroid, SiXcode,
   SiGit, SiDocker, SiGithub, SiVercel, SiLinux,
 };
 
