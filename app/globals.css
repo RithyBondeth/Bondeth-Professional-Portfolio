@@ -130,6 +130,18 @@
   }
 }
 
+/* ── Hero scan line ── */
+@keyframes scan {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+/* ── Cursor blink (typewriter in Hero) ── */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
 /* ── Marquee keyframes (referenced by inline styles in MarqueeTrack) ── */
 @keyframes marquee-rtl {
   from { transform: translateX(0); }
