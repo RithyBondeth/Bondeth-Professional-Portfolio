@@ -7,6 +7,7 @@ export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   useEffect(() => {
     const sectionIds = navLinks.map(({ href }) => href.replace("#", ""));
@@ -14,6 +15,9 @@ export default function Nav() {
     // Scroll handler: background + active section detection
     const onScroll = () => {
       setScrolled(window.scrollY > 20);
+
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      setScrollProgress(maxScroll > 0 ? (window.scrollY / maxScroll) * 100 : 0);
 
       // Active = the last section whose top is above 35% of viewport height
       const threshold = window.innerHeight * 0.35;
@@ -41,6 +45,11 @@ export default function Nav() {
           : "bg-transparent"
       }`}
     >
+      {/* Scroll progress bar */}
+      <div
+        className="absolute bottom-0 left-0 h-[2px] bg-gradient-to-r from-blue-500 to-indigo-400 transition-none z-[60] origin-left"
+        style={{ width: `${scrollProgress}%` }}
+      />
       <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
         <a
           href="#"

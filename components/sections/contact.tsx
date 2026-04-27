@@ -28,9 +28,10 @@ export default function Contact() {
         <AnimateIn delay={0.15}>
           <a
             href={`mailto:${siteConfig.email}`}
-            className="inline-block px-8 py-4 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-500 transition-colors text-lg"
+            className="relative inline-block px-8 py-4 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-500 transition-colors text-lg overflow-hidden group/cta"
           >
-            Say Hello
+            <span className="relative z-10">Say Hello</span>
+            <span className="absolute inset-0 -translate-x-full skew-x-[-12deg] bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover/cta:translate-x-[250%] transition-transform duration-700 ease-in-out pointer-events-none" />
           </a>
         </AnimateIn>
 
@@ -64,7 +65,7 @@ function SocialLink({
       target="_blank"
       rel="noopener noreferrer"
       aria-label={label}
-      className="w-12 h-12 flex items-center justify-center rounded-full border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500 transition-colors"
+      className="w-12 h-12 flex items-center justify-center rounded-full border border-slate-700 text-slate-400 hover:text-white hover:border-blue-400 hover:bg-blue-500/10 hover:shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:scale-110 transition-all duration-300"
     >
       {icon}
     </a>

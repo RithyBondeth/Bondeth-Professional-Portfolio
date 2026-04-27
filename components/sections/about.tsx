@@ -1,5 +1,52 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { siteConfig } from "@/data/portfolio";
 import { AnimateIn, StaggerIn } from "@/components/ui/animate-in";
+
+function CountUp({ num, suffix }: { num: number; suffix: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+    const el = ref.current;
+    if (!el) return;
+
+    const proxy = { val: 0 };
+    const ctx = gsap.context(() => {
+      gsap.to(proxy, {
+        val: num,
+        duration: 2,
+        ease: "power2.out",
+        scrollTrigger: { trigger: el, start: "top 90%", once: true },
+        onUpdate() {
+          if (el) el.textContent = `${Math.round(proxy.val)}${suffix}`;
+        },
+      });
+    });
+
+    return () => ctx.revert();
+  }, [num, suffix]);
+
+  return <span ref={ref}>0{suffix}</span>;
+}
+
+function StatCard({ label, value }: { label: string; value: string }) {
+  const match = value.match(/^(\d+)(.*)$/);
+  const num = match ? parseInt(match[1]) : 0;
+  const suffix = match ? match[2] : value;
+
+  return (
+    <div className="bg-slate-900 rounded-xl p-6 border border-slate-700 hover:border-blue-500/40 hover:shadow-[0_4px_24px_rgba(59,130,246,0.1)] transition-all duration-300 group">
+      <div className="text-3xl font-bold text-blue-400 mb-1 group-hover:text-blue-300 transition-colors duration-300">
+        <CountUp num={num} suffix={suffix} />
+      </div>
+      <div className="text-sm text-slate-400">{label}</div>
+    </div>
+  );
+}
 
 export default function About() {
   return (
@@ -33,7 +80,7 @@ export default function About() {
                   href={siteConfig.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-slate-400 hover:text-white transition-colors"
+                  className="text-slate-400 hover:text-white hover:scale-110 transition-all duration-200"
                   aria-label="GitHub"
                 >
                   <GitHubIcon />
@@ -42,7 +89,7 @@ export default function About() {
                   href={siteConfig.linkedin}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-slate-400 hover:text-white transition-colors"
+                  className="text-slate-400 hover:text-white hover:scale-110 transition-all duration-200"
                   aria-label="LinkedIn"
                 >
                   <LinkedInIcon />
@@ -53,15 +100,7 @@ export default function About() {
 
           <StaggerIn className="grid grid-cols-2 gap-6" stagger={0.1}>
             {stats.map(({ label, value }) => (
-              <div
-                key={label}
-                className="bg-slate-900 rounded-xl p-6 border border-slate-700"
-              >
-                <div className="text-3xl font-bold text-blue-400 mb-1">
-                  {value}
-                </div>
-                <div className="text-sm text-slate-400">{label}</div>
-              </div>
+              <StatCard key={label} label={label} value={value} />
             ))}
           </StaggerIn>
         </div>

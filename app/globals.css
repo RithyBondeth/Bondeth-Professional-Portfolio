@@ -152,3 +152,10 @@
   from { transform: translateX(-50%); }
   to   { transform: translateX(0); }
 }
+
+/* ── Animated scroll dot (Hero) ── */
+@keyframes scroll-dot {
+  0%   { transform: translateY(0);    opacity: 1; }
+  80%  { transform: translateY(44px); opacity: 0; }
+  100% { transform: translateY(44px); opacity: 0; }
+}

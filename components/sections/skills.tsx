@@ -85,9 +85,9 @@ export default function Skills() {
 function SkillBadge({ skill }: { skill: Skill }) {
   const Icon = ICON_MAP[skill.icon];
   return (
-    <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-slate-800 border border-slate-700/50 whitespace-nowrap shrink-0 select-none">
+    <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-slate-800 border border-slate-700/50 whitespace-nowrap shrink-0 select-none hover:border-slate-500 hover:bg-slate-700/80 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 cursor-default group/badge">
       {Icon && (
-        <Icon className="w-[18px] h-[18px] shrink-0" style={{ color: skill.color }} />
+        <Icon className="w-[18px] h-[18px] shrink-0 group-hover/badge:scale-110 transition-transform duration-200" style={{ color: skill.color }} />
       )}
       <span className="text-sm text-slate-300 font-medium">{skill.name}</span>
     </div>

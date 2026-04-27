@@ -1,3 +1,6 @@
+"use client";
+
+import { useRef } from "react";
 import Image from "next/image";
 import { projects, siteConfig } from "@/data/portfolio";
 import type { Project } from "@/types";
@@ -48,8 +51,39 @@ export default function Projects() {
 }
 
 function ProjectCard({ project }: { project: Project }) {
+  const cardRef = useRef<HTMLElement>(null);
+
+  function onEnter() {
+    const el = cardRef.current;
+    if (!el) return;
+    el.style.transition = "transform 0.1s ease, box-shadow 0.3s ease, border-color 0.3s ease";
+  }
+
+  function onMove(e: React.MouseEvent<HTMLElement>) {
+    const el = cardRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width - 0.5;
+    const y = (e.clientY - r.top) / r.height - 0.5;
+    el.style.transform = `perspective(800px) rotateY(${x * 12}deg) rotateX(${-y * 8}deg) translateZ(10px)`;
+  }
+
+  function onLeave() {
+    const el = cardRef.current;
+    if (!el) return;
+    el.style.transition = "transform 0.5s ease, box-shadow 0.3s ease, border-color 0.3s ease";
+    el.style.transform = "perspective(800px) rotateY(0deg) rotateX(0deg) translateZ(0px)";
+  }
+
   return (
-    <article className="group flex flex-col rounded-2xl bg-slate-800 border border-slate-700/60 hover:border-slate-500 overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/30">
+    <article
+      ref={cardRef}
+      onMouseEnter={onEnter}
+      onMouseMove={onMove}
+      onMouseLeave={onLeave}
+      style={{ willChange: "transform" }}
+      className="group flex flex-col rounded-2xl bg-slate-800 border border-slate-700/60 hover:border-blue-500/40 overflow-hidden hover:shadow-[0_20px_60px_rgba(0,0,0,0.4),0_0_30px_rgba(59,130,246,0.1)] transition-[border-color,box-shadow] duration-300"
+    >
 
       {/* ── Preview ──────────────────────────────────── */}
       <div className="relative h-44 overflow-hidden">
@@ -61,16 +95,13 @@ function ProjectCard({ project }: { project: Project }) {
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
-          /* Gradient placeholder with mock browser chrome */
           <div className={`absolute inset-0 bg-gradient-to-br ${project.gradient}`}>
-            {/* Mock browser bar */}
             <div className="absolute top-0 inset-x-0 h-7 bg-slate-900/60 backdrop-blur-sm flex items-center px-3 gap-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-red-500/70" />
               <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/70" />
               <span className="w-2.5 h-2.5 rounded-full bg-green-500/70" />
               <div className="ml-2 flex-1 h-3.5 rounded-sm bg-slate-700/60 max-w-[140px]" />
             </div>
-            {/* Mock content skeleton */}
             <div className="absolute inset-0 top-7 p-4 flex flex-col gap-2">
               <div className="h-3 rounded bg-white/10 w-3/4" />
               <div className="h-3 rounded bg-white/10 w-1/2" />
@@ -83,7 +114,6 @@ function ProjectCard({ project }: { project: Project }) {
           </div>
         )}
 
-        {/* Live badge */}
         {project.live && (
           <div className="absolute top-9 right-3 flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 backdrop-blur-sm">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
@@ -102,19 +132,17 @@ function ProjectCard({ project }: { project: Project }) {
           {project.description}
         </p>
 
-        {/* Tags */}
         <div className="flex flex-wrap gap-1.5">
           {project.tags.map((tag) => (
             <span
               key={tag}
-              className="text-[11px] font-mono text-slate-500 px-2 py-0.5 rounded bg-slate-700/50"
+              className="text-[11px] font-mono text-slate-500 px-2 py-0.5 rounded bg-slate-700/50 hover:text-slate-300 transition-colors duration-150"
             >
               {tag}
             </span>
           ))}
         </div>
 
-        {/* ── Links ──────────────────────────────────── */}
         <div className="flex items-center gap-2 pt-1 border-t border-slate-700/50">
           <a
             href={project.github}

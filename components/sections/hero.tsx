@@ -181,9 +181,10 @@ export default function Hero() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <a
             href="#projects"
-            className="hero-cta-item px-8 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-500 transition-colors"
+            className="hero-cta-item relative px-8 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-500 transition-colors overflow-hidden group/cta1"
           >
-            View My Work
+            <span className="relative z-10">View My Work</span>
+            <span className="absolute inset-0 -translate-x-full skew-x-[-12deg] bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover/cta1:translate-x-[250%] transition-transform duration-700 ease-in-out pointer-events-none" />
           </a>
           <a
             href="#contact"
@@ -197,7 +198,13 @@ export default function Hero() {
           <span className="text-xs font-mono tracking-widest uppercase">
             Scroll
           </span>
-          <div className="w-px h-12 bg-gradient-to-b from-slate-600 to-transparent" />
+          <div className="relative w-px h-12">
+            <div className="absolute inset-0 bg-gradient-to-b from-slate-600 to-transparent" />
+            <div
+              className="absolute top-0 w-full h-4 bg-gradient-to-b from-blue-400/80 to-transparent"
+              style={{ animation: "scroll-dot 1.5s ease-in infinite" }}
+            />
+          </div>
         </div>
       </div>
     </section>
