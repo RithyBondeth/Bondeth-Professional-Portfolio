@@ -78,7 +78,7 @@ export default function Experience() {
               {Array.from({ length: 10 }, (_, copy) =>
                 organizations.map((org) => (
                   <OrgBadge key={`${copy}-${org.name}`} org={org} />
-                ))
+                )),
               )}
             </MarqueeTrack>
           </div>
