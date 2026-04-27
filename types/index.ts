@@ -28,6 +28,24 @@ export interface Project {
   tags: string[];
   github: string;
   live: string | null;
+  /** URL to a screenshot/preview image */
+  image: string | null;
+  /** Tailwind gradient classes used as a fallback when image is null */
+  gradient: string;
+}
+
+export interface Education {
+  degree: string;
+  institution: string;
+  period: string;
+  location: string;
+  description: string;
+  achievements: string[];
+}
+
+export interface TrainingCourse {
+  title: string;
+  institution: string;
 }
 
 export interface SiteConfig {

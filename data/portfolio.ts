@@ -4,27 +4,30 @@ import type {
   Experience,
   Project,
   SiteConfig,
+  Education,
+  TrainingCourse,
 } from "@/types";
 
 export const siteConfig: SiteConfig = {
   name: "Rithy Bondeth",
-  title: "Software Engineer & AI Engineer",
+  title: "Full Stack Developer & AI Engineer",
   tagline:
     "I build elegant web applications and intelligent AI systems — from pixel-perfect UIs to production-ready ML pipelines.",
   bio: [
-    "I'm Rithy Bondeth, a software and AI engineer passionate about building high-quality digital experiences. I work across the full stack and bring machine learning models from research to production.",
-    "I specialize in modern JavaScript ecosystems for the web and Python-based AI/ML workflows, with a focus on LLMs, retrieval-augmented generation, and agentic systems.",
+    "I'm Rithy Bondeth, a full stack developer and AI engineer based in Phnom Penh, Cambodia. I'm passionate about building high-quality digital experiences across web and mobile platforms.",
+    "I specialize in modern JavaScript ecosystems (React, Next.js, Vue, NestJS) and Python-based AI/ML workflows, with experience shipping products from internship to freelance to full-time at Mango-Byte.",
     "I believe the best technology is invisible — it just works, and works beautifully.",
   ],
-  email: "rithy@example.com",
-  github: "https://github.com",
-  linkedin: "https://linkedin.com",
+  email: "rithybondeth999@gmail.com",
+  github: "https://github.com/bondeth",
+  linkedin: "https://linkedin.com/in/rithybondeth",
 };
 
 export const navLinks: NavLink[] = [
   { href: "#about", label: "About" },
   { href: "#skills", label: "Skills" },
   { href: "#experience", label: "Experience" },
+  { href: "#education", label: "Education" },
   { href: "#projects", label: "Projects" },
   { href: "#contact", label: "Contact" },
 ];
@@ -74,29 +77,67 @@ export const skillGroups: SkillGroup[] = [
 
 export const experiences: Experience[] = [
   {
-    role: "Software Engineer",
-    company: "Company Name",
-    period: "2023 – Present",
+    role: "Full Stack Developer",
+    company: "Mango-Byte",
+    period: "2024 – Present",
     description:
-      "Led development of key product features, collaborated with cross-functional teams, and improved system performance by 40% through architecture refactoring.",
-    tags: ["React", "Node.js", "PostgreSQL"],
+      "Working as a junior Full Stack Developer, specializing in web and mobile app development. Building and maintaining production applications across the full stack.",
+    tags: ["React", "Next.js", "NestJS", "PostgreSQL", "Flutter"],
   },
   {
-    role: "Frontend Developer",
-    company: "Previous Company",
-    period: "2022 – 2023",
+    role: "Developer (Freelance Team Collaboration)",
+    company: "Freelance",
+    period: "2023 – 2024",
     description:
-      "Built responsive user interfaces for a SaaS platform, implemented design system components, and shipped features that increased user engagement.",
-    tags: ["TypeScript", "Next.js", "Tailwind CSS"],
+      "Collaborated with a freelancing team on web and mobile app development projects. Delivered multiple client projects including e-commerce and service platforms.",
+    tags: ["Vue.js", "NestJS", "PostgreSQL", "Flutter"],
   },
   {
-    role: "Junior Developer",
-    company: "Startup",
-    period: "2021 – 2022",
+    role: "Web Developer Internship",
+    company: "ALLWEB IT Company Co., Ltd.",
+    period: "Jun 2022 – Sep 2022",
     description:
-      "Developed and maintained full-stack web applications, wrote automated tests, and contributed to improving development workflows.",
-    tags: ["React", "Python", "REST APIs"],
+      "Built an attendance management system and contributed to both frontend and backend development. Gained hands-on experience with enterprise web frameworks.",
+    tags: ["Angular", "Symfony", "PHP", "MySQL"],
   },
+  {
+    role: "IT Supporter",
+    company: "Pailin Province Hall",
+    period: "2020 – 2021",
+    description:
+      "Provided IT support including hardware/software troubleshooting and system installation and configuration for government offices.",
+    tags: ["Hardware", "Networking", "Windows"],
+  },
+  {
+    role: "IDT Coding Instructor",
+    company: "Cambodia Academy of Digital Technology",
+    period: "Feb 2020 – May 2020",
+    description:
+      "Volunteered in the IDT Encoding Program, teaching high school students how to code using C/C++ fundamentals.",
+    tags: ["C", "C++", "Teaching"],
+  },
+];
+
+export const educations: Education[] = [
+  {
+    degree: "Bachelor of Computer Science",
+    institution: "Cambodia Academy of Digital Technology (CADT)",
+    period: "2020 – 2024",
+    location: "Phnom Penh, Cambodia",
+    description:
+      "Pursued a bachelor's degree in Computer Science with a focus on software engineering, web development, and mobile app development. Graduated as a Techo Scholar.",
+    achievements: [
+      "Techo Scholar — merit-based scholarship for outstanding students",
+    ],
+  },
+];
+
+export const trainingCourses: TrainingCourse[] = [
+  { title: "Frontend Web Development", institution: "Instinct Institute" },
+  { title: "Backend Web Development", institution: "Instinct Institute" },
+  { title: "Mobile App Development", institution: "Instinct Institute" },
+  { title: "Web Development with Next.js", institution: "Sabai Code" },
+  { title: "Python for Data Science", institution: "Sabai Code" },
 ];
 
 export const projects: Project[] = [
@@ -107,6 +148,8 @@ export const projects: Project[] = [
     tags: ["Next.js", "TypeScript", "PostgreSQL", "Tailwind CSS"],
     github: "https://github.com",
     live: "https://example.com",
+    image: null,
+    gradient: "from-blue-600/20 via-cyan-500/10 to-slate-800",
   },
   {
     title: "Project Beta",
@@ -115,6 +158,8 @@ export const projects: Project[] = [
     tags: ["Node.js", "Docker", "GitHub Actions"],
     github: "https://github.com",
     live: null,
+    image: null,
+    gradient: "from-violet-600/20 via-purple-500/10 to-slate-800",
   },
   {
     title: "Project Gamma",
@@ -123,5 +168,7 @@ export const projects: Project[] = [
     tags: ["React", "Python", "AWS", "Stripe"],
     github: "https://github.com",
     live: "https://example.com",
+    image: null,
+    gradient: "from-emerald-600/20 via-teal-500/10 to-slate-800",
   },
 ];
