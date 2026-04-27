@@ -6,6 +6,7 @@ import type {
   SiteConfig,
   Education,
   TrainingCourse,
+  Organization,
 } from "@/types";
 
 export const siteConfig: SiteConfig = {
@@ -138,6 +139,16 @@ export const trainingCourses: TrainingCourse[] = [
   { title: "Mobile App Development", institution: "Instinct Institute" },
   { title: "Web Development with Next.js", institution: "Sabai Code" },
   { title: "Python for Data Science", institution: "Sabai Code" },
+];
+
+export const organizations: Organization[] = [
+  { name: "Mango-Byte",               logo: "/organizations/mango-byte-logo.png" },
+  { name: "CADT",                     logo: "/organizations/cadt-logo.png" },
+  { name: "ALLWEB IT",                logo: "/organizations/allweb-logo.png" },
+  { name: "Pailin Province Hall",     logo: "/organizations/pailin-province-hall-logo.jpg" },
+  { name: "Apsara",                   logo: "/organizations/apsara-logo.svg" },
+  { name: "DEBC",                     logo: "/organizations/debc-logo.png" },
+  { name: "MEF",                      logo: "/organizations/mef-logo.png" },
 ];
 
 export const projects: Project[] = [

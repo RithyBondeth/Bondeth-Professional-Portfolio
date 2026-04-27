@@ -1,5 +1,8 @@
-import { experiences } from "@/data/portfolio";
+import Image from "next/image";
+import { experiences, organizations } from "@/data/portfolio";
+import type { Organization } from "@/types";
 import { AnimateIn, StaggerIn } from "@/components/ui/animate-in";
+import { MarqueeTrack } from "@/components/ui/marquee-track";
 
 export default function Experience() {
   return (
@@ -56,6 +59,46 @@ export default function Experience() {
           </StaggerIn>
         </div>
       </div>
+
+      {/* ── Organisation logo marquee ─────────────────── */}
+      <AnimateIn delay={0.1}>
+        <div className="mt-16 pt-12 border-t border-slate-700/50">
+          <p className="text-center text-xs font-mono text-slate-600 uppercase tracking-widest mb-8">
+            Organizations I&apos;ve worked with
+          </p>
+
+          <div className="relative overflow-hidden">
+            {/* Left fade */}
+            <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-slate-800 to-transparent z-10 pointer-events-none" />
+            {/* Right fade */}
+            <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-slate-800 to-transparent z-10 pointer-events-none" />
+
+            <MarqueeTrack direction="rtl" duration={40}>
+              {/* 10 copies to fill any screen width */}
+              {Array.from({ length: 10 }, (_, copy) =>
+                organizations.map((org) => (
+                  <OrgBadge key={`${copy}-${org.name}`} org={org} />
+                ))
+              )}
+            </MarqueeTrack>
+          </div>
+        </div>
+      </AnimateIn>
     </section>
+  );
+}
+
+function OrgBadge({ org }: { org: Organization }) {
+  return (
+    <div className="flex items-center justify-center px-8 py-5 bg-slate-700/50 border border-slate-600/40 hover:border-slate-500 hover:bg-slate-700/80 transition-all duration-300 shrink-0 select-none">
+      <div className="relative w-24 h-24">
+        <Image
+          src={org.logo}
+          alt={org.name}
+          fill
+          className="object-contain"
+        />
+      </div>
+    </div>
   );
 }

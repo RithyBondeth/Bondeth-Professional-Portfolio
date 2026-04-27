@@ -48,6 +48,11 @@ export interface TrainingCourse {
   institution: string;
 }
 
+export interface Organization {
+  name: string;
+  logo: string;
+}
+
 export interface SiteConfig {
   name: string;
   title: string;
