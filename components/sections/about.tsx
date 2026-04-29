@@ -3,10 +3,10 @@ import { AnimateIn, StaggerIn } from "@/components/ui/animate-in";
 
 export default function About() {
   return (
-    <section id="about" className="py-24 px-6 bg-slate-800">
+    <section id="about" className="py-24 px-6 bg-card">
       <div className="max-w-5xl mx-auto">
         <AnimateIn>
-          <p className="text-blue-400 font-mono text-sm tracking-widest uppercase">
+          <p className="text-primary font-mono text-sm tracking-widest uppercase">
             About
           </p>
         </AnimateIn>
@@ -14,14 +14,14 @@ export default function About() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mt-10">
           <div>
             <AnimateIn delay={0.05}>
-              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
+              <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-6">
                 Passionate about building things that matter.
               </h2>
             </AnimateIn>
 
             <StaggerIn className="space-y-4" stagger={0.15} delay={0.1}>
               {siteConfig.bio.map((paragraph, i) => (
-                <p key={i} className="text-slate-400 leading-relaxed">
+                <p key={i} className="text-muted-foreground leading-relaxed">
                   {paragraph}
                 </p>
               ))}
@@ -33,7 +33,7 @@ export default function About() {
                   href={siteConfig.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-slate-400 hover:text-white transition-colors"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
                   aria-label="GitHub"
                 >
                   <GitHubIcon />
@@ -42,7 +42,7 @@ export default function About() {
                   href={siteConfig.linkedin}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-slate-400 hover:text-white transition-colors"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
                   aria-label="LinkedIn"
                 >
                   <LinkedInIcon />
@@ -55,12 +55,12 @@ export default function About() {
             {stats.map(({ label, value }) => (
               <div
                 key={label}
-                className="bg-slate-900 rounded-xl p-6 border border-slate-700"
+                className="bg-background rounded-xl p-6 border border-border"
               >
-                <div className="text-3xl font-bold text-blue-400 mb-1">
+                <div className="text-3xl font-bold text-primary mb-1">
                   {value}
                 </div>
-                <div className="text-sm text-slate-400">{label}</div>
+                <div className="text-sm text-muted-foreground">{label}</div>
               </div>
             ))}
           </StaggerIn>

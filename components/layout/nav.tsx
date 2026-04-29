@@ -38,14 +38,14 @@ export default function Nav() {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-slate-900/95 backdrop-blur-sm border-b border-slate-800 shadow-lg"
+          ? "bg-background/95 backdrop-blur-sm border-b border-border shadow-lg"
           : "bg-transparent"
       }`}
     >
       <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
         <a
           href="#"
-          className="text-white font-bold text-xl tracking-tight hover:text-blue-400 transition-colors"
+          className="text-foreground font-bold text-xl tracking-tight hover:text-primary transition-colors"
         >
           {siteConfig.name
             .split(" ")
@@ -64,8 +64,8 @@ export default function Nav() {
                   href={href}
                   className={`relative py-1 text-sm font-medium transition-colors duration-200 ${
                     isActive
-                      ? "text-white"
-                      : "text-slate-400 hover:text-slate-200"
+                      ? "text-foreground"
+                      : "text-muted-foreground hover:text-primary-foreground"
                   }`}
                 >
                   {label}
@@ -83,7 +83,7 @@ export default function Nav() {
 
         {/* Mobile hamburger */}
         <button
-          className="sm:hidden text-slate-400 hover:text-white transition-colors"
+          className="sm:hidden text-muted-foreground hover:text-foreground transition-colors"
           onClick={() => setMenuOpen((o) => !o)}
           aria-label="Toggle menu"
         >
@@ -97,7 +97,7 @@ export default function Nav() {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="sm:hidden bg-slate-900/98 border-t border-slate-800 px-6 py-4">
+        <div className="sm:hidden bg-background/98 border-t border-border px-6 py-4">
           <ul className="flex flex-col">
             {navLinks.map(({ href, label }) => {
               const id = href.replace("#", "");
@@ -109,8 +109,8 @@ export default function Nav() {
                     onClick={() => setMenuOpen(false)}
                     className={`block px-3 py-2.5 text-sm font-medium border-l-2 transition-all ${
                       isActive
-                        ? "text-white border-blue-400 pl-4"
-                        : "text-slate-400 border-transparent hover:text-white hover:border-slate-600"
+                        ? "text-foreground border-blue-400 pl-4"
+                        : "text-muted-foreground border-transparent hover:text-foreground hover:border-slate-600"
                     }`}
                   >
                     {label}

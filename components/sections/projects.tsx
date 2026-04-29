@@ -5,16 +5,16 @@ import { AnimateIn, StaggerIn } from "@/components/ui/animate-in";
 
 export default function Projects() {
   return (
-    <section id="projects" className="py-24 px-6 bg-slate-900">
+    <section id="projects" className="py-24 px-6 bg-background">
       <div className="max-w-5xl mx-auto">
         <AnimateIn>
-          <p className="text-blue-400 font-mono text-sm tracking-widest uppercase">
+          <p className="text-primary font-mono text-sm tracking-widest uppercase">
             Projects
           </p>
         </AnimateIn>
 
         <AnimateIn delay={0.05}>
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mt-3 mb-12">
+          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mt-3 mb-12">
             Things I&apos;ve built
           </h2>
         </AnimateIn>
@@ -35,7 +35,7 @@ export default function Projects() {
               href={siteConfig.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors font-medium border border-slate-700 hover:border-slate-500 px-6 py-3 rounded-lg"
+              className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors font-medium border border-border hover:border-accent px-6 py-3 rounded-lg"
             >
               View more on GitHub
               <ExternalLinkIcon className="w-4 h-4" />
@@ -49,7 +49,7 @@ export default function Projects() {
 
 function ProjectCard({ project }: { project: Project }) {
   return (
-    <article className="group flex flex-col rounded-2xl bg-slate-800 border border-slate-700/60 hover:border-slate-500 overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/30">
+    <article className="group flex flex-col rounded-2xl bg-card border border-border/60 hover:border-accent overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/30">
       {/* ── Preview ──────────────────────────────────── */}
       <div className="relative h-44 overflow-hidden">
         {project.image ? (
@@ -62,10 +62,10 @@ function ProjectCard({ project }: { project: Project }) {
         ) : (
           /* Gradient placeholder with mock browser chrome */
           <div
-            className={`absolute inset-0 bg-gradient-to-br ${project.gradient}`}
+            className={`absolute inset-0 bg-linear-to-br ${project.gradient}`}
           >
             {/* Mock browser bar */}
-            <div className="absolute top-0 inset-x-0 h-7 bg-slate-900/60 backdrop-blur-sm flex items-center px-3 gap-1.5">
+            <div className="absolute top-0 inset-x-0 h-7 bg-background/60 backdrop-blur-sm flex items-center px-3 gap-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-red-500/70" />
               <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/70" />
               <span className="w-2.5 h-2.5 rounded-full bg-green-500/70" />
@@ -97,11 +97,11 @@ function ProjectCard({ project }: { project: Project }) {
 
       {/* ── Body ─────────────────────────────────────── */}
       <div className="flex flex-col flex-1 p-5 gap-3">
-        <h3 className="text-white font-semibold text-base leading-snug">
+        <h3 className="text-foreground font-semibold text-base leading-snug">
           {project.title}
         </h3>
 
-        <p className="text-slate-400 text-sm leading-relaxed flex-1">
+        <p className="text-muted-foreground text-sm leading-relaxed flex-1">
           {project.description}
         </p>
 
@@ -110,7 +110,7 @@ function ProjectCard({ project }: { project: Project }) {
           {project.tags.map((tag) => (
             <span
               key={tag}
-              className="text-[11px] font-mono text-slate-500 px-2 py-0.5 rounded bg-slate-700/50"
+              className="text-[11px] font-mono text-muted-foreground px-2 py-0.5 rounded bg-slate-700/50"
             >
               {tag}
             </span>
@@ -118,12 +118,12 @@ function ProjectCard({ project }: { project: Project }) {
         </div>
 
         {/* ── Links ──────────────────────────────────── */}
-        <div className="flex items-center gap-2 pt-1 border-t border-slate-700/50">
+        <div className="flex items-center gap-2 pt-1 border-t border-border/50">
           <a
             href={project.github}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-300 bg-slate-700/50 hover:bg-slate-600/60 hover:text-white transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-secondary-foreground bg-slate-700/50 hover:bg-slate-600/60 hover:text-foreground transition-colors"
           >
             <GitHubIcon className="w-3.5 h-3.5" />
             Source
@@ -134,13 +134,13 @@ function ProjectCard({ project }: { project: Project }) {
               href={project.live}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-blue-600 hover:bg-blue-500 transition-colors ml-auto"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-foreground bg-primary hover:bg-primary/90 transition-colors ml-auto"
             >
               Live Preview
               <ExternalLinkIcon className="w-3.5 h-3.5" />
             </a>
           ) : (
-            <span className="ml-auto text-[11px] text-slate-600 font-mono">
+            <span className="ml-auto text-[11px] text-muted-foreground font-mono">
               no demo
             </span>
           )}

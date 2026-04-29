@@ -111,10 +111,10 @@ export default function Hero() {
   return (
     <section
       ref={containerRef}
-      className="min-h-screen flex flex-col items-center justify-center bg-slate-900 text-white px-6 relative overflow-hidden"
+      className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground px-6 relative overflow-hidden"
     >
       {/* Base gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 pointer-events-none" />
+      <div className="absolute inset-0 bg-linear-to-br from-slate-950 via-slate-900 to-blue-950 pointer-events-none" />
 
       {/* CSS grid overlay */}
       <div
@@ -136,7 +136,7 @@ export default function Hero() {
 
       {/* Ambient orbs */}
       <div
-        className="absolute top-1/4 left-1/4 w-[28rem] h-[28rem] bg-blue-600/10 rounded-full blur-3xl pointer-events-none animate-pulse"
+        className="absolute top-1/4 left-1/4 w-md h-112 bg-primary/10 rounded-full blur-3xl pointer-events-none animate-pulse"
         style={{ animationDuration: "6s" }}
       />
       <div
@@ -159,7 +159,7 @@ export default function Hero() {
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_100%_100%_at_50%_50%,transparent_50%,rgba(2,6,23,0.6)_100%)]" />
 
       <div className="relative max-w-3xl text-center">
-        <p className="hero-label text-blue-400 font-mono text-sm mb-6 tracking-widest uppercase">
+        <p className="hero-label text-primary font-mono text-sm mb-6 tracking-widest uppercase">
           Hello, I&apos;m
         </p>
 
@@ -169,7 +169,7 @@ export default function Hero() {
         >
           {siteConfig.name.split(" ").map((word, i) => (
             <span key={i} className="inline-block mr-[0.25em] last:mr-0">
-              <span className="hero-word inline-block bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
+              <span className="hero-word inline-block bg-linear-to-r from-white to-slate-400 bg-clip-text text-transparent">
                 {word}
               </span>
             </span>
@@ -177,36 +177,36 @@ export default function Hero() {
         </h1>
 
         {/* Typewriter subtitle */}
-        <h2 className="hero-subtitle text-xl sm:text-2xl text-slate-300 mb-6 font-light h-8 flex items-center justify-center gap-0.5">
+        <h2 className="hero-subtitle text-xl sm:text-2xl text-secondary-foreground mb-6 font-light h-8 flex items-center justify-center gap-0.5">
           <span>{typed}</span>
           {/* Blinking cursor */}
           <span className="inline-block w-0.5 h-6 bg-blue-400 ml-0.5 animate-[blink_1s_step-end_infinite]" />
         </h2>
 
-        <p className="hero-tagline text-slate-400 text-lg max-w-xl mx-auto mb-10 leading-relaxed">
+        <p className="hero-tagline text-muted-foreground text-lg max-w-xl mx-auto mb-10 leading-relaxed">
           {siteConfig.tagline}
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <a
             href="#projects"
-            className="hero-cta-item px-8 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-500 transition-colors"
+            className="hero-cta-item px-8 py-3 bg-primary text-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
           >
             View My Work
           </a>
           <a
             href="#contact"
-            className="hero-cta-item px-8 py-3 border border-slate-600 text-slate-300 rounded-lg font-medium hover:border-slate-400 hover:text-white transition-colors"
+            className="hero-cta-item px-8 py-3 border border-slate-600 text-secondary-foreground rounded-lg font-medium hover:border-slate-400 hover:text-foreground transition-colors"
           >
             Get In Touch
           </a>
         </div>
 
-        <div className="hero-scroll absolute bottom-[-120px] left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-slate-600">
+        <div className="hero-scroll absolute bottom-[-120px] left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground">
           <span className="text-xs font-mono tracking-widest uppercase">
             Scroll
           </span>
-          <div className="w-px h-12 bg-gradient-to-b from-slate-600 to-transparent" />
+          <div className="w-px h-12 bg-linear-to-b from-slate-600 to-transparent" />
         </div>
       </div>
     </section>

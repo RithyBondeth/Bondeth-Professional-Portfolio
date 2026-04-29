@@ -3,16 +3,16 @@ import { AnimateIn, StaggerIn } from "@/components/ui/animate-in";
 
 export default function Education() {
   return (
-    <section id="education" className="py-24 px-6 bg-slate-900">
+    <section id="education" className="py-24 px-6 bg-background">
       <div className="max-w-5xl mx-auto">
         <AnimateIn>
-          <p className="text-blue-400 font-mono text-sm tracking-widest uppercase">
+          <p className="text-primary font-mono text-sm tracking-widest uppercase">
             Education
           </p>
         </AnimateIn>
 
         <AnimateIn delay={0.05}>
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mt-3 mb-12">
+          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mt-3 mb-12">
             Academic background
           </h2>
         </AnimateIn>
@@ -22,29 +22,29 @@ export default function Education() {
           {educations.map((edu) => (
             <div
               key={edu.degree}
-              className="rounded-2xl bg-slate-800 border border-slate-700 hover:border-slate-500 transition-colors overflow-hidden"
+              className="rounded-2xl bg-card border border-border hover:border-accent transition-colors overflow-hidden"
             >
               {/* Header bar */}
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-6 py-5 border-b border-slate-700/60">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-6 py-5 border-b border-border/60">
                 <div className="flex items-start gap-4">
                   {/* Cap icon */}
-                  <div className="mt-0.5 flex-shrink-0 w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
-                    <GraduationCapIcon className="w-5 h-5 text-blue-400" />
+                  <div className="mt-0.5 shrink-0 w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+                    <GraduationCapIcon className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <h3 className="text-white font-semibold text-lg leading-snug">
+                    <h3 className="text-foreground font-semibold text-lg leading-snug">
                       {edu.degree}
                     </h3>
-                    <p className="text-blue-400 text-sm mt-0.5">
+                    <p className="text-primary text-sm mt-0.5">
                       {edu.institution}
                     </p>
                   </div>
                 </div>
-                <div className="sm:text-right flex-shrink-0 pl-14 sm:pl-0">
-                  <span className="inline-block text-slate-400 text-sm font-mono bg-slate-700/50 px-3 py-1 rounded-lg">
+                <div className="sm:text-right shrink-0 pl-14 sm:pl-0">
+                  <span className="inline-block text-muted-foreground text-sm font-mono bg-slate-700/50 px-3 py-1 rounded-lg">
                     {edu.period}
                   </span>
-                  <p className="text-slate-500 text-xs mt-1.5 flex items-center gap-1 sm:justify-end">
+                  <p className="text-muted-foreground text-xs mt-1.5 flex items-center gap-1 sm:justify-end">
                     <LocationPinIcon className="w-3 h-3" />
                     {edu.location}
                   </p>
@@ -53,7 +53,7 @@ export default function Education() {
 
               {/* Body */}
               <div className="px-6 py-5 space-y-4">
-                <p className="text-slate-400 text-sm leading-relaxed">
+                <p className="text-muted-foreground text-sm leading-relaxed">
                   {edu.description}
                 </p>
 
@@ -64,8 +64,8 @@ export default function Education() {
                         key={achievement}
                         className="flex items-start gap-2.5"
                       >
-                        <TrophyIcon className="w-4 h-4 text-amber-400 mt-0.5 flex-shrink-0" />
-                        <span className="text-slate-300 text-sm">
+                        <TrophyIcon className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" />
+                        <span className="text-secondary-foreground text-sm">
                           {achievement}
                         </span>
                       </div>
@@ -80,20 +80,20 @@ export default function Education() {
         {/* Training courses */}
         <AnimateIn delay={0.1}>
           <div className="mt-12">
-            <h3 className="text-white font-semibold text-lg mb-5 flex items-center gap-2">
-              <BookOpenIcon className="w-5 h-5 text-blue-400" />
+            <h3 className="text-foreground font-semibold text-lg mb-5 flex items-center gap-2">
+              <BookOpenIcon className="w-5 h-5 text-primary" />
               Training Courses
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {trainingCourses.map((course) => (
                 <div
                   key={course.title}
-                  className="flex flex-col gap-1 px-4 py-3 rounded-xl bg-slate-800 border border-slate-700/60 hover:border-slate-500 transition-colors"
+                  className="flex flex-col gap-1 px-4 py-3 rounded-xl bg-card border border-border/60 hover:border-accent transition-colors"
                 >
-                  <span className="text-slate-200 text-sm font-medium">
+                  <span className="text-primary-foreground text-sm font-medium">
                     {course.title}
                   </span>
-                  <span className="text-slate-500 text-xs font-mono">
+                  <span className="text-muted-foreground text-xs font-mono">
                     {course.institution}
                   </span>
                 </div>

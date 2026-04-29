@@ -64,16 +64,16 @@ const COPIES_PER_HALF = 8;
 
 export default function Skills() {
   return (
-    <section id="skills" className="py-24 bg-slate-900 overflow-hidden">
+    <section id="skills" className="py-24 bg-background overflow-hidden">
       {/* Section header */}
       <div className="max-w-5xl mx-auto px-6 mb-16">
         <AnimateIn>
-          <p className="text-blue-400 font-mono text-sm tracking-widest uppercase">
+          <p className="text-primary font-mono text-sm tracking-widest uppercase">
             Skills
           </p>
         </AnimateIn>
         <AnimateIn delay={0.05}>
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mt-3">
+          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mt-3">
             Technologies I work with
           </h2>
         </AnimateIn>
@@ -95,14 +95,14 @@ export default function Skills() {
             <AnimateIn key={category} y={20} delay={i * 0.08}>
               <div className="relative">
                 {/* Left fade + category label */}
-                <div className="absolute inset-y-0 left-0 w-40 sm:w-52 bg-gradient-to-r from-slate-900 via-slate-900/80 to-transparent z-10 pointer-events-none flex items-center pl-6">
-                  <span className="text-[10px] font-mono text-slate-500 uppercase tracking-[0.2em] select-none">
+                <div className="absolute inset-y-0 left-0 w-40 sm:w-52 bg-linear-to-r from-slate-900 via-slate-900/80 to-transparent z-10 pointer-events-none flex items-center pl-6">
+                  <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-[0.2em] select-none">
                     {category}
                   </span>
                 </div>
 
                 {/* Right fade */}
-                <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-slate-900 to-transparent z-10 pointer-events-none" />
+                <div className="absolute inset-y-0 right-0 w-24 bg-linear-to-l from-slate-900 to-transparent z-10 pointer-events-none" />
 
                 <MarqueeTrack direction={direction} duration={60}>
                   {track.map((skill, j) => (
@@ -121,14 +121,14 @@ export default function Skills() {
 function SkillBadge({ skill }: { skill: Skill }) {
   const Icon = ICON_MAP[skill.icon];
   return (
-    <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-slate-800 border border-slate-700/50 whitespace-nowrap shrink-0 select-none">
+    <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-card border border-border/50 whitespace-nowrap shrink-0 select-none">
       {Icon && (
         <Icon
           className="w-[18px] h-[18px] shrink-0"
           style={{ color: skill.color }}
         />
       )}
-      <span className="text-sm text-slate-300 font-medium">{skill.name}</span>
+      <span className="text-sm text-secondary-foreground font-medium">{skill.name}</span>
     </div>
   );
 }

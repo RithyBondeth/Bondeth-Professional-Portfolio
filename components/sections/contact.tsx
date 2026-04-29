@@ -3,22 +3,22 @@ import { AnimateIn, StaggerIn } from "@/components/ui/animate-in";
 
 export default function Contact() {
   return (
-    <section id="contact" className="py-24 px-6 bg-slate-800">
+    <section id="contact" className="py-24 px-6 bg-card">
       <div className="max-w-2xl mx-auto text-center">
         <AnimateIn>
-          <p className="text-blue-400 font-mono text-sm tracking-widest uppercase">
+          <p className="text-primary font-mono text-sm tracking-widest uppercase">
             Contact
           </p>
         </AnimateIn>
 
         <AnimateIn delay={0.05}>
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mt-3 mb-4">
+          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mt-3 mb-4">
             Let&apos;s work together
           </h2>
         </AnimateIn>
 
         <AnimateIn delay={0.1}>
-          <p className="text-slate-400 leading-relaxed mb-10">
+          <p className="text-muted-foreground leading-relaxed mb-10">
             I&apos;m currently open to new opportunities. Whether you have a
             project in mind, a question, or just want to say hi — my inbox is
             always open.
@@ -28,7 +28,7 @@ export default function Contact() {
         <AnimateIn delay={0.15}>
           <a
             href={`mailto:${siteConfig.email}`}
-            className="inline-block px-8 py-4 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-500 transition-colors text-lg"
+            className="inline-block px-8 py-4 bg-primary text-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors text-lg"
           >
             Say Hello
           </a>
@@ -76,7 +76,7 @@ function SocialLink({
       target="_blank"
       rel="noopener noreferrer"
       aria-label={label}
-      className="w-12 h-12 flex items-center justify-center rounded-full border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500 transition-colors"
+      className="w-12 h-12 flex items-center justify-center rounded-full border border-border text-muted-foreground hover:text-foreground hover:border-accent transition-colors"
     >
       {icon}
     </a>

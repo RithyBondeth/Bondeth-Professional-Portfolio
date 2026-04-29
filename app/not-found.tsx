@@ -14,7 +14,7 @@ export default function NotFound() {
         <span className="text-[10rem] sm:text-[14rem] font-black text-slate-800 leading-none">
           404
         </span>
-        <span className="absolute inset-0 flex items-center justify-center text-[10rem] sm:text-[14rem] font-black leading-none text-transparent bg-clip-text bg-gradient-to-b from-blue-400 to-blue-600 opacity-20 blur-sm">
+        <span className="absolute inset-0 flex items-center justify-center text-[10rem] sm:text-[14rem] font-black leading-none text-transparent bg-clip-text bg-linear-to-b from-blue-400 to-blue-600 opacity-20 blur-sm">
           404
         </span>
       </div>
@@ -36,8 +36,18 @@ export default function NotFound() {
         href="/"
         className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm transition-colors"
       >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        <svg
+          className="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M10 19l-7-7m0 0l7-7m-7 7h18"
+          />
         </svg>
         Back to home
       </Link>
