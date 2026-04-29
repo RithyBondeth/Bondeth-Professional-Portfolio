@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { navLinks, siteConfig } from "@/data/portfolio";
+import { MenuIcon, CloseIcon } from "@/components/ui/icons";
 
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
@@ -86,28 +87,11 @@ export default function Nav() {
           onClick={() => setMenuOpen((o) => !o)}
           aria-label="Toggle menu"
         >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            {menuOpen ? (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            ) : (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            )}
-          </svg>
+          {menuOpen ? (
+            <CloseIcon className="w-6 h-6" />
+          ) : (
+            <MenuIcon className="w-6 h-6" />
+          )}
         </button>
       </div>
 
