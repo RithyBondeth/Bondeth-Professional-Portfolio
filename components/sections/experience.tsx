@@ -69,9 +69,9 @@ export default function Experience() {
 
           <div className="relative overflow-hidden">
             {/* Left fade */}
-            <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-slate-800 to-transparent z-10 pointer-events-none" />
+            <div className="absolute inset-y-0 left-0 w-24 bg-linear-to-r from-slate-800 to-transparent z-10 pointer-events-none" />
             {/* Right fade */}
-            <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-slate-800 to-transparent z-10 pointer-events-none" />
+            <div className="absolute inset-y-0 right-0 w-24 bg-linear-to-l from-slate-800 to-transparent z-10 pointer-events-none" />
 
             <MarqueeTrack direction="rtl" duration={40}>
               {/* 10 copies to fill any screen width */}

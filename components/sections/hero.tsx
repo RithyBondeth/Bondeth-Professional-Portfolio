@@ -5,11 +5,7 @@ import gsap from "gsap";
 import { siteConfig } from "@/data/portfolio";
 import { HeroBackground } from "@/components/ui/hero-background";
 
-const TITLES = [
-  "Full Stack Developer",
-  "AI Engineer",
-  "Mobile App Developer",
-];
+const TITLES = ["Full Stack Developer", "AI Engineer", "Mobile App Developer"];
 
 function useTypewriter(phrases: string[], startDelay = 1200) {
   const [displayed, setDisplayed] = useState("");
@@ -31,11 +27,11 @@ function useTypewriter(phrases: string[], startDelay = 1200) {
     // Determine next delay
     let wait: number;
     if (isDeleting) {
-      wait = 35;                        // fast erase
+      wait = 35; // fast erase
     } else if (displayed.length === full.length) {
-      wait = 2200;                      // pause before erasing
+      wait = 2200; // pause before erasing
     } else {
-      wait = 75;                        // typing speed
+      wait = 75; // typing speed
     }
 
     const id = setTimeout(() => {
@@ -69,37 +65,43 @@ export default function Hero() {
       tl.fromTo(
         ".hero-label",
         { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }
+        { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
       )
         .fromTo(
           ".hero-word",
           { opacity: 0, y: 60 },
-          { opacity: 1, y: 0, duration: 0.6, stagger: 0.15, ease: "power3.out" },
-          "-=0.3"
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.6,
+            stagger: 0.15,
+            ease: "power3.out",
+          },
+          "-=0.3",
         )
         .fromTo(
           ".hero-subtitle",
           { opacity: 0, y: 20 },
           { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" },
-          "-=0.2"
+          "-=0.2",
         )
         .fromTo(
           ".hero-tagline",
           { opacity: 0, y: 25 },
           { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
-          "-=0.25"
+          "-=0.25",
         )
         .fromTo(
           ".hero-cta-item",
           { opacity: 0, y: 18 },
           { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, ease: "power3.out" },
-          "-=0.25"
+          "-=0.25",
         )
         .fromTo(
           ".hero-scroll",
           { opacity: 0 },
           { opacity: 1, duration: 0.6, ease: "power2.out" },
-          "-=0.1"
+          "-=0.1",
         );
     }, containerRef);
 
@@ -133,14 +135,21 @@ export default function Hero() {
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_70%_60%_at_50%_50%,rgba(59,130,246,0.07),transparent)]" />
 
       {/* Ambient orbs */}
-      <div className="absolute top-1/4 left-1/4 w-[28rem] h-[28rem] bg-blue-600/10 rounded-full blur-3xl pointer-events-none animate-pulse" style={{ animationDuration: "6s" }} />
-      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none animate-pulse" style={{ animationDuration: "8s", animationDelay: "2s" }} />
+      <div
+        className="absolute top-1/4 left-1/4 w-[28rem] h-[28rem] bg-blue-600/10 rounded-full blur-3xl pointer-events-none animate-pulse"
+        style={{ animationDuration: "6s" }}
+      />
+      <div
+        className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none animate-pulse"
+        style={{ animationDuration: "8s", animationDelay: "2s" }}
+      />
 
       {/* Scan line */}
       <div
         className="absolute inset-x-0 h-px pointer-events-none"
         style={{
-          background: "linear-gradient(90deg, transparent, rgba(96,165,250,0.3), transparent)",
+          background:
+            "linear-gradient(90deg, transparent, rgba(96,165,250,0.3), transparent)",
           animation: "scan 8s linear infinite",
           animationDelay: "1s",
         }}
