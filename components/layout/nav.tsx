@@ -9,29 +9,29 @@ export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     const sectionIds = navLinks.map(({ href }) => href.replace("#", ""));
 
-    // Scroll handler: background + active section detection
     const onScroll = () => {
       setScrolled(window.scrollY > 20);
 
-      // Active = the last section whose top is above 35% of viewport height
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+      setProgress(scrollHeight > 0 ? (window.scrollY / scrollHeight) * 100 : 0);
+
       const threshold = window.innerHeight * 0.35;
       let current = "";
       for (const id of sectionIds) {
         const el = document.getElementById(id);
         if (!el) continue;
-        if (el.getBoundingClientRect().top <= threshold) {
-          current = id;
-        }
+        if (el.getBoundingClientRect().top <= threshold) current = id;
       }
       setActiveSection(current);
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll(); // run once on mount
+    onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
@@ -39,46 +39,51 @@ export default function Nav() {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-background/95 backdrop-blur-sm border-b border-border shadow-lg"
+          ? "bg-[#060d1f]/95 backdrop-blur-md border-b border-border shadow-xl shadow-black/40"
           : "bg-transparent"
       }`}
     >
-      <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-        <a href="#" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+      {/* Scroll progress bar */}
+      <div
+        className="absolute bottom-0 left-0 h-px bg-primary/70 transition-[width] duration-75 ease-out pointer-events-none"
+        style={{ width: `${progress}%` }}
+      />
+      <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+        <a href="#" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity group">
           <Image
             src="/logo.webp"
             alt={siteConfig.name}
-            width={36}
-            height={36}
-            className="rounded-full"
+            width={32}
+            height={32}
+            className="rounded-full ring-1 ring-border group-hover:ring-primary/50 transition-all"
           />
-          <span className="text-foreground font-bold text-base tracking-tight hidden sm:block">
+          <span className="text-foreground font-bold text-sm tracking-tight hidden sm:block font-mono">
             {siteConfig.name}
           </span>
         </a>
 
         {/* Desktop links */}
-        <ul className="hidden sm:flex items-center gap-6">
-          {navLinks.map(({ href, label }) => {
+        <ul className="hidden sm:flex items-center gap-1">
+          {navLinks.map(({ href, label }, i) => {
             const id = href.replace("#", "");
             const isActive = activeSection === id;
             return (
               <li key={href}>
                 <a
                   href={href}
-                  className={`relative py-1 text-sm font-medium transition-colors duration-200 ${
+                  className={`relative px-3 py-1.5 text-xs font-mono tracking-wide transition-colors duration-200 rounded ${
                     isActive
-                      ? "text-foreground"
-                      : "text-muted-foreground hover:text-primary-foreground"
+                      ? "text-primary"
+                      : "text-muted-foreground hover:text-foreground hover:bg-white/3"
                   }`}
                 >
+                  <span className="text-primary/40 mr-1 text-[10px]">
+                    0{i + 1}.
+                  </span>
                   {label}
-                  {/* Sliding underline */}
-                  <span
-                    className={`absolute -bottom-0.5 left-0 h-px bg-blue-400 transition-all duration-300 ${
-                      isActive ? "w-full opacity-100" : "w-0 opacity-0"
-                    }`}
-                  />
+                  {isActive && (
+                    <span className="absolute bottom-0 left-3 right-3 h-px bg-primary/60 rounded-full" />
+                  )}
                 </a>
               </li>
             );
@@ -92,18 +97,18 @@ export default function Nav() {
           aria-label="Toggle menu"
         >
           {menuOpen ? (
-            <CloseIcon className="w-6 h-6" />
+            <CloseIcon className="w-5 h-5" />
           ) : (
-            <MenuIcon className="w-6 h-6" />
+            <MenuIcon className="w-5 h-5" />
           )}
         </button>
       </div>
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="sm:hidden bg-background/98 border-t border-border px-6 py-4">
-          <ul className="flex flex-col">
-            {navLinks.map(({ href, label }) => {
+        <div className="sm:hidden bg-[#060d1f]/98 border-t border-border px-6 py-4">
+          <ul className="flex flex-col gap-1">
+            {navLinks.map(({ href, label }, i) => {
               const id = href.replace("#", "");
               const isActive = activeSection === id;
               return (
@@ -111,12 +116,13 @@ export default function Nav() {
                   <a
                     href={href}
                     onClick={() => setMenuOpen(false)}
-                    className={`block px-3 py-2.5 text-sm font-medium border-l-2 transition-all ${
+                    className={`flex items-center gap-2 px-3 py-2 text-xs font-mono rounded transition-all ${
                       isActive
-                        ? "text-foreground border-blue-400 pl-4"
-                        : "text-muted-foreground border-transparent hover:text-foreground hover:border-slate-600"
+                        ? "text-primary bg-primary/5 border-l border-primary"
+                        : "text-muted-foreground border-l border-transparent hover:text-foreground hover:border-border pl-3"
                     }`}
                   >
+                    <span className="text-primary/40 text-[10px]">0{i + 1}.</span>
                     {label}
                   </a>
                 </li>

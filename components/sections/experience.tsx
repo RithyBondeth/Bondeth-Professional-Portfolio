@@ -7,10 +7,10 @@ import { MarqueeTrack } from "@/components/ui/marquee-track";
 export default function Experience() {
   return (
     <section id="experience" className="py-24 px-6 bg-card">
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <AnimateIn>
-          <p className="text-primary font-mono text-sm tracking-widest uppercase">
-            Experience
+          <p className="text-primary font-mono text-xs tracking-[0.25em] uppercase mb-1">
+            <span className="text-muted-foreground">//</span> experience.json
           </p>
         </AnimateIn>
 
@@ -21,33 +21,37 @@ export default function Experience() {
         </AnimateIn>
 
         <div className="relative">
-          <div className="absolute left-0 top-0 bottom-0 w-px bg-slate-700 ml-[7px] hidden sm:block" />
+          {/* Vertical timeline line */}
+          <div className="absolute left-0 top-0 bottom-0 w-px bg-border ml-[7px] hidden sm:block" />
 
-          <StaggerIn className="space-y-10" stagger={0.15} y={30}>
+          <StaggerIn className="space-y-8" stagger={0.12} y={30}>
             {experiences.map((exp, i) => (
               <div key={i} className="sm:pl-10 relative">
-                <div className="hidden sm:block absolute left-0 top-1.5 w-3.5 h-3.5 rounded-full bg-blue-500 border-2 border-border ring-2 ring-blue-500/30" />
+                {/* Timeline dot */}
+                <div className="hidden sm:flex absolute left-0 top-2 w-3.5 h-3.5 rounded-full bg-primary/20 border border-primary/60 items-center justify-center">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                </div>
 
-                <div className="bg-background rounded-xl p-6 border border-border hover:border-slate-600 transition-colors">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 mb-3">
+                <div className="bg-background rounded border border-border/60 p-5 hover:border-primary/25 hover:shadow-[0_0_20px_rgba(34,211,238,0.08)] transition-all duration-300">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 mb-3">
                     <div>
-                      <h3 className="text-foreground font-semibold text-lg">
+                      <h3 className="text-foreground font-semibold text-base">
                         {exp.role}
                       </h3>
-                      <p className="text-primary text-sm">{exp.company}</p>
+                      <p className="text-primary text-xs font-mono mt-0.5">{exp.company}</p>
                     </div>
-                    <span className="text-muted-foreground text-sm font-mono">
+                    <span className="text-muted-foreground text-xs font-mono shrink-0 mt-0.5">
                       {exp.period}
                     </span>
                   </div>
-                  <p className="text-muted-foreground text-sm leading-relaxed mb-4">
+                  <p className="text-muted-foreground text-xs leading-relaxed mb-4">
                     {exp.description}
                   </p>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1.5">
                     {exp.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="px-2.5 py-1 bg-blue-500/10 text-primary text-xs rounded-md font-mono border border-blue-500/20"
+                        className="px-2 py-0.5 bg-primary/8 text-primary text-[10px] rounded border border-primary/15 font-mono"
                       >
                         {tag}
                       </span>
@@ -60,21 +64,18 @@ export default function Experience() {
         </div>
       </div>
 
-      {/* ── Organisation logo marquee ─────────────────── */}
+      {/* Organisation logo marquee */}
       <AnimateIn delay={0.1}>
-        <div className="mt-16 pt-12 border-t border-border/50">
-          <p className="text-center text-xs font-mono text-muted-foreground uppercase tracking-widest mb-8">
+        <div className="mt-16 pt-12 border-t border-border/40">
+          <p className="text-center text-[10px] font-mono text-muted-foreground/60 uppercase tracking-[0.2em] mb-8">
             Organizations I&apos;ve worked with
           </p>
 
           <div className="relative overflow-hidden">
-            {/* Left fade */}
-            <div className="absolute inset-y-0 left-0 w-24 bg-linear-to-r from-slate-800 to-transparent z-10 pointer-events-none" />
-            {/* Right fade */}
-            <div className="absolute inset-y-0 right-0 w-24 bg-linear-to-l from-slate-800 to-transparent z-10 pointer-events-none" />
+            <div className="absolute inset-y-0 left-0 w-24 bg-linear-to-r from-[#0c1428] to-transparent z-10 pointer-events-none" />
+            <div className="absolute inset-y-0 right-0 w-24 bg-linear-to-l from-[#0c1428] to-transparent z-10 pointer-events-none" />
 
             <MarqueeTrack direction="rtl" duration={40}>
-              {/* 10 copies to fill any screen width */}
               {Array.from({ length: 10 }, (_, copy) =>
                 organizations.map((org) => (
                   <OrgBadge key={`${copy}-${org.name}`} org={org} />
@@ -90,17 +91,16 @@ export default function Experience() {
 
 function OrgBadge({ org }: { org: Organization }) {
   return (
-    <div className="relative flex items-center justify-center px-8 py-5 bg-slate-700/50 border border-slate-600/40 hover:border-accent hover:bg-slate-700/80 transition-all duration-300 shrink-0 select-none group">
-      <div className="relative w-24 h-24">
+    <div className="relative flex items-center justify-center px-8 py-5 bg-background/60 border border-border/40 hover:border-primary/20 hover:bg-background/80 transition-all duration-300 shrink-0 select-none group">
+      <div className="relative w-20 h-20">
         <Image
           src={org.logo}
           alt={org.name}
           fill
-          className="object-contain transition-opacity duration-300 group-hover:opacity-30"
+          className="object-contain transition-opacity duration-300 group-hover:opacity-20"
         />
       </div>
-      {/* Name label on hover */}
-      <span className="absolute inset-0 flex items-center justify-center text-sm font-semibold text-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-300 px-3 text-center leading-snug">
+      <span className="absolute inset-0 flex items-center justify-center text-xs font-mono font-medium text-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-300 px-3 text-center leading-snug">
         {org.name}
       </span>
     </div>

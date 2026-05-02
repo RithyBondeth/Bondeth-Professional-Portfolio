@@ -59,17 +59,15 @@ const ICON_MAP: Record<string, IconType> = {
   SiLinux,
 };
 
-// 8 copies per half → 16 items per skill → seamless loop on any screen including 4K
 const COPIES_PER_HALF = 8;
 
 export default function Skills() {
   return (
     <section id="skills" className="py-24 bg-background overflow-hidden">
-      {/* Section header */}
-      <div className="max-w-5xl mx-auto px-6 mb-16">
+      <div className="max-w-6xl mx-auto px-6 mb-16">
         <AnimateIn>
-          <p className="text-primary font-mono text-sm tracking-widest uppercase">
-            Skills
+          <p className="text-primary font-mono text-xs tracking-[0.25em] uppercase mb-1">
+            <span className="text-muted-foreground">//</span> skills.ts
           </p>
         </AnimateIn>
         <AnimateIn delay={0.05}>
@@ -79,12 +77,9 @@ export default function Skills() {
         </AnimateIn>
       </div>
 
-      {/* One marquee row per category */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         {skillGroups.map(({ category, skills }, i) => {
           const direction = i % 2 === 0 ? "rtl" : "ltr";
-
-          // Build track: two identical halves so translateX(-50%) loops seamlessly
           const half: Skill[] = Array.from(
             { length: COPIES_PER_HALF * skills.length },
             (_, j) => skills[j % skills.length],
@@ -95,14 +90,13 @@ export default function Skills() {
             <AnimateIn key={category} y={20} delay={i * 0.08}>
               <div className="relative">
                 {/* Left fade + category label */}
-                <div className="absolute inset-y-0 left-0 w-40 sm:w-52 bg-linear-to-r from-slate-900 via-slate-900/80 to-transparent z-10 pointer-events-none flex items-center pl-6">
-                  <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-[0.2em] select-none">
+                <div className="absolute inset-y-0 left-0 w-40 sm:w-52 bg-linear-to-r from-[#060d1f] via-[#060d1f]/80 to-transparent z-10 pointer-events-none flex items-center pl-6">
+                  <span className="text-[10px] font-mono text-muted-foreground/60 uppercase tracking-[0.2em] select-none">
                     {category}
                   </span>
                 </div>
-
                 {/* Right fade */}
-                <div className="absolute inset-y-0 right-0 w-24 bg-linear-to-l from-slate-900 to-transparent z-10 pointer-events-none" />
+                <div className="absolute inset-y-0 right-0 w-24 bg-linear-to-l from-[#060d1f] to-transparent z-10 pointer-events-none" />
 
                 <MarqueeTrack direction={direction} duration={60}>
                   {track.map((skill, j) => (
@@ -121,14 +115,11 @@ export default function Skills() {
 function SkillBadge({ skill }: { skill: Skill }) {
   const Icon = ICON_MAP[skill.icon];
   return (
-    <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-card border border-border/50 whitespace-nowrap shrink-0 select-none">
+    <div className="flex items-center gap-2 px-3.5 py-2 rounded border border-border/50 bg-card whitespace-nowrap shrink-0 select-none hover:border-primary/20 transition-colors">
       {Icon && (
-        <Icon
-          className="w-[18px] h-[18px] shrink-0"
-          style={{ color: skill.color }}
-        />
+        <Icon className="w-4 h-4 shrink-0" style={{ color: skill.color }} />
       )}
-      <span className="text-sm text-secondary-foreground font-medium">{skill.name}</span>
+      <span className="text-xs font-mono text-muted-foreground">{skill.name}</span>
     </div>
   );
 }
