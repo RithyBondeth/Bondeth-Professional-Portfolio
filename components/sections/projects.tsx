@@ -6,10 +6,12 @@ import { AnimateIn, StaggerIn } from "@/components/ui/animate-in";
 export default function Projects() {
   return (
     <section id="projects" className="py-24 px-6 bg-background">
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <AnimateIn>
-          <p className="text-primary font-mono text-sm tracking-widest uppercase">
+          <p className="text-primary font-mono text-xs tracking-[0.25em] uppercase mb-1">
+            <span className="text-muted-foreground">&lt;</span>
             Projects
+            <span className="text-muted-foreground"> /&gt;</span>
           </p>
         </AnimateIn>
 
@@ -20,8 +22,8 @@ export default function Projects() {
         </AnimateIn>
 
         <StaggerIn
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-          stagger={0.12}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+          stagger={0.1}
           y={30}
         >
           {projects.map((project) => (
@@ -35,10 +37,11 @@ export default function Projects() {
               href={siteConfig.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors font-medium border border-border hover:border-accent px-6 py-3 rounded-lg"
+              className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors font-mono text-sm border border-border hover:border-primary/40 px-5 py-2.5 rounded"
             >
-              View more on GitHub
-              <ExternalLinkIcon className="w-4 h-4" />
+              <span className="text-primary/60">$</span>
+              git clone github.com/bondeth
+              <ExternalLinkIcon className="w-3.5 h-3.5 ml-1" />
             </a>
           </div>
         </AnimateIn>
@@ -49,9 +52,9 @@ export default function Projects() {
 
 function ProjectCard({ project }: { project: Project }) {
   return (
-    <article className="group flex flex-col rounded-2xl bg-card border border-border/60 hover:border-accent overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/30">
-      {/* ── Preview ──────────────────────────────────── */}
-      <div className="relative h-44 overflow-hidden">
+    <article className="group flex flex-col rounded border border-border/60 bg-card hover:border-primary/30 hover:shadow-[0_0_28px_rgba(34,211,238,0.1)] overflow-hidden transition-all duration-300 hover:-translate-y-1">
+      {/* Preview */}
+      <div className="relative h-40 overflow-hidden">
         {project.image ? (
           <Image
             src={project.image}
@@ -60,73 +63,78 @@ function ProjectCard({ project }: { project: Project }) {
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
-          /* Gradient placeholder with mock browser chrome */
-          <div
-            className={`absolute inset-0 bg-linear-to-br ${project.gradient}`}
-          >
+          <div className={`absolute inset-0 bg-linear-to-br ${project.gradient}`}>
             {/* Mock browser bar */}
-            <div className="absolute top-0 inset-x-0 h-7 bg-background/60 backdrop-blur-sm flex items-center px-3 gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-red-500/70" />
-              <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/70" />
-              <span className="w-2.5 h-2.5 rounded-full bg-green-500/70" />
-              <div className="ml-2 flex-1 h-3.5 rounded-sm bg-slate-700/60 max-w-[140px]" />
+            <div className="absolute top-0 inset-x-0 h-7 bg-background/70 backdrop-blur-sm flex items-center px-3 gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-red-500/70" />
+              <span className="w-2 h-2 rounded-full bg-yellow-500/70" />
+              <span className="w-2 h-2 rounded-full bg-green-500/70" />
+              <div className="ml-2 flex-1 h-3 rounded-sm bg-border/60 max-w-[140px]" />
             </div>
-            {/* Mock content skeleton */}
             <div className="absolute inset-0 top-7 p-4 flex flex-col gap-2">
-              <div className="h-3 rounded bg-white/10 w-3/4" />
-              <div className="h-3 rounded bg-white/10 w-1/2" />
-              <div className="mt-2 h-16 rounded-lg bg-white/5 border border-white/10" />
+              <div className="h-2.5 rounded bg-white/8 w-3/4" />
+              <div className="h-2.5 rounded bg-white/8 w-1/2" />
+              <div className="mt-2 h-14 rounded bg-white/4 border border-white/8" />
               <div className="flex gap-2 mt-auto">
-                <div className="h-7 rounded-md bg-blue-500/30 w-20" />
-                <div className="h-7 rounded-md bg-white/5 w-16" />
+                <div className="h-6 rounded bg-primary/20 w-16" />
+                <div className="h-6 rounded bg-white/5 w-14" />
               </div>
             </div>
           </div>
         )}
 
+        {/* File path overlay */}
+        <div className="absolute top-8 left-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 px-3">
+          <span className="text-[9px] font-mono text-primary/70 bg-background/80 backdrop-blur-sm px-2 py-0.5 rounded">
+            src/projects/{project.title.toLowerCase().replace(/\s+/g, "-")}.ts
+          </span>
+        </div>
+
         {/* Live badge */}
         {project.live && (
-          <div className="absolute top-9 right-3 flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 backdrop-blur-sm">
+          <div className="absolute top-8 right-3 flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/25 backdrop-blur-sm">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-[10px] text-emerald-400 font-mono font-medium">
-              Live
-            </span>
+            <span className="text-[9px] text-emerald-400 font-mono">live</span>
           </div>
         )}
       </div>
 
-      {/* ── Body ─────────────────────────────────────── */}
-      <div className="flex flex-col flex-1 p-5 gap-3">
-        <h3 className="text-foreground font-semibold text-base leading-snug">
-          {project.title}
-        </h3>
+      {/* Body */}
+      <div className="flex flex-col flex-1 p-4 gap-3">
+        {/* File name style header */}
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] font-mono text-muted-foreground/50">▸</span>
+          <h3 className="text-foreground font-mono font-semibold text-sm leading-snug">
+            {project.title}
+          </h3>
+        </div>
 
-        <p className="text-muted-foreground text-sm leading-relaxed flex-1">
+        <p className="text-muted-foreground text-xs leading-relaxed flex-1">
           {project.description}
         </p>
 
         {/* Tags */}
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-1">
           {project.tags.map((tag) => (
             <span
               key={tag}
-              className="text-[11px] font-mono text-muted-foreground px-2 py-0.5 rounded bg-slate-700/50"
+              className="text-[10px] font-mono text-muted-foreground/70 px-1.5 py-0.5 rounded border border-border/60 bg-muted/40"
             >
               {tag}
             </span>
           ))}
         </div>
 
-        {/* ── Links ──────────────────────────────────── */}
-        <div className="flex items-center gap-2 pt-1 border-t border-border/50">
+        {/* Links */}
+        <div className="flex items-center gap-2 pt-2 border-t border-border/40">
           <a
             href={project.github}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-secondary-foreground bg-slate-700/50 hover:bg-slate-600/60 hover:text-foreground transition-colors"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded text-xs font-mono text-muted-foreground bg-muted/40 border border-border/50 hover:border-border hover:text-foreground transition-colors"
           >
             <GitHubIcon className="w-3.5 h-3.5" />
-            Source
+            source
           </a>
 
           {project.live ? (
@@ -134,13 +142,13 @@ function ProjectCard({ project }: { project: Project }) {
               href={project.live}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-foreground bg-primary hover:bg-primary/90 transition-colors ml-auto"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded text-xs font-mono text-primary-foreground bg-primary hover:bg-primary/90 transition-colors ml-auto"
             >
-              Live Preview
-              <ExternalLinkIcon className="w-3.5 h-3.5" />
+              demo
+              <ExternalLinkIcon className="w-3 h-3" />
             </a>
           ) : (
-            <span className="ml-auto text-[11px] text-muted-foreground font-mono">
+            <span className="ml-auto text-[10px] text-muted-foreground/50 font-mono">
               no demo
             </span>
           )}
@@ -164,12 +172,7 @@ function GitHubIcon({ className }: { className?: string }) {
 
 function ExternalLinkIcon({ className }: { className?: string }) {
   return (
-    <svg
-      className={className}
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
