@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { navLinks, siteConfig } from "@/data/portfolio";
 import { MenuIcon, CloseIcon } from "@/components/ui/icons";
 
@@ -43,14 +44,17 @@ export default function Nav() {
       }`}
     >
       <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-        <a
-          href="#"
-          className="text-foreground font-bold text-xl tracking-tight hover:text-primary transition-colors"
-        >
-          {siteConfig.name
-            .split(" ")
-            .map((n) => n[0])
-            .join("")}
+        <a href="#" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <Image
+            src="/logo.webp"
+            alt={siteConfig.name}
+            width={36}
+            height={36}
+            className="rounded-full"
+          />
+          <span className="text-foreground font-bold text-base tracking-tight hidden sm:block">
+            {siteConfig.name}
+          </span>
         </a>
 
         {/* Desktop links */}

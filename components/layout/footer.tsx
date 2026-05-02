@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { siteConfig, navLinks } from "@/data/portfolio";
 import { GitHubIcon, LinkedInIcon, MailIcon } from "@/components/ui/icons";
 
@@ -10,9 +11,18 @@ export default function Footer() {
       <div className="max-w-5xl mx-auto px-6 py-12 grid grid-cols-1 sm:grid-cols-3 gap-10">
         {/* Brand */}
         <div className="sm:col-span-1 flex flex-col gap-3">
-          <span className="text-foreground font-bold text-lg tracking-tight">
-            {siteConfig.name}
-          </span>
+          <div className="flex items-center gap-2">
+            <Image
+              src="/logo.webp"
+              alt={siteConfig.name}
+              width={32}
+              height={32}
+              className="rounded-full"
+            />
+            <span className="text-foreground font-bold text-lg tracking-tight">
+              {siteConfig.name}
+            </span>
+          </div>
           <p className="text-muted-foreground text-sm leading-relaxed max-w-xs">
             {siteConfig.title} based in Phnom Penh, Cambodia.
           </p>
