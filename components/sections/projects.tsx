@@ -1,9 +1,21 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 import { projects, siteConfig } from "@/data/portfolio";
 import type { Project } from "@/types";
 import { AnimateIn, StaggerIn } from "@/components/ui/animate-in";
 
+const CATEGORIES = ["All", "Web", "AI", "Mobile"] as const;
+type Category = (typeof CATEGORIES)[number];
+
 export default function Projects() {
+  const [filter, setFilter] = useState<Category>("All");
+
+  const filteredProjects = projects.filter(
+    (p) => filter === "All" || p.category === filter,
+  );
+
   return (
     <section id="projects" className="py-24 px-6 bg-background">
       <div className="max-w-6xl mx-auto">
@@ -15,21 +27,51 @@ export default function Projects() {
           </p>
         </AnimateIn>
 
-        <AnimateIn delay={0.05}>
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mt-3 mb-12">
-            Things I&apos;ve built
-          </h2>
-        </AnimateIn>
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+          <AnimateIn delay={0.05}>
+            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mt-3">
+              Things I&apos;ve built
+            </h2>
+          </AnimateIn>
+
+          {/* Filter Tabs */}
+          <AnimateIn delay={0.1}>
+            <div className="flex items-center gap-1 bg-card/50 p-1 rounded border border-border/40 w-fit">
+              {CATEGORIES.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setFilter(cat)}
+                  className={`px-4 py-1.5 rounded text-xs font-mono transition-all ${
+                    filter === cat
+                      ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+                      : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </AnimateIn>
+        </div>
 
         <StaggerIn
+          key={filter} // Re-animate on filter change
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
           stagger={0.1}
           y={30}
         >
-          {projects.map((project) => (
+          {filteredProjects.map((project) => (
             <ProjectCard key={project.title} project={project} />
           ))}
         </StaggerIn>
+
+        {filteredProjects.length === 0 && (
+          <div className="py-20 text-center">
+            <p className="text-muted-foreground font-mono text-sm">
+              No projects found in this category.
+            </p>
+          </div>
+        )}
 
         <AnimateIn delay={0.1}>
           <div className="text-center mt-12">

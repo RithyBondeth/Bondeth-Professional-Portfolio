@@ -12,7 +12,10 @@ export default function Nav() {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    const sectionIds = navLinks.map(({ href }) => href.replace("#", ""));
+    const sectionIds = navLinks
+      .map(({ href }) => href)
+      .filter((href) => href.startsWith("/#"))
+      .map((href) => href.replace("/#", ""));
 
     const onScroll = () => {
       setScrolled(window.scrollY > 20);
@@ -22,10 +25,16 @@ export default function Nav() {
 
       const threshold = window.innerHeight * 0.35;
       let current = "";
-      for (const id of sectionIds) {
-        const el = document.getElementById(id);
-        if (!el) continue;
-        if (el.getBoundingClientRect().top <= threshold) current = id;
+
+      // Check if we are on the blog page
+      if (window.location.pathname.startsWith("/blog")) {
+        current = "blog";
+      } else {
+        for (const id of sectionIds) {
+          const el = document.getElementById(id);
+          if (!el) continue;
+          if (el.getBoundingClientRect().top <= threshold) current = id;
+        }
       }
       setActiveSection(current);
     };
@@ -65,7 +74,7 @@ export default function Nav() {
         {/* Desktop links */}
         <ul className="hidden sm:flex items-center gap-1">
           {navLinks.map(({ href, label }, i) => {
-            const id = href.replace("#", "");
+            const id = href.replace("/#", "").replace("/", "");
             const isActive = activeSection === id;
             return (
               <li key={href}>
@@ -88,6 +97,16 @@ export default function Nav() {
               </li>
             );
           })}
+          <li className="ml-2">
+            <a
+              href={siteConfig.resume}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-3 py-1.5 text-xs font-mono tracking-wide text-primary border border-primary/30 rounded hover:bg-primary/5 transition-all"
+            >
+              Resume
+            </a>
+          </li>
         </ul>
 
         {/* Mobile hamburger */}
@@ -109,7 +128,7 @@ export default function Nav() {
         <div className="sm:hidden bg-[#060d1f]/98 border-t border-border px-6 py-4">
           <ul className="flex flex-col gap-1">
             {navLinks.map(({ href, label }, i) => {
-              const id = href.replace("#", "");
+              const id = href.replace("/#", "").replace("/", "");
               const isActive = activeSection === id;
               return (
                 <li key={href}>
@@ -128,6 +147,17 @@ export default function Nav() {
                 </li>
               );
             })}
+            <li className="mt-2 pt-2 border-t border-border/50">
+              <a
+                href={siteConfig.resume}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center justify-center gap-2 px-3 py-2.5 text-xs font-mono rounded text-primary border border-primary/20 bg-primary/5"
+              >
+                Resume.pdf
+              </a>
+            </li>
           </ul>
         </div>
       )}

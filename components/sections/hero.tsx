@@ -279,6 +279,14 @@ export default function Hero() {
                 ./view-work
               </a>
               <a
+                href={siteConfig.resume}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hero-cta-item px-6 py-2.5 border border-primary/20 text-primary rounded font-mono text-sm font-medium hover:bg-primary/5 transition-colors"
+              >
+                ./download-cv
+              </a>
+              <a
                 href="#contact"
                 className="hero-cta-item px-6 py-2.5 border border-border text-muted-foreground rounded font-mono text-sm font-medium hover:border-primary/50 hover:text-foreground transition-colors"
               >

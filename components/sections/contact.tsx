@@ -1,5 +1,6 @@
 import { siteConfig } from "@/data/portfolio";
 import { AnimateIn, StaggerIn } from "@/components/ui/animate-in";
+import ContactForm from "@/components/ui/contact-form";
 
 export default function Contact() {
   return (
@@ -25,39 +26,10 @@ export default function Contact() {
           </p>
         </AnimateIn>
 
-        {/* Terminal-style CTA */}
+        {/* Functional Contact Form */}
         <AnimateIn delay={0.15}>
-          <div className="inline-block w-full max-w-md mb-8">
-            <div className="rounded border border-border/60 bg-background overflow-hidden text-left">
-              {/* Terminal chrome */}
-              <div className="flex items-center gap-1.5 px-4 py-2.5 border-b border-border/50 bg-black/20">
-                <span className="w-2.5 h-2.5 rounded-full bg-red-500/70" />
-                <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/70" />
-                <span className="w-2.5 h-2.5 rounded-full bg-green-500/70" />
-                <span className="ml-3 text-muted-foreground text-[10px] font-mono">bash</span>
-              </div>
-              {/* Command */}
-              <div className="px-4 py-4 font-mono text-xs">
-                <span className="text-emerald-400">~</span>
-                <span className="text-muted-foreground"> $ </span>
-                <span className="text-foreground">sendEmail</span>
-                <span className="text-muted-foreground">(</span>
-                <span className="text-cyan-300">&quot;{siteConfig.email}&quot;</span>
-                <span className="text-muted-foreground">)</span>
-                <br />
-                <span className="text-muted-foreground text-[10px]">
-                  ↳ opening mail client...
-                </span>
-              </div>
-            </div>
-
-            <a
-              href={`mailto:${siteConfig.email}`}
-              className="mt-3 flex items-center justify-center gap-2 w-full px-6 py-3 bg-primary text-primary-foreground rounded font-mono text-sm font-medium hover:bg-primary/90 transition-colors"
-            >
-              <span className="text-primary-foreground/60">▸</span>
-              Send Message
-            </a>
+          <div className="w-full max-w-md mx-auto mb-10">
+            <ContactForm />
           </div>
         </AnimateIn>
 

@@ -118,9 +118,9 @@ export default function Footer() {
       <div className="border-t border-border/40 px-6 py-4">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
           <p className="text-muted-foreground/50 text-[10px] font-mono">
-            <span className="text-muted-foreground/30">/* </span>
+            <span className="text-muted-foreground/30">{"/* "}</span>
             © {year} {siteConfig.name}. All rights reserved.
-            <span className="text-muted-foreground/30"> */</span>
+            <span className="text-muted-foreground/30">{" */"}</span>
           </p>
           <p className="text-muted-foreground/50 text-[10px] font-mono">
             Built with Next.js &amp; Tailwind CSS

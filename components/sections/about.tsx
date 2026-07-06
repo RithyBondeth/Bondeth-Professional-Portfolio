@@ -79,7 +79,7 @@ export default function About() {
       <div className="max-w-6xl mx-auto">
         <AnimateIn>
           <p className="text-primary font-mono text-xs tracking-[0.25em] uppercase mb-1">
-            <span className="text-muted-foreground">//</span> about.tsx
+            <span className="text-muted-foreground">{"//"}</span> about.tsx
           </p>
         </AnimateIn>
 

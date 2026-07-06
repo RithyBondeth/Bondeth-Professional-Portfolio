@@ -22,15 +22,17 @@ export const siteConfig: SiteConfig = {
   email: "rithybondeth999@gmail.com",
   github: "https://github.com/bondeth",
   linkedin: "https://linkedin.com/in/rithybondeth",
+  resume: "/resume.pdf",
 };
 
 export const navLinks: NavLink[] = [
-  { href: "#about", label: "About" },
-  { href: "#skills", label: "Skills" },
-  { href: "#experience", label: "Experience" },
-  { href: "#education", label: "Education" },
-  { href: "#projects", label: "Projects" },
-  { href: "#contact", label: "Contact" },
+  { href: "/#about", label: "About" },
+  { href: "/#skills", label: "Skills" },
+  { href: "/#experience", label: "Experience" },
+  { href: "/#education", label: "Education" },
+  { href: "/#projects", label: "Projects" },
+  { href: "/#contact", label: "Contact" },
+  { href: "/blog", label: "Blog" },
 ];
 
 export const skillGroups: SkillGroup[] = [
@@ -196,6 +198,7 @@ export const projects: Project[] = [
       "Docker",
       "RabbitMQ",
     ],
+    category: "Web",
     github: "https://github.com/apsara-talent/apsara-talent",
     live: "https://apsara-talent.netlify.app",
     image: "/previews/apsara-talent.png",
@@ -214,6 +217,7 @@ export const projects: Project[] = [
       "OpenAI",
       "Anthropic",
     ],
+    category: "AI",
     github: "https://github.com/apsara-assistant/apsara-assistant",
     live: null,
     image: null,
@@ -232,6 +236,7 @@ export const projects: Project[] = [
       "OpenAI",
       "Anthropic",
     ],
+    category: "AI",
     github: "https://github.com/apsara-agentic/apsara-agentic",
     live: "https://apsara-agentic.netlify.app",
     image: "/previews/apsara-agentic.png",
@@ -242,6 +247,7 @@ export const projects: Project[] = [
     description:
       "Official website for the Digital Economy and Business Committee of Cambodia. Built to inform the public on digital economy policies, news, and government services.",
     tags: ["Next.js", "NestJS", "PostgreSQL", "Docker"],
+    category: "Web",
     github: "https://github.com/bondeth",
     live: "https://digitaleconomy.gov.kh/?lang=kh",
     image: "/previews/debc-website.png",
@@ -252,6 +258,7 @@ export const projects: Project[] = [
     description:
       "A platform developed in collaboration with the Ministry of Economy and Finance (MEF) to register and support informal economy workers across Cambodia.",
     tags: ["Next.js", "NestJS", "PostgreSQL", "Docker"],
+    category: "Web",
     github: "https://github.com/bondeth",
     live: "https://informal.digitaleconomy.gov.kh/km",
     image: "/previews/informal-economy.png",
@@ -262,6 +269,7 @@ export const projects: Project[] = [
     description:
       "A developer community platform built during my freelance career. Features authentication with Google, Facebook, and GitHub SSO, enabling developers to discover and share projects.",
     tags: ["React", "NestJS", "PostgreSQL", "Firebase"],
+    category: "Web",
     github: "https://github.com/bondeth/codehub",
     live: "https://codehub-bondeth.netlify.app/signin",
     image: "/previews/codehub.png",
@@ -272,6 +280,7 @@ export const projects: Project[] = [
     description:
       "My oldschool personal vlog and portfolio site — an early project showcasing blog posts, projects, and skills with a distinctive animated 3D logo.",
     tags: ["React", "Next.js", "Vercel"],
+    category: "Web",
     github: "https://github.com/bondeth/bondeth-blog",
     live: "https://bondeth-blog.vercel.app",
     image: "/previews/bondeth-vlog.png",
@@ -282,6 +291,7 @@ export const projects: Project[] = [
     description:
       "A pixel-faithful clone of the Sabay News website, built to practice replicating real-world Khmer news portal layouts with complex grids and category navigation.",
     tags: ["React", "CSS", "Netlify"],
+    category: "Web",
     github: "https://github.com/bondeth/sabynews-clone",
     live: "https://sabynews-clone-bondeth.netlify.app",
     image: "/previews/sabynews-clone.png",
@@ -292,6 +302,7 @@ export const projects: Project[] = [
     description:
       "A front-end clone of the Tesla website featuring the iconic full-screen model showcases, smooth scroll sections, and navigation — built to sharpen UI implementation skills.",
     tags: ["React", "CSS", "Netlify"],
+    category: "Web",
     github: "https://github.com/bondeth/tesla-clone",
     live: "https://tesla-clone-bondeth.netlify.app",
     image: "/previews/tesla-clone.png",

@@ -7,7 +7,7 @@ export default function Education() {
       <div className="max-w-6xl mx-auto">
         <AnimateIn>
           <p className="text-primary font-mono text-xs tracking-[0.25em] uppercase mb-1">
-            <span className="text-muted-foreground">//</span> education.md
+            <span className="text-muted-foreground">{"//"}</span> education.md
           </p>
         </AnimateIn>
 
@@ -73,7 +73,7 @@ export default function Education() {
           <div className="mt-12">
             <h3 className="text-foreground font-semibold text-sm mb-5 flex items-center gap-2 font-mono">
               <BookOpenIcon className="w-4 h-4 text-primary" />
-              <span className="text-muted-foreground">//</span> Training Courses
+              <span className="text-muted-foreground">{"//"}</span> Training Courses
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
               {trainingCourses.map((course) => (

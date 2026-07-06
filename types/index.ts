@@ -26,6 +26,7 @@ export interface Project {
   title: string;
   description: string;
   tags: string[];
+  category: "Web" | "AI" | "Mobile";
   github: string;
   live: string | null;
   /** URL to a screenshot/preview image */
@@ -61,4 +62,5 @@ export interface SiteConfig {
   email: string;
   github: string;
   linkedin: string;
+  resume: string;
 }

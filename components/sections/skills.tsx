@@ -67,7 +67,7 @@ export default function Skills() {
       <div className="max-w-6xl mx-auto px-6 mb-16">
         <AnimateIn>
           <p className="text-primary font-mono text-xs tracking-[0.25em] uppercase mb-1">
-            <span className="text-muted-foreground">//</span> skills.ts
+            <span className="text-muted-foreground">{"//"}</span> skills.ts
           </p>
         </AnimateIn>
         <AnimateIn delay={0.05}>
