@@ -31,6 +31,9 @@ export async function generateMetadata({
     description: post.excerpt,
     alternates: {
       canonical: `/blog/${slug}`,
+      types: {
+        "application/rss+xml": "/feed.xml",
+      },
     },
     openGraph: {
       type: "article",

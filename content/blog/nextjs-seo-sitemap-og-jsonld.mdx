@@ -1,0 +1,115 @@
+---
+title: "SEO for Developers: Sitemaps, OG Images, and JSON-LD in Next.js"
+date: "2026-07-07"
+excerpt: "The SEO checklist I shipped for this site — file-based sitemaps and robots, generated Open Graph images, structured data, and a title-template gotcha that cost me an hour."
+tags: ["Next.js", "SEO", "Open Graph", "Web Dev"]
+---
+
+# SEO for Developers
+
+SEO has a reputation for being marketing voodoo, but the technical half of it is just... shipping files. Next.js turns most of the checklist into code you can review and type-check. Here's everything I added to this site, and one genuinely surprising behavior I hit along the way.
+
+## Sitemap and robots as code
+
+Instead of hand-maintaining XML, `app/sitemap.ts` exports a function. Mine reads the blog posts from disk, so every new `.mdx` file joins the sitemap automatically:
+
+```ts
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const posts = await getAllPosts();
+
+  return [
+    { url: siteConfig.url, changeFrequency: "monthly", priority: 1 },
+    { url: `${siteConfig.url}/blog`, changeFrequency: "weekly", priority: 0.8 },
+    ...posts.map((post) => ({
+      url: `${siteConfig.url}/blog/${post.slug}`,
+      lastModified: new Date(post.date),
+      changeFrequency: "yearly" as const,
+      priority: 0.6,
+    })),
+  ];
+}
+```
+
+`app/robots.ts` works the same way — I allow everything except `/api/` and point crawlers at the sitemap.
+
+## Generated Open Graph images
+
+This is my favorite part. Drop an `opengraph-image.tsx` file next to any route and Next.js renders JSX to a 1200×630 PNG at request time using `ImageResponse`:
+
+```tsx
+export default function Image() {
+  return new ImageResponse(
+    <div style={{ background: "#09090b", color: "#fafafa" /* ... */ }}>
+      <div style={{ fontSize: 84, fontWeight: 700 }}>Rithy Bondeth</div>
+      <div style={{ fontSize: 40, color: "#a1a1aa" }}>
+        Full Stack Developer & AI Engineer
+      </div>
+    </div>,
+    { width: 1200, height: 630 }
+  );
+}
+```
+
+For blog posts, the same file in the `[slug]` folder receives `params`, so every post gets a unique card with its own title and excerpt. No design tool, no stale images when a title changes.
+
+Two caveats from the trenches:
+
+1. The renderer (satori) only supports flexbox — no `display: grid`.
+2. Its built-in font has a limited glyph set. My `▸` terminal-prompt character rendered as a tofu box (▯). Check your generated image with real eyes before shipping.
+
+## JSON-LD: tell Google who you are
+
+Structured data is a `<script type="application/ld+json">` tag. For a portfolio, the `Person` schema is the one that matters:
+
+```tsx
+const personJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: siteConfig.name,
+  jobTitle: siteConfig.title,
+  url: siteConfig.url,
+  sameAs: [siteConfig.github, siteConfig.linkedin],
+};
+```
+
+One security note: if any of those values could ever contain user input, escape `<` before injecting — `JSON.stringify(jsonLd).replace(/</g, "\\u003c")` — so nobody can close your script tag from inside the JSON.
+
+Blog posts additionally get a `BlogPosting` schema with `headline`, `datePublished`, and `author`. You can verify the whole setup with Google's [Rich Results Test](https://search.google.com/test/rich-results).
+
+## The gotcha: title templates don't survive string titles
+
+Next.js title templates let child pages inherit a suffix:
+
+```ts
+// app/layout.tsx
+title: {
+  default: "Rithy Bondeth — Full Stack Developer & AI Engineer",
+  template: "%s — Rithy Bondeth",
+}
+```
+
+My blog section layout then set `title: "Blog"` — a plain string. The blog index rendered fine ("Blog — Rithy Bondeth"), but **every post below it silently lost the suffix**.
+
+The reason: metadata merging is shallow. When a nested layout defines `title` as a string, it replaces the parent's entire title *object* — template included — for everything beneath it. The fix is to re-declare the template at that level:
+
+```ts
+// app/(main)/blog/layout.tsx
+title: {
+  default: "Blog",
+  template: "%s — Rithy Bondeth",
+}
+```
+
+Easy once you know; invisible until you `curl` your own pages and actually read the `<title>` tags. Which brings me to the real lesson:
+
+## Verify with curl, not vibes
+
+Every item above is trivially checkable from the terminal:
+
+```bash
+curl -s https://yoursite.com/sitemap.xml
+curl -s https://yoursite.com/robots.txt
+curl -s https://yoursite.com/blog/some-post | grep -o '<title>[^<]*</title>'
+```
+
+Metadata bugs don't throw errors. They just quietly make your site look worse in search results and link previews — so make checking the rendered HTML part of the definition of done.

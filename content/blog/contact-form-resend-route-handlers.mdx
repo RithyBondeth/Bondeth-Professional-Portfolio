@@ -1,0 +1,122 @@
+---
+title: "Building a Spam-Resistant Contact Form with Next.js Route Handlers and Resend"
+date: "2026-06-21"
+excerpt: "How I replaced a third-party form service with a self-hosted API route: server-side validation, a honeypot trap for bots, and transactional email via Resend — all in about 70 lines."
+tags: ["Next.js", "Resend", "API Routes", "Web Dev"]
+---
+
+# Building a Spam-Resistant Contact Form
+
+Every portfolio needs a contact form, and most tutorials point you at a hosted service like Formspree. That works, but it means a third party sits between your visitors and your inbox, free tiers cap your submissions, and you can't customize validation or spam handling.
+
+Since this site already runs on Next.js, I moved the whole thing into a **Route Handler**. Here's how it works.
+
+## The API route
+
+Route Handlers live in the `app` directory as `route.ts` files. Mine sits at `app/api/contact/route.ts` and exports a single `POST` function:
+
+```ts
+export async function POST(request: Request) {
+  const payload = await request.json();
+
+  const name = typeof payload.name === "string" ? payload.name.trim() : "";
+  const email = typeof payload.email === "string" ? payload.email.trim() : "";
+  const message =
+    typeof payload.message === "string" ? payload.message.trim() : "";
+
+  // ...validate, then send
+}
+```
+
+Note the defensive parsing: I never assume a field is a string just because the frontend sends one. Anyone can `curl` your endpoint with whatever payload they like.
+
+## Validation on the server, not just the browser
+
+The form inputs have `required` and `type="email"` attributes, but browser validation is a courtesy, not a guarantee. The route re-checks everything:
+
+```ts
+if (!name || name.length > 100) {
+  return NextResponse.json(
+    { error: "Please provide your name." },
+    { status: 400 }
+  );
+}
+if (!EMAIL_REGEX.test(email) || email.length > 254) {
+  return NextResponse.json(
+    { error: "Please provide a valid email address." },
+    { status: 400 }
+  );
+}
+```
+
+The length caps matter more than they look. Without them, someone can POST a 10 MB "message" and you'll happily forward it to your own inbox.
+
+## The honeypot: cheap and surprisingly effective
+
+Spam bots fill in every field they find. Real users never see hidden fields. So the form includes one input that's invisible to humans:
+
+```tsx
+<input
+  type="text"
+  name="company"
+  tabIndex={-1}
+  autoComplete="off"
+  aria-hidden="true"
+  className="hidden"
+/>
+```
+
+If `company` arrives with a value, the API returns a **fake success** and silently drops the message:
+
+```ts
+if (honeypot) {
+  return NextResponse.json({ ok: true });
+}
+```
+
+Returning success instead of an error is deliberate — you don't want to teach the bot which of its requests are being filtered.
+
+## Sending the email with Resend
+
+[Resend](https://resend.com) has a clean API and a free tier that's plenty for a portfolio. The one trick worth knowing is `replyTo`:
+
+```ts
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+await resend.emails.send({
+  from: "Portfolio Contact <onboarding@resend.dev>",
+  to: siteConfig.email,
+  replyTo: email, // hit "Reply" and you answer the visitor directly
+  subject: `Portfolio contact from ${name}`,
+  text: `Name: ${name}\nEmail: ${email}\n\n${message}`,
+});
+```
+
+The email arrives *from* your sending domain but replying goes straight to the visitor — no copy-pasting addresses.
+
+I also send plain text rather than HTML. The form content is user input; interpolating it into HTML would mean sanitizing it first. Plain text sidesteps the whole problem.
+
+## Frontend: surface the server's error messages
+
+Since the API returns specific error messages, the form shows them instead of a generic "something went wrong":
+
+```ts
+if (response.ok) {
+  setStatus("success");
+} else {
+  const body = await response.json().catch(() => null);
+  setErrorMessage(body?.error ?? null);
+  setStatus("error");
+}
+```
+
+The `.catch(() => null)` guards against a non-JSON error response (a crashed server returns HTML) — a small thing that prevents an unhandled rejection in exactly the moment things are already going wrong.
+
+## Takeaways
+
+- **Route Handlers make third-party form services optional.** The entire backend is ~70 lines.
+- **Validate on the server** with length caps, not just the browser.
+- **A honeypot field** filters the majority of drive-by spam for free — and should fail silently.
+- **`replyTo`** turns transactional email into a usable inbox workflow.
+
+Total cost: one environment variable and zero monthly fees.

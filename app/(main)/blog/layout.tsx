@@ -12,6 +12,9 @@ export const metadata: Metadata = {
     "Technical insights, AI research, and software engineering thoughts by Rithy Bondeth.",
   alternates: {
     canonical: "/blog",
+    types: {
+      "application/rss+xml": "/feed.xml",
+    },
   },
 };
 

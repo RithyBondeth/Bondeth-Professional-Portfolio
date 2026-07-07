@@ -10,8 +10,13 @@ import { siteConfig } from "@/utils/constants/portfolio.constant";
 
 /* --------------------------------- Metadata --------------------------------- */
 export const metadata: Metadata = {
+  // `alternates` replaces the root layout's object wholesale,
+  // so the RSS type must be re-declared alongside the canonical.
   alternates: {
     canonical: "/",
+    types: {
+      "application/rss+xml": "/feed.xml",
+    },
   },
 };
 

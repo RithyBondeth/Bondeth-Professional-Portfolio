@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { track } from "@vercel/analytics";
 
 type TFormStatus = "idle" | "loading" | "success" | "error";
 
@@ -28,6 +29,7 @@ export default function ContactForm() {
       });
 
       if (response.ok) {
+        track("contact_form_submitted");
         setStatus("success");
         (e.target as HTMLFormElement).reset();
       } else {

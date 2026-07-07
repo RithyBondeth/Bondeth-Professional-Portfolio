@@ -24,11 +24,21 @@ export default async function BlogPage() {
         </AnimateIn>
 
         <AnimateIn delay={0.1}>
-          <p className="text-muted-foreground text-sm max-w-2xl mb-16 leading-relaxed">
+          <p className="text-muted-foreground text-sm max-w-2xl mb-4 leading-relaxed">
             Sharing my journey through software engineering, AI research, and
             building digital products. Expect deep dives, tutorials, and
             occasional rants about clean code.
           </p>
+        </AnimateIn>
+
+        {/* RSS Link Section */}
+        <AnimateIn delay={0.12}>
+          <a
+            href="/feed.xml"
+            className="inline-flex items-center gap-2 text-xs font-mono text-muted-foreground hover:text-primary transition-colors mb-16"
+          >
+            <span className="text-primary">⚡</span> Subscribe via RSS
+          </a>
         </AnimateIn>
 
         {/* Post List Section */}
