@@ -1,4 +1,6 @@
+import type { Metadata } from "next";
 import { getPostBySlug, getAllPosts } from "@/utils/functions/blog";
+import { siteConfig } from "@/utils/constants/portfolio.constant";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import Link from "next/link";
@@ -17,14 +19,33 @@ export async function generateStaticParams() {
   }));
 }
 
-export async function generateMetadata({ params }: IBlogPostPageProps) {
+export async function generateMetadata({
+  params,
+}: IBlogPostPageProps): Promise<Metadata> {
   const { slug } = await params;
   const post = await getPostBySlug(slug);
   if (!post) return {};
 
   return {
-    title: `${post.title} — Rithy Bondeth`,
+    title: post.title,
     description: post.excerpt,
+    alternates: {
+      canonical: `/blog/${slug}`,
+    },
+    openGraph: {
+      type: "article",
+      url: `/blog/${slug}`,
+      title: post.title,
+      description: post.excerpt,
+      publishedTime: post.date,
+      authors: [siteConfig.name],
+      tags: post.tags,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.excerpt,
+    },
   };
 }
 
@@ -37,10 +58,34 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
     notFound();
   }
 
+  /* ------------------------------ Structured Data ----------------------------- */
+  const blogPostJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.excerpt,
+    datePublished: post.date,
+    keywords: post.tags.join(", "),
+    url: `${siteConfig.url}/blog/${slug}`,
+    author: {
+      "@type": "Person",
+      name: siteConfig.name,
+      url: siteConfig.url,
+    },
+  };
+
   /* -------------------------------- Render UI ------------------------------- */
   return (
     <main className="flex-1 pt-32 pb-24 px-6 bg-background">
       <div className="max-w-3xl mx-auto">
+        {/* Structured Data (JSON-LD) */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(blogPostJsonLd).replace(/</g, "\\u003c"),
+          }}
+        />
+
         {/* Back Link Section */}
         <AnimateIn>
           <Link

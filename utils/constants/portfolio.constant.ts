@@ -12,6 +12,9 @@ import {
 /* -------------------------------- Site Config ------------------------------- */
 export const siteConfig: ISiteConfig = {
   name: "Rithy Bondeth",
+  url:
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    "https://bondeth-professional-portfolio.vercel.app",
   title: "Full Stack Developer & AI Engineer",
   tagline:
     "I build elegant web applications and intelligent AI systems — from pixel-perfect UIs to production-ready ML pipelines.",

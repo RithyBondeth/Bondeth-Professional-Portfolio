@@ -1,5 +1,6 @@
 export interface ISiteConfig {
   name: string;
+  url: string;
   title: string;
   tagline: string;
   bio: string[];
