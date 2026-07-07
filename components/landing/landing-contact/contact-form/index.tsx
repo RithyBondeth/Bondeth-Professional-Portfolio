@@ -7,23 +7,23 @@ type TFormStatus = "idle" | "loading" | "success" | "error";
 export default function ContactForm() {
   /* -------------------------------- All States ------------------------------- */
   const [status, setStatus] = useState<TFormStatus>("idle");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   /* --------------------------------- Methods -------------------------------- */
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setStatus("loading");
+    setErrorMessage(null);
 
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData.entries());
 
     try {
-      // Replace 'YOUR_FORMSPREE_ID' with your actual Formspree ID
-      const response = await fetch("https://formspree.io/f/YOUR_FORMSPREE_ID", {
+      const response = await fetch("/api/contact", {
         method: "POST",
         body: JSON.stringify(data),
         headers: {
           "Content-Type": "application/json",
-          Accept: "application/json",
         },
       });
 
@@ -31,6 +31,8 @@ export default function ContactForm() {
         setStatus("success");
         (e.target as HTMLFormElement).reset();
       } else {
+        const body = await response.json().catch(() => null);
+        setErrorMessage(body?.error ?? null);
         setStatus("error");
       }
     } catch {
@@ -59,6 +61,16 @@ export default function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-left">
+      {/* Honeypot Section (hidden from real users, catches bots) */}
+      <input
+        type="text"
+        name="company"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        className="hidden"
+      />
+
       {/* Name + Email Section */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="flex flex-col gap-1.5">
@@ -116,7 +128,8 @@ export default function ContactForm() {
       {/* Error Message Section */}
       {status === "error" && (
         <p className="text-red-400 text-xs font-mono">
-          Oops! Something went wrong. Please try again or email me directly.
+          {errorMessage ??
+            "Oops! Something went wrong. Please try again or email me directly."}
         </p>
       )}
 
