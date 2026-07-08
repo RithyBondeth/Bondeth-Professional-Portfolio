@@ -32,6 +32,11 @@ export const en = {
   },
   skills: {
     heading: "Technologies I work with",
+    levels: {
+      expert: "Expert",
+      proficient: "Proficient",
+      familiar: "Familiar",
+    },
   },
   experience: {
     heading: "Where I've worked",
@@ -83,6 +88,8 @@ export const en = {
     subscribeRss: "Subscribe via RSS",
     backToAll: "back to all posts",
     viewMore: "View more posts",
+    minRead: "min read",
+    relatedPosts: "Related posts",
     empty: "No posts found. Check back soon!",
   },
   notFound: {

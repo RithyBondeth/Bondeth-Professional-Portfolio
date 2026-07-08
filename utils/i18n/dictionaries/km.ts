@@ -38,6 +38,11 @@ export const km: TDictionary = {
   },
   skills: {
     heading: "បច្ចេកវិទ្យាដែលខ្ញុំប្រើប្រាស់",
+    levels: {
+      expert: "ជំនាញខ្ពស់",
+      proficient: "ស្ទាត់ជំនាញ",
+      familiar: "ស្គាល់",
+    },
   },
   experience: {
     heading: "កន្លែងដែលខ្ញុំធ្លាប់បម្រើការងារ",
@@ -89,6 +94,8 @@ export const km: TDictionary = {
     subscribeRss: "តាមដានតាម RSS",
     backToAll: "ត្រឡប់ទៅអត្ថបទទាំងអស់",
     viewMore: "មើលអត្ថបទបន្ថែម",
+    minRead: "នាទីអាន",
+    relatedPosts: "អត្ថបទពាក់ព័ន្ធ",
     empty: "មិនទាន់មានអត្ថបទនៅឡើយទេ។ សូមត្រឡប់មកម្តងទៀត!",
   },
   notFound: {

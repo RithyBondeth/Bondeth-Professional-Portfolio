@@ -1,5 +1,8 @@
 import { skillGroups } from "@/utils/constants/portfolio.constant";
-import { ISkill } from "@/utils/interfaces/portfolio/skill.interface";
+import {
+  ISkill,
+  type TSkillLevel,
+} from "@/utils/interfaces/portfolio/skill.interface";
 import { getDictionary, type TLocale } from "@/utils/i18n";
 import { AnimateIn } from "@/components/utils/animations/animate-in";
 import { MarqueeTrack } from "@/components/utils/animations/marquee-track";
@@ -67,6 +70,13 @@ export default function LandingSkills(props: { lang: TLocale }) {
   const { lang } = props;
   const dict = getDictionary(lang);
 
+  /* ---------------------------------- Utils --------------------------------- */
+  const levelLabels: Record<TSkillLevel, string> = {
+    3: dict.skills.levels.expert,
+    2: dict.skills.levels.proficient,
+    1: dict.skills.levels.familiar,
+  };
+
   /* -------------------------------- Render UI ------------------------------- */
   return (
     <section id="skills" className="py-24 bg-background overflow-hidden">
@@ -81,6 +91,23 @@ export default function LandingSkills(props: { lang: TLocale }) {
           <h2 className="text-3xl sm:text-4xl font-bold text-foreground mt-3">
             {dict.skills.heading}
           </h2>
+        </AnimateIn>
+
+        {/* Proficiency Legend Section */}
+        <AnimateIn from="zoom-in" delay={0.1}>
+          <ul className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-6">
+            {([3, 2, 1] as const).map((level) => (
+              <li
+                key={level}
+                className="flex items-center gap-1.5 text-[10px] font-mono text-muted-foreground uppercase tracking-wider"
+              >
+                <span className="text-primary">
+                  <ProficiencyDots level={level} />
+                </span>
+                {levelLabels[level]}
+              </li>
+            ))}
+          </ul>
         </AnimateIn>
       </div>
 
@@ -113,7 +140,11 @@ export default function LandingSkills(props: { lang: TLocale }) {
 
                 <MarqueeTrack direction={direction} duration={60}>
                   {track.map((skill, j) => (
-                    <SkillBadge key={j} skill={skill} />
+                    <SkillBadge
+                      key={j}
+                      skill={skill}
+                      levelLabel={levelLabels[skill.level]}
+                    />
                   ))}
                 </MarqueeTrack>
               </div>
@@ -126,21 +157,49 @@ export default function LandingSkills(props: { lang: TLocale }) {
 }
 
 /* --------------------------------- Utilities -------------------------------- */
-function SkillBadge(props: { skill: ISkill }) {
+/** A three-dot meter; dots up to `level` are filled with the current text color. */
+function ProficiencyDots(props: { level: TSkillLevel }) {
+  const { level } = props;
+  return (
+    <span className="flex items-center gap-0.5" aria-hidden>
+      {([1, 2, 3] as const).map((dot) => (
+        <span
+          key={dot}
+          className={`w-1 h-1 rounded-full ${
+            dot <= level ? "bg-current" : "bg-muted-foreground/25"
+          }`}
+        />
+      ))}
+    </span>
+  );
+}
+
+function SkillBadge(props: { skill: ISkill; levelLabel: string }) {
   /* ---------------------------------- Props --------------------------------- */
-  const { skill } = props;
+  const { skill, levelLabel } = props;
 
   /* ---------------------------------- Utils --------------------------------- */
   const Icon = ICON_MAP[skill.icon];
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
-    <div className="flex items-center gap-2 px-3.5 py-2 rounded border border-border/50 bg-card whitespace-nowrap shrink-0 select-none hover:border-primary/20 transition-colors">
+    <div
+      className="flex items-center gap-2 px-3.5 py-2 rounded border border-border/50 bg-card whitespace-nowrap shrink-0 select-none hover:border-primary/20 transition-colors"
+      title={`${skill.name} — ${levelLabel}`}
+    >
       {Icon && (
         <Icon className="w-4 h-4 shrink-0" style={{ color: skill.color }} />
       )}
       <span className="text-xs font-mono text-muted-foreground">
         {skill.name}
+      </span>
+      <span className="sr-only">{levelLabel}</span>
+      <span
+        className="ml-0.5 shrink-0"
+        style={{ color: skill.color }}
+        aria-hidden
+      >
+        <ProficiencyDots level={skill.level} />
       </span>
     </div>
   );

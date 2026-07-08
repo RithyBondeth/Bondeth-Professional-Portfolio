@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import { IPost } from "@/utils/interfaces/blog/blog.interface";
+import { getReadingTime } from "./get-reading-time";
 
 const BLOG_DIR = path.join(process.cwd(), "content/blog");
 
@@ -34,6 +35,7 @@ export async function getAllPosts(): Promise<IPost[]> {
         tags: data.tags,
         cover: data.cover ?? null,
         coverAlt: data.coverAlt ?? null,
+        readingTime: getReadingTime(content),
         content,
       };
     });

@@ -9,5 +9,7 @@ export interface IPost {
   cover?: string | null;
   /** Alt text for the cover image; falls back to the title when omitted. */
   coverAlt?: string | null;
+  /** Estimated reading time in whole minutes, derived from the content. */
+  readingTime: number;
   content: string;
 }

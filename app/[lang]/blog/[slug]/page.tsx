@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
-import { getPostBySlug, getAllPosts } from "@/utils/functions/blog";
+import {
+  getPostBySlug,
+  getAllPosts,
+  getRelatedPosts,
+} from "@/utils/functions/blog";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
@@ -74,6 +78,8 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
     notFound();
   }
 
+  const relatedPosts = await getRelatedPosts(post.slug, post.tags);
+
   /* ------------------------------ Structured Data ----------------------------- */
   const blogPostJsonLd = {
     "@context": "https://schema.org",
@@ -126,16 +132,24 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
 
         {/* Post Header Section */}
         <AnimateIn delay={0.1}>
-          <time className="text-xs font-mono text-primary dark:text-primary/60 mb-2 block">
-            {new Date(post.date).toLocaleDateString(
-              lang === "km" ? "km-KH" : "en-US",
-              {
-                month: "long",
-                day: "numeric",
-                year: "numeric",
-              },
-            )}
-          </time>
+          <div className="flex items-center gap-3 text-xs font-mono text-primary dark:text-primary/60 mb-2">
+            <time>
+              {new Date(post.date).toLocaleDateString(
+                lang === "km" ? "km-KH" : "en-US",
+                {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                },
+              )}
+            </time>
+            <span aria-hidden className="text-muted-foreground/40">
+              ·
+            </span>
+            <span className="text-muted-foreground dark:text-muted-foreground/60">
+              {post.readingTime} {dict.blog.minRead}
+            </span>
+          </div>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-8 leading-tight">
             {post.title}
           </h1>
@@ -169,6 +183,49 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
               </span>
             ))}
           </div>
+
+          {/* Related Posts Section */}
+          {relatedPosts.length > 0 && (
+            <AnimateIn className="mb-10">
+              <p className="text-primary font-mono text-xs tracking-[0.25em] uppercase mb-6">
+                <span className="text-muted-foreground">{"//"}</span>{" "}
+                {dict.blog.relatedPosts}
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                {relatedPosts.map((related) => (
+                  <article key={related.slug} className="group">
+                    <Link
+                      href={`/${lang}/blog/${related.slug}`}
+                      className="block"
+                    >
+                      <BlogCover
+                        post={related}
+                        className="aspect-[2/1] mb-3 transition-colors group-hover:border-primary/40"
+                      />
+                      <div className="flex items-center gap-2 text-[10px] font-mono text-muted-foreground dark:text-muted-foreground/60 mb-1.5">
+                        <time>
+                          {new Date(related.date).toLocaleDateString(
+                            lang === "km" ? "km-KH" : "en-US",
+                            { month: "short", day: "numeric", year: "numeric" },
+                          )}
+                        </time>
+                        <span aria-hidden className="text-muted-foreground/40">
+                          ·
+                        </span>
+                        <span>
+                          {related.readingTime} {dict.blog.minRead}
+                        </span>
+                      </div>
+                      <h3 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors leading-snug line-clamp-2">
+                        {related.title}
+                      </h3>
+                    </Link>
+                  </article>
+                ))}
+              </div>
+            </AnimateIn>
+          )}
+
           <Link
             href={`/${lang}/blog`}
             className="inline-flex items-center gap-2 px-6 py-2.5 bg-card border border-border hover:border-primary/40 rounded text-sm font-mono text-muted-foreground hover:text-foreground transition-all"
