@@ -18,60 +18,58 @@ export default async function Image({
   const post = await getPostBySlug(slug);
 
   return new ImageResponse(
-    (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        padding: "80px",
+        background: "#09090b",
+        color: "#fafafa",
+        fontFamily: "monospace",
+      }}
+    >
       <div
         style={{
-          width: "100%",
-          height: "100%",
           display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          padding: "80px",
-          background: "#09090b",
-          color: "#fafafa",
-          fontFamily: "monospace",
+          alignItems: "center",
+          gap: "12px",
+          fontSize: 26,
+          color: "#34d399",
+          marginBottom: 32,
         }}
       >
+        <span>&gt;</span>
+        <span>{siteConfig.name} — Blog</span>
+      </div>
+      <div style={{ fontSize: 64, fontWeight: 700, lineHeight: 1.15 }}>
+        {post?.title ?? "Blog"}
+      </div>
+      {post?.excerpt && (
         <div
           style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "12px",
-            fontSize: 26,
-            color: "#34d399",
-            marginBottom: 32,
+            fontSize: 30,
+            color: "#a1a1aa",
+            marginTop: 28,
+            lineHeight: 1.4,
           }}
         >
-          <span>&gt;</span>
-          <span>{siteConfig.name} — Blog</span>
+          {post.excerpt}
         </div>
-        <div style={{ fontSize: 64, fontWeight: 700, lineHeight: 1.15 }}>
-          {post?.title ?? "Blog"}
-        </div>
-        {post?.excerpt && (
-          <div
-            style={{
-              fontSize: 30,
-              color: "#a1a1aa",
-              marginTop: 28,
-              lineHeight: 1.4,
-            }}
-          >
-            {post.excerpt}
-          </div>
-        )}
-        <div
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            width: "100%",
-            height: "8px",
-            background: "#34d399",
-          }}
-        />
-      </div>
-    ),
-    { ...size }
+      )}
+      <div
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          width: "100%",
+          height: "8px",
+          background: "#34d399",
+        }}
+      />
+    </div>,
+    { ...size },
   );
 }

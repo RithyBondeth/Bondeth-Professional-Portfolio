@@ -111,11 +111,20 @@ export default function Navbar(props: { lang: TLocale }) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMenuOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [menuOpen]);
+
   /* -------------------------------- Render UI ------------------------------- */
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
+        scrolled || menuOpen
           ? "bg-background/95 backdrop-blur-md border-b border-border shadow-xl shadow-black/10 dark:shadow-black/40"
           : "bg-transparent"
       }`}
@@ -138,13 +147,13 @@ export default function Navbar(props: { lang: TLocale }) {
             height={32}
             className="rounded-full ring-1 ring-border group-hover:ring-primary/50 transition-all"
           />
-          <span className="text-foreground font-bold text-sm tracking-tight hidden sm:block font-mono">
+          <span className="text-foreground font-bold text-sm tracking-tight hidden sm:block font-mono whitespace-nowrap">
             {siteConfig.name}
           </span>
         </a>
 
         {/* Desktop Links Section */}
-        <ul className="hidden sm:flex items-center gap-1">
+        <ul className="hidden lg:flex items-center gap-0.5 xl:gap-1">
           {navLinks.map(({ href }, i) => {
             const id = href.replace("/#", "").replace("/", "");
             const isActive = activeSection === id;
@@ -152,13 +161,13 @@ export default function Navbar(props: { lang: TLocale }) {
               <li key={href}>
                 <a
                   href={localizeHref(href, lang)}
-                  className={`relative px-3 py-1.5 text-xs font-mono tracking-wide transition-colors duration-200 rounded ${
+                  className={`relative px-2.5 xl:px-3 py-1.5 text-xs font-mono tracking-wide whitespace-nowrap transition-colors duration-200 rounded ${
                     isActive
                       ? "text-primary"
                       : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
                   }`}
                 >
-                  <span className="text-primary/40 mr-1 text-[10px]">
+                  <span className="text-primary/40 mr-1 text-[10px] hidden xl:inline">
                     0{i + 1}.
                   </span>
                   {dict.nav[navKeyFromHref(href)]}
@@ -169,12 +178,13 @@ export default function Navbar(props: { lang: TLocale }) {
               </li>
             );
           })}
-          <li className="ml-2">
+          <li aria-hidden className="mx-2 h-4 w-px bg-border" />
+          <li>
             <a
               href={siteConfig.resume}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-3 py-1.5 text-xs font-mono tracking-wide text-primary border border-primary/30 rounded hover:bg-primary/5 transition-all"
+              className="px-3 py-1.5 text-xs font-mono tracking-wide whitespace-nowrap text-primary border border-primary/30 rounded hover:bg-primary/5 transition-all"
             >
               {dict.nav.resume}
             </a>
@@ -188,13 +198,14 @@ export default function Navbar(props: { lang: TLocale }) {
         </ul>
 
         {/* Mobile Right Section */}
-        <div className="sm:hidden flex items-center gap-3">
+        <div className="lg:hidden flex items-center gap-3">
           <LanguageSwitcher lang={lang} />
           <ThemeToggle label={dict.nav.toggleTheme} />
           <button
-            className="text-muted-foreground hover:text-foreground transition-colors"
+            className="p-1 -m-1 text-muted-foreground hover:text-foreground transition-colors"
             onClick={() => setMenuOpen((o) => !o)}
             aria-label={dict.nav.toggleMenu}
+            aria-expanded={menuOpen}
           >
             {menuOpen ? (
               <CloseIcon className="w-5 h-5" />
@@ -206,9 +217,14 @@ export default function Navbar(props: { lang: TLocale }) {
       </div>
 
       {/* Mobile Menu Section */}
-      {menuOpen && (
-        <div className="sm:hidden bg-background/98 border-t border-border px-6 py-4">
-          <ul className="flex flex-col gap-1">
+      <div
+        inert={!menuOpen}
+        className={`lg:hidden grid transition-[grid-template-rows,opacity] duration-300 ease-out ${
+          menuOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+        }`}
+      >
+        <div className="overflow-hidden">
+          <ul className="flex flex-col gap-1 border-t border-border px-6 py-4">
             {navLinks.map(({ href }, i) => {
               const id = href.replace("/#", "").replace("/", "");
               const isActive = activeSection === id;
@@ -217,10 +233,10 @@ export default function Navbar(props: { lang: TLocale }) {
                   <a
                     href={localizeHref(href, lang)}
                     onClick={() => setMenuOpen(false)}
-                    className={`flex items-center gap-2 px-3 py-2 text-xs font-mono rounded transition-all ${
+                    className={`flex items-center gap-2 px-3 py-2.5 text-xs font-mono rounded border-l transition-all ${
                       isActive
-                        ? "text-primary bg-primary/5 border-l border-primary"
-                        : "text-muted-foreground border-l border-transparent hover:text-foreground hover:border-border pl-3"
+                        ? "text-primary bg-primary/5 border-primary"
+                        : "text-muted-foreground border-transparent hover:text-foreground hover:border-border"
                     }`}
                   >
                     <span className="text-primary/40 text-[10px]">
@@ -231,20 +247,20 @@ export default function Navbar(props: { lang: TLocale }) {
                 </li>
               );
             })}
-            <li className="mt-2 pt-2 border-t border-border/50">
+            <li className="mt-2 pt-3 border-t border-border/50">
               <a
                 href={siteConfig.resume}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setMenuOpen(false)}
-                className="flex items-center justify-center gap-2 px-3 py-2.5 text-xs font-mono rounded text-primary border border-primary/20 bg-primary/5"
+                className="flex items-center justify-center gap-2 px-3 py-2.5 text-xs font-mono rounded text-primary border border-primary/20 bg-primary/5 hover:bg-primary/10 transition-colors"
               >
                 {dict.nav.resumeMobile}
               </a>
             </li>
           </ul>
         </div>
-      )}
+      </div>
     </nav>
   );
 }
