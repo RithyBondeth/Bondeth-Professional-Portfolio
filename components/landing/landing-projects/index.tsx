@@ -2,16 +2,27 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { projects, siteConfig } from "@/utils/constants/portfolio.constant";
+import { siteConfig } from "@/utils/constants/portfolio.constant";
 import { IProject } from "@/utils/interfaces/portfolio/project.interface";
 import { TProjectCategory } from "@/utils/types/portfolio/project-category.type";
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
 import { GitHubIcon, ExternalLinkIcon } from "@/components/utils/icons";
+import { getDictionary, type TLocale, type TDictionary } from "@/utils/i18n";
+import { getProjects } from "@/utils/i18n/content";
 
 const CATEGORIES = ["All", "Web", "AI", "Mobile"] as const;
 type TFilter = "All" | TProjectCategory;
 
-export default function LandingProjects() {
+function categoryLabel(cat: TFilter, dict: TDictionary): string {
+  return cat === "All" ? dict.projects.filterAll : cat;
+}
+
+export default function LandingProjects(props: { lang: TLocale }) {
+  /* ---------------------------------- Props --------------------------------- */
+  const { lang } = props;
+  const dict = getDictionary(lang);
+  const projects = getProjects(lang);
+
   /* -------------------------------- All States ------------------------------- */
   const [filter, setFilter] = useState<TFilter>("All");
 
@@ -36,7 +47,7 @@ export default function LandingProjects() {
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
           <AnimateIn delay={0.05}>
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground mt-3">
-              Things I&apos;ve built
+              {dict.projects.heading}
             </h2>
           </AnimateIn>
 
@@ -50,10 +61,10 @@ export default function LandingProjects() {
                   className={`px-4 py-1.5 rounded text-xs font-mono transition-all ${
                     filter === cat
                       ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-                      : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+                      : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
                   }`}
                 >
-                  {cat}
+                  {categoryLabel(cat, dict)}
                 </button>
               ))}
             </div>
@@ -68,14 +79,14 @@ export default function LandingProjects() {
           y={30}
         >
           {filteredProjects.map((project) => (
-            <ProjectCard key={project.title} project={project} />
+            <ProjectCard key={project.title} project={project} dict={dict} />
           ))}
         </StaggerIn>
 
         {filteredProjects.length === 0 && (
           <div className="py-20 text-center">
             <p className="text-muted-foreground font-mono text-sm">
-              No projects found in this category.
+              {dict.projects.empty}
             </p>
           </div>
         )}
@@ -101,9 +112,9 @@ export default function LandingProjects() {
 }
 
 /* --------------------------------- Utilities -------------------------------- */
-function ProjectCard(props: { project: IProject }) {
+function ProjectCard(props: { project: IProject; dict: TDictionary }) {
   /* ---------------------------------- Props --------------------------------- */
-  const { project } = props;
+  const { project, dict } = props;
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
@@ -129,12 +140,12 @@ function ProjectCard(props: { project: IProject }) {
               <div className="ml-2 flex-1 h-3 rounded-sm bg-border/60 max-w-[140px]" />
             </div>
             <div className="absolute inset-0 top-7 p-4 flex flex-col gap-2">
-              <div className="h-2.5 rounded bg-white/8 w-3/4" />
-              <div className="h-2.5 rounded bg-white/8 w-1/2" />
-              <div className="mt-2 h-14 rounded bg-white/4 border border-white/8" />
+              <div className="h-2.5 rounded bg-foreground/10 w-3/4" />
+              <div className="h-2.5 rounded bg-foreground/10 w-1/2" />
+              <div className="mt-2 h-14 rounded bg-foreground/5 border border-foreground/10" />
               <div className="flex gap-2 mt-auto">
                 <div className="h-6 rounded bg-primary/20 w-16" />
-                <div className="h-6 rounded bg-white/5 w-14" />
+                <div className="h-6 rounded bg-foreground/5 w-14" />
               </div>
             </div>
           </div>
@@ -193,7 +204,7 @@ function ProjectCard(props: { project: IProject }) {
             className="flex items-center gap-1.5 px-2.5 py-1.5 rounded text-xs font-mono text-muted-foreground bg-muted/40 border border-border/50 hover:border-border hover:text-foreground transition-colors"
           >
             <GitHubIcon className="w-3.5 h-3.5" />
-            source
+            {dict.projects.source}
           </a>
 
           {project.live ? (
@@ -203,12 +214,12 @@ function ProjectCard(props: { project: IProject }) {
               rel="noopener noreferrer"
               className="flex items-center gap-1.5 px-2.5 py-1.5 rounded text-xs font-mono text-primary-foreground bg-primary hover:bg-primary/90 transition-colors ml-auto"
             >
-              demo
+              {dict.projects.demo}
               <ExternalLinkIcon className="w-3 h-3" />
             </a>
           ) : (
             <span className="ml-auto text-[10px] text-muted-foreground/50 font-mono">
-              no demo
+              {dict.projects.noDemo}
             </span>
           )}
         </div>

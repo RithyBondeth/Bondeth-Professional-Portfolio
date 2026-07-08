@@ -1,10 +1,14 @@
-import {
-  educations,
-  trainingCourses,
-} from "@/utils/constants/portfolio.constant";
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
+import { getDictionary, type TLocale } from "@/utils/i18n";
+import { getEducations, getTrainingCourses } from "@/utils/i18n/content";
 
-export default function LandingEducation() {
+export default function LandingEducation(props: { lang: TLocale }) {
+  /* ---------------------------------- Props --------------------------------- */
+  const { lang } = props;
+  const dict = getDictionary(lang);
+  const educations = getEducations(lang);
+  const trainingCourses = getTrainingCourses(lang);
+
   /* -------------------------------- Render UI ------------------------------- */
   return (
     <section id="education" className="py-24 px-6 bg-background">
@@ -18,7 +22,7 @@ export default function LandingEducation() {
 
         <AnimateIn delay={0.05}>
           <h2 className="text-3xl sm:text-4xl font-bold text-foreground mt-3 mb-12">
-            Academic background
+            {dict.education.heading}
           </h2>
         </AnimateIn>
 
@@ -82,8 +86,8 @@ export default function LandingEducation() {
           <div className="mt-12">
             <h3 className="text-foreground font-semibold text-sm mb-5 flex items-center gap-2 font-mono">
               <BookOpenIcon className="w-4 h-4 text-primary" />
-              <span className="text-muted-foreground">{"//"}</span> Training
-              Courses
+              <span className="text-muted-foreground">{"//"}</span>{" "}
+              {dict.education.trainingCourses}
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
               {trainingCourses.map((course) => (

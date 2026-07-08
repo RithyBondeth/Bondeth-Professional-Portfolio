@@ -1,8 +1,25 @@
 import Image from "next/image";
 import { siteConfig, navLinks } from "@/utils/constants/portfolio.constant";
 import { GitHubIcon, LinkedInIcon, MailIcon } from "@/components/utils/icons";
+import {
+  localizeHref,
+  getDictionary,
+  type TLocale,
+  type TDictionary,
+} from "@/utils/i18n";
+import { getSiteConfig } from "@/utils/i18n/content";
 
-export default function Footer() {
+/* ---------------------------------- Utils ---------------------------------- */
+function navKeyFromHref(href: string): keyof TDictionary["nav"] {
+  return href.replace("/#", "").replace("/", "") as keyof TDictionary["nav"];
+}
+
+export default function Footer(props: { lang: TLocale }) {
+  /* ---------------------------------- Props --------------------------------- */
+  const { lang } = props;
+  const dict = getDictionary(lang);
+  const localized = getSiteConfig(lang);
+
   /* ---------------------------------- Utils --------------------------------- */
   const year = new Date().getFullYear();
 
@@ -26,7 +43,7 @@ export default function Footer() {
             </span>
           </div>
           <p className="text-muted-foreground text-xs leading-relaxed max-w-xs">
-            {siteConfig.title} based in Phnom Penh, Cambodia.
+            {localized.title} {dict.footer.basedIn}
           </p>
           {/* Social Icons Section */}
           <div className="flex items-center gap-2 mt-1">
@@ -61,17 +78,17 @@ export default function Footer() {
         {/* Quick Nav Section */}
         <div className="flex flex-col gap-3">
           <p className="text-muted-foreground/60 text-[10px] font-mono uppercase tracking-[0.2em]">
-            Navigation
+            {dict.footer.navigation}
           </p>
           <ul className="flex flex-col gap-2">
-            {navLinks.map(({ href, label }, i) => (
+            {navLinks.map(({ href }, i) => (
               <li key={href}>
                 <a
-                  href={href}
+                  href={localizeHref(href, lang)}
                   className="text-muted-foreground hover:text-primary text-xs font-mono transition-colors flex items-center gap-1.5"
                 >
                   <span className="text-primary/30 text-[9px]">0{i + 1}.</span>
-                  {label}
+                  {dict.nav[navKeyFromHref(href)]}
                 </a>
               </li>
             ))}
@@ -81,7 +98,7 @@ export default function Footer() {
         {/* Contact Section */}
         <div className="flex flex-col gap-3">
           <p className="text-muted-foreground/60 text-[10px] font-mono uppercase tracking-[0.2em]">
-            Contact
+            {dict.footer.contact}
           </p>
           <ul className="flex flex-col gap-2">
             <li>
@@ -121,7 +138,7 @@ export default function Footer() {
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
           <p className="text-muted-foreground/50 text-[10px] font-mono">
             <span className="text-muted-foreground/30">{"/* "}</span>© {year}{" "}
-            {siteConfig.name}. All rights reserved.
+            {siteConfig.name}. {dict.footer.rights}
             <span className="text-muted-foreground/30">{" */"}</span>
           </p>
           <p className="text-muted-foreground/50 text-[10px] font-mono">

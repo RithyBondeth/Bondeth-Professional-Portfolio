@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
 import HeroBackground from "./hero-background";
-
-const TITLES = ["Full Stack Developer", "AI Engineer", "Mobile App Developer"];
+import { getDictionary, type TLocale } from "@/utils/i18n";
+import { getSiteConfig } from "@/utils/i18n/content";
 
 /* ---------------------------------- Hooks ---------------------------------- */
 function useTypewriter(phrases: string[], startDelay = 1200) {
@@ -56,14 +56,14 @@ function CodeBlock() {
       {/* Ambient Glow Section */}
       <div className="absolute -inset-6 bg-cyan-500/6 rounded-2xl blur-3xl pointer-events-none" />
 
-      {/* Editor Window Section */}
-      <div className="relative rounded-md border border-border bg-card overflow-hidden shadow-2xl shadow-black/60">
+      {/* Editor Window Section — stays dark in both themes, like a real editor */}
+      <div className="relative rounded-md border border-[#1a2e52] bg-[#0c1428] overflow-hidden shadow-2xl shadow-black/30 dark:shadow-black/60">
         {/* Window Chrome Section */}
-        <div className="flex items-center gap-1.5 px-4 py-3 border-b border-border/60 bg-black/30">
+        <div className="flex items-center gap-1.5 px-4 py-3 border-b border-[#1a2e52]/60 bg-black/30">
           <span className="w-3 h-3 rounded-full bg-red-500/80" />
           <span className="w-3 h-3 rounded-full bg-yellow-500/70" />
           <span className="w-3 h-3 rounded-full bg-green-500/70" />
-          <span className="ml-3 text-muted-foreground text-[11px] font-mono select-none">
+          <span className="ml-3 text-slate-500 text-[11px] font-mono select-none">
             profile.ts
           </span>
         </div>
@@ -71,7 +71,7 @@ function CodeBlock() {
         {/* Line Numbers + Code Section */}
         <div className="flex text-xs font-mono leading-6 overflow-x-auto">
           {/* Line Numbers */}
-          <div className="select-none text-right pr-4 pl-4 py-5 text-[#1a2e52] border-r border-border/30 shrink-0">
+          <div className="select-none text-right pr-4 pl-4 py-5 text-[#1a2e52] border-r border-[#1a2e52]/40 shrink-0">
             {Array.from({ length: 18 }, (_, i) => (
               <div key={i}>{i + 1}</div>
             ))}
@@ -137,10 +137,15 @@ function CodeBlock() {
   );
 }
 
-export default function LandingHero() {
+export default function LandingHero(props: { lang: TLocale }) {
+  /* ---------------------------------- Props --------------------------------- */
+  const { lang } = props;
+  const dict = getDictionary(lang);
+  const localized = getSiteConfig(lang);
+
   /* ---------------------------------- Utils --------------------------------- */
   const containerRef = useRef<HTMLElement>(null);
-  const typed = useTypewriter(TITLES);
+  const typed = useTypewriter(dict.hero.titles);
 
   /* --------------------------------- Effects -------------------------------- */
   useEffect(() => {
@@ -198,7 +203,7 @@ export default function LandingHero() {
       className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground relative overflow-hidden"
     >
       {/* Base Gradient Section */}
-      <div className="absolute inset-0 bg-linear-to-br from-[#030812] via-[#060d1f] to-[#070d22] pointer-events-none" />
+      <div className="absolute inset-0 bg-linear-to-br from-slate-100 via-white to-cyan-50 dark:from-[#030812] dark:via-[#060d1f] dark:to-[#070d22] pointer-events-none" />
 
       {/* CSS Grid Overlay Section */}
       <div
@@ -239,8 +244,8 @@ export default function LandingHero() {
         }}
       />
 
-      {/* Vignette Section */}
-      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_100%_100%_at_50%_50%,transparent_50%,rgba(3,8,18,0.7)_100%)]" />
+      {/* Vignette Section (dark mode only) */}
+      <div className="absolute inset-0 pointer-events-none hidden dark:block bg-[radial-gradient(ellipse_100%_100%_at_50%_50%,transparent_50%,rgba(3,8,18,0.7)_100%)]" />
 
       {/* Main Content Section */}
       <div className="relative w-full max-w-6xl mx-auto px-6 py-24 flex items-center min-h-screen">
@@ -257,7 +262,7 @@ export default function LandingHero() {
             >
               {siteConfig.name.split(" ").map((word, i) => (
                 <span key={i} className="inline-block mr-[0.25em] last:mr-0">
-                  <span className="hero-word inline-block bg-linear-to-r from-white via-slate-200 to-cyan-200 bg-clip-text text-transparent">
+                  <span className="hero-word inline-block bg-linear-to-r from-slate-900 via-slate-700 to-cyan-600 dark:from-white dark:via-slate-200 dark:to-cyan-200 bg-clip-text text-transparent">
                     {word}
                   </span>
                 </span>
@@ -267,12 +272,12 @@ export default function LandingHero() {
             {/* Typewriter Subtitle */}
             <h2 className="hero-subtitle text-lg sm:text-xl text-muted-foreground mb-6 font-mono h-7 flex items-center lg:justify-start justify-center gap-0.5">
               <span className="text-primary/60 mr-1">$</span>
-              <span className="text-slate-300">{typed}</span>
+              <span className="text-slate-600 dark:text-slate-300">{typed}</span>
               <span className="inline-block w-0.5 h-5 bg-primary ml-0.5 animate-[blink_1s_step-end_infinite]" />
             </h2>
 
             <p className="hero-tagline text-muted-foreground text-base max-w-lg mx-auto lg:mx-0 mb-10 leading-relaxed">
-              {siteConfig.tagline}
+              {localized.tagline}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
@@ -280,7 +285,7 @@ export default function LandingHero() {
                 href="#projects"
                 className="hero-cta-item px-6 py-2.5 bg-primary text-primary-foreground rounded font-mono text-sm font-medium hover:bg-primary/90 transition-colors"
               >
-                ./view-work
+                {dict.hero.viewWork}
               </a>
               <a
                 href={siteConfig.resume}
@@ -288,13 +293,13 @@ export default function LandingHero() {
                 rel="noopener noreferrer"
                 className="hero-cta-item px-6 py-2.5 border border-primary/20 text-primary rounded font-mono text-sm font-medium hover:bg-primary/5 transition-colors"
               >
-                ./download-cv
+                {dict.hero.downloadCv}
               </a>
               <a
                 href="#contact"
                 className="hero-cta-item px-6 py-2.5 border border-border text-muted-foreground rounded font-mono text-sm font-medium hover:border-primary/50 hover:text-foreground transition-colors"
               >
-                ./get-in-touch
+                {dict.hero.getInTouch}
               </a>
             </div>
           </div>
@@ -309,7 +314,7 @@ export default function LandingHero() {
       {/* Scroll Indicator Section */}
       <div className="hero-scroll absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground">
         <span className="text-[10px] font-mono tracking-[0.2em] uppercase text-muted-foreground/60">
-          scroll
+          {dict.hero.scroll}
         </span>
         <div className="w-px h-10 bg-linear-to-b from-border to-transparent" />
       </div>

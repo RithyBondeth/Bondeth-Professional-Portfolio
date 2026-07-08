@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import LandingHero from "@/components/landing/landing-hero";
 import LandingAbout from "@/components/landing/landing-about";
 import LandingSkills from "@/components/landing/landing-skills";
@@ -7,36 +8,58 @@ import LandingEducation from "@/components/landing/landing-education";
 import LandingProjects from "@/components/landing/landing-projects";
 import LandingContact from "@/components/landing/landing-contact";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
+import { hasLocale } from "@/utils/i18n";
+import { getSiteConfig } from "@/utils/i18n/content";
+
+interface IHomePageProps {
+  params: Promise<{ lang: string }>;
+}
 
 /* --------------------------------- Metadata --------------------------------- */
-export const metadata: Metadata = {
-  // `alternates` replaces the root layout's object wholesale,
-  // so the RSS type must be re-declared alongside the canonical.
-  alternates: {
-    canonical: "/",
-    types: {
-      "application/rss+xml": "/feed.xml",
+export async function generateMetadata({
+  params,
+}: IHomePageProps): Promise<Metadata> {
+  const { lang } = await params;
+
+  return {
+    // `alternates` replaces the layout's object wholesale,
+    // so the RSS type must be re-declared alongside the canonical.
+    alternates: {
+      canonical: `/${lang}`,
+      languages: {
+        en: "/en",
+        km: "/km",
+        "x-default": "/en",
+      },
+      types: {
+        "application/rss+xml": "/feed.xml",
+      },
     },
-  },
-};
+  };
+}
 
-/* ------------------------------ Structured Data ----------------------------- */
-const personJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Person",
-  name: siteConfig.name,
-  jobTitle: siteConfig.title,
-  url: siteConfig.url,
-  email: `mailto:${siteConfig.email}`,
-  sameAs: [siteConfig.github, siteConfig.linkedin],
-  address: {
-    "@type": "PostalAddress",
-    addressLocality: "Phnom Penh",
-    addressCountry: "KH",
-  },
-};
+export default async function IndexPage({ params }: IHomePageProps) {
+  /* ---------------------------------- Utils --------------------------------- */
+  const { lang } = await params;
+  if (!hasLocale(lang)) notFound();
+  const localized = getSiteConfig(lang);
 
-export default function IndexPage() {
+  /* ------------------------------ Structured Data ----------------------------- */
+  const personJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: localized.name,
+    jobTitle: localized.title,
+    url: `${siteConfig.url}/${lang}`,
+    email: `mailto:${siteConfig.email}`,
+    sameAs: [siteConfig.github, siteConfig.linkedin],
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Phnom Penh",
+      addressCountry: "KH",
+    },
+  };
+
   /* -------------------------------- Render UI ------------------------------- */
   return (
     <main>
@@ -49,25 +72,25 @@ export default function IndexPage() {
       />
 
       {/* Section 1: Hero */}
-      <LandingHero />
+      <LandingHero lang={lang} />
 
       {/* Section 2: About */}
-      <LandingAbout />
+      <LandingAbout lang={lang} />
 
       {/* Section 3: Skills */}
-      <LandingSkills />
+      <LandingSkills lang={lang} />
 
       {/* Section 4: Experience */}
-      <LandingExperience />
+      <LandingExperience lang={lang} />
 
       {/* Section 5: Education */}
-      <LandingEducation />
+      <LandingEducation lang={lang} />
 
       {/* Section 6: Projects */}
-      <LandingProjects />
+      <LandingProjects lang={lang} />
 
       {/* Section 7: Contact */}
-      <LandingContact />
+      <LandingContact lang={lang} />
     </main>
   );
 }

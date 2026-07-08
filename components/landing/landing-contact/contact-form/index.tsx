@@ -2,10 +2,16 @@
 
 import { useState } from "react";
 import { track } from "@vercel/analytics";
+import { getDictionary, type TLocale } from "@/utils/i18n";
 
 type TFormStatus = "idle" | "loading" | "success" | "error";
 
-export default function ContactForm() {
+export default function ContactForm(props: { lang: TLocale }) {
+  /* ---------------------------------- Props --------------------------------- */
+  const { lang } = props;
+  const dict = getDictionary(lang);
+  const t = dict.contact.form;
+
   /* -------------------------------- All States ------------------------------- */
   const [status, setStatus] = useState<TFormStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -46,16 +52,13 @@ export default function ContactForm() {
   if (status === "success") {
     return (
       <div className="rounded border border-emerald-500/20 bg-emerald-500/5 p-8 text-center">
-        <h3 className="text-emerald-400 font-bold mb-2">Message Sent!</h3>
-        <p className="text-muted-foreground text-sm">
-          Thanks for reaching out. I&apos;ll get back to you as soon as
-          possible.
-        </p>
+        <h3 className="text-emerald-400 font-bold mb-2">{t.successTitle}</h3>
+        <p className="text-muted-foreground text-sm">{t.successBody}</p>
         <button
           onClick={() => setStatus("idle")}
           className="mt-6 text-xs font-mono text-emerald-400/80 hover:text-emerald-400 underline underline-offset-4"
         >
-          Send another message
+          {t.sendAnother}
         </button>
       </div>
     );
@@ -80,14 +83,14 @@ export default function ContactForm() {
             htmlFor="name"
             className="text-[10px] font-mono uppercase text-muted-foreground ml-1"
           >
-            Name
+            {t.name}
           </label>
           <input
             required
             id="name"
             name="name"
             type="text"
-            placeholder="Your Name"
+            placeholder={t.namePlaceholder}
             className="bg-background border border-border/60 rounded px-4 py-2.5 text-sm focus:outline-hidden focus:border-primary/50 transition-colors"
           />
         </div>
@@ -96,14 +99,14 @@ export default function ContactForm() {
             htmlFor="email"
             className="text-[10px] font-mono uppercase text-muted-foreground ml-1"
           >
-            Email
+            {t.email}
           </label>
           <input
             required
             id="email"
             name="email"
             type="email"
-            placeholder="your@email.com"
+            placeholder={t.emailPlaceholder}
             className="bg-background border border-border/60 rounded px-4 py-2.5 text-sm focus:outline-hidden focus:border-primary/50 transition-colors"
           />
         </div>
@@ -115,14 +118,14 @@ export default function ContactForm() {
           htmlFor="message"
           className="text-[10px] font-mono uppercase text-muted-foreground ml-1"
         >
-          Message
+          {t.message}
         </label>
         <textarea
           required
           id="message"
           name="message"
           rows={5}
-          placeholder="How can I help you?"
+          placeholder={t.messagePlaceholder}
           className="bg-background border border-border/60 rounded px-4 py-2.5 text-sm focus:outline-hidden focus:border-primary/50 transition-colors resize-none"
         />
       </div>
@@ -130,8 +133,7 @@ export default function ContactForm() {
       {/* Error Message Section */}
       {status === "error" && (
         <p className="text-red-400 text-xs font-mono">
-          {errorMessage ??
-            "Oops! Something went wrong. Please try again or email me directly."}
+          {errorMessage ?? t.errorFallback}
         </p>
       )}
 
@@ -142,7 +144,7 @@ export default function ContactForm() {
         className="mt-2 flex items-center justify-center gap-2 w-full px-6 py-3 bg-primary text-primary-foreground rounded font-mono text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <span className="text-primary-foreground/60">▸</span>
-        {status === "loading" ? "Sending..." : "Send Message"}
+        {status === "loading" ? t.sending : t.send}
       </button>
     </form>
   );

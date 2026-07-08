@@ -2,10 +2,74 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { navLinks, siteConfig } from "@/utils/constants/portfolio.constant";
 import { MenuIcon, CloseIcon } from "@/components/utils/icons";
+import ThemeToggle from "@/components/utils/theme/theme-toggle";
+import {
+  locales,
+  localizeHref,
+  getDictionary,
+  type TLocale,
+  type TDictionary,
+} from "@/utils/i18n";
 
-export default function Navbar() {
+/* ---------------------------------- Utils ---------------------------------- */
+function navKeyFromHref(href: string): keyof TDictionary["nav"] {
+  return href
+    .replace("/#", "")
+    .replace("/", "") as keyof TDictionary["nav"];
+}
+
+/* -------------------------------- Components -------------------------------- */
+function LanguageSwitcher(props: { lang: TLocale }) {
+  /* ---------------------------------- Props --------------------------------- */
+  const { lang } = props;
+
+  /* ---------------------------------- Utils --------------------------------- */
+  const pathname = usePathname();
+  const labels: Record<TLocale, string> = { en: "EN", km: "ខ្មែរ" };
+
+  function switchedPath(target: TLocale): string {
+    const rest = pathname.replace(/^\/(en|km)(?=\/|$)/, "");
+    return `/${target}${rest}`;
+  }
+
+  /* -------------------------------- Render UI ------------------------------- */
+  return (
+    <div className="flex items-center gap-0.5 border border-border/60 rounded px-1 py-0.5">
+      {locales.map((locale, i) => (
+        <span key={locale} className="flex items-center">
+          {i > 0 && (
+            <span className="text-muted-foreground/30 text-[10px] mx-0.5">
+              |
+            </span>
+          )}
+          <Link
+            href={switchedPath(locale)}
+            onClick={() => {
+              document.cookie = `NEXT_LOCALE=${locale};path=/;max-age=31536000`;
+            }}
+            className={`px-1.5 py-0.5 text-[11px] font-mono rounded transition-colors ${
+              lang === locale
+                ? "text-primary"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {labels[locale]}
+          </Link>
+        </span>
+      ))}
+    </div>
+  );
+}
+
+export default function Navbar(props: { lang: TLocale }) {
+  /* ---------------------------------- Props --------------------------------- */
+  const { lang } = props;
+  const dict = getDictionary(lang);
+
   /* -------------------------------- All States ------------------------------- */
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -30,7 +94,7 @@ export default function Navbar() {
       let current = "";
 
       // Check if we are on the blog page
-      if (window.location.pathname.startsWith("/blog")) {
+      if (window.location.pathname.includes("/blog")) {
         current = "blog";
       } else {
         for (const id of sectionIds) {
@@ -52,7 +116,7 @@ export default function Navbar() {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-[#060d1f]/95 backdrop-blur-md border-b border-border shadow-xl shadow-black/40"
+          ? "bg-background/95 backdrop-blur-md border-b border-border shadow-xl shadow-black/10 dark:shadow-black/40"
           : "bg-transparent"
       }`}
     >
@@ -64,7 +128,7 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
         {/* Brand Section */}
         <a
-          href="#"
+          href={`/${lang}`}
           className="flex items-center gap-2.5 hover:opacity-80 transition-opacity group"
         >
           <Image
@@ -81,23 +145,23 @@ export default function Navbar() {
 
         {/* Desktop Links Section */}
         <ul className="hidden sm:flex items-center gap-1">
-          {navLinks.map(({ href, label }, i) => {
+          {navLinks.map(({ href }, i) => {
             const id = href.replace("/#", "").replace("/", "");
             const isActive = activeSection === id;
             return (
               <li key={href}>
                 <a
-                  href={href}
+                  href={localizeHref(href, lang)}
                   className={`relative px-3 py-1.5 text-xs font-mono tracking-wide transition-colors duration-200 rounded ${
                     isActive
                       ? "text-primary"
-                      : "text-muted-foreground hover:text-foreground hover:bg-white/3"
+                      : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
                   }`}
                 >
                   <span className="text-primary/40 mr-1 text-[10px]">
                     0{i + 1}.
                   </span>
-                  {label}
+                  {dict.nav[navKeyFromHref(href)]}
                   {isActive && (
                     <span className="absolute bottom-0 left-3 right-3 h-px bg-primary/60 rounded-full" />
                   )}
@@ -112,36 +176,46 @@ export default function Navbar() {
               rel="noopener noreferrer"
               className="px-3 py-1.5 text-xs font-mono tracking-wide text-primary border border-primary/30 rounded hover:bg-primary/5 transition-all"
             >
-              Resume
+              {dict.nav.resume}
             </a>
+          </li>
+          <li className="ml-2">
+            <LanguageSwitcher lang={lang} />
+          </li>
+          <li className="ml-1">
+            <ThemeToggle label={dict.nav.toggleTheme} />
           </li>
         </ul>
 
-        {/* Mobile Hamburger Section */}
-        <button
-          className="sm:hidden text-muted-foreground hover:text-foreground transition-colors"
-          onClick={() => setMenuOpen((o) => !o)}
-          aria-label="Toggle menu"
-        >
-          {menuOpen ? (
-            <CloseIcon className="w-5 h-5" />
-          ) : (
-            <MenuIcon className="w-5 h-5" />
-          )}
-        </button>
+        {/* Mobile Right Section */}
+        <div className="sm:hidden flex items-center gap-3">
+          <LanguageSwitcher lang={lang} />
+          <ThemeToggle label={dict.nav.toggleTheme} />
+          <button
+            className="text-muted-foreground hover:text-foreground transition-colors"
+            onClick={() => setMenuOpen((o) => !o)}
+            aria-label={dict.nav.toggleMenu}
+          >
+            {menuOpen ? (
+              <CloseIcon className="w-5 h-5" />
+            ) : (
+              <MenuIcon className="w-5 h-5" />
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Menu Section */}
       {menuOpen && (
-        <div className="sm:hidden bg-[#060d1f]/98 border-t border-border px-6 py-4">
+        <div className="sm:hidden bg-background/98 border-t border-border px-6 py-4">
           <ul className="flex flex-col gap-1">
-            {navLinks.map(({ href, label }, i) => {
+            {navLinks.map(({ href }, i) => {
               const id = href.replace("/#", "").replace("/", "");
               const isActive = activeSection === id;
               return (
                 <li key={href}>
                   <a
-                    href={href}
+                    href={localizeHref(href, lang)}
                     onClick={() => setMenuOpen(false)}
                     className={`flex items-center gap-2 px-3 py-2 text-xs font-mono rounded transition-all ${
                       isActive
@@ -152,7 +226,7 @@ export default function Navbar() {
                     <span className="text-primary/40 text-[10px]">
                       0{i + 1}.
                     </span>
-                    {label}
+                    {dict.nav[navKeyFromHref(href)]}
                   </a>
                 </li>
               );
@@ -165,7 +239,7 @@ export default function Navbar() {
                 onClick={() => setMenuOpen(false)}
                 className="flex items-center justify-center gap-2 px-3 py-2.5 text-xs font-mono rounded text-primary border border-primary/20 bg-primary/5"
               >
-                Resume.pdf
+                {dict.nav.resumeMobile}
               </a>
             </li>
           </ul>

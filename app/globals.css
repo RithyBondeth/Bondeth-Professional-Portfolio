@@ -133,6 +133,14 @@
   }
 }
 
+/* ── Khmer locale: JetBrains Mono / Geist have no Khmer glyphs, so put
+   Kantumruy Pro first in every stack when the page language is Khmer.
+   Kept OUTSIDE @layer so it can override next/font's unlayered variables. ── */
+html[lang="km"] {
+  --font-mono: var(--font-khmer), "JetBrains Mono", ui-monospace, monospace;
+  --font-geist-sans: var(--font-khmer), ui-sans-serif, sans-serif;
+}
+
 /* ── Hero scan line ── */
 @keyframes scan {
   0%   { transform: translateY(-100%); }

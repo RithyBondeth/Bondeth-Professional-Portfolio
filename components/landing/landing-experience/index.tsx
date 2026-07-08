@@ -1,13 +1,17 @@
 import Image from "next/image";
-import {
-  experiences,
-  organizations,
-} from "@/utils/constants/portfolio.constant";
+import { organizations } from "@/utils/constants/portfolio.constant";
 import { IOrganization } from "@/utils/interfaces/portfolio/organization.interface";
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
 import { MarqueeTrack } from "@/components/utils/animations/marquee-track";
+import { getDictionary, type TLocale } from "@/utils/i18n";
+import { getExperiences } from "@/utils/i18n/content";
 
-export default function LandingExperience() {
+export default function LandingExperience(props: { lang: TLocale }) {
+  /* ---------------------------------- Props --------------------------------- */
+  const { lang } = props;
+  const dict = getDictionary(lang);
+  const experiences = getExperiences(lang);
+
   /* -------------------------------- Render UI ------------------------------- */
   return (
     <section id="experience" className="py-24 px-6 bg-card">
@@ -22,7 +26,7 @@ export default function LandingExperience() {
 
         <AnimateIn delay={0.05}>
           <h2 className="text-3xl sm:text-4xl font-bold text-foreground mt-3 mb-12">
-            Where I&apos;ve worked
+            {dict.experience.heading}
           </h2>
         </AnimateIn>
 
@@ -77,12 +81,12 @@ export default function LandingExperience() {
       <AnimateIn delay={0.1}>
         <div className="mt-16 pt-12 border-t border-border/40">
           <p className="text-center text-[10px] font-mono text-muted-foreground/60 uppercase tracking-[0.2em] mb-8">
-            Organizations I&apos;ve worked with
+            {dict.experience.organizations}
           </p>
 
           <div className="relative overflow-hidden">
-            <div className="absolute inset-y-0 left-0 w-24 bg-linear-to-r from-[#0c1428] to-transparent z-10 pointer-events-none" />
-            <div className="absolute inset-y-0 right-0 w-24 bg-linear-to-l from-[#0c1428] to-transparent z-10 pointer-events-none" />
+            <div className="absolute inset-y-0 left-0 w-24 bg-linear-to-r from-card to-transparent z-10 pointer-events-none" />
+            <div className="absolute inset-y-0 right-0 w-24 bg-linear-to-l from-card to-transparent z-10 pointer-events-none" />
 
             <MarqueeTrack direction="rtl" duration={40}>
               {Array.from({ length: 10 }, (_, copy) =>

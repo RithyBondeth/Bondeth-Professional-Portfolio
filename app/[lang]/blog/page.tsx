@@ -1,9 +1,18 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { getAllPosts } from "@/utils/functions/blog";
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
+import { hasLocale, getDictionary } from "@/utils/i18n";
 
-export default async function BlogPage() {
+interface IBlogPageProps {
+  params: Promise<{ lang: string }>;
+}
+
+export default async function BlogPage({ params }: IBlogPageProps) {
   /* ---------------------------------- Utils --------------------------------- */
+  const { lang } = await params;
+  if (!hasLocale(lang)) notFound();
+  const dict = getDictionary(lang);
   const posts = await getAllPosts();
 
   /* -------------------------------- Render UI ------------------------------- */
@@ -19,15 +28,13 @@ export default async function BlogPage() {
 
         <AnimateIn delay={0.05}>
           <h1 className="text-4xl sm:text-5xl font-bold text-foreground mt-3 mb-4">
-            Technical Insights
+            {dict.blog.heading}
           </h1>
         </AnimateIn>
 
         <AnimateIn delay={0.1}>
           <p className="text-muted-foreground text-sm max-w-2xl mb-4 leading-relaxed">
-            Sharing my journey through software engineering, AI research, and
-            building digital products. Expect deep dives, tutorials, and
-            occasional rants about clean code.
+            {dict.blog.blurb}
           </p>
         </AnimateIn>
 
@@ -37,7 +44,7 @@ export default async function BlogPage() {
             href="/feed.xml"
             className="inline-flex items-center gap-2 text-xs font-mono text-muted-foreground hover:text-primary transition-colors mb-16"
           >
-            <span className="text-primary">⚡</span> Subscribe via RSS
+            <span className="text-primary">⚡</span> {dict.blog.subscribeRss}
           </a>
         </AnimateIn>
 
@@ -47,15 +54,18 @@ export default async function BlogPage() {
             <article key={post.slug} className="group relative">
               <div className="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-6">
                 <time className="text-xs font-mono text-muted-foreground/60 sm:w-24 shrink-0">
-                  {new Date(post.date).toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                    year: "numeric",
-                  })}
+                  {new Date(post.date).toLocaleDateString(
+                    lang === "km" ? "km-KH" : "en-US",
+                    {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    },
+                  )}
                 </time>
                 <div className="flex-1">
                   <Link
-                    href={`/blog/${post.slug}`}
+                    href={`/${lang}/blog/${post.slug}`}
                     className="block group-hover:translate-x-1 transition-transform"
                   >
                     <h2 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors mb-2">
@@ -85,7 +95,7 @@ export default async function BlogPage() {
         {posts.length === 0 && (
           <div className="py-20 text-center border border-dashed border-border rounded">
             <p className="text-muted-foreground font-mono text-sm">
-              No posts found. Check back soon!
+              {dict.blog.empty}
             </p>
           </div>
         )}

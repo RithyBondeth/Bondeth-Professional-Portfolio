@@ -1,5 +1,6 @@
 import { skillGroups } from "@/utils/constants/portfolio.constant";
 import { ISkill } from "@/utils/interfaces/portfolio/skill.interface";
+import { getDictionary, type TLocale } from "@/utils/i18n";
 import { AnimateIn } from "@/components/utils/animations/animate-in";
 import { MarqueeTrack } from "@/components/utils/animations/marquee-track";
 import {
@@ -61,7 +62,11 @@ const ICON_MAP: Record<string, IconType> = {
 
 const COPIES_PER_HALF = 8;
 
-export default function LandingSkills() {
+export default function LandingSkills(props: { lang: TLocale }) {
+  /* ---------------------------------- Props --------------------------------- */
+  const { lang } = props;
+  const dict = getDictionary(lang);
+
   /* -------------------------------- Render UI ------------------------------- */
   return (
     <section id="skills" className="py-24 bg-background overflow-hidden">
@@ -74,7 +79,7 @@ export default function LandingSkills() {
         </AnimateIn>
         <AnimateIn delay={0.05}>
           <h2 className="text-3xl sm:text-4xl font-bold text-foreground mt-3">
-            Technologies I work with
+            {dict.skills.heading}
           </h2>
         </AnimateIn>
       </div>
@@ -93,13 +98,13 @@ export default function LandingSkills() {
             <AnimateIn key={category} y={20} delay={i * 0.08}>
               <div className="relative">
                 {/* Left Fade + Category Label */}
-                <div className="absolute inset-y-0 left-0 w-40 sm:w-52 bg-linear-to-r from-[#060d1f] via-[#060d1f]/80 to-transparent z-10 pointer-events-none flex items-center pl-6">
+                <div className="absolute inset-y-0 left-0 w-40 sm:w-52 bg-linear-to-r from-background via-background/80 to-transparent z-10 pointer-events-none flex items-center pl-6">
                   <span className="text-[10px] font-mono text-muted-foreground/60 uppercase tracking-[0.2em] select-none">
                     {category}
                   </span>
                 </div>
                 {/* Right Fade */}
-                <div className="absolute inset-y-0 right-0 w-24 bg-linear-to-l from-[#060d1f] to-transparent z-10 pointer-events-none" />
+                <div className="absolute inset-y-0 right-0 w-24 bg-linear-to-l from-background to-transparent z-10 pointer-events-none" />
 
                 <MarqueeTrack direction={direction} duration={60}>
                   {track.map((skill, j) => (

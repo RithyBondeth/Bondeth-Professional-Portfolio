@@ -17,7 +17,7 @@ export async function GET() {
 
   const items = posts
     .map((post) => {
-      const url = `${siteConfig.url}/blog/${post.slug}`;
+      const url = `${siteConfig.url}/en/blog/${post.slug}`;
       const categories = post.tags
         .map((tag) => `      <category>${escapeXml(tag)}</category>`)
         .join("\n");
@@ -37,7 +37,7 @@ ${categories}
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>${escapeXml(`${siteConfig.name} — Blog`)}</title>
-    <link>${siteConfig.url}/blog</link>
+    <link>${siteConfig.url}/en/blog</link>
     <description>Technical insights, AI research, and software engineering thoughts by ${escapeXml(siteConfig.name)}.</description>
     <language>en</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>

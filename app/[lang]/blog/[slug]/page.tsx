@@ -6,9 +6,10 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import Link from "next/link";
 import { AnimateIn } from "@/components/utils/animations/animate-in";
 import remarkGfm from "remark-gfm";
+import { hasLocale, getDictionary } from "@/utils/i18n";
 
 interface IBlogPostPageProps {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ lang: string; slug: string }>;
 }
 
 /* --------------------------------- Metadata --------------------------------- */
@@ -22,7 +23,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: IBlogPostPageProps): Promise<Metadata> {
-  const { slug } = await params;
+  const { lang, slug } = await params;
   const post = await getPostBySlug(slug);
   if (!post) return {};
 
@@ -30,14 +31,19 @@ export async function generateMetadata({
     title: post.title,
     description: post.excerpt,
     alternates: {
-      canonical: `/blog/${slug}`,
+      canonical: `/${lang}/blog/${slug}`,
+      languages: {
+        en: `/en/blog/${slug}`,
+        km: `/km/blog/${slug}`,
+        "x-default": `/en/blog/${slug}`,
+      },
       types: {
         "application/rss+xml": "/feed.xml",
       },
     },
     openGraph: {
       type: "article",
-      url: `/blog/${slug}`,
+      url: `/${lang}/blog/${slug}`,
       title: post.title,
       description: post.excerpt,
       publishedTime: post.date,
@@ -54,7 +60,9 @@ export async function generateMetadata({
 
 export default async function BlogPostPage({ params }: IBlogPostPageProps) {
   /* ---------------------------------- Utils --------------------------------- */
-  const { slug } = await params;
+  const { lang, slug } = await params;
+  if (!hasLocale(lang)) notFound();
+  const dict = getDictionary(lang);
   const post = await getPostBySlug(slug);
 
   if (!post) {
@@ -69,7 +77,7 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
     description: post.excerpt,
     datePublished: post.date,
     keywords: post.tags.join(", "),
-    url: `${siteConfig.url}/blog/${slug}`,
+    url: `${siteConfig.url}/${lang}/blog/${slug}`,
     author: {
       "@type": "Person",
       name: siteConfig.name,
@@ -92,24 +100,27 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
         {/* Back Link Section */}
         <AnimateIn>
           <Link
-            href="/blog"
+            href={`/${lang}/blog`}
             className="text-xs font-mono text-muted-foreground hover:text-primary transition-colors flex items-center gap-2 mb-8 group"
           >
             <span className="group-hover:-translate-x-1 transition-transform">
               ←
             </span>
-            back to all posts
+            {dict.blog.backToAll}
           </Link>
         </AnimateIn>
 
         {/* Post Header Section */}
         <AnimateIn delay={0.05}>
           <time className="text-xs font-mono text-primary/60 mb-2 block">
-            {new Date(post.date).toLocaleDateString("en-US", {
-              month: "long",
-              day: "numeric",
-              year: "numeric",
-            })}
+            {new Date(post.date).toLocaleDateString(
+              lang === "km" ? "km-KH" : "en-US",
+              {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+              },
+            )}
           </time>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-8 leading-tight">
             {post.title}
@@ -119,7 +130,7 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
         {/* Post Content Section */}
         <AnimateIn
           delay={0.1}
-          className="prose prose-invert prose-slate max-w-none"
+          className="prose prose-slate dark:prose-invert max-w-none"
         >
           <MDXRemote
             source={post.content}
@@ -144,10 +155,10 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
             ))}
           </div>
           <Link
-            href="/blog"
+            href={`/${lang}/blog`}
             className="inline-flex items-center gap-2 px-6 py-2.5 bg-card border border-border hover:border-primary/40 rounded text-sm font-mono text-muted-foreground hover:text-foreground transition-all"
           >
-            ← View more posts
+            ← {dict.blog.viewMore}
           </Link>
         </footer>
       </div>

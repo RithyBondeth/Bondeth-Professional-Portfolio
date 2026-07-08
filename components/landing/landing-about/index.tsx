@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
 import { GitHubIcon, LinkedInIcon } from "@/components/utils/icons";
+import { getDictionary, type TLocale } from "@/utils/i18n";
+import { getSiteConfig } from "@/utils/i18n/content";
 
 /* ---------------------------------- Hooks ---------------------------------- */
 function useCountUp(target: number, duration: number, started: boolean) {
@@ -53,13 +55,18 @@ function StatCard(props: {
 }
 
 const stats = [
-  { label: "Years Experience", value: "3+", varName: "yearsExp" },
-  { label: "Projects Completed", value: "20+", varName: "projects" },
-  { label: "Technologies", value: "15+", varName: "techStack" },
-  { label: "Happy Clients", value: "10+", varName: "clients" },
-];
+  { key: "yearsExp", value: "3+", varName: "yearsExp" },
+  { key: "projects", value: "20+", varName: "projects" },
+  { key: "techStack", value: "15+", varName: "techStack" },
+  { key: "clients", value: "10+", varName: "clients" },
+] as const;
 
-export default function LandingAbout() {
+export default function LandingAbout(props: { lang: TLocale }) {
+  /* ---------------------------------- Props --------------------------------- */
+  const { lang } = props;
+  const dict = getDictionary(lang);
+  const localized = getSiteConfig(lang);
+
   /* -------------------------------- All States ------------------------------- */
   const [started, setStarted] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
@@ -94,12 +101,12 @@ export default function LandingAbout() {
           <div>
             <AnimateIn delay={0.05}>
               <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-6 leading-snug">
-                Passionate about building things that matter.
+                {dict.about.heading}
               </h2>
             </AnimateIn>
 
             <StaggerIn className="space-y-4" stagger={0.15} delay={0.1}>
-              {siteConfig.bio.map((paragraph, i) => (
+              {localized.bio.map((paragraph, i) => (
                 <p
                   key={i}
                   className="text-muted-foreground leading-relaxed text-sm"
@@ -136,7 +143,13 @@ export default function LandingAbout() {
           {/* Stats Section — count up when the section enters view */}
           <StaggerIn className="grid grid-cols-2 gap-4" stagger={0.1}>
             {stats.map((stat) => (
-              <StatCard key={stat.label} {...stat} started={started} />
+              <StatCard
+                key={stat.key}
+                label={dict.about.stats[stat.key]}
+                value={stat.value}
+                varName={stat.varName}
+                started={started}
+              />
             ))}
           </StaggerIn>
         </div>

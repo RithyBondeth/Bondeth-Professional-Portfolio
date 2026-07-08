@@ -2,8 +2,13 @@ import { siteConfig } from "@/utils/constants/portfolio.constant";
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
 import { GitHubIcon, LinkedInIcon, MailIcon } from "@/components/utils/icons";
 import ContactForm from "./contact-form";
+import { getDictionary, type TLocale } from "@/utils/i18n";
 
-export default function LandingContact() {
+export default function LandingContact(props: { lang: TLocale }) {
+  /* ---------------------------------- Props --------------------------------- */
+  const { lang } = props;
+  const dict = getDictionary(lang);
+
   /* -------------------------------- Render UI ------------------------------- */
   return (
     <section id="contact" className="py-24 px-6 bg-card">
@@ -17,22 +22,20 @@ export default function LandingContact() {
 
         <AnimateIn delay={0.05}>
           <h2 className="text-3xl sm:text-4xl font-bold text-foreground mt-3 mb-4">
-            Let&apos;s work together
+            {dict.contact.heading}
           </h2>
         </AnimateIn>
 
         <AnimateIn delay={0.1}>
           <p className="text-muted-foreground text-sm leading-relaxed mb-10 max-w-md mx-auto">
-            I&apos;m currently open to new opportunities. Whether you have a
-            project in mind, a question, or just want to say hi — my inbox is
-            always open.
+            {dict.contact.blurb}
           </p>
         </AnimateIn>
 
         {/* Contact Form Section */}
         <AnimateIn delay={0.15}>
           <div className="w-full max-w-md mx-auto mb-10">
-            <ContactForm />
+            <ContactForm lang={lang} />
           </div>
         </AnimateIn>
 
