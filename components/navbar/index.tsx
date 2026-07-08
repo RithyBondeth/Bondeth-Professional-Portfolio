@@ -7,6 +7,7 @@ import { navLinks, siteConfig } from "@/utils/constants/portfolio.constant";
 import { MenuIcon, CloseIcon } from "@/components/utils/icons";
 import { Logo } from "@/components/utils/icons/logo";
 import ThemeToggle from "@/components/utils/theme/theme-toggle";
+import { OPEN_COMMAND_PALETTE } from "@/components/command-palette";
 import {
   locales,
   localizeNavHref,
@@ -20,6 +21,27 @@ function navKeyFromHref(href: string): keyof TDictionary["nav"] {
   return href
     .replace("/#", "")
     .replace("/", "") as keyof TDictionary["nav"];
+}
+
+function openCommandPalette() {
+  window.dispatchEvent(new CustomEvent(OPEN_COMMAND_PALETTE));
+}
+
+function SearchIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.75}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      viewBox="0 0 24 24"
+    >
+      <circle cx="11" cy="11" r="7" />
+      <path d="m21 21-4.3-4.3" />
+    </svg>
+  );
 }
 
 /* -------------------------------- Components -------------------------------- */
@@ -173,6 +195,19 @@ export default function Navbar(props: { lang: TLocale }) {
           })}
           <li aria-hidden className="mx-2 h-4 w-px bg-border" />
           <li>
+            <button
+              type="button"
+              onClick={openCommandPalette}
+              aria-label={dict.commandPalette.open}
+              className="flex items-center gap-2 pl-2.5 pr-2 py-1.5 text-xs font-mono text-muted-foreground border border-border/60 rounded hover:text-foreground hover:border-primary/40 transition-colors"
+            >
+              <SearchIcon className="w-3.5 h-3.5" />
+              <kbd className="text-[10px] text-muted-foreground dark:text-muted-foreground/70">
+                ⌘K
+              </kbd>
+            </button>
+          </li>
+          <li>
             <a
               href={siteConfig.resume}
               target="_blank"
@@ -192,6 +227,14 @@ export default function Navbar(props: { lang: TLocale }) {
 
         {/* Mobile Right Section */}
         <div className="lg:hidden flex items-center gap-3">
+          <button
+            type="button"
+            onClick={openCommandPalette}
+            aria-label={dict.commandPalette.open}
+            className="w-7 h-7 flex items-center justify-center rounded border border-border/60 text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors"
+          >
+            <SearchIcon className="w-3.5 h-3.5" />
+          </button>
           <LanguageSwitcher lang={lang} />
           <ThemeToggle label={dict.nav.toggleTheme} />
           <button

@@ -63,13 +63,13 @@ function CodeBlock() {
           <span className="w-3 h-3 rounded-full bg-red-500/80" />
           <span className="w-3 h-3 rounded-full bg-yellow-500/70" />
           <span className="w-3 h-3 rounded-full bg-green-500/70" />
-          <span className="ml-3 text-slate-500 text-[11px] font-mono select-none">
+          <span className="ml-3 text-slate-500 text-[11px] font-code select-none">
             profile.ts
           </span>
         </div>
 
         {/* Line Numbers + Code Section */}
-        <div className="flex text-xs font-mono leading-6 overflow-x-auto">
+        <div className="flex text-xs font-code leading-6 overflow-x-auto">
           {/* Line Numbers */}
           <div className="select-none text-right pr-4 pl-4 py-5 text-[#1a2e52] border-r border-[#1a2e52]/40 shrink-0">
             {Array.from({ length: 18 }, (_, i) => (

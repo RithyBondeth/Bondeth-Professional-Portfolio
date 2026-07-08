@@ -12,6 +12,7 @@ import "../globals.css";
 import { cn } from "@/lib/utils";
 import Nav from "@/components/navbar";
 import Footer from "@/components/footer";
+import CommandPalette from "@/components/command-palette";
 import { ThemeProvider } from "@/components/utils/theme/theme-provider";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
 import { locales, hasLocale, type TLocale } from "@/utils/i18n";
@@ -126,6 +127,7 @@ export default async function RootLayout({
           <Nav lang={lang} />
           {children}
           <Footer lang={lang} />
+          <CommandPalette lang={lang} />
         </ThemeProvider>
         <Analytics />
         <SpeedInsights />
