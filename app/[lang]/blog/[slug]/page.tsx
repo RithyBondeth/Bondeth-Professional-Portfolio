@@ -25,7 +25,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: IBlogPostPageProps): Promise<Metadata> {
-  const { lang, slug } = await params;
+  const { slug } = await params;
   const post = await getPostBySlug(slug);
   if (!post) return {};
 
@@ -33,10 +33,11 @@ export async function generateMetadata({
     title: post.title,
     description: post.excerpt,
     alternates: {
-      canonical: `/${lang}/blog/${slug}`,
+      // The blog is English-only; km routes redirect to en, so the canonical
+      // and alternates always point at the English post.
+      canonical: `/en/blog/${slug}`,
       languages: {
         en: `/en/blog/${slug}`,
-        km: `/km/blog/${slug}`,
         "x-default": `/en/blog/${slug}`,
       },
       types: {
@@ -45,7 +46,7 @@ export async function generateMetadata({
     },
     openGraph: {
       type: "article",
-      url: `/${lang}/blog/${slug}`,
+      url: `/en/blog/${slug}`,
       title: post.title,
       description: post.excerpt,
       publishedTime: post.date,

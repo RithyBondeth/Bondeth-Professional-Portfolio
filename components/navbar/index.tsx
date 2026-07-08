@@ -9,7 +9,7 @@ import { Logo } from "@/components/utils/icons/logo";
 import ThemeToggle from "@/components/utils/theme/theme-toggle";
 import {
   locales,
-  localizeHref,
+  localizeNavHref,
   getDictionary,
   type TLocale,
   type TDictionary,
@@ -153,7 +153,7 @@ export default function Navbar(props: { lang: TLocale }) {
             return (
               <li key={href}>
                 <a
-                  href={localizeHref(href, lang)}
+                  href={localizeNavHref(href, lang)}
                   className={`relative px-2.5 xl:px-3 py-1.5 text-xs font-mono tracking-wide whitespace-nowrap transition-colors duration-200 rounded ${
                     isActive
                       ? "text-primary"
@@ -224,7 +224,7 @@ export default function Navbar(props: { lang: TLocale }) {
               return (
                 <li key={href}>
                   <a
-                    href={localizeHref(href, lang)}
+                    href={localizeNavHref(href, lang)}
                     onClick={() => setMenuOpen(false)}
                     className={`flex items-center gap-2 px-3 py-2.5 text-xs font-mono rounded border-l transition-all ${
                       isActive

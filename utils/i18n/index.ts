@@ -29,3 +29,12 @@ export function localizeHref(href: string, lang: TLocale): string {
   if (href.startsWith("/#")) return `/${lang}${href.slice(1)}`;
   return `/${lang}${href}`;
 }
+
+/**
+ * Like {@link localizeHref}, but keeps English-only routes (the blog) pinned to
+ * the English locale so nav/footer links never point at a nonexistent Khmer page.
+ */
+export function localizeNavHref(href: string, lang: TLocale): string {
+  if (href === "/blog" || href.startsWith("/blog/")) return `/en${href}`;
+  return localizeHref(href, lang);
+}

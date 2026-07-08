@@ -15,9 +15,13 @@ function escapeXml(value: string): string {
 export async function GET() {
   const posts = await getAllPosts();
 
+  // The blog is published in English only, so the feed and every item link to
+  // the canonical /en blog routes.
+  const blogUrl = `${siteConfig.url}/en/blog`;
+
   const items = posts
     .map((post) => {
-      const url = `${siteConfig.url}/en/blog/${post.slug}`;
+      const url = `${blogUrl}/${post.slug}`;
       const categories = post.tags
         .map((tag) => `      <category>${escapeXml(tag)}</category>`)
         .join("\n");
@@ -37,7 +41,7 @@ ${categories}
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>${escapeXml(`${siteConfig.name} — Blog`)}</title>
-    <link>${siteConfig.url}/en/blog</link>
+    <link>${blogUrl}</link>
     <description>Technical insights, AI research, and software engineering thoughts by ${escapeXml(siteConfig.name)}.</description>
     <language>en</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>

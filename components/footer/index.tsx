@@ -2,7 +2,7 @@ import { siteConfig, navLinks } from "@/utils/constants/portfolio.constant";
 import { GitHubIcon, LinkedInIcon, MailIcon } from "@/components/utils/icons";
 import { Logo } from "@/components/utils/icons/logo";
 import {
-  localizeHref,
+  localizeNavHref,
   getDictionary,
   type TLocale,
   type TDictionary,
@@ -76,7 +76,7 @@ export default function Footer(props: { lang: TLocale }) {
             {navLinks.map(({ href }, i) => (
               <li key={href}>
                 <a
-                  href={localizeHref(href, lang)}
+                  href={localizeNavHref(href, lang)}
                   className="text-muted-foreground hover:text-primary text-xs font-mono transition-colors flex items-center gap-1.5"
                 >
                   <span className="text-primary dark:text-primary/30 text-[9px]">0{i + 1}.</span>
