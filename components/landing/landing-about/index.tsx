@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
+import { Parallax } from "@/components/utils/animations/parallax";
 import { GitHubIcon, LinkedInIcon } from "@/components/utils/icons";
 import { getDictionary, type TLocale } from "@/utils/i18n";
 import { getSiteConfig } from "@/utils/i18n/content";
@@ -65,14 +66,21 @@ function PortraitPanel(props: { alt: string }) {
 function useCountUp(target: number, duration: number, started: boolean) {
   const [count, setCount] = useState(0);
   useEffect(() => {
-    if (!started) return;
+    // Reset to zero whenever the stats leave view so the count replays from
+    // scratch the next time they scroll back in.
+    if (!started) {
+      setCount(0);
+      return;
+    }
+    let raf = 0;
     const startTime = performance.now();
     const tick = (now: number) => {
       const p = Math.min((now - startTime) / duration, 1);
       setCount(Math.round((1 - Math.pow(1 - p, 3)) * target));
-      if (p < 1) requestAnimationFrame(tick);
+      if (p < 1) raf = requestAnimationFrame(tick);
     };
-    requestAnimationFrame(tick);
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
   }, [target, duration, started]);
   return count;
 }
@@ -123,28 +131,27 @@ export default function LandingAbout(props: { lang: TLocale }) {
 
   /* -------------------------------- All States ------------------------------- */
   const [started, setStarted] = useState(false);
-  const sectionRef = useRef<HTMLElement>(null);
+  const statsRef = useRef<HTMLDivElement>(null);
 
   /* --------------------------------- Effects -------------------------------- */
   useEffect(() => {
+    // Watch the stats strip itself (not the whole section) so the numbers only
+    // start counting once they're actually on screen — otherwise they'd finish
+    // while still far below the fold. Toggling `started` replays the count each
+    // time the strip re-enters view.
     const obs = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) {
-          setStarted(true);
-          obs.disconnect();
-        }
-      },
-      { threshold: 0.2 },
+      ([e]) => setStarted(e.isIntersecting),
+      { threshold: 0.35 },
     );
-    if (sectionRef.current) obs.observe(sectionRef.current);
+    if (statsRef.current) obs.observe(statsRef.current);
     return () => obs.disconnect();
   }, []);
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
-    <section ref={sectionRef} id="about" className="py-24 px-6 bg-card">
+    <section id="about" className="py-24 px-6 bg-card">
       <div className="max-w-6xl mx-auto">
-        <AnimateIn>
+        <AnimateIn from="zoom-in">
           <p className="text-primary font-mono text-xs tracking-[0.25em] uppercase mb-1">
             <span className="text-muted-foreground">{"//"}</span> about.tsx
           </p>
@@ -153,19 +160,27 @@ export default function LandingAbout(props: { lang: TLocale }) {
         {/* Portrait + Bio Row */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center mt-10">
           {/* Portrait Section — leads on mobile as a human hook */}
-          <AnimateIn delay={0.15} className="lg:col-span-5">
-            <PortraitPanel alt={dict.about.portraitAlt} />
+          <AnimateIn
+            from="left"
+            distance={70}
+            blur={6}
+            delay={0.15}
+            className="lg:col-span-5"
+          >
+            <Parallax speed={60}>
+              <PortraitPanel alt={dict.about.portraitAlt} />
+            </Parallax>
           </AnimateIn>
 
           {/* Bio Section */}
           <div className="lg:col-span-7">
-            <AnimateIn delay={0.05}>
+            <AnimateIn from="right" distance={50}>
               <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-6 leading-snug">
                 {dict.about.heading}
               </h2>
             </AnimateIn>
 
-            <StaggerIn className="space-y-4" stagger={0.15} delay={0.1}>
+            <StaggerIn from="right" distance={40} stagger={0.15} delay={0.1}>
               {localized.bio.map((paragraph, i) => (
                 <p
                   key={i}
@@ -201,21 +216,25 @@ export default function LandingAbout(props: { lang: TLocale }) {
           </div>
         </div>
 
-        {/* Stats Section — full-width strip; counts up when the section enters view */}
-        <StaggerIn
-          className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-12"
-          stagger={0.1}
-        >
-          {stats.map((stat) => (
-            <StatCard
-              key={stat.key}
-              label={dict.about.stats[stat.key]}
-              value={stat.value}
-              varName={stat.varName}
-              started={started}
-            />
-          ))}
-        </StaggerIn>
+        {/* Stats Section — full-width strip; counts up when the strip enters view */}
+        <div ref={statsRef}>
+          <StaggerIn
+            from="zoom-in"
+            className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-12"
+            stagger={0.1}
+            staggerFrom="center"
+          >
+            {stats.map((stat) => (
+              <StatCard
+                key={stat.key}
+                label={dict.about.stats[stat.key]}
+                value={stat.value}
+                varName={stat.varName}
+                started={started}
+              />
+            ))}
+          </StaggerIn>
+        </div>
       </div>
     </section>
   );

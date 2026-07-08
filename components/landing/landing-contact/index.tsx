@@ -14,26 +14,26 @@ export default function LandingContact(props: { lang: TLocale }) {
     <section id="contact" className="py-24 px-6 bg-card">
       <div className="max-w-2xl mx-auto text-center">
         {/* Heading Section */}
-        <AnimateIn>
+        <AnimateIn from="zoom-in">
           <p className="text-primary font-mono text-xs tracking-[0.25em] uppercase mb-1">
             <span className="text-muted-foreground">$</span> contact --init
           </p>
         </AnimateIn>
 
-        <AnimateIn delay={0.05}>
+        <AnimateIn from="zoom-in" delay={0.05}>
           <h2 className="text-3xl sm:text-4xl font-bold text-foreground mt-3 mb-4">
             {dict.contact.heading}
           </h2>
         </AnimateIn>
 
-        <AnimateIn delay={0.1}>
+        <AnimateIn from="up" delay={0.1}>
           <p className="text-muted-foreground text-sm leading-relaxed mb-10 max-w-md mx-auto">
             {dict.contact.blurb}
           </p>
         </AnimateIn>
 
         {/* Contact Form Section */}
-        <AnimateIn delay={0.15}>
+        <AnimateIn from="zoom-in" scale={1} blur={4} delay={0.15}>
           <div className="w-full max-w-md mx-auto mb-10">
             <ContactForm lang={lang} />
           </div>
@@ -42,9 +42,10 @@ export default function LandingContact(props: { lang: TLocale }) {
         {/* Social Links Section */}
         <StaggerIn
           className="flex justify-center gap-4"
+          from="zoom-in"
           stagger={0.1}
+          staggerFrom="center"
           delay={0.2}
-          y={20}
         >
           <SocialLink
             href={siteConfig.github}

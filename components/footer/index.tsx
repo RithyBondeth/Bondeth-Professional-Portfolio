@@ -1,5 +1,6 @@
 import { siteConfig, navLinks } from "@/utils/constants/portfolio.constant";
 import { GitHubIcon, LinkedInIcon, MailIcon } from "@/components/utils/icons";
+import { Logo } from "@/components/utils/icons/logo";
 import {
   localizeHref,
   getDictionary,
@@ -30,9 +31,8 @@ export default function Footer(props: { lang: TLocale }) {
         {/* Brand Section */}
         <div className="sm:col-span-1 flex flex-col gap-3">
           <div className="flex items-center">
-            <span className="text-foreground font-bold text-sm tracking-tight font-mono">
-              {siteConfig.name}
-            </span>
+            <Logo className="text-base" />
+            <span className="sr-only">{siteConfig.name}</span>
           </div>
           <p className="text-muted-foreground text-xs leading-relaxed max-w-xs">
             {localized.title} {dict.footer.basedIn}

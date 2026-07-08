@@ -5,6 +5,8 @@ import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import Link from "next/link";
 import { AnimateIn } from "@/components/utils/animations/animate-in";
+import { BlogCover } from "@/components/blog/blog-cover";
+import { mdxComponents } from "@/components/blog/mdx-components";
 import remarkGfm from "remark-gfm";
 import { hasLocale, getDictionary } from "@/utils/i18n";
 
@@ -49,11 +51,13 @@ export async function generateMetadata({
       publishedTime: post.date,
       authors: [siteConfig.name],
       tags: post.tags,
+      ...(post.cover ? { images: [{ url: post.cover }] } : {}),
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description: post.excerpt,
+      ...(post.cover ? { images: [post.cover] } : {}),
     },
   };
 }
@@ -87,7 +91,7 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
-    <main className="flex-1 pt-32 pb-24 px-6 bg-background">
+    <main className="flex-1 pt-32 pb-24 px-6 bg-background font-sans">
       <div className="max-w-3xl mx-auto">
         {/* Structured Data (JSON-LD) */}
         <script
@@ -110,8 +114,17 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
           </Link>
         </AnimateIn>
 
-        {/* Post Header Section */}
+        {/* Cover Section */}
         <AnimateIn delay={0.05}>
+          <BlogCover
+            post={post}
+            priority
+            className="aspect-[2/1] sm:aspect-[5/2] mb-8"
+          />
+        </AnimateIn>
+
+        {/* Post Header Section */}
+        <AnimateIn delay={0.1}>
           <time className="text-xs font-mono text-primary dark:text-primary/60 mb-2 block">
             {new Date(post.date).toLocaleDateString(
               lang === "km" ? "km-KH" : "en-US",
@@ -130,10 +143,11 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
         {/* Post Content Section */}
         <AnimateIn
           delay={0.1}
-          className="prose prose-slate dark:prose-invert max-w-none"
+          className="prose prose-slate dark:prose-invert max-w-none prose-pre:font-code prose-code:font-code"
         >
           <MDXRemote
             source={post.content}
+            components={mdxComponents}
             options={{
               mdxOptions: {
                 remarkPlugins: [remarkGfm],

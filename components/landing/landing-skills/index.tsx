@@ -72,12 +72,12 @@ export default function LandingSkills(props: { lang: TLocale }) {
     <section id="skills" className="py-24 bg-background overflow-hidden">
       {/* Heading Section */}
       <div className="max-w-6xl mx-auto px-6 mb-16">
-        <AnimateIn>
+        <AnimateIn from="zoom-in">
           <p className="text-primary font-mono text-xs tracking-[0.25em] uppercase mb-1">
             <span className="text-muted-foreground">{"//"}</span> skills.ts
           </p>
         </AnimateIn>
-        <AnimateIn delay={0.05}>
+        <AnimateIn from="zoom-in" delay={0.05}>
           <h2 className="text-3xl sm:text-4xl font-bold text-foreground mt-3">
             {dict.skills.heading}
           </h2>
@@ -95,7 +95,12 @@ export default function LandingSkills(props: { lang: TLocale }) {
           const track = [...half, ...half];
 
           return (
-            <AnimateIn key={category} y={20} delay={i * 0.08}>
+            <AnimateIn
+              key={category}
+              from={direction === "rtl" ? "right" : "left"}
+              distance={80}
+              delay={i * 0.08}
+            >
               <div className="relative">
                 {/* Left Fade + Category Label */}
                 <div className="absolute inset-y-0 left-0 w-40 sm:w-52 bg-linear-to-r from-background via-background/80 to-transparent z-10 pointer-events-none flex items-center pl-6">

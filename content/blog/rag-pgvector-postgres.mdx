@@ -1,0 +1,128 @@
+---
+title: "RAG on Postgres You Already Have: pgvector From Scratch"
+date: "2026-07-02"
+excerpt: "You don't need a dedicated vector database to ship retrieval-augmented generation. With the pgvector extension, the Postgres instance behind your app becomes a semantic search engine. Here's the whole pipeline — chunking, embedding, storing, and querying."
+tags: ["RAG", "Embeddings", "PostgreSQL", "AI"]
+---
+
+# RAG on Postgres You Already Have
+
+Retrieval-augmented generation (RAG) sounds heavier than it is. Strip away the acronym and it's one idea: **before you ask the model a question, find the most relevant pieces of your own data and paste them into the prompt.** The model answers from that context instead of from memory, so it can cite your docs and stop hallucinating facts it was never given.
+
+The part people over-engineer is storage. You'll read that you need a specialized vector database. For most projects you don't — if you already run Postgres, the [`pgvector`](https://github.com/pgvector/pgvector) extension turns it into a perfectly good vector store. One fewer service to run, back up, and pay for.
+
+Here's the shape of the whole thing:
+
+![RAG has two phases: an offline indexing pass that chunks documents, embeds each chunk, and writes the vectors to pgvector; and a per-query retrieval pass that embeds the question, finds the top-k nearest chunks, and hands them to the model as context.](/blog/rag-pipeline-diagram.svg)
+
+## Step 1: Turn on pgvector
+
+It ships with most managed Postgres providers now. Enable the extension and add a column to hold embeddings:
+
+```sql
+CREATE EXTENSION IF NOT EXISTS vector;
+
+CREATE TABLE chunks (
+  id        bigserial PRIMARY KEY,
+  document  text NOT NULL,
+  content   text NOT NULL,
+  embedding vector(1536)
+);
+```
+
+The `1536` is the dimension of the embedding model you'll use — it must match exactly. Swap models later and you re-embed everything, so pick one and note it somewhere.
+
+## Step 2: Chunk, don't dump
+
+Embedding an entire document as one vector throws away everything that makes retrieval useful — you get back a whole file when you wanted one paragraph. Split first. A simple, surprisingly effective rule: **split on headings and paragraphs, then merge fragments up to ~500 tokens, keeping a little overlap** so a sentence that straddles a boundary isn't orphaned.
+
+```ts
+function chunk(text: string, target = 500, overlap = 60): string[] {
+  const paragraphs = text.split(/\n\s*\n/);
+  const chunks: string[] = [];
+  let buffer = "";
+
+  for (const p of paragraphs) {
+    if ((buffer + p).length > target * 4) {
+      chunks.push(buffer.trim());
+      buffer = buffer.slice(-overlap * 4);
+    }
+    buffer += "\n\n" + p;
+  }
+  if (buffer.trim()) chunks.push(buffer.trim());
+  return chunks;
+}
+```
+
+(The `* 4` is a rough chars-per-token approximation — good enough for chunking; use a real tokenizer if you need precision.)
+
+## Step 3: Embed and store
+
+Each chunk goes to an embedding model, and the resulting vector lands in Postgres. pgvector accepts the vector as a bracketed string literal:
+
+```ts
+async function indexDocument(document: string, text: string) {
+  for (const content of chunk(text)) {
+    const embedding = await embed(content); // → number[]
+    await sql`
+      INSERT INTO chunks (document, content, embedding)
+      VALUES (${document}, ${content}, ${JSON.stringify(embedding)})
+    `;
+  }
+}
+```
+
+Once you have more than a few thousand rows, add an approximate index so search stays fast. HNSW gives the best recall/speed trade-off:
+
+```sql
+CREATE INDEX ON chunks
+USING hnsw (embedding vector_cosine_ops);
+```
+
+## Step 4: Retrieve
+
+At query time you embed the *question* the same way, then ask Postgres for the nearest chunks. The `<=>` operator is cosine distance (smaller = more similar):
+
+```ts
+async function retrieve(question: string, k = 5) {
+  const q = await embed(question);
+  return sql`
+    SELECT content, 1 - (embedding <=> ${JSON.stringify(q)}) AS score
+    FROM chunks
+    ORDER BY embedding <=> ${JSON.stringify(q)}
+    LIMIT ${k}
+  `;
+}
+```
+
+`1 - distance` converts distance into a 0–1 similarity score, which is handy for filtering: below ~0.7 usually means "nothing in the corpus actually answers this," and you're better off saying so than stuffing weak context into the prompt.
+
+## Step 5: Answer with context
+
+Finally, assemble the retrieved chunks into a prompt and let the model write the answer:
+
+```ts
+const context = (await retrieve(question))
+  .map((r) => r.content)
+  .join("\n\n---\n\n");
+
+const prompt = `Answer using ONLY the context below. If the answer isn't
+there, say you don't know.
+
+Context:
+${context}
+
+Question: ${question}`;
+```
+
+That instruction — *use only the context, and admit when it's missing* — is doing real work. It's the difference between a system that grounds its answers and one that quietly falls back to guessing.
+
+## Takeaways
+
+- **RAG is "retrieve, then prompt."** The magic is in the retrieval, not the model.
+- **pgvector makes your existing Postgres a vector store** — no separate database for most workloads.
+- **Chunk on structure with overlap.** Whole-document embeddings retrieve poorly.
+- **Add an HNSW index** once the table grows, and **use the similarity score** to detect out-of-corpus questions.
+- **Tell the model to answer only from context** and to say "I don't know" — grounding is a prompt instruction, not just a data-flow.
+
+Start on the database you already have. Reach for a dedicated vector store when you can prove Postgres is the bottleneck — not before.

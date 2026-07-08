@@ -28,6 +28,8 @@ export async function getPostBySlug(slug: string): Promise<IPost | null> {
     date: data.date,
     excerpt: data.excerpt,
     tags: data.tags,
+    cover: data.cover ?? null,
+    coverAlt: data.coverAlt ?? null,
     content,
   };
 }

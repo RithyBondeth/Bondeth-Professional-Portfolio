@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { navLinks, siteConfig } from "@/utils/constants/portfolio.constant";
 import { MenuIcon, CloseIcon } from "@/components/utils/icons";
+import { Logo } from "@/components/utils/icons/logo";
 import ThemeToggle from "@/components/utils/theme/theme-toggle";
 import {
   locales,
@@ -137,11 +138,11 @@ export default function Navbar(props: { lang: TLocale }) {
         {/* Brand Section */}
         <a
           href={`/${lang}`}
+          aria-label={siteConfig.name}
           className="flex items-center hover:opacity-80 transition-opacity"
         >
-          <span className="text-foreground font-bold text-sm tracking-tight font-mono whitespace-nowrap">
-            {siteConfig.name}
-          </span>
+          <Logo className="text-base" />
+          <span className="sr-only">{siteConfig.name}</span>
         </a>
 
         {/* Desktop Links Section */}

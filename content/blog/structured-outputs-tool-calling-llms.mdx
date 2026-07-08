@@ -1,0 +1,122 @@
+---
+title: "Getting Reliable JSON Out of an LLM"
+date: "2026-06-28"
+excerpt: "\"Respond in JSON\" in the prompt is not a contract — it's a suggestion the model breaks under pressure. Here's how I get schema-valid structured data every time using tool calling, schema validation, and a tight repair loop."
+tags: ["LLM", "Tool Calling", "AI", "TypeScript"]
+---
+
+# Getting Reliable JSON Out of an LLM
+
+The moment you move past chat and try to *use* a model's output in code — populate a form, route a ticket, extract fields from an invoice — you need structured data. And the first thing everyone tries is asking for it in the prompt:
+
+> "Respond with JSON: `{ "sentiment": "...", "score": ... }`"
+
+This works about 90% of the time, which is exactly the problem. The other 10% is a markdown fence around the JSON, a friendly `Sure! Here's the JSON:` preamble, a trailing comma, or a hallucinated extra field — and every one of those crashes `JSON.parse`. At scale, 90% reliable is an outage waiting to happen.
+
+There's a better path, and it has three parts.
+
+## 1. Use tool calling, not prose
+
+Every current model provider supports **tool calling** (a.k.a. function calling): you describe a function with a JSON Schema, and the model returns arguments that conform to that schema — as structured data, not as text it typed into a message. This sidesteps the entire "parse the prose" problem, because the provider guarantees the arguments match the schema's shape.
+
+The trick is that you don't actually need the tool to *do* anything. Define a tool whose only job is to be the shape of your answer:
+
+```ts
+const tools = [
+  {
+    name: "record_analysis",
+    description: "Record the sentiment analysis of a message.",
+    input_schema: {
+      type: "object",
+      properties: {
+        sentiment: {
+          type: "string",
+          enum: ["positive", "neutral", "negative"],
+        },
+        score: { type: "number", minimum: 0, maximum: 1 },
+        reason: { type: "string" },
+      },
+      required: ["sentiment", "score", "reason"],
+    },
+  },
+];
+```
+
+Then force the model to call it:
+
+```ts
+const response = await client.messages.create({
+  model: "claude-sonnet-5",
+  max_tokens: 512,
+  tools,
+  tool_choice: { type: "tool", name: "record_analysis" },
+  messages: [{ role: "user", content: text }],
+});
+
+const block = response.content.find((b) => b.type === "tool_use");
+const data = block?.input; // already an object, no JSON.parse
+```
+
+`tool_choice` is the key line. Without it the model *might* call the tool; with it, it must. The `enum` and `minimum`/`maximum` constraints also do double duty as documentation the model reads — a well-described schema measurably improves the quality of what comes back.
+
+## 2. Validate anyway
+
+The schema constrains structure, but it can't enforce your *business* rules — that a date is in the past, that a total equals the sum of line items, that an enum value makes sense in context. So validate the result against a real schema on your side. I use Zod:
+
+```ts
+import { z } from "zod";
+
+const Analysis = z.object({
+  sentiment: z.enum(["positive", "neutral", "negative"]),
+  score: z.number().min(0).max(1),
+  reason: z.string().min(1),
+});
+
+const result = Analysis.safeParse(data);
+```
+
+Now you have a typed object *and* a guarantee it meets your invariants — or a precise list of what's wrong.
+
+## 3. Repair, don't retry blindly
+
+When validation fails, the naive move is to run the whole request again and hope. Better: hand the model its own broken output plus the exact validation errors and ask it to fix them. Models are good at correcting a specific mistake they can see.
+
+```ts
+async function extract(text: string, attempts = 2) {
+  let messages = [{ role: "user", content: text }];
+
+  for (let i = 0; i < attempts; i++) {
+    const data = await callTool(messages);
+    const parsed = Analysis.safeParse(data);
+    if (parsed.success) return parsed.data;
+
+    messages = [
+      ...messages,
+      { role: "assistant", content: JSON.stringify(data) },
+      {
+        role: "user",
+        content: `That failed validation: ${parsed.error.message}. Fix it.`,
+      },
+    ];
+  }
+  throw new Error("Could not produce valid output");
+}
+```
+
+In practice one repair round resolves the vast majority of failures, and you cap the loop so a genuinely impossible request fails loudly instead of looping forever.
+
+## When to reach for each layer
+
+- **Extracting a few fields?** Tool calling alone is usually enough.
+- **Feeding a database or billing system?** Add Zod validation — the cost of a bad row is higher than an extra check.
+- **High volume or messy inputs?** Add the repair loop; it turns transient failures into self-healing ones.
+
+## Takeaways
+
+- **Prompt-and-parse is ~90% reliable, which means it fails.** Don't build on it.
+- **Tool calling with `tool_choice` gives structured data by construction** — no parsing prose.
+- **A rich schema is also a prompt** — enums and bounds improve output quality, not just shape.
+- **Validate for business rules** the schema can't express, with something like Zod.
+- **Repair with the specific errors** instead of retrying blind; cap the attempts.
+
+Treat the model like an untrusted input source — because that's what it is — and structured output stops being a gamble.

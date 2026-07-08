@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAllPosts } from "@/utils/functions/blog";
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
+import { BlogCover } from "@/components/blog/blog-cover";
 import { hasLocale, getDictionary } from "@/utils/i18n";
 
 interface IBlogPageProps {
@@ -17,7 +18,7 @@ export default async function BlogPage({ params }: IBlogPageProps) {
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
-    <main className="flex-1 pt-32 pb-24 px-6 bg-background">
+    <main className="flex-1 pt-32 pb-24 px-6 bg-background font-sans">
       <div className="max-w-4xl mx-auto">
         {/* Heading Section */}
         <AnimateIn>
@@ -49,11 +50,19 @@ export default async function BlogPage({ params }: IBlogPageProps) {
         </AnimateIn>
 
         {/* Post List Section */}
-        <StaggerIn className="flex flex-col gap-10" stagger={0.1} delay={0.15}>
+        <StaggerIn
+          className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-12"
+          stagger={0.1}
+          delay={0.15}
+        >
           {posts.map((post) => (
             <article key={post.slug} className="group relative">
-              <div className="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-6">
-                <time className="text-xs font-mono text-muted-foreground dark:text-muted-foreground/60 sm:w-24 shrink-0">
+              <Link href={`/${lang}/blog/${post.slug}`} className="block">
+                <BlogCover
+                  post={post}
+                  className="aspect-[2/1] mb-4 transition-colors group-hover:border-primary/40"
+                />
+                <time className="text-xs font-mono text-muted-foreground dark:text-muted-foreground/60 block mb-2">
                   {new Date(post.date).toLocaleDateString(
                     lang === "km" ? "km-KH" : "en-US",
                     {
@@ -63,30 +72,23 @@ export default async function BlogPage({ params }: IBlogPageProps) {
                     },
                   )}
                 </time>
-                <div className="flex-1">
-                  <Link
-                    href={`/${lang}/blog/${post.slug}`}
-                    className="block group-hover:translate-x-1 transition-transform"
-                  >
-                    <h2 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors mb-2">
-                      {post.title}
-                    </h2>
-                    <p className="text-muted-foreground text-sm leading-relaxed mb-4 line-clamp-2">
-                      {post.excerpt}
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {post.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="text-[10px] font-mono text-primary dark:text-primary/70 bg-primary/5 px-2 py-0.5 rounded border border-primary/10"
-                        >
-                          #{tag}
-                        </span>
-                      ))}
-                    </div>
-                  </Link>
+                <h2 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors mb-2">
+                  {post.title}
+                </h2>
+                <p className="text-muted-foreground text-sm leading-relaxed mb-4 line-clamp-2">
+                  {post.excerpt}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {post.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="text-[10px] font-mono text-primary dark:text-primary/70 bg-primary/5 px-2 py-0.5 rounded border border-primary/10"
+                    >
+                      #{tag}
+                    </span>
+                  ))}
                 </div>
-              </div>
+              </Link>
             </article>
           ))}
         </StaggerIn>

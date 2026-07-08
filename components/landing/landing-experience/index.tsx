@@ -17,14 +17,14 @@ export default function LandingExperience(props: { lang: TLocale }) {
     <section id="experience" className="py-24 px-6 bg-card">
       <div className="max-w-6xl mx-auto">
         {/* Heading Section */}
-        <AnimateIn>
+        <AnimateIn from="zoom-in">
           <p className="text-primary font-mono text-xs tracking-[0.25em] uppercase mb-1">
             <span className="text-muted-foreground">{"//"}</span>{" "}
             experience.json
           </p>
         </AnimateIn>
 
-        <AnimateIn delay={0.05}>
+        <AnimateIn from="left" distance={50} delay={0.05}>
           <h2 className="text-3xl sm:text-4xl font-bold text-foreground mt-3 mb-12">
             {dict.experience.heading}
           </h2>
@@ -35,7 +35,13 @@ export default function LandingExperience(props: { lang: TLocale }) {
           {/* Vertical Timeline Line */}
           <div className="absolute left-0 top-0 bottom-0 w-px bg-border ml-[7px] hidden sm:block" />
 
-          <StaggerIn className="space-y-8" stagger={0.12} y={30}>
+          <StaggerIn
+            className="space-y-8"
+            from="left"
+            distance={60}
+            blur={4}
+            stagger={0.12}
+          >
             {experiences.map((exp, i) => (
               <div key={i} className="sm:pl-10 relative">
                 {/* Timeline Dot */}
@@ -78,7 +84,7 @@ export default function LandingExperience(props: { lang: TLocale }) {
       </div>
 
       {/* Organization Logo Marquee Section */}
-      <AnimateIn delay={0.1}>
+      <AnimateIn from="zoom-out" delay={0.1}>
         <div className="mt-16 pt-12 border-t border-border/40">
           <p className="text-center text-[10px] font-mono text-muted-foreground dark:text-muted-foreground/60 uppercase tracking-[0.2em] mb-8">
             {dict.experience.organizations}

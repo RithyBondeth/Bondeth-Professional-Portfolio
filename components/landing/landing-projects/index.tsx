@@ -5,7 +5,8 @@ import Image from "next/image";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
 import { IProject } from "@/utils/interfaces/portfolio/project.interface";
 import { TProjectCategory } from "@/utils/types/portfolio/project-category.type";
-import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
+import { AnimateIn } from "@/components/utils/animations/animate-in";
+import { HorizontalScroll } from "@/components/utils/animations/horizontal-scroll";
 import { GitHubIcon, ExternalLinkIcon } from "@/components/utils/icons";
 import { getDictionary, type TLocale, type TDictionary } from "@/utils/i18n";
 import { getProjects } from "@/utils/i18n/content";
@@ -31,68 +32,70 @@ export default function LandingProjects(props: { lang: TLocale }) {
     (p) => filter === "All" || p.category === filter,
   );
 
+  /* --------------------------------- Header --------------------------------- */
+  const header = (
+    <>
+      <p className="text-primary font-mono text-xs tracking-[0.25em] uppercase mb-1">
+        <span className="text-muted-foreground">&lt;</span>
+        Projects
+        <span className="text-muted-foreground"> /&gt;</span>
+      </p>
+
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <h2 className="text-3xl sm:text-4xl font-bold text-foreground mt-3">
+          {dict.projects.heading}
+        </h2>
+
+        {/* Filter Tabs Section */}
+        <div className="flex items-center gap-1 bg-card/50 p-1 rounded border border-border/40 w-fit">
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setFilter(cat)}
+              className={`px-4 py-1.5 rounded text-xs font-mono transition-all ${
+                filter === cat
+                  ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+                  : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
+              }`}
+            >
+              {categoryLabel(cat, dict)}
+            </button>
+          ))}
+        </div>
+      </div>
+    </>
+  );
+
   /* -------------------------------- Render UI ------------------------------- */
   return (
-    <section id="projects" className="py-24 px-6 bg-background">
-      <div className="max-w-6xl mx-auto">
-        {/* Heading Section */}
-        <AnimateIn>
-          <p className="text-primary font-mono text-xs tracking-[0.25em] uppercase mb-1">
-            <span className="text-muted-foreground">&lt;</span>
-            Projects
-            <span className="text-muted-foreground"> /&gt;</span>
-          </p>
-        </AnimateIn>
-
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-          <AnimateIn delay={0.05}>
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mt-3">
-              {dict.projects.heading}
-            </h2>
-          </AnimateIn>
-
-          {/* Filter Tabs Section */}
-          <AnimateIn delay={0.1}>
-            <div className="flex items-center gap-1 bg-card/50 p-1 rounded border border-border/40 w-fit">
-              {CATEGORIES.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setFilter(cat)}
-                  className={`px-4 py-1.5 rounded text-xs font-mono transition-all ${
-                    filter === cat
-                      ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-                      : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
-                  }`}
-                >
-                  {categoryLabel(cat, dict)}
-                </button>
-              ))}
+    <section id="projects" className="bg-background overflow-hidden">
+      {/* Project Showcase — pins and scrolls sideways as you scroll (all sizes) */}
+      <HorizontalScroll
+        refreshOn={filter}
+        trackClassName="py-2"
+        header={header}
+      >
+        {filteredProjects.length > 0 ? (
+          filteredProjects.map((project) => (
+            <div
+              key={project.title}
+              className="w-[80vw] sm:w-[360px] shrink-0 snap-center"
+            >
+              <ProjectCard project={project} dict={dict} />
             </div>
-          </AnimateIn>
-        </div>
-
-        {/* Project Grid Section */}
-        <StaggerIn
-          key={filter} // Re-animate on filter change
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
-          stagger={0.1}
-          y={30}
-        >
-          {filteredProjects.map((project) => (
-            <ProjectCard key={project.title} project={project} dict={dict} />
-          ))}
-        </StaggerIn>
-
-        {filteredProjects.length === 0 && (
-          <div className="py-20 text-center">
+          ))
+        ) : (
+          <div className="w-full py-20 text-center">
             <p className="text-muted-foreground font-mono text-sm">
               {dict.projects.empty}
             </p>
           </div>
         )}
+      </HorizontalScroll>
 
+      <div className="max-w-6xl mx-auto px-6 pb-24">
         {/* GitHub CTA Section */}
-        <AnimateIn delay={0.1}>
+        <AnimateIn from="zoom-in" delay={0.1}>
           <div className="text-center mt-12">
             <a
               href={siteConfig.github}
@@ -118,7 +121,7 @@ function ProjectCard(props: { project: IProject; dict: TDictionary }) {
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
-    <article className="group flex flex-col rounded border border-border/60 bg-card hover:border-primary/30 hover:shadow-[0_0_28px_rgba(34,211,238,0.1)] overflow-hidden transition-all duration-300 hover:-translate-y-1">
+    <article className="group flex flex-col h-full rounded border border-border/60 bg-card hover:border-primary/30 hover:shadow-[0_0_28px_rgba(34,211,238,0.1)] overflow-hidden transition-all duration-300 hover:-translate-y-1">
       {/* Preview Section */}
       <div className="relative h-40 overflow-hidden">
         {project.image ? (

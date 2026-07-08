@@ -14,20 +14,26 @@ export default function LandingEducation(props: { lang: TLocale }) {
     <section id="education" className="py-24 px-6 bg-background">
       <div className="max-w-6xl mx-auto">
         {/* Heading Section */}
-        <AnimateIn>
+        <AnimateIn from="zoom-in">
           <p className="text-primary font-mono text-xs tracking-[0.25em] uppercase mb-1">
             <span className="text-muted-foreground">{"//"}</span> education.md
           </p>
         </AnimateIn>
 
-        <AnimateIn delay={0.05}>
+        <AnimateIn from="right" distance={50} delay={0.05}>
           <h2 className="text-3xl sm:text-4xl font-bold text-foreground mt-3 mb-12">
             {dict.education.heading}
           </h2>
         </AnimateIn>
 
         {/* Degree Cards Section */}
-        <StaggerIn className="space-y-5" stagger={0.12} y={30}>
+        <StaggerIn
+          className="space-y-5"
+          from="right"
+          distance={60}
+          blur={4}
+          stagger={0.12}
+        >
           {educations.map((edu) => (
             <div
               key={edu.degree}
@@ -82,7 +88,7 @@ export default function LandingEducation(props: { lang: TLocale }) {
         </StaggerIn>
 
         {/* Training Courses Section */}
-        <AnimateIn delay={0.1}>
+        <AnimateIn from="zoom-in" delay={0.1}>
           <div className="mt-12">
             <h3 className="text-foreground font-semibold text-sm mb-5 flex items-center gap-2 font-mono">
               <BookOpenIcon className="w-4 h-4 text-primary" />

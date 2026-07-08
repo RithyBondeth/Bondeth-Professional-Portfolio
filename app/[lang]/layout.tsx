@@ -19,7 +19,7 @@ import { getSiteConfig } from "@/utils/i18n/content";
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
-  variable: "--font-mono",
+  variable: "--font-jetbrains",
 });
 
 const geistSans = Geist({

@@ -1,0 +1,116 @@
+---
+title: "Streaming LLM Responses in Next.js Without a Framework"
+date: "2026-07-06"
+excerpt: "Token-by-token streaming makes an AI feature feel instant. Here's how I stream model output straight from a Next.js Route Handler using the Web Streams API — no extra SDK, no client library, about 40 lines total."
+tags: ["AI", "LLM", "Next.js", "Streaming"]
+---
+
+# Streaming LLM Responses in Next.js
+
+The single biggest UX difference between a cheap AI feature and a good one isn't the model — it's whether the answer *streams*. Waiting eight seconds for a wall of text feels broken. Watching words appear as they're generated feels alive, even when the total time is identical.
+
+The good news: you don't need a dedicated framework for this. Next.js Route Handlers return standard `Response` objects, and a `Response` can wrap a `ReadableStream`. That's the whole trick.
+
+## The endpoint
+
+Model providers expose a streaming mode that yields incremental events. I take those events, pull out the text deltas, and push them into a stream that Next hands back to the browser:
+
+```ts
+import Anthropic from "@anthropic-ai/sdk";
+
+const client = new Anthropic();
+
+export async function POST(request: Request) {
+  const { messages } = await request.json();
+
+  const encoder = new TextEncoder();
+
+  const stream = new ReadableStream({
+    async start(controller) {
+      const completion = await client.messages.create({
+        model: "claude-sonnet-5",
+        max_tokens: 1024,
+        messages,
+        stream: true,
+      });
+
+      for await (const event of completion) {
+        if (
+          event.type === "content_block_delta" &&
+          event.delta.type === "text_delta"
+        ) {
+          controller.enqueue(encoder.encode(event.delta.text));
+        }
+      }
+
+      controller.close();
+    },
+  });
+
+  return new Response(stream, {
+    headers: { "Content-Type": "text/plain; charset=utf-8" },
+  });
+}
+```
+
+No SSE formatting, no JSON framing — just raw UTF-8 text chunks. The client reassembles them by concatenation, which keeps both ends simple.
+
+## Reading the stream on the client
+
+The browser's `fetch` gives you a `ReadableStream` on `response.body`. You read it chunk by chunk and append to state:
+
+```ts
+async function ask(prompt: string) {
+  const response = await fetch("/api/chat", {
+    method: "POST",
+    body: JSON.stringify({ messages: [{ role: "user", content: prompt }] }),
+  });
+
+  if (!response.body) return;
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+
+  setAnswer("");
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    setAnswer((prev) => prev + decoder.decode(value, { stream: true }));
+  }
+}
+```
+
+The `{ stream: true }` option on `decode` matters: a multi-byte character (an emoji, a Khmer glyph) can be split across two network chunks. Without it, you get replacement squares at the boundary. With it, the decoder buffers the partial bytes until the rest arrives.
+
+## Don't forget the abort path
+
+Users change their minds. If they navigate away or ask a new question mid-stream, you want to cancel the old request — otherwise you're paying for tokens nobody will read and racing two streams into the same state.
+
+```ts
+const controller = new AbortController();
+
+const response = await fetch("/api/chat", {
+  method: "POST",
+  body: JSON.stringify({ messages }),
+  signal: controller.signal,
+});
+
+// later, to cancel:
+controller.abort();
+```
+
+Passing the `signal` all the way through means aborting the fetch also closes the underlying model stream, so billing stops too.
+
+## Runtime notes
+
+- **Streaming works on both the Node and Edge runtimes.** The Edge runtime has lower cold-start latency, which pairs nicely with a feature that's all about perceived speed. Add `export const runtime = "edge"` if your provider SDK supports it.
+- **Disable buffering proxies.** Some CDNs buffer responses until they're complete, which silently defeats streaming. If output arrives all at once in production but streams fine locally, that's almost always the culprit.
+
+## Takeaways
+
+- **A `ReadableStream` inside a `Response` is all Next.js needs** to stream — no special framework.
+- **Send raw text, not SSE**, unless you need multiple event types. Concatenation on the client is the simplest possible protocol.
+- **Use `TextDecoder` with `{ stream: true }`** so multi-byte characters survive chunk boundaries.
+- **Thread an `AbortSignal` through** to cancel the model stream and stop billing when the user moves on.
+
+Streaming is one of those features that's disproportionately cheap for how much better it makes the product feel. Forty lines, no dependencies beyond the model SDK.

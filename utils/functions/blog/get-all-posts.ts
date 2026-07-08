@@ -32,6 +32,8 @@ export async function getAllPosts(): Promise<IPost[]> {
         date: data.date,
         excerpt: data.excerpt,
         tags: data.tags,
+        cover: data.cover ?? null,
+        coverAlt: data.coverAlt ?? null,
         content,
       };
     });

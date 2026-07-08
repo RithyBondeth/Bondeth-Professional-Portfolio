@@ -1,0 +1,73 @@
+<svg width="980" height="500" viewBox="0 0 980 500" xmlns="http://www.w3.org/2000/svg" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">
+  <rect width="980" height="500" rx="14" fill="#060d1f"/>
+
+  <text x="30" y="48" fill="#22d3ee" font-size="15" font-weight="700">1 · Indexing</text>
+  <text x="132" y="48" fill="#64748b" font-size="13">— done once, offline</text>
+
+  <g>
+    <rect x="30" y="72" width="150" height="60" rx="8" fill="#0c1428" stroke="#22d3ee" stroke-width="1.5"/>
+    <text x="105" y="108" text-anchor="middle" fill="#e2e8f0" font-size="15">Documents</text>
+
+    <rect x="222" y="72" width="132" height="60" rx="8" fill="#0c1428" stroke="#22d3ee" stroke-width="1.5"/>
+    <text x="288" y="108" text-anchor="middle" fill="#e2e8f0" font-size="15">Chunk</text>
+
+    <rect x="396" y="72" width="132" height="60" rx="8" fill="#0c1428" stroke="#22d3ee" stroke-width="1.5"/>
+    <text x="462" y="108" text-anchor="middle" fill="#e2e8f0" font-size="15">Embed</text>
+  </g>
+
+  <rect x="600" y="66" width="200" height="90" rx="10" fill="#0f2040" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="700" y="104" text-anchor="middle" fill="#fbbf24" font-size="16" font-weight="700">pgvector</text>
+  <text x="700" y="126" text-anchor="middle" fill="#94a3b8" font-size="12">vectors + metadata</text>
+
+  <g stroke="#64748b" stroke-width="1.6" fill="none">
+    <path d="M180 102 H222" marker-end="url(#arrow)"/>
+    <path d="M354 102 H396" marker-end="url(#arrow)"/>
+    <path d="M528 102 H600" marker-end="url(#arrow)"/>
+  </g>
+  <text x="560" y="92" text-anchor="middle" fill="#64748b" font-size="11">store</text>
+
+  <text x="30" y="330" fill="#8b5cf6" font-size="15" font-weight="700">2 · Retrieval</text>
+  <text x="140" y="330" fill="#64748b" font-size="13">— on every question</text>
+
+  <g>
+    <rect x="30" y="356" width="150" height="60" rx="8" fill="#0c1428" stroke="#8b5cf6" stroke-width="1.5"/>
+    <text x="105" y="392" text-anchor="middle" fill="#e2e8f0" font-size="15">Question</text>
+
+    <rect x="222" y="356" width="132" height="60" rx="8" fill="#0c1428" stroke="#8b5cf6" stroke-width="1.5"/>
+    <text x="288" y="392" text-anchor="middle" fill="#e2e8f0" font-size="15">Embed</text>
+
+    <rect x="396" y="356" width="160" height="60" rx="8" fill="#0c1428" stroke="#8b5cf6" stroke-width="1.5"/>
+    <text x="476" y="388" text-anchor="middle" fill="#e2e8f0" font-size="14">Vector search</text>
+    <text x="476" y="405" text-anchor="middle" fill="#64748b" font-size="11">top-k nearest</text>
+
+    <rect x="600" y="356" width="170" height="60" rx="8" fill="#0c1428" stroke="#8b5cf6" stroke-width="1.5"/>
+    <text x="685" y="388" text-anchor="middle" fill="#e2e8f0" font-size="14">LLM</text>
+    <text x="685" y="405" text-anchor="middle" fill="#64748b" font-size="11">question + context</text>
+
+    <rect x="812" y="356" width="140" height="60" rx="8" fill="#0c1428" stroke="#22d3ee" stroke-width="1.5"/>
+    <text x="882" y="392" text-anchor="middle" fill="#22d3ee" font-size="15" font-weight="700">Answer</text>
+  </g>
+
+  <g stroke="#64748b" stroke-width="1.6" fill="none">
+    <path d="M180 386 H222" marker-end="url(#arrow)"/>
+    <path d="M354 386 H396" marker-end="url(#arrow)"/>
+    <path d="M556 386 H600" marker-end="url(#arrow)"/>
+    <path d="M770 386 H812" marker-end="url(#arrow)"/>
+  </g>
+
+  <g stroke="#f59e0b" stroke-width="1.6" fill="none" stroke-dasharray="5 4">
+    <path d="M476 356 V210 H660 V156" marker-end="url(#arrowAmber)"/>
+    <path d="M740 156 V210 H700 V356" marker-end="url(#arrowAmber)"/>
+  </g>
+  <text x="486" y="250" fill="#fbbf24" font-size="11">query</text>
+  <text x="712" y="250" fill="#fbbf24" font-size="11">top-k chunks</text>
+
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+      <path d="M0 0 L7 3 L0 6 Z" fill="#64748b"/>
+    </marker>
+    <marker id="arrowAmber" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+      <path d="M0 0 L7 3 L0 6 Z" fill="#f59e0b"/>
+    </marker>
+  </defs>
+</svg>
