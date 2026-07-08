@@ -27,6 +27,8 @@ export const km: TDictionary = {
   },
   about: {
     heading: "ចូលចិត្តបង្កើតអ្វីៗដែលមានតម្លៃ។",
+    portraitAlt:
+      "រិទ្ធី បណ្ឌេត អ្នកអភិវឌ្ឍន៍ full-stack និងវិស្វករ AI ដាក់ដៃទល់ចង្កាកំពុងគិត អង្គុយនៅពីមុខអេក្រង់កូដ។",
     stats: {
       yearsExp: "ឆ្នាំបទពិសោធន៍",
       projects: "គម្រោងបានបញ្ចប់",

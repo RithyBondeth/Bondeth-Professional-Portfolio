@@ -21,6 +21,8 @@ export const en = {
   },
   about: {
     heading: "Passionate about building things that matter.",
+    portraitAlt:
+      "Rithy Bondeth, full-stack and AI engineer, resting his chin on his hand in thought, seated in front of code-editor screens.",
     stats: {
       yearsExp: "Years Experience",
       projects: "Projects Completed",

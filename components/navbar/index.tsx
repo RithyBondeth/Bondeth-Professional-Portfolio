@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { navLinks, siteConfig } from "@/utils/constants/portfolio.constant";
@@ -138,16 +137,9 @@ export default function Navbar(props: { lang: TLocale }) {
         {/* Brand Section */}
         <a
           href={`/${lang}`}
-          className="flex items-center gap-2.5 hover:opacity-80 transition-opacity group"
+          className="flex items-center hover:opacity-80 transition-opacity"
         >
-          <Image
-            src="/logo.webp"
-            alt={siteConfig.name}
-            width={32}
-            height={32}
-            className="rounded-full ring-1 ring-border group-hover:ring-primary/50 transition-all"
-          />
-          <span className="text-foreground font-bold text-sm tracking-tight hidden sm:block font-mono whitespace-nowrap">
+          <span className="text-foreground font-bold text-sm tracking-tight font-mono whitespace-nowrap">
             {siteConfig.name}
           </span>
         </a>

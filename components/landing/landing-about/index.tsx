@@ -1,11 +1,65 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
 import { GitHubIcon, LinkedInIcon } from "@/components/utils/icons";
 import { getDictionary, type TLocale } from "@/utils/i18n";
 import { getSiteConfig } from "@/utils/i18n/content";
+
+/* --------------------------------- Portrait -------------------------------- */
+/**
+ * The photo is framed like the Hero's profile.ts editor window so it reads as
+ * another panel in the same IDE. The frame colours are intentionally FIXED
+ * (not theme tokens) so the photo's dark code-editor backdrop looks like a
+ * deliberate embedded editor screenshot in light mode and melts into bg-card
+ * in dark mode.
+ */
+function PortraitPanel(props: { alt: string }) {
+  return (
+    <figure className="relative w-full max-w-sm mx-auto lg:max-w-none">
+      {/* Ambient Glow */}
+      <div className="absolute -inset-6 bg-cyan-500/6 rounded-2xl blur-3xl pointer-events-none" />
+
+      {/* Editor Window */}
+      <div className="relative rounded-md border border-[#1a2e52] bg-[#0c1428] overflow-hidden shadow-2xl shadow-black/30 dark:shadow-black/60">
+        {/* Window Chrome */}
+        <div className="flex items-center gap-1.5 px-4 py-3 border-b border-[#1a2e52]/60 bg-black/30">
+          <span aria-hidden className="w-3 h-3 rounded-full bg-red-500/80" />
+          <span aria-hidden className="w-3 h-3 rounded-full bg-yellow-500/70" />
+          <span aria-hidden className="w-3 h-3 rounded-full bg-green-500/70" />
+          <span className="ml-3 text-slate-500 text-[11px] font-mono select-none">
+            rithybondeth.png
+          </span>
+        </div>
+
+        {/* Photo */}
+        <Image
+          src="/rithybondeth-full.webp"
+          alt={props.alt}
+          width={1000}
+          height={1070}
+          sizes="(min-width: 1024px) 400px, (min-width: 768px) 45vw, 100vw"
+          className="w-full h-auto block select-none"
+        />
+
+        {/* Status Bar */}
+        <div className="flex items-center justify-between px-4 py-2.5 border-t border-[#1a2e52]/60 bg-black/30 text-[10px] font-mono text-slate-400">
+          <span>
+            <span className="text-emerald-400">▸</span> whoami
+          </span>
+          <span>Phnom Penh, KH</span>
+        </div>
+      </div>
+
+      {/* Caption */}
+      <figcaption className="mt-3 text-[11px] font-mono text-muted-foreground text-center lg:text-left">
+        {"// full-stack + AI engineer"}
+      </figcaption>
+    </figure>
+  );
+}
 
 /* ---------------------------------- Hooks ---------------------------------- */
 function useCountUp(target: number, duration: number, started: boolean) {
@@ -96,9 +150,15 @@ export default function LandingAbout(props: { lang: TLocale }) {
           </p>
         </AnimateIn>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16 items-start mt-10">
+        {/* Portrait + Bio Row */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center mt-10">
+          {/* Portrait Section — leads on mobile as a human hook */}
+          <AnimateIn delay={0.15} className="lg:col-span-5">
+            <PortraitPanel alt={dict.about.portraitAlt} />
+          </AnimateIn>
+
           {/* Bio Section */}
-          <div>
+          <div className="lg:col-span-7">
             <AnimateIn delay={0.05}>
               <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-6 leading-snug">
                 {dict.about.heading}
@@ -139,20 +199,23 @@ export default function LandingAbout(props: { lang: TLocale }) {
               </div>
             </AnimateIn>
           </div>
-
-          {/* Stats Section — count up when the section enters view */}
-          <StaggerIn className="grid grid-cols-2 gap-4" stagger={0.1}>
-            {stats.map((stat) => (
-              <StatCard
-                key={stat.key}
-                label={dict.about.stats[stat.key]}
-                value={stat.value}
-                varName={stat.varName}
-                started={started}
-              />
-            ))}
-          </StaggerIn>
         </div>
+
+        {/* Stats Section — full-width strip; counts up when the section enters view */}
+        <StaggerIn
+          className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-12"
+          stagger={0.1}
+        >
+          {stats.map((stat) => (
+            <StatCard
+              key={stat.key}
+              label={dict.about.stats[stat.key]}
+              value={stat.value}
+              varName={stat.varName}
+              started={started}
+            />
+          ))}
+        </StaggerIn>
       </div>
     </section>
   );

@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { siteConfig, navLinks } from "@/utils/constants/portfolio.constant";
 import { GitHubIcon, LinkedInIcon, MailIcon } from "@/components/utils/icons";
 import {
@@ -30,14 +29,7 @@ export default function Footer(props: { lang: TLocale }) {
       <div className="max-w-6xl mx-auto px-6 py-12 grid grid-cols-1 sm:grid-cols-3 gap-10">
         {/* Brand Section */}
         <div className="sm:col-span-1 flex flex-col gap-3">
-          <div className="flex items-center gap-2.5">
-            <Image
-              src="/logo.webp"
-              alt={siteConfig.name}
-              width={28}
-              height={28}
-              className="rounded-full ring-1 ring-border"
-            />
+          <div className="flex items-center">
             <span className="text-foreground font-bold text-sm tracking-tight font-mono">
               {siteConfig.name}
             </span>
