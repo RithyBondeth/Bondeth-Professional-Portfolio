@@ -100,7 +100,7 @@ export default function LandingProjects(props: { lang: TLocale }) {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors font-mono text-sm border border-border hover:border-primary/40 px-5 py-2.5 rounded"
             >
-              <span className="text-primary/60">$</span>
+              <span className="text-primary dark:text-primary/60">$</span>
               git clone github.com/bondeth
               <ExternalLinkIcon className="w-3.5 h-3.5 ml-1" />
             </a>
@@ -153,7 +153,7 @@ function ProjectCard(props: { project: IProject; dict: TDictionary }) {
 
         {/* File Path Overlay */}
         <div className="absolute top-8 left-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 px-3">
-          <span className="text-[9px] font-mono text-primary/70 bg-background/80 backdrop-blur-sm px-2 py-0.5 rounded">
+          <span className="text-[9px] font-mono text-primary dark:text-primary/70 bg-background/80 backdrop-blur-sm px-2 py-0.5 rounded">
             src/projects/{project.title.toLowerCase().replace(/\s+/g, "-")}.ts
           </span>
         </div>
@@ -171,7 +171,7 @@ function ProjectCard(props: { project: IProject; dict: TDictionary }) {
       <div className="flex flex-col flex-1 p-4 gap-3">
         {/* File Name Style Header */}
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-mono text-muted-foreground/50">
+          <span className="text-[10px] font-mono text-muted-foreground dark:text-muted-foreground/50">
             ▸
           </span>
           <h3 className="text-foreground font-mono font-semibold text-sm leading-snug">
@@ -188,7 +188,7 @@ function ProjectCard(props: { project: IProject; dict: TDictionary }) {
           {project.tags.map((tag) => (
             <span
               key={tag}
-              className="text-[10px] font-mono text-muted-foreground/70 px-1.5 py-0.5 rounded border border-border/60 bg-muted/40"
+              className="text-[10px] font-mono text-muted-foreground dark:text-muted-foreground/70 px-1.5 py-0.5 rounded border border-border/60 bg-muted/40"
             >
               {tag}
             </span>
@@ -218,7 +218,7 @@ function ProjectCard(props: { project: IProject; dict: TDictionary }) {
               <ExternalLinkIcon className="w-3 h-3" />
             </a>
           ) : (
-            <span className="ml-auto text-[10px] text-muted-foreground/50 font-mono">
+            <span className="ml-auto text-[10px] text-muted-foreground dark:text-muted-foreground/50 font-mono">
               {dict.projects.noDemo}
             </span>
           )}

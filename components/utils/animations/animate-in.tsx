@@ -27,8 +27,9 @@ export function AnimateIn(props: {
     const el = ref.current;
     if (!el) return;
 
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
+    const mm = gsap.matchMedia();
+    mm.add("(prefers-reduced-motion: no-preference)", () => {
+      const tween = gsap.fromTo(
         el,
         { opacity: 0, y },
         {
@@ -44,9 +45,16 @@ export function AnimateIn(props: {
           },
         },
       );
+      return () => {
+        tween.scrollTrigger?.kill();
+        tween.kill();
+      };
+    });
+    mm.add("(prefers-reduced-motion: reduce)", () => {
+      gsap.set(el, { opacity: 1, y: 0 });
     });
 
-    return () => ctx.revert();
+    return () => mm.revert();
   }, [delay, y, duration]);
 
   /* -------------------------------- Render UI ------------------------------- */
@@ -88,8 +96,9 @@ export function StaggerIn(props: {
     const el = ref.current;
     if (!el) return;
 
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
+    const mm = gsap.matchMedia();
+    mm.add("(prefers-reduced-motion: no-preference)", () => {
+      const tween = gsap.fromTo(
         Array.from(el.children),
         { opacity: 0, y },
         {
@@ -106,9 +115,16 @@ export function StaggerIn(props: {
           },
         },
       );
+      return () => {
+        tween.scrollTrigger?.kill();
+        tween.kill();
+      };
+    });
+    mm.add("(prefers-reduced-motion: reduce)", () => {
+      gsap.set(Array.from(el.children), { opacity: 1, y: 0 });
     });
 
-    return () => ctx.revert();
+    return () => mm.revert();
   }, [stagger, delay, y, duration]);
 
   /* -------------------------------- Render UI ------------------------------- */

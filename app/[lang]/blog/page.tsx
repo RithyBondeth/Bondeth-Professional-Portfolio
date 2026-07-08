@@ -53,7 +53,7 @@ export default async function BlogPage({ params }: IBlogPageProps) {
           {posts.map((post) => (
             <article key={post.slug} className="group relative">
               <div className="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-6">
-                <time className="text-xs font-mono text-muted-foreground/60 sm:w-24 shrink-0">
+                <time className="text-xs font-mono text-muted-foreground dark:text-muted-foreground/60 sm:w-24 shrink-0">
                   {new Date(post.date).toLocaleDateString(
                     lang === "km" ? "km-KH" : "en-US",
                     {
@@ -78,7 +78,7 @@ export default async function BlogPage({ params }: IBlogPageProps) {
                       {post.tags.map((tag) => (
                         <span
                           key={tag}
-                          className="text-[10px] font-mono text-primary/70 bg-primary/5 px-2 py-0.5 rounded border border-primary/10"
+                          className="text-[10px] font-mono text-primary dark:text-primary/70 bg-primary/5 px-2 py-0.5 rounded border border-primary/10"
                         >
                           #{tag}
                         </span>

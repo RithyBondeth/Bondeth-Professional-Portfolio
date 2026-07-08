@@ -80,7 +80,7 @@ export default function LandingExperience(props: { lang: TLocale }) {
       {/* Organization Logo Marquee Section */}
       <AnimateIn delay={0.1}>
         <div className="mt-16 pt-12 border-t border-border/40">
-          <p className="text-center text-[10px] font-mono text-muted-foreground/60 uppercase tracking-[0.2em] mb-8">
+          <p className="text-center text-[10px] font-mono text-muted-foreground dark:text-muted-foreground/60 uppercase tracking-[0.2em] mb-8">
             {dict.experience.organizations}
           </p>
 

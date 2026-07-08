@@ -42,7 +42,7 @@ function LanguageSwitcher(props: { lang: TLocale }) {
       {locales.map((locale, i) => (
         <span key={locale} className="flex items-center">
           {i > 0 && (
-            <span className="text-muted-foreground/30 text-[10px] mx-0.5">
+            <span className="text-muted-foreground dark:text-muted-foreground/30 text-[10px] mx-0.5">
               |
             </span>
           )}
@@ -167,7 +167,7 @@ export default function Navbar(props: { lang: TLocale }) {
                       : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
                   }`}
                 >
-                  <span className="text-primary/40 mr-1 text-[10px] hidden xl:inline">
+                  <span className="text-primary dark:text-primary/40 mr-1 text-[10px] hidden xl:inline">
                     0{i + 1}.
                   </span>
                   {dict.nav[navKeyFromHref(href)]}
@@ -239,7 +239,7 @@ export default function Navbar(props: { lang: TLocale }) {
                         : "text-muted-foreground border-transparent hover:text-foreground hover:border-border"
                     }`}
                   >
-                    <span className="text-primary/40 text-[10px]">
+                    <span className="text-primary dark:text-primary/40 text-[10px]">
                       0{i + 1}.
                     </span>
                     {dict.nav[navKeyFromHref(href)]}

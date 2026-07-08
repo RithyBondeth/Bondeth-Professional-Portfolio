@@ -99,7 +99,7 @@ export default function LandingSkills(props: { lang: TLocale }) {
               <div className="relative">
                 {/* Left Fade + Category Label */}
                 <div className="absolute inset-y-0 left-0 w-40 sm:w-52 bg-linear-to-r from-background via-background/80 to-transparent z-10 pointer-events-none flex items-center pl-6">
-                  <span className="text-[10px] font-mono text-muted-foreground/60 uppercase tracking-[0.2em] select-none">
+                  <span className="text-[10px] font-mono text-muted-foreground dark:text-muted-foreground/60 uppercase tracking-[0.2em] select-none">
                     {category}
                   </span>
                 </div>

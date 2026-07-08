@@ -112,7 +112,7 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
 
         {/* Post Header Section */}
         <AnimateIn delay={0.05}>
-          <time className="text-xs font-mono text-primary/60 mb-2 block">
+          <time className="text-xs font-mono text-primary dark:text-primary/60 mb-2 block">
             {new Date(post.date).toLocaleDateString(
               lang === "km" ? "km-KH" : "en-US",
               {

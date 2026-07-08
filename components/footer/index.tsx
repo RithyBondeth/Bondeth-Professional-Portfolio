@@ -77,7 +77,7 @@ export default function Footer(props: { lang: TLocale }) {
 
         {/* Quick Nav Section */}
         <div className="flex flex-col gap-3">
-          <p className="text-muted-foreground/60 text-[10px] font-mono uppercase tracking-[0.2em]">
+          <p className="text-muted-foreground dark:text-muted-foreground/60 text-[10px] font-mono uppercase tracking-[0.2em]">
             {dict.footer.navigation}
           </p>
           <ul className="flex flex-col gap-2">
@@ -87,7 +87,7 @@ export default function Footer(props: { lang: TLocale }) {
                   href={localizeHref(href, lang)}
                   className="text-muted-foreground hover:text-primary text-xs font-mono transition-colors flex items-center gap-1.5"
                 >
-                  <span className="text-primary/30 text-[9px]">0{i + 1}.</span>
+                  <span className="text-primary dark:text-primary/30 text-[9px]">0{i + 1}.</span>
                   {dict.nav[navKeyFromHref(href)]}
                 </a>
               </li>
@@ -97,7 +97,7 @@ export default function Footer(props: { lang: TLocale }) {
 
         {/* Contact Section */}
         <div className="flex flex-col gap-3">
-          <p className="text-muted-foreground/60 text-[10px] font-mono uppercase tracking-[0.2em]">
+          <p className="text-muted-foreground dark:text-muted-foreground/60 text-[10px] font-mono uppercase tracking-[0.2em]">
             {dict.footer.contact}
           </p>
           <ul className="flex flex-col gap-2">
@@ -136,14 +136,14 @@ export default function Footer(props: { lang: TLocale }) {
       {/* Bottom Bar Section */}
       <div className="border-t border-border/40 px-6 py-4">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p className="text-muted-foreground/50 text-[10px] font-mono">
-            <span className="text-muted-foreground/30">{"/* "}</span>© {year}{" "}
+          <p className="text-muted-foreground dark:text-muted-foreground/50 text-[10px] font-mono">
+            <span className="text-muted-foreground dark:text-muted-foreground/30">{"/* "}</span>© {year}{" "}
             {siteConfig.name}. {dict.footer.rights}
-            <span className="text-muted-foreground/30">{" */"}</span>
+            <span className="text-muted-foreground dark:text-muted-foreground/30">{" */"}</span>
           </p>
-          <p className="text-muted-foreground/50 text-[10px] font-mono">
+          <p className="text-muted-foreground dark:text-muted-foreground/50 text-[10px] font-mono">
             Built with Next.js &amp; Tailwind CSS
-            <span className="text-primary/40 ml-2">v1.0.0</span>
+            <span className="text-primary dark:text-primary/40 ml-2">v1.0.0</span>
           </p>
         </div>
       </div>

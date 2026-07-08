@@ -149,7 +149,18 @@ export default function LandingHero(props: { lang: TLocale }) {
 
   /* --------------------------------- Effects -------------------------------- */
   useEffect(() => {
-    const ctx = gsap.context(() => {
+    const revealSelectors = [
+      ".hero-label",
+      ".hero-word",
+      ".hero-subtitle",
+      ".hero-tagline",
+      ".hero-cta-item",
+      ".hero-code",
+      ".hero-scroll",
+    ];
+
+    const mm = gsap.matchMedia(containerRef);
+    mm.add("(prefers-reduced-motion: no-preference)", () => {
       const tl = gsap.timeline({ delay: 0.15 });
       tl.fromTo(
         ".hero-label",
@@ -192,8 +203,28 @@ export default function LandingHero(props: { lang: TLocale }) {
           { opacity: 1, duration: 0.6, ease: "power2.out" },
           "-=0.1",
         );
-    }, containerRef);
-    return () => ctx.revert();
+      return () => tl.kill();
+    });
+    mm.add("(prefers-reduced-motion: reduce)", () => {
+      gsap.set(revealSelectors.join(","), { opacity: 1, y: 0, x: 0 });
+    });
+
+    // Safety net: above-the-fold content must never be stranded invisible
+    // (e.g. a tab backgrounded mid-load pauses GSAP's rAF ticker indefinitely).
+    const safety = window.setTimeout(() => {
+      const root = containerRef.current;
+      if (!root) return;
+      gsap.set(root.querySelectorAll(revealSelectors.join(",")), {
+        opacity: 1,
+        y: 0,
+        x: 0,
+      });
+    }, 4000);
+
+    return () => {
+      mm.revert();
+      window.clearTimeout(safety);
+    };
   }, []);
 
   /* -------------------------------- Render UI ------------------------------- */
@@ -257,7 +288,7 @@ export default function LandingHero(props: { lang: TLocale }) {
             </p>
 
             <h1
-              className="text-5xl sm:text-6xl xl:text-7xl font-bold mb-4 overflow-hidden animate-[glitch_7s_linear_infinite]"
+              className="text-5xl sm:text-6xl xl:text-7xl font-bold mb-4 overflow-hidden motion-safe:animate-[glitch_7s_linear_infinite]"
               aria-label={siteConfig.name}
             >
               {siteConfig.name.split(" ").map((word, i) => (
@@ -271,7 +302,7 @@ export default function LandingHero(props: { lang: TLocale }) {
 
             {/* Typewriter Subtitle */}
             <h2 className="hero-subtitle text-lg sm:text-xl text-muted-foreground mb-6 font-mono h-7 flex items-center lg:justify-start justify-center gap-0.5">
-              <span className="text-primary/60 mr-1">$</span>
+              <span className="text-primary dark:text-primary/60 mr-1">$</span>
               <span className="text-slate-600 dark:text-slate-300">{typed}</span>
               <span className="inline-block w-0.5 h-5 bg-primary ml-0.5 animate-[blink_1s_step-end_infinite]" />
             </h2>
@@ -313,7 +344,7 @@ export default function LandingHero(props: { lang: TLocale }) {
 
       {/* Scroll Indicator Section */}
       <div className="hero-scroll absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground">
-        <span className="text-[10px] font-mono tracking-[0.2em] uppercase text-muted-foreground/60">
+        <span className="text-[10px] font-mono tracking-[0.2em] uppercase text-muted-foreground dark:text-muted-foreground/60">
           {dict.hero.scroll}
         </span>
         <div className="w-px h-10 bg-linear-to-b from-border to-transparent" />

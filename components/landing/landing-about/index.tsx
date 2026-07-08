@@ -41,7 +41,7 @@ function StatCard(props: {
   /* -------------------------------- Render UI ------------------------------- */
   return (
     <div className="rounded border border-border/60 bg-background p-5 hover:border-primary/30 hover:shadow-[0_0_24px_rgba(34,211,238,0.09)] transition-all duration-300 group">
-      <p className="text-[10px] font-mono text-muted-foreground mb-3 group-hover:text-primary/60 transition-colors">
+      <p className="text-[10px] font-mono text-muted-foreground mb-3 group-hover:text-primary dark:group-hover:text-primary/60 transition-colors">
         <span className="text-violet-400">const</span>{" "}
         <span className="text-sky-300">{varName}</span>
       </p>
