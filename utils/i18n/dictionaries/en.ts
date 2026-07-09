@@ -69,6 +69,7 @@ export const en = {
   experience: {
     heading: "Where I've worked",
     organizations: "Organizations I've worked with",
+    earlierRoles: "View earlier experience",
   },
   education: {
     heading: "Academic background",
@@ -76,6 +77,13 @@ export const en = {
   },
   projects: {
     heading: "Things I've built",
+    featuredBlurb:
+      "Selected public work and limited profiles that show the products and systems I've contributed to.",
+    viewAllProjects: "View all projects",
+    allProjectsHeading: "All projects",
+    allProjectsBlurb:
+      "Browse my public projects and approved public-sector profiles. Sensitive implementation details remain private.",
+    filterLabel: "Filter projects by category",
     filterAll: "All",
     viewDetails: "view details",
     publicProject: "Public project",
@@ -106,6 +114,7 @@ export const en = {
       emailPlaceholder: "your@email.com",
       message: "Message",
       messagePlaceholder: "How can I help you?",
+      characterCount: "characters",
       send: "Send Message",
       sending: "Sending...",
       successTitle: "Message Sent!",

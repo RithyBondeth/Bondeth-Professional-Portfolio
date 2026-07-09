@@ -25,6 +25,8 @@ export function MarqueeTrack(props: {
       className="overflow-hidden"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
+      onFocusCapture={() => setPaused(true)}
+      onBlurCapture={() => setPaused(false)}
     >
       <div
         style={{
@@ -36,6 +38,7 @@ export function MarqueeTrack(props: {
           animation: `marquee-${direction} ${duration}s linear infinite`,
           animationPlayState: paused ? "paused" : "running",
         }}
+        className="marquee-track"
       >
         {children}
       </div>

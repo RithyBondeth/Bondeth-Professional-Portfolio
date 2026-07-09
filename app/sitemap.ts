@@ -30,6 +30,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       alternates: { languages: languageAlternates("") },
     });
 
+    entries.push({
+      url: `${siteConfig.url}/${locale}/projects`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+      alternates: { languages: languageAlternates("/projects") },
+    });
+
     entries.push(
       ...projects
         .filter((project) => project.visibility !== "confidential")

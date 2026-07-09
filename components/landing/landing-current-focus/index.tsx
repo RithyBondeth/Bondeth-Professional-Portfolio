@@ -8,7 +8,7 @@ export default function LandingCurrentFocus(props: { lang: TLocale }) {
   return (
     <section
       id="current-focus"
-      className="relative overflow-hidden bg-card px-6 py-24"
+      className="relative overflow-hidden bg-card px-6 py-20"
     >
       <div
         aria-hidden
@@ -49,7 +49,7 @@ export default function LandingCurrentFocus(props: { lang: TLocale }) {
           </div>
 
           <StaggerIn
-            className="grid gap-4 sm:grid-cols-2"
+            className="grid grid-cols-2 gap-3 sm:gap-4"
             from="up"
             stagger={0.1}
             delay={0.1}
@@ -57,7 +57,7 @@ export default function LandingCurrentFocus(props: { lang: TLocale }) {
             {currentFocus.items.map((item, index) => (
               <article
                 key={item.label}
-                className="group rounded border border-border/60 bg-background/70 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_12px_40px_rgba(34,211,238,0.07)]"
+                className="group rounded border border-border/60 bg-background/70 p-4 transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_12px_40px_rgba(34,211,238,0.07)] motion-reduce:transform-none sm:p-5"
               >
                 <div className="mb-4 flex items-center justify-between">
                   <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">

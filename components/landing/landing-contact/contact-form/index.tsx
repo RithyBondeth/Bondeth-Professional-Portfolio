@@ -15,6 +15,7 @@ export default function ContactForm(props: { lang: TLocale }) {
   /* -------------------------------- All States ------------------------------- */
   const [status, setStatus] = useState<TFormStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [message, setMessage] = useState("");
 
   /* --------------------------------- Methods -------------------------------- */
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -37,6 +38,7 @@ export default function ContactForm(props: { lang: TLocale }) {
       if (response.ok) {
         track("contact_form_submitted");
         setStatus("success");
+        setMessage("");
         (e.target as HTMLFormElement).reset();
       } else {
         const body = await response.json().catch(() => null);
@@ -55,8 +57,9 @@ export default function ContactForm(props: { lang: TLocale }) {
         <h3 className="text-emerald-400 font-bold mb-2">{t.successTitle}</h3>
         <p className="text-muted-foreground text-sm">{t.successBody}</p>
         <button
+          type="button"
           onClick={() => setStatus("idle")}
-          className="mt-6 text-xs font-mono text-emerald-400/80 hover:text-emerald-400 underline underline-offset-4"
+          className="mt-6 min-h-11 px-3 text-xs font-mono text-emerald-400/80 hover:text-emerald-400 underline underline-offset-4"
         >
           {t.sendAnother}
         </button>
@@ -90,6 +93,8 @@ export default function ContactForm(props: { lang: TLocale }) {
             id="name"
             name="name"
             type="text"
+            maxLength={100}
+            autoComplete="name"
             placeholder={t.namePlaceholder}
             className="bg-background border border-border/60 rounded px-4 py-2.5 text-sm focus:outline-hidden focus:border-primary/50 transition-colors"
           />
@@ -106,6 +111,8 @@ export default function ContactForm(props: { lang: TLocale }) {
             id="email"
             name="email"
             type="email"
+            maxLength={254}
+            autoComplete="email"
             placeholder={t.emailPlaceholder}
             className="bg-background border border-border/60 rounded px-4 py-2.5 text-sm focus:outline-hidden focus:border-primary/50 transition-colors"
           />
@@ -125,14 +132,24 @@ export default function ContactForm(props: { lang: TLocale }) {
           id="message"
           name="message"
           rows={5}
+          maxLength={5000}
+          value={message}
+          onChange={(event) => setMessage(event.currentTarget.value)}
           placeholder={t.messagePlaceholder}
           className="bg-background border border-border/60 rounded px-4 py-2.5 text-sm focus:outline-hidden focus:border-primary/50 transition-colors resize-none"
         />
+        <p className="text-right font-mono text-[10px] text-muted-foreground">
+          {message.length.toLocaleString()}/5,000 {t.characterCount}
+        </p>
       </div>
 
       {/* Error Message Section */}
       {status === "error" && (
-        <p className="text-red-400 text-xs font-mono">
+        <p
+          role="alert"
+          aria-live="polite"
+          className="text-red-400 text-xs font-mono"
+        >
           {errorMessage ?? t.errorFallback}
         </p>
       )}

@@ -11,6 +11,8 @@ export default function LandingExperience(props: { lang: TLocale }) {
   const { lang } = props;
   const dict = getDictionary(lang);
   const experiences = getExperiences(lang);
+  const recentExperiences = experiences.slice(0, 3);
+  const earlierExperiences = experiences.slice(3);
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
@@ -42,7 +44,7 @@ export default function LandingExperience(props: { lang: TLocale }) {
             blur={4}
             stagger={0.12}
           >
-            {experiences.map((exp, i) => (
+            {recentExperiences.map((exp, i) => (
               <div key={i} className="sm:pl-10 relative">
                 {/* Timeline Dot */}
                 <div className="hidden sm:flex absolute left-0 top-2 w-3.5 h-3.5 rounded-full bg-primary/20 border border-primary/60 items-center justify-center">
@@ -80,6 +82,47 @@ export default function LandingExperience(props: { lang: TLocale }) {
               </div>
             ))}
           </StaggerIn>
+
+          {earlierExperiences.length > 0 && (
+            <AnimateIn from="up" delay={0.1}>
+              <details className="group mt-8 sm:ml-10">
+                <summary className="flex min-h-11 cursor-pointer list-none items-center justify-center gap-2 rounded border border-border/60 bg-background px-4 font-mono text-xs text-muted-foreground transition-colors hover:border-primary/30 hover:text-primary">
+                  <span>{dict.experience.earlierRoles}</span>
+                  <span
+                    aria-hidden
+                    className="transition-transform group-open:rotate-180"
+                  >
+                    ↓
+                  </span>
+                </summary>
+                <div className="mt-4 space-y-4">
+                  {earlierExperiences.map((exp) => (
+                    <article
+                      key={`${exp.role}-${exp.company}`}
+                      className="rounded border border-border/60 bg-background p-5"
+                    >
+                      <div className="flex flex-col justify-between gap-1 sm:flex-row">
+                        <div>
+                          <h3 className="text-sm font-semibold text-foreground">
+                            {exp.role}
+                          </h3>
+                          <p className="mt-0.5 font-mono text-xs text-primary">
+                            {exp.company}
+                          </p>
+                        </div>
+                        <span className="font-mono text-xs text-muted-foreground">
+                          {exp.period}
+                        </span>
+                      </div>
+                      <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+                        {exp.description}
+                      </p>
+                    </article>
+                  ))}
+                </div>
+              </details>
+            </AnimateIn>
+          )}
         </div>
       </div>
 

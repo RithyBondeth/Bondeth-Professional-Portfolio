@@ -137,10 +137,12 @@
   }
   body {
     @apply bg-background text-foreground;
+    overflow-x: clip;
   }
   html {
     @apply font-mono;
     scroll-behavior: smooth;
+    overflow-x: clip;
   }
   /* Code always renders in JetBrains Mono, in every locale. Tailwind's
      Preflight resets these tags to `--font-mono`, which is remapped to
@@ -266,6 +268,13 @@ html[lang="km"] {
   animation: type-caret 1s steps(1) infinite;
 }
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .marquee-track {
+    animation: none !important;
+    transform: none !important;
+  }
   .type-caret {
     animation: none;
     opacity: 0;

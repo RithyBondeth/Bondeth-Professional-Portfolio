@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { useTheme } from "next-themes";
+
+const subscribe = () => () => {};
 
 /* --------------------------------- Utilities -------------------------------- */
 function SunIcon({ className }: { className?: string }) {
@@ -46,17 +48,12 @@ export default function ThemeToggle(props: { label: string }) {
 
   /* -------------------------------- All States ------------------------------- */
   const { resolvedTheme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  /* --------------------------------- Effects -------------------------------- */
-  // Theme is only known client-side; render a placeholder until mounted
-  // so server and client markup match.
-  useEffect(() => setMounted(true), []);
+  const mounted = useSyncExternalStore(subscribe, () => true, () => false);
 
   /* -------------------------------- Render UI ------------------------------- */
   if (!mounted) {
     return (
-      <span className="w-7 h-7 flex items-center justify-center rounded border border-border/60">
+      <span className="flex size-11 items-center justify-center rounded border border-border/60 lg:size-7">
         <span className="w-3.5 h-3.5" />
       </span>
     );
@@ -69,7 +66,7 @@ export default function ThemeToggle(props: { label: string }) {
       onClick={() => setTheme(isDark ? "light" : "dark")}
       aria-label={label}
       title={label}
-      className="w-7 h-7 flex items-center justify-center rounded border border-border/60 text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors"
+      className="flex size-11 items-center justify-center rounded border border-border/60 text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary lg:size-7"
     >
       {isDark ? (
         <SunIcon className="w-3.5 h-3.5" />

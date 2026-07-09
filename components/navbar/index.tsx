@@ -60,7 +60,7 @@ function LanguageSwitcher(props: { lang: TLocale }) {
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
-    <div className="flex items-center gap-0.5 border border-border/60 rounded px-1 py-0.5">
+    <div className="flex items-center gap-0.5 rounded border border-border/60 px-1 lg:py-0.5">
       {locales.map((locale, i) => (
         <span key={locale} className="flex items-center">
           {i > 0 && (
@@ -73,7 +73,7 @@ function LanguageSwitcher(props: { lang: TLocale }) {
             onClick={() => {
               document.cookie = `NEXT_LOCALE=${locale};path=/;max-age=31536000`;
             }}
-            className={`px-1.5 py-0.5 text-[11px] font-mono rounded transition-colors ${
+            className={`flex min-h-11 items-center rounded px-1.5 font-mono text-[11px] transition-colors lg:min-h-0 lg:py-0.5 ${
               lang === locale
                 ? "text-primary"
                 : "text-muted-foreground hover:text-foreground"
@@ -226,19 +226,19 @@ export default function Navbar(props: { lang: TLocale }) {
         </ul>
 
         {/* Mobile Right Section */}
-        <div className="lg:hidden flex items-center gap-3">
+        <div className="flex items-center gap-1 lg:hidden">
           <button
             type="button"
             onClick={openCommandPalette}
             aria-label={dict.commandPalette.open}
-            className="w-7 h-7 flex items-center justify-center rounded border border-border/60 text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors"
+            className="flex size-11 items-center justify-center rounded border border-border/60 text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
           >
             <SearchIcon className="w-3.5 h-3.5" />
           </button>
           <LanguageSwitcher lang={lang} />
           <ThemeToggle label={dict.nav.toggleTheme} />
           <button
-            className="p-1 -m-1 text-muted-foreground hover:text-foreground transition-colors"
+            className="flex size-11 items-center justify-center rounded text-muted-foreground transition-colors hover:bg-foreground/5 hover:text-foreground"
             onClick={() => setMenuOpen((o) => !o)}
             aria-label={dict.nav.toggleMenu}
             aria-expanded={menuOpen}
@@ -269,7 +269,7 @@ export default function Navbar(props: { lang: TLocale }) {
                   <a
                     href={localizeNavHref(href, lang)}
                     onClick={() => setMenuOpen(false)}
-                    className={`flex items-center gap-2 px-3 py-2.5 text-xs font-mono rounded border-l transition-all ${
+                    className={`flex min-h-11 items-center gap-2 rounded border-l px-3 text-xs font-mono transition-all ${
                       isActive
                         ? "text-primary bg-primary/5 border-primary"
                         : "text-muted-foreground border-transparent hover:text-foreground hover:border-border"
@@ -289,7 +289,7 @@ export default function Navbar(props: { lang: TLocale }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setMenuOpen(false)}
-                className="flex items-center justify-center gap-2 px-3 py-2.5 text-xs font-mono rounded text-primary border border-primary/20 bg-primary/5 hover:bg-primary/10 transition-colors"
+                className="flex min-h-11 items-center justify-center gap-2 rounded border border-primary/20 bg-primary/5 px-3 text-xs font-mono text-primary transition-colors hover:bg-primary/10"
               >
                 {dict.nav.resumeMobile}
               </a>
