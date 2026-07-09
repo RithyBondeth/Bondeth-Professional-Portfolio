@@ -103,6 +103,73 @@ export const en = {
     noDemo: "no demo",
     empty: "No projects found in this category.",
   },
+  labs: {
+    navLabel: "AI Labs",
+    heading: "Interactive AI Labs",
+    blurb:
+      "Small, transparent experiments that explain practical AI engineering patterns without hiding limitations or sending your data to external services.",
+    experimental: "Experiment",
+    costFree: "No API cost",
+    structuredOutputTitle: "Structured Output Playground",
+    structuredOutputDescription:
+      "Turn an unstructured project inquiry into predictable JSON, then inspect schema validation and missing fields.",
+    openLab: "Open playground",
+    backToLabs: "back to all labs",
+    playground: {
+      intro:
+        "Enter a project inquiry in English or Khmer. The local demo endpoint extracts contact details, service intent, and urgency, then validates the result against a fixed schema.",
+      localMode: "Local demo mode",
+      inputLabel: "Input",
+      inputHeading: "Describe a project inquiry",
+      privacy: "Processed locally by this site. No external AI provider is called.",
+      run: "Extract structured data",
+      running: "Extracting...",
+      outputHeading: "Validated result",
+      emptyOutput:
+        "Run the extraction to see structured JSON and validation details.",
+      valid: "Schema valid",
+      incomplete: "Incomplete output",
+      missingFields: "Missing required fields",
+      schema: "Expected schema",
+      error: "The extraction could not be completed. Please try again.",
+      presets: [
+        {
+          label: "English example",
+          value:
+            "My name is Sokha Lim. Email me at sokha@example.com. I need an AI assistant for my online shop and the request is urgent.",
+        },
+        {
+          label: "Khmer example",
+          value:
+            "ខ្ញុំឈ្មោះ សុខា លីម។ អ៊ីមែល sokha@example.com។ ខ្ញុំត្រូវការកម្មវិធីទូរស័ព្ទ ហើយគម្រោងនេះបន្ទាន់។",
+        },
+        {
+          label: "Incomplete example",
+          value:
+            "We are considering a website for our organization sometime next month.",
+        },
+      ],
+      steps: [
+        {
+          title: "Extract",
+          description:
+            "Identify candidate values from natural-language input.",
+        },
+        {
+          title: "Normalize",
+          description:
+            "Map varied wording into stable service and urgency values.",
+        },
+        {
+          title: "Validate",
+          description:
+            "Check required fields before another system consumes the result.",
+        },
+      ],
+      relatedReading: "Related technical article",
+      relatedArticle: "Getting Reliable JSON Out of an LLM",
+    },
+  },
   contact: {
     heading: "Let's work together",
     blurb:

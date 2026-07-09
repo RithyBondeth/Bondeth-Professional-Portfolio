@@ -109,6 +109,73 @@ export const km: TDictionary = {
     noDemo: "គ្មានដេមូ",
     empty: "មិនមានគម្រោងក្នុងប្រភេទនេះទេ។",
   },
+  labs: {
+    navLabel: "AI Labs",
+    heading: "មន្ទីរពិសោធន៍ AI អន្តរកម្ម",
+    blurb:
+      "ការពិសោធន៍តូចៗ និងមានតម្លាភាព ដែលពន្យល់ពីលំនាំវិស្វកម្ម AI ជាក់ស្តែង ដោយមិនលាក់ដែនកំណត់ ឬផ្ញើទិន្នន័យរបស់អ្នកទៅសេវាខាងក្រៅ។",
+    experimental: "ការពិសោធន៍",
+    costFree: "គ្មានថ្លៃ API",
+    structuredOutputTitle: "Structured Output Playground",
+    structuredOutputDescription:
+      "បម្លែងសំណើគម្រោងដែលមិនមានរចនាសម្ព័ន្ធទៅជា JSON ដែលអាចព្យាករបាន ហើយពិនិត្យ schema និងទិន្នន័យដែលខ្វះ។",
+    openLab: "បើក Playground",
+    backToLabs: "ត្រឡប់ទៅ Labs ទាំងអស់",
+    playground: {
+      intro:
+        "បញ្ចូលសំណើគម្រោងជាភាសាអង់គ្លេស ឬខ្មែរ។ Demo endpoint ក្នុងតំបន់នឹងស្រង់ព័ត៌មានទំនាក់ទំនង ប្រភេទសេវា និងភាពបន្ទាន់ បន្ទាប់មកផ្ទៀងផ្ទាត់លទ្ធផលជាមួយ schema ថេរ។",
+      localMode: "Local demo mode",
+      inputLabel: "ទិន្នន័យបញ្ចូល",
+      inputHeading: "ពិពណ៌នាអំពីសំណើគម្រោង",
+      privacy:
+        "ដំណើរការក្នុងគេហទំព័រនេះ។ មិនមានការហៅទៅកាន់ AI provider ខាងក្រៅទេ។",
+      run: "ស្រង់ទិន្នន័យមានរចនាសម្ព័ន្ធ",
+      running: "កំពុងស្រង់...",
+      outputHeading: "លទ្ធផលដែលបានផ្ទៀងផ្ទាត់",
+      emptyOutput:
+        "ដំណើរការការស្រង់ ដើម្បីមើល JSON និងព័ត៌មានផ្ទៀងផ្ទាត់។",
+      valid: "Schema ត្រឹមត្រូវ",
+      incomplete: "លទ្ធផលមិនពេញលេញ",
+      missingFields: "ទិន្នន័យចាំបាច់ដែលខ្វះ",
+      schema: "Schema ដែលរំពឹងទុក",
+      error: "មិនអាចបញ្ចប់ការស្រង់ទិន្នន័យបានទេ។ សូមព្យាយាមម្តងទៀត។",
+      presets: [
+        {
+          label: "ឧទាហរណ៍អង់គ្លេស",
+          value:
+            "My name is Sokha Lim. Email me at sokha@example.com. I need an AI assistant for my online shop and the request is urgent.",
+        },
+        {
+          label: "ឧទាហរណ៍ខ្មែរ",
+          value:
+            "ខ្ញុំឈ្មោះ សុខា លីម។ អ៊ីមែល sokha@example.com។ ខ្ញុំត្រូវការកម្មវិធីទូរស័ព្ទ ហើយគម្រោងនេះបន្ទាន់។",
+        },
+        {
+          label: "ឧទាហរណ៍មិនពេញលេញ",
+          value:
+            "យើងកំពុងពិចារណាបង្កើតគេហទំព័រសម្រាប់អង្គការរបស់យើងនៅខែក្រោយ។",
+        },
+      ],
+      steps: [
+        {
+          title: "ស្រង់ទិន្នន័យ",
+          description: "កំណត់តម្លៃដែលអាចប្រើបានពីភាសាធម្មជាតិ។",
+        },
+        {
+          title: "ធ្វើឱ្យស្តង់ដារ",
+          description:
+            "បម្លែងពាក្យផ្សេងៗទៅជាតម្លៃសេវា និងភាពបន្ទាន់ដែលថេរ។",
+        },
+        {
+          title: "ផ្ទៀងផ្ទាត់",
+          description:
+            "ពិនិត្យទិន្នន័យចាំបាច់ មុនពេលប្រព័ន្ធផ្សេងប្រើប្រាស់លទ្ធផល។",
+        },
+      ],
+      relatedReading: "អត្ថបទបច្ចេកទេសពាក់ព័ន្ធ",
+      relatedArticle: "ការទាញយក JSON ដែលអាចទុកចិត្តបានពី LLM",
+    },
+  },
   contact: {
     heading: "តោះធ្វើការជាមួយគ្នា",
     blurb:

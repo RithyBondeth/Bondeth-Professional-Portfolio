@@ -3,6 +3,7 @@ import { GitHubIcon, LinkedInIcon, MailIcon } from "@/components/utils/icons";
 import { Logo } from "@/components/utils/icons/logo";
 import {
   localizeNavHref,
+  localizeHref,
   getDictionary,
   type TLocale,
   type TDictionary,
@@ -84,6 +85,17 @@ export default function Footer(props: { lang: TLocale }) {
                 </a>
               </li>
             ))}
+            <li>
+              <a
+                href={localizeHref("/labs", lang)}
+                className="flex items-center gap-1.5 font-mono text-xs text-muted-foreground transition-colors hover:text-primary"
+              >
+                <span className="text-[9px] text-primary dark:text-primary/30">
+                  08.
+                </span>
+                {dict.labs.navLabel}
+              </a>
+            </li>
           </ul>
         </div>
 

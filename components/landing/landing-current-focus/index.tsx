@@ -1,9 +1,10 @@
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
+import Link from "next/link";
 import { getDictionary, type TLocale } from "@/utils/i18n";
 
 export default function LandingCurrentFocus(props: { lang: TLocale }) {
   const { lang } = props;
-  const { currentFocus } = getDictionary(lang);
+  const { currentFocus, labs } = getDictionary(lang);
 
   return (
     <section
@@ -38,12 +39,21 @@ export default function LandingCurrentFocus(props: { lang: TLocale }) {
             </AnimateIn>
 
             <AnimateIn from="up" delay={0.15}>
-              <div className="mt-7 inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5 font-mono text-[11px] text-emerald-500">
-                <span className="relative flex h-2 w-2" aria-hidden>
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-50 motion-reduce:animate-none" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-                </span>
-                {currentFocus.status}
+              <div className="mt-7 flex flex-wrap items-center gap-3">
+                <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5 font-mono text-[11px] text-emerald-500">
+                  <span className="relative flex h-2 w-2" aria-hidden>
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-50 motion-reduce:animate-none" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+                  </span>
+                  {currentFocus.status}
+                </div>
+                <Link
+                  href={`/${lang}/labs`}
+                  className="inline-flex min-h-11 items-center gap-2 rounded border border-primary/25 px-3 font-mono text-[11px] text-primary transition-colors hover:bg-primary/5"
+                >
+                  {labs.navLabel}
+                  <span aria-hidden>→</span>
+                </Link>
               </div>
             </AnimateIn>
           </div>

@@ -39,6 +39,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
 
     entries.push(
+      {
+        url: `${siteConfig.url}/${locale}/labs`,
+        lastModified: new Date(),
+        changeFrequency: "monthly",
+        priority: 0.7,
+        alternates: { languages: languageAlternates("/labs") },
+      },
+      {
+        url: `${siteConfig.url}/${locale}/labs/structured-output`,
+        lastModified: new Date(),
+        changeFrequency: "monthly",
+        priority: 0.7,
+        alternates: {
+          languages: languageAlternates("/labs/structured-output"),
+        },
+      },
+    );
+
+    entries.push(
       ...projects
         .filter((project) => project.visibility !== "confidential")
         .map((project) => ({
