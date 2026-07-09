@@ -1,0 +1,112 @@
+---
+title: "Zero-Downtime Database Migrations: Expand, Backfill, Contract"
+date: "2026-07-08"
+excerpt: "Changing a production schema safely is less about clever SQL and more about ordering: add new structure, ship compatible code, backfill data, then remove the old path."
+tags: ["Database", "PostgreSQL", "Backend", "DevOps"]
+---
+
+# Zero-Downtime Database Migrations: Expand, Backfill, Contract
+
+Database migrations are easy when nobody is using the app. Production is different. Old code, new code, background workers, and long-running requests can all touch the same tables while a deploy is happening.
+
+The safest mental model is simple: **expand, backfill, contract**.
+
+## The dangerous migration
+
+Imagine you want to rename `users.full_name` to `users.display_name`. The tempting migration is:
+
+```sql
+ALTER TABLE users RENAME COLUMN full_name TO display_name;
+```
+
+That works locally. In production it can break any running server still reading `full_name`. Even if the deploy is fast, there is a window where code and schema disagree.
+
+Zero-downtime migrations avoid that disagreement.
+
+## Step 1: Expand
+
+First, add the new shape without removing the old one:
+
+```sql
+ALTER TABLE users ADD COLUMN display_name text;
+```
+
+Then ship code that writes both columns and reads safely:
+
+```ts
+const name = user.display_name ?? user.full_name;
+
+await db.user.update({
+  id,
+  full_name: nextName,
+  display_name: nextName,
+});
+```
+
+Now old code still works, new code works, and deploy order is no longer fragile.
+
+## Step 2: Backfill
+
+Once the new code is deployed, copy old data into the new column. For small tables, one statement may be fine:
+
+```sql
+UPDATE users
+SET display_name = full_name
+WHERE display_name IS NULL;
+```
+
+For large tables, do it in batches so you do not lock or overload the database:
+
+```sql
+UPDATE users
+SET display_name = full_name
+WHERE id IN (
+  SELECT id FROM users
+  WHERE display_name IS NULL
+  ORDER BY id
+  LIMIT 1000
+);
+```
+
+Run that repeatedly from a job until no rows remain. Track progress. Make it restartable.
+
+## Step 3: Read from the new path
+
+After the backfill is complete, ship code that treats `display_name` as the source of truth. Keep writing the old column for one more deploy if rollback risk is high.
+
+```ts
+const name = user.display_name;
+```
+
+This step is where you watch metrics: null counts, error rates, slow queries, and any logs mentioning the old field.
+
+## Step 4: Contract
+
+Only after the app no longer needs the old column should you remove it:
+
+```sql
+ALTER TABLE users DROP COLUMN full_name;
+```
+
+This final migration should be boring. If dropping the column feels risky, you are probably doing it too early.
+
+## Indexes need the same care
+
+Adding an index can block writes if you do it carelessly. In PostgreSQL, use concurrent index creation for busy tables:
+
+```sql
+CREATE INDEX CONCURRENTLY users_display_name_idx
+ON users (display_name);
+```
+
+Then deploy code that depends on the index after it exists. Drop old indexes later, also outside the risky deploy path.
+
+## Takeaways
+
+- **Never force code and schema to change at the exact same instant.**
+- **Expand first** by adding new columns, tables, or indexes.
+- **Ship compatible code** that can survive both old and new schema states.
+- **Backfill in batches** for large tables.
+- **Contract last** after metrics prove the old path is unused.
+
+Zero-downtime migrations are not glamorous. They are careful sequencing. That is exactly why they work.

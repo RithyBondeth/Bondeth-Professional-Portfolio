@@ -1,0 +1,96 @@
+---
+title: "Background Jobs: Retries Are Easy, Idempotency Is the Hard Part"
+date: "2026-07-09"
+excerpt: "Queues make slow work reliable, but retries can duplicate emails, payments, and database writes unless every job is designed to be safe to run again."
+tags: ["Backend", "Queues", "Reliability", "Architecture"]
+---
+
+# Background Jobs: Retries Are Easy, Idempotency Is the Hard Part
+
+Most web requests should finish quickly. Sending email, generating reports, syncing data, resizing images, and calling slow APIs belong in background jobs. A queue gives you breathing room: accept the request now, do the expensive work later.
+
+The trap is that queues achieve reliability by retrying. If a worker crashes halfway through a job, the queue will run it again. That is exactly what you want until "send invoice email" runs twice or "charge card" runs twice.
+
+The real design question is: **can this job safely run more than once?**
+
+## Give every job an idempotency key
+
+An idempotency key is a stable name for the work. It should come from the business event, not from the retry attempt.
+
+```ts
+const job = {
+  type: "send_invoice_email",
+  idempotencyKey: `invoice-email:${invoiceId}`,
+  payload: { invoiceId },
+};
+```
+
+Before doing side effects, record that key in a table with a unique constraint:
+
+```sql
+CREATE TABLE job_effects (
+  key text PRIMARY KEY,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+```
+
+If inserting the key fails, another attempt already performed the effect. Stop quietly.
+
+## Make external calls dedupe too
+
+Database writes are easy to protect with constraints. External services are trickier. For payment providers, pass their idempotency header. For email providers, store your own sent marker before or after the call depending on the failure mode you prefer.
+
+There is no perfect answer for every side effect. You are choosing between two bad outcomes:
+
+- mark sent first, then the email call fails: the user might never receive it.
+- send first, then marking sent fails: the user might receive a duplicate.
+
+For emails, duplicates are usually less harmful than silence. For payments, duplicates are unacceptable. Design per effect.
+
+## Keep jobs small
+
+Large jobs fail in confusing places. Split workflows into steps that each have one responsibility:
+
+```txt
+invoice.created
+  -> render_invoice_pdf
+  -> send_invoice_email
+  -> sync_invoice_to_accounting
+```
+
+Each step gets its own idempotency key and retry policy. If accounting is down, email should not keep resending.
+
+## Retry with backoff, not panic
+
+Immediate retries are usually noise. If an API is down, retrying ten times in one second helps nobody. Use exponential backoff with jitter:
+
+```ts
+const delay = Math.min(60_000, 1000 * 2 ** attempts);
+const jitter = Math.floor(Math.random() * 1000);
+retryIn(delay + jitter);
+```
+
+Also set a maximum attempt count. Infinite retries turn one bad payload into a permanent tax on your system.
+
+## Dead-letter queues are product work
+
+A dead-letter queue is where jobs go after they fail too many times. It should not be a graveyard nobody opens. Include enough context for a human to act:
+
+- job type
+- idempotency key
+- payload
+- last error
+- attempt count
+- link to the affected user, invoice, or record
+
+The best dead-letter queue is boring: small, monitored, and easy to replay after a fix.
+
+## Takeaways
+
+- **Queues retry by design**, so every job should be safe to run again.
+- **Use idempotency keys** based on business events.
+- **Protect side effects** with unique constraints, provider idempotency, or sent markers.
+- **Split workflows into small jobs** so one failure does not repeat unrelated work.
+- **Use backoff and dead-letter queues** instead of endless retries.
+
+Background jobs make systems feel fast. Idempotency makes them trustworthy.

@@ -1,0 +1,96 @@
+---
+title: "Background Jobs: Retry ងាយ ប៉ុន្តែ Idempotency ទើបពិបាក"
+date: "2026-07-09"
+excerpt: "Queues ធ្វើឱ្យការងារយឺតៗមានភាពជឿជាក់ ប៉ុន្តែ retries អាចបង្កើត email, payment និង database write ស្ទួន ប្រសិនបើ job មិនត្រូវបានរចនាឱ្យ run ម្តងទៀតដោយសុវត្ថិភាព។"
+tags: ["Backend", "Queues", "Reliability", "Architecture"]
+---
+
+# Background Jobs: Retry ងាយ ប៉ុន្តែ Idempotency ទើបពិបាក
+
+Web request ភាគច្រើនគួរបញ្ចប់ឱ្យលឿន។ ការផ្ញើ email, បង្កើត report, sync data, resize image និងហៅ API យឺតៗគួរទៅនៅក្នុង background jobs។ Queue ផ្តល់ពេលដកដង្ហើម: ទទួល request ឥឡូវនេះ ហើយធ្វើការងារធ្ងន់ពេលក្រោយ។
+
+បញ្ហាគឺ queues ទទួលបាន reliability តាមរយៈ retry។ បើ worker គាំងពាក់កណ្តាល job នោះ queue នឹង run វាម្តងទៀត។ វាជាអ្វីដែលយើងចង់បាន រហូតដល់ "send invoice email" run ពីរដង ឬ "charge card" run ពីរដង។
+
+សំណួររចនាពិតប្រាកដគឺ: **job នេះអាច run លើសម្តងដោយសុវត្ថិភាពឬអត់?**
+
+## ផ្តល់ idempotency key ឱ្យ job នីមួយៗ
+
+Idempotency key គឺជាឈ្មោះថេរសម្រាប់ការងារ។ វាគួរមកពី business event មិនមែនពី retry attempt។
+
+```ts
+const job = {
+  type: "send_invoice_email",
+  idempotencyKey: `invoice-email:${invoiceId}`,
+  payload: { invoiceId },
+};
+```
+
+មុនធ្វើ side effect សូមកត់ត្រា key នោះក្នុង table ដែលមាន unique constraint:
+
+```sql
+CREATE TABLE job_effects (
+  key text PRIMARY KEY,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+```
+
+បើ insert key បរាជ័យ មានន័យថា attempt មួយទៀតបានធ្វើ effect នោះរួចហើយ។ ឈប់ដោយស្ងៀមស្ងាត់។
+
+## ធ្វើឱ្យ external calls dedupe ផងដែរ
+
+Database writes ងាយការពារដោយ constraints។ External services ពិបាកជាង។ សម្រាប់ payment providers សូមផ្ញើ idempotency header របស់ពួកគេ។ សម្រាប់ email providers សូមរក្សា sent marker ផ្ទាល់ខ្លួន មុនឬក្រោយ call អាស្រ័យលើ failure mode ដែលអ្នកអាចទទួលយកបាន។
+
+មិនមានចម្លើយល្អឥតខ្ចោះសម្រាប់ side effect ទាំងអស់ទេ។ អ្នកកំពុងជ្រើសរើសរវាងលទ្ធផលអាក្រក់ពីរ:
+
+- mark sent មុន បន្ទាប់មក email call បរាជ័យ: អ្នកប្រើប្រហែលមិនទទួល email។
+- send មុន បន្ទាប់មក marking sent បរាជ័យ: អ្នកប្រើប្រហែលទទួល email ស្ទួន។
+
+សម្រាប់ emails ការស្ទួនភាគច្រើនមានគ្រោះថ្នាក់តិចជាងភាពស្ងាត់។ សម្រាប់ payments ការស្ទួនមិនអាចទទួលយកបានទេ។ រចនាតាម effect នីមួយៗ។
+
+## ធ្វើ job ឱ្យតូច
+
+Jobs ធំៗបរាជ័យនៅកន្លែងដែលពិបាកយល់។ បំបែក workflow ជាជំហានដែលនីមួយៗមានតួនាទីតែមួយ:
+
+```txt
+invoice.created
+  -> render_invoice_pdf
+  -> send_invoice_email
+  -> sync_invoice_to_accounting
+```
+
+ជំហាននីមួយៗមាន idempotency key និង retry policy ផ្ទាល់ខ្លួន។ បើ accounting down, email មិនគួរផ្ញើម្តងហើយម្តងទៀតទេ។
+
+## Retry ជាមួយ backoff មិនមែន panic
+
+Immediate retries ភាគច្រើនគ្រាន់តែបន្ថែមសំឡេងរំខាន។ បើ API មួយ down ការសាកល្បង ១០ដងក្នុងមួយវិនាទីមិនជួយនរណាទេ។ ប្រើ exponential backoff ជាមួយ jitter:
+
+```ts
+const delay = Math.min(60_000, 1000 * 2 ** attempts);
+const jitter = Math.floor(Math.random() * 1000);
+retryIn(delay + jitter);
+```
+
+កំណត់ maximum attempt count ផងដែរ។ Infinite retries បម្លែង payload អាក្រក់មួយទៅជាភារកិច្ចអចិន្ត្រៃយ៍លើប្រព័ន្ធ។
+
+## Dead-letter queues គឺជាការងារផលិតផល
+
+Dead-letter queue គឺកន្លែងដែល jobs ទៅនៅពេលបរាជ័យច្រើនដងពេក។ វាមិនគួរជាទីបញ្ចុះសពដែលគ្មាននរណាបើកមើលទេ។ បញ្ចូល context គ្រប់គ្រាន់ឱ្យមនុស្សអាចធ្វើសកម្មភាពបាន:
+
+- job type
+- idempotency key
+- payload
+- last error
+- attempt count
+- link ទៅ user, invoice ឬ record ដែលពាក់ព័ន្ធ
+
+Dead-letter queue ល្អបំផុតគឺគួរឱ្យធុញ: តូច មាន monitoring និងងាយ replay បន្ទាប់ពី fix។
+
+## ចំណុចសំខាន់ៗដែលទទួលបាន
+
+- **Queues retry ដោយរចនា** ដូច្នេះ job នីមួយៗគួរតែ run ម្តងទៀតដោយសុវត្ថិភាព។
+- **ប្រើ idempotency keys** ដែលផ្អែកលើ business events។
+- **ការពារ side effects** ដោយ unique constraints, provider idempotency ឬ sent markers។
+- **បំបែក workflows ជា jobs តូចៗ** ដើម្បីកុំឱ្យ failure មួយធ្វើការងារមិនពាក់ព័ន្ធម្តងទៀត។
+- **ប្រើ backoff និង dead-letter queues** ជំនួស endless retries។
+
+Background jobs ធ្វើឱ្យប្រព័ន្ធមានអារម្មណ៍លឿន។ Idempotency ធ្វើឱ្យវាគួរឱ្យទុកចិត្ត។

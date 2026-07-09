@@ -48,7 +48,12 @@ export const skillGroups: ISkillGroup[] = [
       { name: "React", icon: "SiReact", color: "#61DAFB", level: 3 },
       { name: "Next.js", icon: "SiNextdotjs", color: "#FFFFFF", level: 3 },
       { name: "TypeScript", icon: "SiTypescript", color: "#3178C6", level: 3 },
-      { name: "Tailwind CSS", icon: "SiTailwindcss", color: "#06B6D4", level: 3 },
+      {
+        name: "Tailwind CSS",
+        icon: "SiTailwindcss",
+        color: "#06B6D4",
+        level: 3,
+      },
       { name: "HTML5", icon: "SiHtml5", color: "#E34F26", level: 3 },
     ],
   },
@@ -69,7 +74,12 @@ export const skillGroups: ISkillGroup[] = [
       { name: "TensorFlow", icon: "SiTensorflow", color: "#FF6F00", level: 2 },
       { name: "OpenAI", icon: "SiOpenai", color: "#FFFFFF", level: 3 },
       { name: "LangChain", icon: "SiLangchain", color: "#10B981", level: 2 },
-      { name: "Hugging Face", icon: "SiHuggingface", color: "#FFD21E", level: 2 },
+      {
+        name: "Hugging Face",
+        icon: "SiHuggingface",
+        color: "#FFD21E",
+        level: 2,
+      },
     ],
   },
   {

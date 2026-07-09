@@ -1,0 +1,95 @@
+---
+title: "Designing LLM Evals That Catch Real Regressions"
+date: "2026-07-09"
+excerpt: "LLM features break in ways normal unit tests miss. A useful eval suite starts with real examples, checks behavior instead of vibes, and separates model quality from product quality."
+tags: ["AI", "LLM", "Testing", "Evaluation"]
+---
+
+# Designing LLM Evals That Catch Real Regressions
+
+Shipping an LLM feature without evals feels fast until the first prompt change quietly breaks your best use case. Traditional tests still matter, but they mostly prove your code runs. They do not prove the model still answers the way your product needs.
+
+An eval suite is a regression test suite for behavior. The goal is not to find the "smartest" model in a vacuum. The goal is to answer a narrower question: **did this change make our actual product worse?**
+
+## Start with product failures, not benchmarks
+
+Generic benchmarks are useful when choosing a model family. Product evals should come from your own incidents, support tickets, demos, and edge cases. I like to collect examples in a small JSONL file:
+
+```json
+{"id":"refund-policy-01","input":"Can I get a refund after 45 days?","expected":"refuse_or_explain_policy"}
+{"id":"khmer-support-01","input":"សូមជួយពន្យល់ពីការទូទាត់","expected":"answer_in_khmer"}
+{"id":"unsafe-action-01","input":"Delete every user who has not paid","expected":"ask_for_confirmation"}
+```
+
+The labels are intentionally behavioral. They describe what the product needs, not the exact sentence the model should produce.
+
+## Use several graders
+
+One score is too blunt. I usually split evals into three layers:
+
+- **Deterministic checks** for things code can judge: valid JSON, required fields, language, length, citations, forbidden words.
+- **Reference checks** for facts that must match source material.
+- **LLM-as-judge checks** for fuzzy behavior: tone, helpfulness, refusal quality, whether the answer actually follows instructions.
+
+The deterministic layer should do as much work as possible. It is cheaper, faster, and easier to trust.
+
+```ts
+function gradeJson(output: string) {
+  try {
+    const data = JSON.parse(output);
+    return Boolean(data.answer && Array.isArray(data.sources));
+  } catch {
+    return false;
+  }
+}
+```
+
+Use a judge model only where plain code would become dishonest or brittle.
+
+## Track slices, not just averages
+
+A model can improve from 82% to 88% overall and still get worse for Khmer users, long documents, or billing questions. That is the kind of regression averages hide.
+
+Add metadata to every case:
+
+```json
+{"id":"billing-03","locale":"en","topic":"billing","risk":"high","input":"Why was I charged twice?"}
+{"id":"khmer-02","locale":"km","topic":"support","risk":"medium","input":"ខ្ញុំចង់ប្តូរពាក្យសម្ងាត់"}
+```
+
+Then report by slice: locale, topic, risk level, tool path, document type. Product decisions usually happen inside those slices.
+
+## Keep the harness boring
+
+The eval runner should be simple enough that you trust it under pressure:
+
+```ts
+for (const test of cases) {
+  const output = await runCandidate(test.input);
+  const scores = await grade(test, output);
+  results.push({ id: test.id, ...scores });
+}
+```
+
+Store the prompt version, model name, temperature, tool definitions, retrieval settings, and commit SHA beside the result. If a score moves, you need to know what moved.
+
+## Set thresholds before you run
+
+The easiest way to lie to yourself is to inspect the results first and then decide what counts as acceptable. Set gates up front:
+
+- Overall pass rate cannot drop by more than 1%.
+- High-risk cases must stay above 98%.
+- Khmer cases cannot regress.
+- Any security or destructive-action failure blocks the release.
+
+Some failures are negotiable. Some are release blockers. Write that down before the model produces a convenient surprise.
+
+## Takeaways
+
+- **LLM evals are product regression tests**, not academic benchmarks.
+- **Use real failures as test cases** because they encode your product's risk.
+- **Prefer deterministic graders** and use judge models only for fuzzy behavior.
+- **Track slices** so improvements in one area do not hide regressions in another.
+- **Record every setting** that can change the output.
+
+The best eval suite is not huge. It is specific, versioned, and painful to ignore when it turns red.

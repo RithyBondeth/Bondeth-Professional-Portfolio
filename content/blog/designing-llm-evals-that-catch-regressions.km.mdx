@@ -1,0 +1,95 @@
+---
+title: "ការរចនា LLM Evals ដែលចាប់ Regression ពិតប្រាកដ"
+date: "2026-07-09"
+excerpt: "មុខងារ LLM ខូចក្នុងរបៀបដែល unit tests ធម្មតាមើលមិនឃើញ។ Eval suite ល្អគួរចាប់ផ្តើមពីឧទាហរណ៍ពិត ពិនិត្យអាកប្បកិរិយា មិនមែនអារម្មណ៍ ហើយបំបែកគុណភាពម៉ូដែលពីគុណភាពផលិតផល។"
+tags: ["AI", "LLM", "Testing", "Evaluation"]
+---
+
+# ការរចនា LLM Evals ដែលចាប់ Regression ពិតប្រាកដ
+
+ការដាក់មុខងារ LLM ឱ្យដំណើរការដោយគ្មាន evals មើលទៅលឿន រហូតដល់ការកែ prompt តូចមួយបំបែក use case សំខាន់ៗដោយស្ងៀមស្ងាត់។ Tests ធម្មតានៅតែសំខាន់ ប៉ុន្តែភាគច្រើនវាបង្ហាញតែថា code ដំណើរការ។ វាមិនបង្ហាញថាម៉ូដែលនៅតែឆ្លើយតាមរបៀបដែលផលិតផលត្រូវការទេ។
+
+Eval suite គឺជា regression test suite សម្រាប់អាកប្បកិរិយា។ គោលបំណងមិនមែនរកម៉ូដែលដែល "ឆ្លាតជាងគេ" ទូទៅទេ។ គោលបំណងគឺឆ្លើយសំណួរតូចជាងនេះ: **ការផ្លាស់ប្តូរនេះធ្វើឱ្យផលិតផលពិតរបស់យើងអន់ជាងមុនឬអត់?**
+
+## ចាប់ផ្តើមពីបញ្ហាផលិតផល មិនមែន benchmark
+
+Benchmark ទូទៅមានប្រយោជន៍ពេលជ្រើសរើសក្រុមម៉ូដែល។ ប៉ុន្តែ product evals គួរមកពី incident, support ticket, demo និង edge case ផ្ទាល់របស់អ្នក។ ខ្ញុំចូលចិត្តប្រមូលឧទាហរណ៍ក្នុង JSONL file តូចមួយ:
+
+```json
+{"id":"refund-policy-01","input":"Can I get a refund after 45 days?","expected":"refuse_or_explain_policy"}
+{"id":"khmer-support-01","input":"សូមជួយពន្យល់ពីការទូទាត់","expected":"answer_in_khmer"}
+{"id":"unsafe-action-01","input":"Delete every user who has not paid","expected":"ask_for_confirmation"}
+```
+
+Labels ត្រូវបានដាក់ជាអាកប្បកិរិយា។ វាពិពណ៌នាអ្វីដែលផលិតផលត្រូវការ មិនមែនប្រយោគតែមួយដែលម៉ូដែលត្រូវតែសរសេរតាមនោះទេ។
+
+## ប្រើ grader ច្រើនស្រទាប់
+
+Score តែមួយធំពេក។ ខ្ញុំបែងចែក evals ជាបីស្រទាប់:
+
+- **Deterministic checks** សម្រាប់អ្វីដែល code អាចវាយតម្លៃបាន: JSON ត្រឹមត្រូវ, required fields, ភាសា, ប្រវែង, citations, ពាក្យហាមឃាត់។
+- **Reference checks** សម្រាប់ facts ដែលត្រូវតែស្របនឹងប្រភព។
+- **LLM-as-judge checks** សម្រាប់អាកប្បកិរិយាដែលមិនងាយវាស់: tone, helpfulness, គុណភាព refusal, និងការធ្វើតាម instruction។
+
+ស្រទាប់ deterministic គួរធ្វើការឱ្យបានច្រើនបំផុត ព្រោះវាថោក លឿន និងងាយជឿជាក់។
+
+```ts
+function gradeJson(output: string) {
+  try {
+    const data = JSON.parse(output);
+    return Boolean(data.answer && Array.isArray(data.sources));
+  } catch {
+    return false;
+  }
+}
+```
+
+ប្រើ judge model តែពេលដែល code ធម្មតានឹងក្លាយជាការវាស់ដែលបំពានឬ brittle ពេក។
+
+## តាមដាន slice មិនមែនតែមធ្យមភាគ
+
+ម៉ូដែលអាចឡើងពី 82% ទៅ 88% សរុប ប៉ុន្តែអន់សម្រាប់អ្នកប្រើខ្មែរ ឯកសារវែង ឬសំណួរ billing។ នេះជាប្រភេទ regression ដែលមធ្យមភាគលាក់។
+
+បន្ថែម metadata ទៅ case នីមួយៗ:
+
+```json
+{"id":"billing-03","locale":"en","topic":"billing","risk":"high","input":"Why was I charged twice?"}
+{"id":"khmer-02","locale":"km","topic":"support","risk":"medium","input":"ខ្ញុំចង់ប្តូរពាក្យសម្ងាត់"}
+```
+
+បន្ទាប់មក report តាម slice: locale, topic, risk level, tool path, document type។ ការសម្រេចចិត្តផលិតផលភាគច្រើនកើតឡើងនៅក្នុង slice ទាំងនេះ។
+
+## ធ្វើ harness ឱ្យសាមញ្ញ
+
+Eval runner គួរសាមញ្ញគ្រប់គ្រាន់ ដើម្បីឱ្យអ្នកជឿវាពេលមានសម្ពាធ:
+
+```ts
+for (const test of cases) {
+  const output = await runCandidate(test.input);
+  const scores = await grade(test, output);
+  results.push({ id: test.id, ...scores });
+}
+```
+
+រក្សាទុក prompt version, model name, temperature, tool definitions, retrieval settings និង commit SHA ជាមួយ result។ បើ score ផ្លាស់ទី អ្នកត្រូវដឹងថាអ្វីបានផ្លាស់ទី។
+
+## កំណត់ threshold មុនពេល run
+
+វិធីងាយបំផុតក្នុងការបោកខ្លួនឯងគឺមើល result ជាមុន រួចទើបសម្រេចថាអ្វីគ្រប់គ្រាន់។ កំណត់ gates ជាមុន:
+
+- Overall pass rate មិនអាចធ្លាក់លើស 1%។
+- High-risk cases ត្រូវនៅលើ 98%។
+- Khmer cases មិនអាច regress។
+- Security ឬ destructive-action failure ណាមួយត្រូវ block release។
+
+Failure ខ្លះអាចពិភាក្សាបាន។ Failure ខ្លះជាឧបសគ្គ release។ សរសេរវាចុះ មុនពេលម៉ូដែលផ្តល់លទ្ធផលដែលមើលទៅងាយស្រួលពេក។
+
+## ចំណុចសំខាន់ៗដែលទទួលបាន
+
+- **LLM evals គឺ product regression tests** មិនមែន academic benchmarks។
+- **ប្រើ failure ពិតជាករណី test** ព្រោះវាកត់ត្រា risk របស់ផលិតផល។
+- **ចូលចិត្ត deterministic graders** ហើយប្រើ judge models តែសម្រាប់អាកប្បកិរិយាមិនងាយវាស់។
+- **តាមដាន slices** ដើម្បីកុំឱ្យ improvement មួយលាក់ regression មួយទៀត។
+- **កត់ត្រា setting ទាំងអស់** ដែលអាចប្តូរ output។
+
+Eval suite ល្អបំផុតមិនចាំបាច់ធំទេ។ វាជាក់លាក់ មាន version ហើយពិបាកមិនអើពើពេលវាក្រហម។

@@ -1,0 +1,112 @@
+---
+title: "Zero-Downtime Database Migrations: Expand, Backfill, Contract"
+date: "2026-07-08"
+excerpt: "ការផ្លាស់ប្តូរ schema ក្នុង production ដោយសុវត្ថិភាព មិនមែនពឹងលើ SQL ឆ្លាតៗទេ ប៉ុន្តែពឹងលើលំដាប់: បន្ថែមរចនាសម្ព័ន្ធថ្មី, deploy code ដែល compatible, backfill data, បន្ទាប់មកដក path ចាស់ចេញ។"
+tags: ["Database", "PostgreSQL", "Backend", "DevOps"]
+---
+
+# Zero-Downtime Database Migrations: Expand, Backfill, Contract
+
+Database migrations ងាយស្រួលពេលគ្មានអ្នកប្រើ app។ Production ខុសពីនោះ។ Code ចាស់, code ថ្មី, background workers និង requests ដែលរត់យូរ អាចប៉ះ tables ដូចគ្នាក្នុងពេល deploy។
+
+Mental model ដែលមានសុវត្ថិភាពបំផុតគឺសាមញ្ញ: **expand, backfill, contract**។
+
+## Migration ដែលគ្រោះថ្នាក់
+
+ស្រមៃថាអ្នកចង់ប្តូរឈ្មោះ `users.full_name` ទៅ `users.display_name`។ Migration ដែលគួរឱ្យចង់សរសេរគឺ:
+
+```sql
+ALTER TABLE users RENAME COLUMN full_name TO display_name;
+```
+
+វាដំណើរការនៅ local។ តែនៅ production វាអាចបំបែក server ដែលកំពុងអាន `full_name`។ ទោះ deploy លឿនក៏ដោយ ក៏មានចន្លោះពេលដែល code និង schema មិនស្របគ្នា។
+
+Zero-downtime migrations ជៀសវាងភាពមិនស្របគ្នានោះ។
+
+## ជំហានទី 1: Expand
+
+ដំបូង បន្ថែម shape ថ្មីដោយមិនដកចាស់ចេញ:
+
+```sql
+ALTER TABLE users ADD COLUMN display_name text;
+```
+
+បន្ទាប់មក ship code ដែលសរសេរ columns ទាំងពីរ ហើយអានដោយសុវត្ថិភាព:
+
+```ts
+const name = user.display_name ?? user.full_name;
+
+await db.user.update({
+  id,
+  full_name: nextName,
+  display_name: nextName,
+});
+```
+
+ឥឡូវ code ចាស់នៅតែដំណើរការ, code ថ្មីដំណើរការ ហើយ deploy order លែង fragile។
+
+## ជំហានទី 2: Backfill
+
+បន្ទាប់ពី code ថ្មី deploy រួច ចម្លង data ចាស់ទៅ column ថ្មី។ សម្រាប់ table តូច statement មួយអាចគ្រប់គ្រាន់:
+
+```sql
+UPDATE users
+SET display_name = full_name
+WHERE display_name IS NULL;
+```
+
+សម្រាប់ table ធំ ធ្វើជាបាច់ៗ ដើម្បីកុំ lock ឬ overload database:
+
+```sql
+UPDATE users
+SET display_name = full_name
+WHERE id IN (
+  SELECT id FROM users
+  WHERE display_name IS NULL
+  ORDER BY id
+  LIMIT 1000
+);
+```
+
+Run វាម្តងហើយម្តងទៀតពី job រហូតដល់គ្មាន rows នៅសល់។ តាមដាន progress។ ធ្វើឱ្យវា restart បាន។
+
+## ជំហានទី 3: អានពី path ថ្មី
+
+បន្ទាប់ពី backfill ចប់ ship code ដែលចាត់ទុក `display_name` ជា source of truth។ បើ rollback risk ខ្ពស់ អាចបន្តសរសេរ column ចាស់សម្រាប់ deploy មួយទៀត។
+
+```ts
+const name = user.display_name;
+```
+
+ជំហាននេះគឺពេលអ្នកត្រូវមើល metrics: null counts, error rates, slow queries និង logs ដែលនៅនិយាយពី field ចាស់។
+
+## ជំហានទី 4: Contract
+
+តែបន្ទាប់ពី app លែងត្រូវការ column ចាស់ ទើបដកវាចេញ:
+
+```sql
+ALTER TABLE users DROP COLUMN full_name;
+```
+
+Migration ចុងក្រោយនេះគួរតែគួរឱ្យធុញ។ បើការដក column ធ្វើឱ្យអ្នកមានអារម្មណ៍ risky មានន័យថាអ្នកប្រហែលធ្វើវាលឿនពេក។
+
+## Indexes ក៏ត្រូវការការប្រុងប្រយ័ត្នដូចគ្នា
+
+ការបន្ថែម index អាច block writes ប្រសិនបើធ្វើមិនប្រុងប្រយ័ត្ន។ នៅ PostgreSQL សម្រាប់ busy tables សូមប្រើ concurrent index creation:
+
+```sql
+CREATE INDEX CONCURRENTLY users_display_name_idx
+ON users (display_name);
+```
+
+បន្ទាប់មក deploy code ដែលពឹងផ្អែកលើ index បន្ទាប់ពីវាមានរួច។ Drop indexes ចាស់ពេលក្រោយ ហើយធ្វើឱ្យវានៅក្រៅ deploy path ដែល risky។
+
+## ចំណុចសំខាន់ៗដែលទទួលបាន
+
+- **កុំបង្ខំ code និង schema ឱ្យផ្លាស់ប្តូរនៅវិនាទីតែមួយ។**
+- **Expand មុនគេ** ដោយបន្ថែម columns, tables ឬ indexes ថ្មី។
+- **Ship compatible code** ដែលអាចរស់នៅជាមួយ schema ចាស់និងថ្មី។
+- **Backfill ជាបាច់ៗ** សម្រាប់ tables ធំ។
+- **Contract ចុងក្រោយ** បន្ទាប់ពី metrics បង្ហាញថា path ចាស់មិនត្រូវបានប្រើទៀត។
+
+Zero-downtime migrations មិនមែនរឿង flashy ទេ។ វាគ្រាន់តែជាការរៀបលំដាប់ដោយប្រុងប្រយ័ត្ន។ នោះហើយជាហេតុផលដែលវាដំណើរការ។
