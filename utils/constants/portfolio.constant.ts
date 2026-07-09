@@ -36,9 +36,14 @@ export const navLinks: INavLink[] = [
   { href: "/#experience", label: "Experience" },
   { href: "/#education", label: "Education" },
   { href: "/#projects", label: "Projects" },
-  { href: "/#contact", label: "Contact" },
+  { href: "/labs", label: "Labs" },
   { href: "/blog", label: "Blog" },
+  { href: "/#contact", label: "Contact" },
 ];
+
+export const primaryNavLinks = navLinks.filter(
+  ({ href }) => href !== "/#education",
+);
 
 /* -------------------------------- Skill Groups ------------------------------ */
 export const skillGroups: ISkillGroup[] = [

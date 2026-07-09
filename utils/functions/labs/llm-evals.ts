@@ -20,7 +20,24 @@ export interface IEvalTestResult {
   id: TEvalTestId;
   passed: boolean;
   weight: number;
-  detail: string;
+  detail: {
+    code:
+      | "parse-success"
+      | "parse-failed"
+      | "all-keys-present"
+      | "missing"
+      | "all-facts-present"
+      | "no-forbidden-claims"
+      | "found"
+      | "citation-found"
+      | "citation-missing"
+      | "khmer-found"
+      | "khmer-missing"
+      | "character-count";
+    values?: string[];
+    current?: number;
+    limit?: number;
+  };
 }
 
 export interface ICandidateEvaluation {
@@ -100,12 +117,12 @@ function parseJson(value: string): Record<string, unknown> | null {
 function runRule(response: string, rule: IEvalRule): IEvalTestResult {
   const normalized = response.toLowerCase();
   let passed = false;
-  let detail = "";
+  let detail: IEvalTestResult["detail"];
 
   switch (rule.id) {
     case "valid-json": {
       passed = parseJson(response) !== null;
-      detail = passed ? "parse: success" : "parse: failed";
+      detail = { code: passed ? "parse-success" : "parse-failed" };
       break;
     }
     case "required-keys": {
@@ -114,7 +131,9 @@ function runRule(response: string, rule: IEvalRule): IEvalTestResult {
         (key) => !parsed || !(key in parsed),
       );
       passed = missing.length === 0;
-      detail = passed ? "all keys present" : `missing: ${missing.join(", ")}`;
+      detail = passed
+        ? { code: "all-keys-present" }
+        : { code: "missing", values: missing };
       break;
     }
     case "required-facts": {
@@ -122,7 +141,9 @@ function runRule(response: string, rule: IEvalRule): IEvalTestResult {
         (fact) => !normalized.includes(fact.toLowerCase()),
       );
       passed = missing.length === 0;
-      detail = passed ? "all facts present" : `missing: ${missing.join(", ")}`;
+      detail = passed
+        ? { code: "all-facts-present" }
+        : { code: "missing", values: missing };
       break;
     }
     case "forbidden-claims": {
@@ -130,23 +151,29 @@ function runRule(response: string, rule: IEvalRule): IEvalTestResult {
         normalized.includes(claim.toLowerCase()),
       );
       passed = found.length === 0;
-      detail = passed ? "no forbidden claims" : `found: ${found.join(", ")}`;
+      detail = passed
+        ? { code: "no-forbidden-claims" }
+        : { code: "found", values: found };
       break;
     }
     case "citation": {
       passed = /\[\d+\]/.test(response);
-      detail = passed ? "citation found" : "citation missing";
+      detail = { code: passed ? "citation-found" : "citation-missing" };
       break;
     }
     case "khmer-script": {
       passed = /[\u1780-\u17ff]/.test(response);
-      detail = passed ? "Khmer text found" : "Khmer text missing";
+      detail = { code: passed ? "khmer-found" : "khmer-missing" };
       break;
     }
     case "max-length": {
       const limit = rule.maxLength ?? 0;
       passed = response.length <= limit;
-      detail = `${response.length}/${limit} characters`;
+      detail = {
+        code: "character-count",
+        current: response.length,
+        limit,
+      };
       break;
     }
   }

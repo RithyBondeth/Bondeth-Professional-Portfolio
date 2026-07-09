@@ -6,6 +6,7 @@ export const en = {
     education: "Education",
     projects: "Projects",
     contact: "Contact",
+    labs: "Labs",
     blog: "Blog",
     resume: "Resume",
     resumeMobile: "Resume.pdf",
@@ -256,6 +257,20 @@ export const en = {
         citation: "Citation present",
         "khmer-script": "Khmer language",
         "max-length": "Length limit",
+      },
+      detailLabels: {
+        "parse-success": "Parse successful",
+        "parse-failed": "Parse failed",
+        "all-keys-present": "All keys present",
+        missing: "Missing",
+        "all-facts-present": "All facts present",
+        "no-forbidden-claims": "No forbidden claims",
+        found: "Found",
+        "citation-found": "Citation found",
+        "citation-missing": "Citation missing",
+        "khmer-found": "Khmer text found",
+        "khmer-missing": "Khmer text missing",
+        "character-count": "characters",
       },
       presets: [
         {

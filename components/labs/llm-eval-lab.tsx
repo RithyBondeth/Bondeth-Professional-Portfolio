@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type {
   IEvalComparison,
+  IEvalTestResult,
   TEvalSuiteId,
 } from "@/utils/functions/labs/llm-evals";
 import type { TDictionary } from "@/utils/i18n";
@@ -215,14 +216,14 @@ export function LlmEvalLab(props: {
                         <td className="px-4 py-3">
                           <TestStatus
                             passed={testA.passed}
-                            detail={testA.detail}
+                            detail={formatTestDetail(testA, labels)}
                             labels={labels}
                           />
                         </td>
                         <td className="px-4 py-3">
                           <TestStatus
                             passed={testB.passed}
-                            detail={testB.detail}
+                            detail={formatTestDetail(testB, labels)}
                             labels={labels}
                           />
                         </td>
@@ -244,6 +245,22 @@ export function LlmEvalLab(props: {
       </section>
     </div>
   );
+}
+
+function formatTestDetail(
+  test: IEvalTestResult,
+  labels: TDictionary["labs"]["evals"],
+): string {
+  const { detail } = test;
+  const template = labels.detailLabels[detail.code];
+
+  if (detail.code === "missing" || detail.code === "found") {
+    return `${template}: ${detail.values?.join(", ") ?? "—"}`;
+  }
+  if (detail.code === "character-count") {
+    return `${detail.current}/${detail.limit} ${template}`;
+  }
+  return template;
 }
 
 function CandidateEditor(props: {

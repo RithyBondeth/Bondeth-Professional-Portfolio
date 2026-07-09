@@ -3,7 +3,11 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { navLinks, siteConfig } from "@/utils/constants/portfolio.constant";
+import {
+  navLinks,
+  primaryNavLinks,
+  siteConfig,
+} from "@/utils/constants/portfolio.constant";
 import { MenuIcon, CloseIcon } from "@/components/utils/icons";
 import { Logo } from "@/components/utils/icons/logo";
 import ThemeToggle from "@/components/utils/theme/theme-toggle";
@@ -116,7 +120,9 @@ export default function Navbar(props: { lang: TLocale }) {
       let current = "";
 
       // Check if we are on the blog page
-      if (window.location.pathname.includes("/blog")) {
+      if (window.location.pathname.includes("/labs")) {
+        current = "labs";
+      } else if (window.location.pathname.includes("/blog")) {
         current = "blog";
       } else {
         for (const id of sectionIds) {
@@ -169,7 +175,7 @@ export default function Navbar(props: { lang: TLocale }) {
 
         {/* Desktop Links Section */}
         <ul className="hidden lg:flex items-center gap-0.5 xl:gap-1">
-          {navLinks.map(({ href }, i) => {
+          {primaryNavLinks.map(({ href }, i) => {
             const id = href.replace("/#", "").replace("/", "");
             const isActive = activeSection === id;
             return (

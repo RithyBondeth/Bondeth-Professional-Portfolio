@@ -1,9 +1,11 @@
-import { siteConfig, navLinks } from "@/utils/constants/portfolio.constant";
+import {
+  siteConfig,
+  primaryNavLinks,
+} from "@/utils/constants/portfolio.constant";
 import { GitHubIcon, LinkedInIcon, MailIcon } from "@/components/utils/icons";
 import { Logo } from "@/components/utils/icons/logo";
 import {
   localizeNavHref,
-  localizeHref,
   getDictionary,
   type TLocale,
   type TDictionary,
@@ -74,28 +76,19 @@ export default function Footer(props: { lang: TLocale }) {
             {dict.footer.navigation}
           </p>
           <ul className="flex flex-col gap-2">
-            {navLinks.map(({ href }, i) => (
+            {primaryNavLinks.map(({ href }, i) => (
               <li key={href}>
                 <a
                   href={localizeNavHref(href, lang)}
                   className="text-muted-foreground hover:text-primary text-xs font-mono transition-colors flex items-center gap-1.5"
                 >
-                  <span className="text-primary dark:text-primary/30 text-[9px]">0{i + 1}.</span>
+                  <span className="text-primary dark:text-primary/30 text-[9px]">
+                    0{i + 1}.
+                  </span>
                   {dict.nav[navKeyFromHref(href)]}
                 </a>
               </li>
             ))}
-            <li>
-              <a
-                href={localizeHref("/labs", lang)}
-                className="flex items-center gap-1.5 font-mono text-xs text-muted-foreground transition-colors hover:text-primary"
-              >
-                <span className="text-[9px] text-primary dark:text-primary/30">
-                  08.
-                </span>
-                {dict.labs.navLabel}
-              </a>
-            </li>
           </ul>
         </div>
 
@@ -120,7 +113,7 @@ export default function Footer(props: { lang: TLocale }) {
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-primary text-xs font-mono transition-colors"
               >
-                github.com/bondeth
+                github.com/Rithybondeth
               </a>
             </li>
             <li>
@@ -141,13 +134,19 @@ export default function Footer(props: { lang: TLocale }) {
       <div className="border-t border-border/40 px-6 py-4">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
           <p className="text-muted-foreground dark:text-muted-foreground/50 text-[10px] font-mono">
-            <span className="text-muted-foreground dark:text-muted-foreground/30">{"/* "}</span>© {year}{" "}
-            {siteConfig.name}. {dict.footer.rights}
-            <span className="text-muted-foreground dark:text-muted-foreground/30">{" */"}</span>
+            <span className="text-muted-foreground dark:text-muted-foreground/30">
+              {"/* "}
+            </span>
+            © {year} {siteConfig.name}. {dict.footer.rights}
+            <span className="text-muted-foreground dark:text-muted-foreground/30">
+              {" */"}
+            </span>
           </p>
           <p className="text-muted-foreground dark:text-muted-foreground/50 text-[10px] font-mono">
             Built with Next.js &amp; Tailwind CSS
-            <span className="text-primary dark:text-primary/40 ml-2">v1.0.0</span>
+            <span className="text-primary dark:text-primary/40 ml-2">
+              v1.0.0
+            </span>
           </p>
         </div>
       </div>

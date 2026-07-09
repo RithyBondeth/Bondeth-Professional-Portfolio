@@ -8,6 +8,7 @@ export const km: TDictionary = {
     education: "ការសិក្សា",
     projects: "គម្រោង",
     contact: "ទំនាក់ទំនង",
+    labs: "ពិសោធន៍ AI",
     blog: "ប្លុក",
     resume: "ប្រវត្តិរូប",
     resumeMobile: "ប្រវត្តិរូប (PDF)",
@@ -110,7 +111,7 @@ export const km: TDictionary = {
     empty: "មិនមានគម្រោងក្នុងប្រភេទនេះទេ។",
   },
   labs: {
-    navLabel: "AI Labs",
+    navLabel: "ពិសោធន៍ AI",
     heading: "មន្ទីរពិសោធន៍ AI អន្តរកម្ម",
     blurb:
       "ការពិសោធន៍តូចៗ និងមានតម្លាភាព ដែលពន្យល់ពីលំនាំវិស្វកម្ម AI ជាក់ស្តែង ដោយមិនលាក់ដែនកំណត់ ឬផ្ញើទិន្នន័យរបស់អ្នកទៅសេវាខាងក្រៅ។",
@@ -262,6 +263,20 @@ export const km: TDictionary = {
         citation: "មាន Citation",
         "khmer-script": "ភាសាខ្មែរ",
         "max-length": "ដែនកំណត់ប្រវែង",
+      },
+      detailLabels: {
+        "parse-success": "បំប្លែងបានជោគជ័យ",
+        "parse-failed": "បំប្លែងមិនបានជោគជ័យ",
+        "all-keys-present": "មាន key ចាំបាច់ទាំងអស់",
+        missing: "ខ្វះ",
+        "all-facts-present": "មានព័ត៌មានចាំបាច់ទាំងអស់",
+        "no-forbidden-claims": "គ្មានការអះអាងហាមឃាត់",
+        found: "បានរកឃើញ",
+        "citation-found": "បានរកឃើញ citation",
+        "citation-missing": "ខ្វះ citation",
+        "khmer-found": "បានរកឃើញអក្សរខ្មែរ",
+        "khmer-missing": "ខ្វះអក្សរខ្មែរ",
+        "character-count": "តួអក្សរ",
       },
       presets: [
         {
