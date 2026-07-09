@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
 import { IProject } from "@/utils/interfaces/portfolio/project.interface";
 import { TProjectCategory } from "@/utils/types/portfolio/project-category.type";
 import { AnimateIn } from "@/components/utils/animations/animate-in";
 import { HorizontalScroll } from "@/components/utils/animations/horizontal-scroll";
-import { GitHubIcon, ExternalLinkIcon } from "@/components/utils/icons";
+import { ExternalLinkIcon } from "@/components/utils/icons";
 import { getDictionary, type TLocale, type TDictionary } from "@/utils/i18n";
 import { getProjects } from "@/utils/i18n/content";
 
@@ -81,7 +82,7 @@ export default function LandingProjects(props: { lang: TLocale }) {
               key={project.title}
               className="w-[80vw] sm:w-[360px] shrink-0 snap-center"
             >
-              <ProjectCard project={project} dict={dict} />
+              <ProjectCard project={project} dict={dict} lang={lang} />
             </div>
           ))
         ) : (
@@ -115,16 +116,20 @@ export default function LandingProjects(props: { lang: TLocale }) {
 }
 
 /* --------------------------------- Utilities -------------------------------- */
-function ProjectCard(props: { project: IProject; dict: TDictionary }) {
+function ProjectCard(props: {
+  project: IProject;
+  dict: TDictionary;
+  lang: TLocale;
+}) {
   /* ---------------------------------- Props --------------------------------- */
-  const { project, dict } = props;
+  const { project, dict, lang } = props;
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
     <article className="group flex flex-col h-full rounded border border-border/60 bg-card hover:border-primary/30 hover:shadow-[0_0_28px_rgba(34,211,238,0.1)] overflow-hidden transition-all duration-300 hover:-translate-y-1">
       {/* Preview Section */}
       <div className="relative h-40 overflow-hidden">
-        {project.image ? (
+        {project.image && project.visibility !== "confidential" ? (
           <Image
             src={project.image}
             alt={`${project.title} preview`}
@@ -162,7 +167,7 @@ function ProjectCard(props: { project: IProject; dict: TDictionary }) {
         </div>
 
         {/* Live Badge */}
-        {project.live && (
+        {project.live && project.visibility !== "confidential" && (
           <div className="absolute top-8 right-3 flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/25 backdrop-blur-sm">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
             <span className="text-[9px] text-emerald-400 font-mono">live</span>
@@ -180,10 +185,19 @@ function ProjectCard(props: { project: IProject; dict: TDictionary }) {
           <h3 className="text-foreground font-mono font-semibold text-sm leading-snug">
             {project.title}
           </h3>
+          {project.visibility !== "public" && (
+            <span className="ml-auto rounded border border-amber-500/20 bg-amber-500/5 px-1.5 py-0.5 font-mono text-[9px] text-amber-500">
+              {project.visibility === "limited"
+                ? dict.projects.limitedProject
+                : dict.projects.confidentialProject}
+            </span>
+          )}
         </div>
 
         <p className="text-muted-foreground text-xs leading-relaxed flex-1">
-          {project.description}
+          {project.visibility === "confidential"
+            ? dict.projects.confidentialCard
+            : project.description}
         </p>
 
         {/* Tags */}
@@ -200,28 +214,31 @@ function ProjectCard(props: { project: IProject; dict: TDictionary }) {
 
         {/* Links */}
         <div className="flex items-center gap-2 pt-2 border-t border-border/40">
-          {project.github && (
-            <a
-              href={project.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded text-xs font-mono text-muted-foreground bg-muted/40 border border-border/50 hover:border-border hover:text-foreground transition-colors"
+          {project.visibility !== "confidential" && (
+            <Link
+              href={`/${lang}/projects/${project.slug}`}
+              className="flex items-center gap-1.5 rounded border border-border/50 bg-muted/40 px-2.5 py-1.5 font-mono text-xs text-muted-foreground transition-colors hover:border-primary/30 hover:text-primary"
             >
-              <GitHubIcon className="w-3.5 h-3.5" />
-              {dict.projects.source}
-            </a>
+              {dict.projects.viewDetails}
+              <span aria-hidden>→</span>
+            </Link>
           )}
 
-          {project.live ? (
+          {project.live && project.visibility !== "confidential" ? (
             <a
               href={project.live}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded text-xs font-mono text-primary-foreground bg-primary hover:bg-primary/90 transition-colors ml-auto"
+              className="ml-auto flex items-center gap-1.5 rounded bg-primary px-2.5 py-1.5 font-mono text-xs text-primary-foreground transition-colors hover:bg-primary/90"
+              aria-label={`${dict.projects.demo}: ${project.title}`}
             >
-              {dict.projects.demo}
+              <span className="sr-only">{dict.projects.demo}</span>
               <ExternalLinkIcon className="w-3 h-3" />
             </a>
+          ) : project.visibility === "confidential" ? (
+            <span className="ml-auto font-mono text-[10px] text-amber-500">
+              {dict.projects.confidentialProject}
+            </span>
           ) : (
             <span className="ml-auto text-[10px] text-muted-foreground dark:text-muted-foreground/50 font-mono">
               {dict.projects.noDemo}

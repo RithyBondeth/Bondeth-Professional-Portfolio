@@ -77,7 +77,20 @@ export const en = {
   projects: {
     heading: "Things I've built",
     filterAll: "All",
-    source: "source",
+    viewDetails: "view details",
+    publicProject: "Public project",
+    limitedProject: "Limited public profile",
+    confidentialProject: "Confidential project",
+    confidentialCard:
+      "Details are intentionally withheld to respect project confidentiality.",
+    backToProjects: "back to projects",
+    overview: "Overview",
+    technologies: "Technologies",
+    publicResources: "Public resources",
+    liveProduct: "Live product",
+    limitedNoticeTitle: "Public information only",
+    limitedNotice:
+      "This profile intentionally includes only publicly available information. Internal architecture, workflows, metrics, security details, and project materials are omitted to respect confidentiality and public-sector security requirements.",
     demo: "demo",
     noDemo: "no demo",
     empty: "No projects found in this category.",

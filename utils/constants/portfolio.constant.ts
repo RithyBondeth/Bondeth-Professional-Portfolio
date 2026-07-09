@@ -206,6 +206,7 @@ export const organizations: IOrganization[] = [
 /* --------------------------------- Projects --------------------------------- */
 export const projects: IProject[] = [
   {
+    slug: "apsara-talent",
     title: "Apsara Talent",
     description:
       "The Apsara Talent platform is designed to address the challenges of the recruitment process by simplifying and improving job matching for freelancers and employers.",
@@ -220,12 +221,14 @@ export const projects: IProject[] = [
       "RabbitMQ",
     ],
     category: "Web",
+    visibility: "public",
     github: "https://github.com/apsara-talent/apsara-talent",
     live: "https://apsara-talent.netlify.app",
     image: "/previews/apsara-talent.png",
     gradient: "from-blue-600/20 via-cyan-500/10 to-slate-800",
   },
   {
+    slug: "apsara-assistant",
     title: "Apsara Assistant",
     description:
       "Apsara Assistant is an AI-powered sales assistant designed for Cambodian online sellers. It helps businesses automatically reply to customer messages, manage conversations, and increase sales — all in Khmer and English.",
@@ -239,12 +242,14 @@ export const projects: IProject[] = [
       "Anthropic",
     ],
     category: "AI",
+    visibility: "public",
     github: "https://github.com/apsara-assistant/apsara-assistant",
     live: null,
     image: null,
     gradient: "from-violet-600/20 via-purple-500/10 to-slate-800",
   },
   {
+    slug: "apsara-agentic",
     title: "Apsara Agentic",
     description:
       "Apsara Agentic is a production-ready backend system for building an AI-powered agentic coding platform. It explores how modern AI agents can understand tasks, reason through problems, and generate code using large language models.",
@@ -258,72 +263,85 @@ export const projects: IProject[] = [
       "Anthropic",
     ],
     category: "AI",
+    visibility: "public",
     github: "https://github.com/apsara-agentic/apsara-agentic",
     live: "https://apsara-agentic.netlify.app",
     image: "/previews/apsara-agentic.png",
     gradient: "from-emerald-600/20 via-teal-500/10 to-slate-800",
   },
   {
+    slug: "debc-website",
     title: "DEBC Website",
     description:
       "Official website for the Digital Economy and Business Committee of Cambodia. Built to inform the public on digital economy policies, news, and government services.",
     tags: ["Next.js", "NestJS", "PostgreSQL", "Docker"],
     category: "Web",
+    visibility: "limited",
     github: null,
     live: "https://digitaleconomy.gov.kh/?lang=kh",
     image: "/previews/debc-website.png",
     gradient: "from-blue-700/20 via-indigo-500/10 to-slate-800",
   },
   {
+    slug: "informal-economy",
     title: "Informal Economy",
     description:
       "A platform developed in collaboration with the Ministry of Economy and Finance (MEF) to register and support informal economy workers across Cambodia.",
     tags: ["Next.js", "NestJS", "PostgreSQL", "Docker"],
     category: "Web",
+    visibility: "limited",
     github: null,
     live: "https://informal.digitaleconomy.gov.kh/km",
     image: "/previews/informal-economy.png",
     gradient: "from-amber-600/20 via-orange-500/10 to-slate-800",
   },
   {
+    slug: "code-hub",
     title: "Code Hub",
     description:
       "A developer community platform built during my freelance career. Features authentication with Google, Facebook, and GitHub SSO, enabling developers to discover and share projects.",
     tags: ["React", "NestJS", "PostgreSQL", "Firebase"],
     category: "Web",
+    visibility: "public",
     github: "https://github.com/bondeth/codehub",
     live: "https://codehub-bondeth.netlify.app/signin",
     image: "/previews/codehub.png",
     gradient: "from-rose-600/20 via-pink-500/10 to-slate-800",
   },
   {
+    slug: "bondeth-vlog",
     title: "Bondeth Vlog",
     description:
       "My oldschool personal vlog and portfolio site — an early project showcasing blog posts, projects, and skills with a distinctive animated 3D logo.",
     tags: ["React", "Next.js", "Vercel"],
     category: "Web",
+    visibility: "public",
     github: "https://github.com/bondeth/bondeth-blog",
     live: "https://bondeth-blog.vercel.app",
     image: "/previews/bondeth-vlog.png",
     gradient: "from-slate-600/20 via-gray-500/10 to-slate-800",
   },
   {
+    slug: "sabynews-clone",
     title: "Sabynews Clone",
     description:
       "A pixel-faithful clone of the Sabay News website, built to practice replicating real-world Khmer news portal layouts with complex grids and category navigation.",
     tags: ["React", "CSS", "Netlify"],
     category: "Web",
+    visibility: "public",
     github: "https://github.com/bondeth/sabynews-clone",
     live: "https://sabynews-clone-bondeth.netlify.app",
     image: "/previews/sabynews-clone.png",
     gradient: "from-red-600/20 via-rose-500/10 to-slate-800",
   },
   {
+    slug: "tesla-clone",
     title: "Tesla Clone",
     description:
       "A front-end clone of the Tesla website featuring the iconic full-screen model showcases, smooth scroll sections, and navigation — built to sharpen UI implementation skills.",
     tags: ["React", "CSS", "Netlify"],
     category: "Web",
+    visibility: "public",
     github: "https://github.com/bondeth/tesla-clone",
     live: "https://tesla-clone-bondeth.netlify.app",
     image: "/previews/tesla-clone.png",

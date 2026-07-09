@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getAllPosts } from "@/utils/functions/blog";
-import { siteConfig } from "@/utils/constants/portfolio.constant";
+import { projects, siteConfig } from "@/utils/constants/portfolio.constant";
 import { locales } from "@/utils/i18n";
 
 /* ---------------------------------- Utils ---------------------------------- */
@@ -29,6 +29,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1,
       alternates: { languages: languageAlternates("") },
     });
+
+    entries.push(
+      ...projects
+        .filter((project) => project.visibility !== "confidential")
+        .map((project) => ({
+          url: `${siteConfig.url}/${locale}/projects/${project.slug}`,
+          lastModified: new Date(),
+          changeFrequency: "monthly" as const,
+          priority: project.visibility === "public" ? 0.7 : 0.5,
+          alternates: {
+            languages: languageAlternates(`/projects/${project.slug}`),
+          },
+        })),
+    );
   }
 
   for (const { locale, posts } of postsByLocale) {
