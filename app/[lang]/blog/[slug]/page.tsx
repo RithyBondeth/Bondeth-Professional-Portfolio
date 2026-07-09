@@ -13,6 +13,7 @@ import { BlogCover } from "@/components/blog/blog-cover";
 import { mdxComponents } from "@/components/blog/mdx-components";
 import { CopyLinkButton } from "@/components/blog/copy-link-button";
 import { TableOfContents } from "@/components/blog/table-of-contents";
+import rehypePrettyCode, { type Options as PrettyCodeOptions } from "rehype-pretty-code";
 import remarkGfm from "remark-gfm";
 import { hasLocale, getDictionary, locales } from "@/utils/i18n";
 import { getTableOfContents } from "@/utils/functions/blog/get-table-of-contents";
@@ -22,6 +23,15 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 interface IBlogPostPageProps {
   params: Promise<{ lang: string; slug: string }>;
 }
+
+const prettyCodeOptions: PrettyCodeOptions = {
+  theme: "github-dark",
+  keepBackground: false,
+  defaultLang: {
+    block: "plaintext",
+    inline: "plaintext",
+  },
+};
 
 /* --------------------------------- Metadata --------------------------------- */
 export async function generateStaticParams() {
@@ -204,6 +214,7 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
                 options={{
                   mdxOptions: {
                     remarkPlugins: [remarkGfm],
+                    rehypePlugins: [[rehypePrettyCode, prettyCodeOptions]],
                   },
                 }}
               />

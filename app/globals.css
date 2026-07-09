@@ -172,6 +172,77 @@ html[lang="km"] {
   --tw-prose-pre-bg: #000000;
   --tw-prose-invert-pre-bg: #000000;
 }
+.prose figure[data-rehype-pretty-code-figure] {
+  margin-block: 2rem;
+}
+.prose figure[data-rehype-pretty-code-figure] pre {
+  position: relative;
+  overflow-x: auto;
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in oklab, var(--border) 72%, transparent);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--primary) 10%, transparent),
+      transparent 4.25rem
+    ),
+    #030712;
+  box-shadow:
+    0 24px 60px rgb(0 0 0 / 0.28),
+    inset 0 1px 0 rgb(255 255 255 / 0.06);
+  color: #d1d5db;
+  line-height: 1.75;
+  padding: 3.25rem 1.25rem 1.25rem;
+}
+.prose figure[data-rehype-pretty-code-figure] pre::before {
+  content: "";
+  position: absolute;
+  left: 1.25rem;
+  top: 1.15rem;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 999px;
+  background: #fb7185;
+  box-shadow:
+    1.05rem 0 #facc15,
+    2.1rem 0 #34d399;
+}
+.prose figure[data-rehype-pretty-code-figure] pre::after {
+  content: attr(data-language);
+  position: absolute;
+  right: 1.25rem;
+  top: 0.95rem;
+  border-radius: 999px;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  background: rgb(255 255 255 / 0.06);
+  padding: 0.2rem 0.55rem;
+  color: #94a3b8;
+  font-family: var(--font-code);
+  font-size: 0.65rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.prose figure[data-rehype-pretty-code-figure] code {
+  counter-reset: line;
+  font-family: var(--font-code);
+  font-size: 0.875rem;
+}
+.prose figure[data-rehype-pretty-code-figure] [data-line] {
+  border-left: 2px solid transparent;
+  padding-inline: 0.25rem 1rem;
+}
+.prose figure[data-rehype-pretty-code-figure] [data-highlighted-line] {
+  border-left-color: var(--primary);
+  background: color-mix(in oklab, var(--primary) 16%, transparent);
+}
+.prose figure[data-rehype-pretty-code-figure] mark[data-highlighted-chars] {
+  border-radius: 0.25rem;
+  background: color-mix(in oklab, var(--primary) 22%, transparent);
+  color: inherit;
+  padding: 0.1rem 0.15rem;
+}
 .prose pre {
   font-family: var(--font-code);
   border: 1px solid var(--border);
