@@ -1,5 +1,6 @@
-import { IPost } from "@/utils/interfaces/blog/blog.interface";
+import type { IPost } from "@/utils/interfaces/blog/blog.interface";
 import { getAllPosts } from "./get-all-posts";
+import type { TLocale } from "@/utils/i18n";
 
 /* --------------------------------- Method ---------------------------------- */
 /**
@@ -14,9 +15,10 @@ import { getAllPosts } from "./get-all-posts";
 export async function getRelatedPosts(
   slug: string,
   tags: string[],
+  lang: TLocale,
   limit = 3,
 ): Promise<IPost[]> {
-  const posts = await getAllPosts();
+  const posts = await getAllPosts(lang);
 
   return posts
     .filter((post) => post.slug !== slug)

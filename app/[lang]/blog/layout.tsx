@@ -20,11 +20,10 @@ export async function generateMetadata({
     },
     description: dict.meta.blogDescription,
     alternates: {
-      // The blog is English-only; km routes redirect to en, so we don't
-      // declare a Khmer alternate here.
-      canonical: "/en/blog",
+      canonical: `/${lang}/blog`,
       languages: {
         en: "/en/blog",
+        km: "/km/blog",
         "x-default": "/en/blog",
       },
       types: {

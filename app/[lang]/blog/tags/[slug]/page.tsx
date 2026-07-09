@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getPostsByTag } from "@/utils/functions/blog/get-tags";
 import { AnimateIn } from "@/components/utils/animations/animate-in";
 import { BlogExplorer } from "@/components/blog/blog-explorer";
-import { hasLocale, getDictionary, TLocale } from "@/utils/i18n";
+import { hasLocale, getDictionary } from "@/utils/i18n";
 
 interface ITagPageProps {
   params: Promise<{ lang: string; slug: string }>;
@@ -13,13 +13,24 @@ export default async function TagPage({ params }: ITagPageProps) {
   const { lang, slug } = await params;
   if (!hasLocale(lang)) notFound();
 
-  const dict = getDictionary(lang as TLocale);
-  const { tag, posts } = await getPostsByTag(slug);
+  const dict = getDictionary(lang);
+  const { tag, posts } = await getPostsByTag(slug, lang);
 
   if (!tag) notFound();
 
-  // Strip MDX content before crossing to the client
-  const listPosts = posts.map(({ content: _content, ...rest }) => rest);
+  // Strip MDX content before crossing to the client.
+  const listPosts = posts.map(
+    ({ slug, title, date, excerpt, tags, cover, coverAlt, readingTime }) => ({
+      slug,
+      title,
+      date,
+      excerpt,
+      tags,
+      cover,
+      coverAlt,
+      readingTime,
+    }),
+  );
 
   return (
     <main className="flex-1 pt-32 pb-24 px-6 bg-background font-sans">
@@ -46,7 +57,7 @@ export default async function TagPage({ params }: ITagPageProps) {
               <BlogExplorer
                 posts={listPosts}
                 tags={[]}
-                lang={lang as TLocale}
+                lang={lang}
                 labels={dict.blog}
               />
             </AnimateIn>

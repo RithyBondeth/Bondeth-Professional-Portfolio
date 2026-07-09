@@ -1,6 +1,7 @@
-import { IPost } from "@/utils/interfaces/blog/blog.interface";
+import type { IPost } from "@/utils/interfaces/blog/blog.interface";
 import { getAllPosts } from "./get-all-posts";
 import { slugifyTag } from "./slugify-tag";
+import type { TLocale } from "@/utils/i18n";
 
 export interface ITagCount {
   /** Display tag as authored in frontmatter, e.g. "Next.js" */
@@ -16,8 +17,8 @@ export interface ITagCount {
  * Collects every tag used across all posts, de-duplicated by slug, with a count
  * of how many posts use it. Sorted by count (desc) then alphabetically.
  */
-export async function getAllTags(): Promise<ITagCount[]> {
-  const posts = await getAllPosts();
+export async function getAllTags(lang: TLocale): Promise<ITagCount[]> {
+  const posts = await getAllPosts(lang);
   const map = new Map<string, ITagCount>();
 
   for (const post of posts) {
@@ -43,8 +44,9 @@ export async function getAllTags(): Promise<ITagCount[]> {
  */
 export async function getPostsByTag(
   slug: string,
+  lang: TLocale,
 ): Promise<{ tag: string | null; posts: IPost[] }> {
-  const posts = await getAllPosts();
+  const posts = await getAllPosts(lang);
   let tag: string | null = null;
 
   const matched = posts.filter((post) =>

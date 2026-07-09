@@ -1,0 +1,116 @@
+---
+title: "ការបញ្ជូនទិន្នន័យ (Streaming) ចម្លើយ LLM នៅក្នុង Next.js ដោយមិនប្រើប្រាស់ Framework"
+date: "2026-07-06"
+excerpt: "ការបញ្ជូនទិន្នន័យ token ម្តងមួយៗធ្វើអោយមុខងារ AI មានអារម្មណ៍ថាលឿនរហ័ស។ ខាងក្រោមជារបៀបដែលខ្ញុំបញ្ជូនទិន្នន័យត្រង់ចេញពី Next.js Route Handler ដោយប្រើប្រាស់ Web Streams API — មិនបាច់មានការបន្ថែម SDK ផ្សេងទៀត មិនមាន client library, សរុបប្រហែល៤០បន្ទាត់។"
+tags: ["AI", "LLM", "Next.js", "Streaming"]
+---
+
+# ការបញ្ជូនទិន្នន័យ (Streaming) ចម្លើយ LLM នៅក្នុង Next.js
+
+ភាពខុសគ្នាដ៏ធំបំផុតនៅក្នុងបទពិសោធន៍អ្នកប្រើប្រាស់ (UX) រវាងមុខងារ AI តម្លៃថោកនិងមុខងារល្អ មិនមែនម៉ូដែលនោះទេ — គឺទៅលើថាតើចម្លើយនោះត្រូវបាន _បញ្ជូនមក (stream)_ ដែរឬអត់។ ការរង់ចាំប្រាំបីវិនាទីសម្រាប់ផ្ទាំងអក្សរមករួមគ្នា វាហាក់បីដូចជាគាំងខូច។ ប៉ុន្តែការមើលឃើញពាក្យលេចឡើងបណ្តើរៗ ធ្វើឱ្យមុខងាររស់រវើក ទោះបីជាពេលវេលាសរុបដើរដូចគ្នាក៏ដោយ។
+
+ដំណឹងល្អគឺ: អ្នកមិនត្រូវការ framework ជាក់លាក់ដាច់ដោយឡែកសម្រាប់វាទេ។ Next.js Route Handlers ផ្តល់ត្រលប់នូវ `Response` objects ធម្មតា ហើយ `Response` នេះអាចរុំព័ទ្ធនូវ `ReadableStream` មួយបានដោយគ្រាន់តែប្រើតិចនិចបន្តិចបន្តួចនេះ។
+
+## ការប្រើប្រាស់ endpoint
+
+ក្រុមហ៊ុនផ្តល់ម៉ូដែលទាំងអស់មានរបៀបបញ្ជូន events ជាបន្តបន្ទាប់ៗ (streaming mode)។ ខ្ញុំចាប់យក events ទាំងនោះ, បញ្ចេញ text deltas, រួចរុញវាចូលទៅក្នុង stream មួយដែល Next ផ្តល់អោយទៅ browser វិញ:
+
+```ts
+import Anthropic from "@anthropic-ai/sdk";
+
+const client = new Anthropic();
+
+export async function POST(request: Request) {
+  const { messages } = await request.json();
+
+  const encoder = new TextEncoder();
+
+  const stream = new ReadableStream({
+    async start(controller) {
+      const completion = await client.messages.create({
+        model: "claude-sonnet-5",
+        max_tokens: 1024,
+        messages,
+        stream: true,
+      });
+
+      for await (const event of completion) {
+        if (
+          event.type === "content_block_delta" &&
+          event.delta.type === "text_delta"
+        ) {
+          controller.enqueue(encoder.encode(event.delta.text));
+        }
+      }
+
+      controller.close();
+    },
+  });
+
+  return new Response(stream, {
+    headers: { "Content-Type": "text/plain; charset=utf-8" },
+  });
+}
+```
+
+គ្មានការរៀបចំទម្រង់ SSE ទេ, គ្មានការសរសេរ JSON ទេ — គឺមានតែទិន្នន័យអក្សរ UTF-8 សុទ្ធ។ ខាងផ្នែក client នឹងយកវាមកតម្រៀបចូលគ្នា ដែលរក្សាភាពសាមញ្ញសាកសមនឹងអ្នកទាំងសងខាង។
+
+## ការអាន stream នៅលើផ្នែក client
+
+ការប្រើប្រាស់ `fetch` នៅលើ browser ផ្តល់នូវ `ReadableStream` មាននៅក្នុង `response.body` ។ អ្នកចូលអានវាអោយអស់ម្តងមួយកង់ រួចបន្ថែមវាទៅកាន់ state:
+
+```ts
+async function ask(prompt: string) {
+  const response = await fetch("/api/chat", {
+    method: "POST",
+    body: JSON.stringify({ messages: [{ role: "user", content: prompt }] }),
+  });
+
+  if (!response.body) return;
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+
+  setAnswer("");
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    setAnswer((prev) => prev + decoder.decode(value, { stream: true }));
+  }
+}
+```
+
+ជម្រើស `{ stream: true }` នៅលើ `decode` គឺសំខាន់ណាស់: តួអក្សរ multi-byte (ដូចជា emoji ឬ តួអក្សរខ្មែរមួយ) អាចនឹងត្រូវបានចោះកាត់ដាច់ពេលដូរទិន្នន័យបញ្ជូន។ បើគ្មានវា អ្នកនឹងទទួលបានរូបគំនូរប្រអប់ជ្រុងពេលវាមិនត្រូវគ្នា។ តែនៅពេលមានវា decoder នឹងទុកទិន្នន័យមិនទាន់ពេញលេញចោល រហូតដល់បំណែកសល់មកដល់ដើម្បីអានត្រឹមត្រូវ។
+
+## កុំភ្លេចផ្លូវបោះចោល (Abort path)
+
+អ្នកប្រើប្រាស់អាចនឹងប្តូរចិត្តរបស់ពួកគេ។ ប្រសិនបើពួកគេផ្លាស់ប្តូរទំព័រ ឬសួរសំណួរថ្មីពាក់កណ្តាល stream អ្នកគប្បីបោះបង់ (cancel) ការទាញយកទិន្នន័យចាស់នោះចោល — បើមិនដូច្នេះទេ អ្នកនឹងត្រូវបង់លុយសម្រាប់ token ដែលគ្មាននរណាម្នាក់អាន ហើយទិន្នន័យនឹងច្ររំជណ្តើរគ្នា។
+
+```ts
+const controller = new AbortController();
+
+const response = await fetch("/api/chat", {
+  method: "POST",
+  body: JSON.stringify({ messages }),
+  signal: controller.signal,
+});
+
+// នៅពេលក្រោយ ដើម្បីលុបចោល:
+controller.abort();
+```
+
+ការបញ្ជូន `signal` រហូតដល់ក្នុងន័យថាយើងអាចបញ្ឈប់ការទាញយករបស់ fetch ហើយក៏បិទ stream របស់ម៉ូដែលផងដែរ ដើម្បីបញ្ឈប់ការគិតលុយក្នុងពេលតែមួយ។
+
+## ចំណុចសម្គាល់
+
+- **ការ stream ដំណើរការយ៉ាងរលូននៅលើ Node និង Edge runtimes។** Edge runtime មានភាពយឺតយ៉ាវទាបនៅពេលចាប់ដេីមដំបូង (cold-start) ដែលធ្វើឱ្យស៊ីគ្នាជាមួយនឹងល្បឿនដែលវាឆ្វេងយល់។
+- **ដាក់បិទ buffering proxies។** CDNs មួយចំនួនរក្សាជំនួស (buffer) responses រហូតដល់វាពេញលេញ ដែលអាចបំផ្លាញការបញ្ជូនទិន្នន័យ។ ប្រសិនបើទិន្នន័យលេចចេញទាំងអស់ក្នុងពេលតែមួយនៅក្នុង production ប៉ុន្តែ stream បានល្អនៅលើម៉ាស៊ីន local - នេះជាពិរុទ្ធជនចំបង!
+
+## ចំណុចសំខាន់ៗដែលទទួលបាន
+
+- **`ReadableStream` នៅក្នុង `Response` គឺគ្រប់គ្រាន់សម្រាប់ Next.js** ក្នុងការបញ្ជូនទិន្នន័យជាបន្តបន្ទាប់ - មិនត្រូវការ framework ពិសេសទេ។
+- **ផ្ញើអក្សរសុទ្ធ មិនមែន SSE** លុះត្រាតែអ្នកត្រូវការប្រភេទ event ច្រើន។ ការតភ្ជាប់អក្សរនៅ client គឺជា protocol សាមញ្ញបំផុត។
+- **ប្រើ `TextDecoder` ជាមួយ `{ stream: true }`** ដើម្បីឱ្យតួអក្សរ multi-byte អាចឆ្លងកាត់ព្រំដែន chunk បានត្រឹមត្រូវ។
+- **បញ្ជូន `AbortSignal` រហូតដល់ចុងខ្សែ** ដើម្បីបោះបង់ stream របស់ម៉ូដែល និងបញ្ឈប់ការគិតថ្លៃនៅពេលអ្នកប្រើប្រាស់ប្តូរទិស។
+
+Streaming គឺជាមុខងារមួយដែលចំណាយតិច ប៉ុន្តែធ្វើឱ្យផលិតផលមានអារម្មណ៍ល្អឡើងយ៉ាងច្រើន។ ប្រហែល៤០បន្ទាត់ មិនចាំបាច់មាន dependency បន្ថែមក្រៅពី SDK របស់ម៉ូដែលទេ។

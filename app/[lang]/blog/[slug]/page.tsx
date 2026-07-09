@@ -12,7 +12,7 @@ import { AnimateIn } from "@/components/utils/animations/animate-in";
 import { BlogCover } from "@/components/blog/blog-cover";
 import { mdxComponents } from "@/components/blog/mdx-components";
 import remarkGfm from "remark-gfm";
-import { hasLocale, getDictionary } from "@/utils/i18n";
+import { hasLocale, getDictionary, locales } from "@/utils/i18n";
 
 interface IBlogPostPageProps {
   params: Promise<{ lang: string; slug: string }>;
@@ -20,28 +20,36 @@ interface IBlogPostPageProps {
 
 /* --------------------------------- Metadata --------------------------------- */
 export async function generateStaticParams() {
-  const posts = await getAllPosts();
-  return posts.map((post) => ({
-    slug: post.slug,
-  }));
+  const postsByLocale = await Promise.all(
+    locales.map(async (lang) => {
+      const posts = await getAllPosts(lang);
+      return posts.map((post) => ({
+        lang,
+        slug: post.slug,
+      }));
+    }),
+  );
+
+  return postsByLocale.flat();
 }
 
 export async function generateMetadata({
   params,
 }: IBlogPostPageProps): Promise<Metadata> {
-  const { slug } = await params;
-  const post = await getPostBySlug(slug);
+  const { slug, lang } = await params;
+  if (!hasLocale(lang)) return {};
+
+  const post = await getPostBySlug(slug, lang);
   if (!post) return {};
 
   return {
     title: post.title,
     description: post.excerpt,
     alternates: {
-      // The blog is English-only; km routes redirect to en, so the canonical
-      // and alternates always point at the English post.
-      canonical: `/en/blog/${slug}`,
+      canonical: `/${lang}/blog/${slug}`,
       languages: {
         en: `/en/blog/${slug}`,
+        km: `/km/blog/${slug}`,
         "x-default": `/en/blog/${slug}`,
       },
       types: {
@@ -50,7 +58,7 @@ export async function generateMetadata({
     },
     openGraph: {
       type: "article",
-      url: `/en/blog/${slug}`,
+      url: `/${lang}/blog/${slug}`,
       title: post.title,
       description: post.excerpt,
       publishedTime: post.date,
@@ -72,13 +80,17 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
   const { lang, slug } = await params;
   if (!hasLocale(lang)) notFound();
   const dict = getDictionary(lang);
-  const post = await getPostBySlug(slug);
+  const post = await getPostBySlug(slug, lang);
 
   if (!post) {
     notFound();
   }
 
-  const relatedPosts = await getRelatedPosts(post.slug, post.tags);
+  const relatedPosts = await getRelatedPosts(
+    post.slug,
+    post.tags,
+    lang,
+  );
 
   /* ------------------------------ Structured Data ----------------------------- */
   const blogPostJsonLd = {

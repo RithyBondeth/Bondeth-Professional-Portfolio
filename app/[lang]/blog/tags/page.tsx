@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getAllTags } from "@/utils/functions/blog/get-tags";
 import { AnimateIn } from "@/components/utils/animations/animate-in";
-import { hasLocale, getDictionary, TLocale } from "@/utils/i18n";
+import { hasLocale, getDictionary } from "@/utils/i18n";
 
 interface ITagsPageProps {
   params: Promise<{ lang: string }>;
@@ -12,8 +12,8 @@ export default async function TagsPage({ params }: ITagsPageProps) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
 
-  const dict = getDictionary(lang as TLocale);
-  const tags = await getAllTags();
+  const dict = getDictionary(lang);
+  const tags = await getAllTags(lang);
 
   return (
     <main className="flex-1 pt-32 pb-24 px-6 bg-background font-sans">

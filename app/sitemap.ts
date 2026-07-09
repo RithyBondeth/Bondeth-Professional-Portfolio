@@ -6,12 +6,17 @@ import { locales } from "@/utils/i18n";
 /* ---------------------------------- Utils ---------------------------------- */
 function languageAlternates(path: string): Record<string, string> {
   return Object.fromEntries(
-    locales.map((locale) => [locale, `${siteConfig.url}/${locale}${path}`])
+    locales.map((locale) => [locale, `${siteConfig.url}/${locale}${path}`]),
   );
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const posts = await getAllPosts();
+  const postsByLocale = await Promise.all(
+    locales.map(async (locale) => ({
+      locale,
+      posts: await getAllPosts(locale),
+    })),
+  );
 
   const entries: MetadataRoute.Sitemap = [];
 
@@ -26,21 +31,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
   }
 
-  // The blog is English-only, so it appears once under /en with no alternates.
-  entries.push(
-    {
-      url: `${siteConfig.url}/en/blog`,
+  for (const { locale, posts } of postsByLocale) {
+    entries.push({
+      url: `${siteConfig.url}/${locale}/blog`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.8,
-    },
-    ...posts.map((post) => ({
-      url: `${siteConfig.url}/en/blog/${post.slug}`,
-      lastModified: new Date(post.date),
-      changeFrequency: "yearly" as const,
-      priority: 0.6,
-    }))
-  );
+      alternates: { languages: languageAlternates("/blog") },
+    });
+
+    entries.push(
+      ...posts.map((post) => ({
+        url: `${siteConfig.url}/${locale}/blog/${post.slug}`,
+        lastModified: new Date(post.date),
+        changeFrequency: "yearly" as const,
+        priority: 0.6,
+        alternates: { languages: languageAlternates(`/blog/${post.slug}`) },
+      })),
+    );
+  }
 
   return entries;
 }

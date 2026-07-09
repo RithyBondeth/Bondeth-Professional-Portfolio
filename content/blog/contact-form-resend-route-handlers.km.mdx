@@ -1,0 +1,122 @@
+---
+title: "ការសាងសង់ Contact Form ដែលធន់នឹង Spam ជាមួយនឹង Next.js Route Handlers និងវេទិកា Resend"
+date: "2026-06-21"
+excerpt: "របៀបដែលខ្ញុំប្តូរពីការប្រើ third-party form service មកប្រើប្រាស់ API route ផ្ទាល់ខ្លួន: ការផ្ទៀងផ្ទាត់ទិន្នន័យពីខាង server, honeypot សម្រាប់ទប់ទល់បត (bots) និង transactional email តាមរយៈ Resend - ដែលមានកូដប្រហែល៧០បន្ទាត់ប៉ុណ្ណោះ។"
+tags: ["Next.js", "Resend", "API Routes", "Web Dev"]
+---
+
+# ការសាងសង់ Contact Form ដែលធន់នឹង Spam
+
+រាល់ portfolio តែងតែត្រូវការ contact form ហើយការណែនាំជាច្រើនច្រើនតែផ្តោតទៅលើ hosted service ដូចជា Formspree។ វាដំណើរការបានល្អ ប៉ុន្តែវាមានន័យថាភាគីទីបីនៅចន្លោះអ្នកចូលមើលរបស់អ្នក និងប្រអប់សំបុត្ររបស់អ្នក, កម្រិតចូលមើលដោយឥតគិតថ្លៃមានកំណត់ ហើយអ្នកមិនអាចប្ដូរតាមបំណងសម្រាប់ការផ្ទៀងផ្ទាត់ទិន្នន័យ (validation) ឬការចាត់ចែង spam ទេ។
+
+ដោយសារតែវែបសាយនេះដំណើរការដោយប្រើប្រាស់ Next.js ខ្ញុំបានផ្លាស់ប្តូរផ្នែកនេះទាំងស្រុងទៅក្នុង **Route Handler**។ នេះគឺជារបៀបដែលវាដំណើរការ។
+
+## ផ្នែក API route
+
+Route Handlers មានទីតាំងនៅក្នុង directory `app` ជាឯកសារ `route.ts`។ Route របស់ខ្ញុំស្ថិតនៅក្នុង `app/api/contact/route.ts` ហើយ export តែ `POST` function មួយប៉ុណ្ណោះ:
+
+```ts
+export async function POST(request: Request) {
+  const payload = await request.json();
+
+  const name = typeof payload.name === "string" ? payload.name.trim() : "";
+  const email = typeof payload.email === "string" ? payload.email.trim() : "";
+  const message =
+    typeof payload.message === "string" ? payload.message.trim() : "";
+
+  // ...validate, then send
+}
+```
+
+សូមចំណាំពីការ parsing ប្រុងប្រយ័ត្ន: ខ្ញុំមិនដែលសន្មតថាវាជា string គ្រាន់តែដោយសារតែ frontend បញ្ជូនវាទេ។ នរណាម្នាក់អាច `curl` ទៅ endpoint របស់អ្នកជាមួយនឹង payload ដែលពួកគេចង់បាន។
+
+## ការផ្ទៀងផ្ទាត់នៅលើ server មិនមែនតែលើ browser ទេ
+
+Input របស់ form មាន attributes `required` និង `type="email"` ប៉ុន្តែការផ្ទៀងផ្ទាត់លើ browser គឺគ្រាន់តែជួយសម្រួលប៉ុណ្ណោះ មិនមែនជាការធានាទេ។ Route ធ្វើការត្រួតពិនិត្យឡើងវិញទាំងអស់:
+
+```ts
+if (!name || name.length > 100) {
+  return NextResponse.json(
+    { error: "សូមបញ្ចូលឈ្មោះរបស់អ្នក។" },
+    { status: 400 },
+  );
+}
+if (!EMAIL_REGEX.test(email) || email.length > 254) {
+  return NextResponse.json(
+    { error: "សូមបញ្ចូលអាសយដ្ឋានអ៊ីមែលដែលមានសុពលភាព។" },
+    { status: 400 },
+  );
+}
+```
+
+ការដាក់ការកំណត់ទំហំគឺមានសារៈសំខាន់ជាងអ្វីដែលមើលឃើញទៅទៀត។ បើគ្មានវាទេ នរណាម្នាក់អាច POST នូវ "សារ" ទំហំ 10 MB ហើយអ្នកនឹងបញ្ជូនវាចូលប្រអប់សំបុត្ររបស់អ្នកយ៉ាងសប្បាយ។
+
+## នុយទាក់បត (Honeypot): ថោក និងមានប្រសិទ្ធភាពខ្លាំង
+
+Spam bots នឹងបំពេញរាល់ field ដែលពួកវាឃើញ។ អ្នកប្រើប្រាស់ពិតប្រាកដមិនដែលឃើញ fields ដែលលាក់នោះទេ។ ដូច្នេះ form នេះរួមបញ្ចូលទាំង input មួយដែលមនុស្សមើលមិនឃើញ:
+
+```tsx
+<input
+  type="text"
+  name="company"
+  tabIndex={-1}
+  autoComplete="off"
+  aria-hidden="true"
+  className="hidden"
+/>
+```
+
+ប្រសិនបើ `company` ត្រូវបានផ្ញើមកជាមួយតម្លៃ នោះ API នឹងបង្វិលសងនូវ **ភាពជោគជ័យក្លែងក្លាយ** ហើយដោយស្ងាត់ស្ងៀមទម្លាក់សារចោល:
+
+```ts
+if (honeypot) {
+  return NextResponse.json({ ok: true });
+}
+```
+
+ការបង្វិលសងភាពជោគជ័យជំនួសឱ្យបញ្ហាគឺជាចេតនា - អ្នកមិនចង់បង្រៀនបតឱ្យដឹងថាតើសំណើណាមួយរបស់វាត្រូវបានច្រានចោលនោះទេ។
+
+## ការផ្ញើអ៊ីមែលជាមួយនឹង Resend
+
+[Resend](https://resend.com) មាន API ងាយស្រួល ហើយមានផ្ទៃឥតគិតថ្លៃគ្រប់គ្រាន់សម្រាប់ portfolio មួយ។ ល្បិចមួយដែលអ្នកគួរដឹងគឺ `replyTo`:
+
+```ts
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+await resend.emails.send({
+  from: "Portfolio Contact <onboarding@resend.dev>",
+  to: siteConfig.email,
+  replyTo: email, // ចុច "Reply" នោះអ្នកនឹងឆ្លើយតបទៅអ្នកចូលទស្សនាដោយផ្ទាល់
+  subject: `Portfolio contact ពី ${name}`,
+  text: `Name: ${name}\nEmail: ${email}\n\n${message}`,
+});
+```
+
+អ៊ីមែលមកដល់ពី sending domain របស់អ្នក ប៉ុន្តែការឆ្លើយតបវិញចូលទៅកាន់អ្នកចូលទស្សនាត្រង់តែម្តង - មិនបាច់ copy-pasting អាសយដ្ឋានឡើយ។
+
+ខ្ញុំក៏ផ្ញើជា plain text ជាជាងប្រើប្រាស់ HTML ផងដែរ។ Content នៅក្នុង form គឺជាអ្វីដែលអ្នកប្រើប្រាស់វាយបញ្ចូល; ការបញ្ចូលវាទៅក្នុង HTML គឺមានន័យថាអ្នកត្រូវសម្អាតវាជាមុនសិន។ Plain text គឺបំបាត់បញ្ហានេះទាំងស្រុង។
+
+## Frontend: បង្ហាញពីសារកំហុសរបស់ server
+
+ដោយសារតែ API ត្រលប់មកវិញជាមួយសារកំហុសជាក់ច្បាស់ form នឹងបង្ហាញពួកវាជំនួសឱ្យអត្ថបទ "មានអ្វីមួយមិនត្រឹមត្រូវ" ជាទូទៅ:
+
+```ts
+if (response.ok) {
+  setStatus("success");
+} else {
+  const body = await response.json().catch(() => null);
+  setErrorMessage(body?.error ?? null);
+  setStatus("error");
+}
+```
+
+បច្ចេកទេស `.catch(() => null)` ការពារកុំឱ្យមានផលប៉ះពាល់ប្រសិនបើមានការចាប់ខុស (non-JSON error response) (server គាំងត្រឡប់ជា HTML) — ដែលអាចជួយរារាំងមិនឱ្យការបដិសេធគ្មានអ្នកដោះស្រាយកើតមានឡើង នៅពេលដែលអ្វីៗកំពុងតែខូចខាត។
+
+## ចំណុចសំខាន់ៗដែលទទួលបាន
+
+- **Route Handlers ធ្វើអោយ third-party form services ក្លាយជាជម្រើសមួយ។** វាមានប្រហែលតែ៧០បន្ទាត់ប៉ុណ្ណោះ។
+- **ផ្ទៀងផ្ទាត់លើ server** ជាមួយនឹងការកំណត់ទំហំ មិនមែនតែលើ browser ទេ។
+- **A honeypot field** ជួយច្រានចោលសារ spam ដោយឥតគិតថ្លៃ យ៉ាងស្ងៀមស្ងាត់។
+- **`replyTo`** បម្លែង transactional email ទៅកាន់ប្រអប់សារដែលអាចឆ្លើយទៅបានយ៉ាងងាយ។
+
+ចំណាយសរុប: អថេរ environment (environment variable) មួយ និងថ្លៃសេវាសូន្យរៀងរាល់ខែ។

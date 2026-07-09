@@ -16,7 +16,12 @@ interface IBlogExplorerProps {
   labels: TDictionary["blog"];
 }
 
-export function BlogExplorer({ posts, tags, lang, labels }: IBlogExplorerProps) {
+export function BlogExplorer({
+  posts,
+  tags,
+  lang,
+  labels,
+}: IBlogExplorerProps) {
   /* -------------------------------- All States ------------------------------- */
   const [query, setQuery] = useState("");
 
@@ -115,7 +120,7 @@ export function BlogExplorer({ posts, tags, lang, labels }: IBlogExplorerProps) 
               <Link href={`/${lang}/blog/${post.slug}`} className="block">
                 <BlogCover
                   post={post}
-                  className="aspect-[2/1] mb-4 transition-colors group-hover:border-primary/40"
+                  className="aspect-2/1 mb-4 transition-colors group-hover:border-primary/40"
                 />
                 <time className="mb-2 block font-mono text-xs text-muted-foreground dark:text-muted-foreground/60">
                   {new Date(post.date).toLocaleDateString(

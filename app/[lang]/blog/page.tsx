@@ -14,11 +14,22 @@ export default async function BlogPage({ params }: IBlogPageProps) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   const dict = getDictionary(lang);
-  const posts = await getAllPosts();
-  const tags = await getAllTags();
+  const posts = await getAllPosts(lang);
+  const tags = await getAllTags(lang);
 
   // Strip MDX content before crossing to the client — the list only needs metadata.
-  const listPosts = posts.map(({ content: _content, ...rest }) => rest);
+  const listPosts = posts.map(
+    ({ slug, title, date, excerpt, tags, cover, coverAlt, readingTime }) => ({
+      slug,
+      title,
+      date,
+      excerpt,
+      tags,
+      cover,
+      coverAlt,
+      readingTime,
+    }),
+  );
 
   /* -------------------------------- Render UI ------------------------------- */
   return (

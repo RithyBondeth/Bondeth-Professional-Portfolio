@@ -3,6 +3,7 @@ import path from "path";
 import matter from "gray-matter";
 import { IPost } from "@/utils/interfaces/blog/blog.interface";
 import { getReadingTime } from "./get-reading-time";
+import type { TLocale } from "@/utils/i18n";
 
 const BLOG_DIR = path.join(process.cwd(), "content/blog");
 
@@ -13,7 +14,7 @@ const BLOG_DIR = path.join(process.cwd(), "content/blog");
  *
  * @returns All blog posts, or an empty array when the directory is missing
  */
-export async function getAllPosts(): Promise<IPost[]> {
+export async function getAllPosts(lang: TLocale = "en"): Promise<IPost[]> {
   if (!fs.existsSync(BLOG_DIR)) {
     return [];
   }
@@ -21,14 +22,18 @@ export async function getAllPosts(): Promise<IPost[]> {
   const files = fs.readdirSync(BLOG_DIR);
 
   const posts = files
-    .filter((file) => file.endsWith(".mdx"))
+    .filter((file) =>
+      lang === "km"
+        ? file.endsWith(".km.mdx")
+        : file.endsWith(".mdx") && !file.endsWith(".km.mdx"),
+    )
     .map((file) => {
       const filePath = path.join(BLOG_DIR, file);
       const fileContent = fs.readFileSync(filePath, "utf-8");
       const { data, content } = matter(fileContent);
 
       return {
-        slug: file.replace(".mdx", ""),
+        slug: file.replace(lang === "km" ? ".km.mdx" : ".mdx", ""),
         title: data.title,
         date: data.date,
         excerpt: data.excerpt,

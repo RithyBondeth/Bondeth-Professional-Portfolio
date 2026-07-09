@@ -1,0 +1,128 @@
+---
+title: "RAG នៅជាមួយ Postgres: ការបង្កើត pgvector ពីដំបូង"
+date: "2026-07-02"
+excerpt: "អ្នកមិនតម្រូវឱ្យមានប្រព័ន្ធទិន្នន័យ (vector database) ដាច់ដោយឡែកដើម្បីដំណើរការ retrieval-augmented generation (RAG) ទេ។ តាមរយៈ pgvector extension ប្រព័ន្ធ Postgres នៅពីក្រោមកម្មវិធីរបស់អ្នកនឹងក្លាយជា engine ដើម្បីធ្វើការ semantic search បានយ៉ាងងាយ។ ខាងក្រោមនេះជាពត៌មានលម្អិតពី: chunking, embedding, ផ្ទុក និង querying។"
+tags: ["RAG", "Embeddings", "PostgreSQL", "AI"]
+---
+
+# RAG ជាមួួយនឹង Postgres ដែលអ្នកមានស្រាប់
+
+Retrieval-augmented generation (RAG) ស្តាប់ទៅហាក់ដូចជាសាំញ៉ាំបន្តិច។ ប៉ុន្តែបើក្រលេកឲ្យជ្រៅវាគ្រាន់តែមានគោលគំនិតមួយពិតប្រាកដ: **មុនពេលអ្នកសួរសំណួរទៅកាន់ម៉ូដែល AI សូមស្វែងរកផ្នែកដែលទាក់ទងបំផុតលើទិន្នន័យរបស់អ្នក ហើយផ្តល់វាទៅក្នុង prompt របស់ AI**។ នៅពេលនេះ AI នឹងឆ្លើយចេញពីទិន្នន័យនោះ មិនមែនមកពីការចងចាំទទេររបស់វា ដែលកាត់បន្ថយការបង្កើតពត៌មានខុស (hallucination)។
+
+ផ្នែកដែលធ្វើអោយអ្នកអភិវឌ្ឍន៍ស្មុគស្មាញគឺការផ្ទុកទិន្នន័យ។ អ្នកតែងតែលឺគេថាត្រូវការ vector database ដាច់ដោយឡែក។ សម្រាប់គម្រោងភាគច្រើនមិនចាំបាច់ទេ បើអ្នកកំពុងតែប្រើ Postgres ស្រាប់ — [`pgvector`](https://github.com/pgvector/pgvector) extension និងបម្លែងវាទៅជា vector store ដ៏អស្ចារ្យ។ វិធីនេះអ្នកមិនចាំបាច់មានប្រព័ន្ធពីរដែលត្រូវបង់លុយ និងថែទាំនោះទេ។
+
+នេះជាទម្រង់ដំណើរការទាំងមូល:
+
+![RAG មានដំណាក់កាលពីរ: ដំណាក់កាល offline indexing ដែលចែកងឯកសារ, បង្កប់នីមួយៗ (embed) និងសរសេរទៅ pgvector; នឹង ការទាញយក (retrieval) ដែលបម្លែងសំណួរ រួចឆែករកំណាត់ ដែលជិតជាងគេ ហើយផ្ទេរទៅកាន់ម៉ូដែលជា context។](/blog/rag-pipeline-diagram.svg)
+
+## ជំហានទី 1: បើក pgvector
+
+វាមានរួចជាស្រេចនៅលើសេវាកម្ម Postgres សំខាន់ៗ។ អនុញ្ញាតឲ្យដំណើរការវា ហើយបន្ថែមជួរឈរមួយសម្រាប់ផ្ទុក embeddings:
+
+```sql
+CREATE EXTENSION IF NOT EXISTS vector;
+
+CREATE TABLE chunks (
+  id        bigserial PRIMARY KEY,
+  document  text NOT NULL,
+  content   text NOT NULL,
+  embedding vector(1536)
+);
+```
+
+`1536` ដែលផ្តល់គឺខ្នាតវិមាត្រ (dimension) របស់ embedding ម៉ូដែលរបស់អ្នក — ហើយត្រូវតែស៊ីគ្នា។ បើចង់ដូរម៉ូដែលពេលក្រោយ គឺត្រូវការបម្លែងសារជាថ្មី ដូច្នេះត្រូវប្រាកដពីជម្រើសដំបូង។
+
+## ជំហានទី 2: ការបំបែកចំណែក (Chunk) កុំយកតែមួយផ្ទាំងធំ
+
+ការបម្លែងឯកសារទាំងមូលធំក្លាយជា vector តែមួយ គឺជាកំហុសធំ — អ្នកនឹងទាញយកមកវិញនូវ file មួយទាំងមូល មិនមែនតែផ្នែកដែលឆ្លើយតបត្រូវនោះទេ។ គួរតែបំបែកជាមួយច្បាប់ងាយនេះ: **បំបែកចំណងជើង និងកថាខណ្ឌ រួមបញ្ជូលផ្នែកដែលមានប្រវែងអតិប្បរមា ~500 tokens ហើយរក្សាខ្លឹមសារថតគ្នាបន្តិច (overlap) កុំអោយឃ្លាជាប់ដាច់រលាត់។**
+
+```ts
+function chunk(text: string, target = 500, overlap = 60): string[] {
+  const paragraphs = text.split(/\n\s*\n/);
+  const chunks: string[] = [];
+  let buffer = "";
+
+  for (const p of paragraphs) {
+    if ((buffer + p).length > target * 4) {
+      chunks.push(buffer.trim());
+      buffer = buffer.slice(-overlap * 4);
+    }
+    buffer += "\n\n" + p;
+  }
+  if (buffer.trim()) chunks.push(buffer.trim());
+  return chunks;
+}
+```
+
+(ត្រង់នេះ `* 4` គឺការប្រមាណបែប chars-per-token — ល្មមគ្រប់គ្រាន់ បើត្រូវការតម្លាភាពសូមប្រើប្រាស់ tokenizer ពិតប្រាកដ។)
+
+## ជំហានទី 3: បម្លែង និង ស្តុកទុក
+
+រាល់ chunk ត្រូវតែឆ្លងកាត់ embedding ម៉ូដែល រួចចាក់ចូលទៅ Postgres។ pgvector ទទួលយកវាជា string ដែលមានសញ្ញាវង់ក្រចក:
+
+```ts
+async function indexDocument(document: string, text: string) {
+  for (const content of chunk(text)) {
+    const embedding = await embed(content); // → number[]
+    await sql`
+      INSERT INTO chunks (document, content, embedding)
+      VALUES (${document}, ${content}, ${JSON.stringify(embedding)})
+    `;
+  }
+}
+```
+
+នៅពេលមានឯកសារដល់រាប់ពាន់ អ្នកត្រូវបន្ថែម approximate index ដើម្បើអោយការស្វែងរកនៅរលូន។ HNSW បច្ចេកទេសនឹងផ្តល់ជម្រើសដែលប្រសើរ:
+
+```sql
+CREATE INDEX ON chunks
+USING hnsw (embedding vector_cosine_ops);
+```
+
+## ជំហានទី 4: ការស្វែងរកប្រកបដោយអត្ថន័យ (Retrieve)
+
+នៅពេលសំណួរលេចឡើង អ្នកបម្លែង _សំណួរ_ ទៅជាទម្រង់ embedding ដដែល រួចទាញយកចំណែកក្នុងទីតាំងប្រហាក់ប្រហែល។ The `<=>` សញ្ញានេះត្រូវគ្នាទៅនឹង cosine distance (លេខតូច = ស្រដៀងខ្លាំង):
+
+```ts
+async function retrieve(question: string, k = 5) {
+  const q = await embed(question);
+  return sql`
+    SELECT content, 1 - (embedding <=> ${JSON.stringify(q)}) AS score
+    FROM chunks
+    ORDER BY embedding <=> ${JSON.stringify(q)}
+    LIMIT ${k}
+  `;
+}
+```
+
+`1 - distance` converts គុណន័យសរើប្រាប់ជាលេខ 0–1 ដែលជួយដល់ការត្រងអត្ថន័យ: តូចជាង ~0.7 ហាក់ដូចជា "គ្មានអ្វីច្បាស់លាស់" ប្រសើរជាងការចាប់ប្រគល់ context ដែលអន់ទន់ខ្សោយឱ្យ AI ខាត់ពេលអាន។
+
+## ជំហានទី 5: ការឆ្លើយជាមួយនឹង context
+
+ជាចុងក្រោយ ការប្រមូលយក chunk បញ្ចូលគ្នាដើម្បីបញ្ជោះនិងផ្ញើអោយម៉ូដែលសរសេរចម្លើយ:
+
+```ts
+const context = (await retrieve(question))
+  .map((r) => r.content)
+  .join("\n\n---\n\n");
+
+const prompt = `Answer using ONLY the context below. If the answer isn't
+there, say you don't know.
+
+Context:
+${context}
+
+Question: ${question}`;
+```
+
+កំណត់ចំណាំ - _ប្រើប្រាស់ context ទាំងស្រុង ហើយប្រាប់ថាមិនដឹងបើវាមិននៅទីនោះ_...នេះជាបញ្ចាចលិត ដែលជួយអ្នកប្រើប្រាស់មិនជួបចម្លើយហោះហើរ (guessing) របស់វា។
+
+## ចំណុចសម្គាល់
+
+- **RAG មានន័យថា "ទាញយក បន្ទាប់មកផ្តល់សំណួរ"** កម្លាំងរបស់វាគឺមកពីការទាញយក មិនមែនតែម៉ូដែលទេ។
+- **pgvector បម្លែង Postgres ទៅជា vector store** — ដោយមិនចាំបាច់មាន database ដាច់ឡែក។
+- **ការបំបែកដោយ overlap** — whole-document គឺពិបាកអោយយល់ន័យ។
+- **ប្រើ HNSW index និងការពិនិត្យពិន្ទុ similarity** សម្រាប់សំណួរក្រៅបរិបទ។
+- **កំណត់អោយម៉ូដែលឆ្លើយតាម context ពីព្រោះវាសំខាន់ដល់ស្ថេរភាព។**
+
+រួសរាន់ដាក់ឱ្យដំណើរការលើ database របស់អ្នកដែលមានស្រាប់។ ទាល់តែប្រព័ន្ធនោះធ្ងន់ពេកទើបតែប្រើ vector store ថ្មី។

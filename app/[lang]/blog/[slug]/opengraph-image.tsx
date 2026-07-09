@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 import { getPostBySlug } from "@/utils/functions/blog";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
+import { hasLocale } from "@/utils/i18n";
 
 export const alt = "Blog post";
 export const size = {
@@ -14,8 +15,8 @@ export default async function Image({
 }: {
   params: Promise<{ lang: string; slug: string }>;
 }) {
-  const { slug } = await params;
-  const post = await getPostBySlug(slug);
+  const { lang, slug } = await params;
+  const post = await getPostBySlug(slug, hasLocale(lang) ? lang : "en");
 
   return new ImageResponse(
     <div

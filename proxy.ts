@@ -27,13 +27,6 @@ function getLocale(request: NextRequest): TLocale {
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // The blog is published in English only. Redirect any Khmer blog URL to its
-  // English equivalent so we never advertise a translation that doesn't exist.
-  if (pathname === "/km/blog" || pathname.startsWith("/km/blog/")) {
-    request.nextUrl.pathname = pathname.replace(/^\/km\//, "/en/");
-    return NextResponse.redirect(request.nextUrl);
-  }
-
   const pathnameHasLocale = locales.some(
     (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
   );

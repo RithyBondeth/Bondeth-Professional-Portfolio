@@ -1,0 +1,115 @@
+---
+title: "SEO សម្រាប់អ្នកអភិវឌ្ឍន៍: Sitemaps, OG Images, និង JSON-LD នៅក្នុង Next.js"
+date: "2026-07-07"
+excerpt: "បញ្ជីពិនិត្យ SEO ដែលខ្ញុំបានរៀបចំសម្រាប់វែបសាយនេះ — file-based sitemaps និង robots, ការបង្កើត Open Graph images, ទិន្នន័យមានរចនាសម្ព័ន្ធ (structured data), និងបញ្ហា title មួយចំនួនដែលធ្វើឲ្យខ្ញុំខាតពេលមួយម៉ោង។"
+tags: ["Next.js", "SEO", "Open Graph", "Web Dev"]
+---
+
+# SEO សម្រាប់អ្នកអភិវឌ្ឍន៍
+
+SEO តែងតែមានកេរ្តិ៍ឈ្មោះថាជាមន្តអាគមរបស់ទីផ្សារ ប៉ុន្តែផ្នែកបច្ចេកទេសរបស់វាគឺគ្រាន់តែ... ជាការរុញ file ប៉ុណ្ណោះ។ Next.js បានបម្លែងបញ្ជី SEO ស្ទើរតែទាំងអស់ទៅជាកូដដែលអ្នកអាចពិនិត្យ និង type-check ទាំងស្រុងបាន។ ខាងក្រោមនេះជាអ្វីទាំងអស់ដែលខ្ញុំបានបន្ថែមទៅវែបសាយនេះ និងអាកប្បកិរិយាគួរឱ្យភ្ញាក់ផ្អើលមួយដែលខ្ញុំបានជួបប្រទះក្នុងពេលអនុវត្តវាពិតប្រាកដ។
+
+## Sitemap និង robots ក្នុងទម្រង់ជា Code
+
+ជំនួសឲ្យការសរសេរជា XML ដោយដៃ ឯកសារ `app/sitemap.ts` បាន export នូវ function មួយ។ Function ខ្ញុំវាស្កែនរកឯកសារប្លុកនៅក្នុង memory ដូច្នេះរាល់ពេលមាន file `.mdx` ថ្មី វានឹងចូលទៅក្នុង sitemap ដោយស្វ័យប្រវត្តិ:
+
+```ts
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const posts = await getAllPosts("en");
+
+  return [
+    { url: siteConfig.url, changeFrequency: "monthly", priority: 1 },
+    { url: `${siteConfig.url}/blog`, changeFrequency: "weekly", priority: 0.8 },
+    ...posts.map((post) => ({
+      url: `${siteConfig.url}/blog/${post.slug}`,
+      lastModified: new Date(post.date),
+      changeFrequency: "yearly" as const,
+      priority: 0.6,
+    })),
+  ];
+}
+```
+
+`app/robots.ts` ធ្វើការដូចគ្នា — ខ្ញុំអនុញ្ញាតឱ្យស្វែងរករាល់ទំព័រទាំងអស់លើកលែងតែ `/api/` ហើយបញ្ជូន bots ទៅកាន់ sitemap។
+
+## ការបង្កើត Open Graph images
+
+នេះគឺជាផ្នែកដែលខ្ញុំចូលចិត្តជាងគេ។ គ្រាន់តែដាក់ `opengraph-image.tsx` នៅក្បែរ route ណាមួយ នោះ Next.js នឹង render កូដទម្រង់ JSX ទៅជារូបភាព PNG ទំហំ 1200×630 នៅពេលមានការឆែកចូល (request time) ដោយប្រើប្រាស់ `ImageResponse`:
+
+```tsx
+export default function Image() {
+  return new ImageResponse(
+    <div style={{ background: "#09090b", color: "#fafafa" /* ... */ }}>
+      <div style={{ fontSize: 84, fontWeight: 700 }}>Rithy Bondeth</div>
+      <div style={{ fontSize: 40, color: "#a1a1aa" }}>
+        Full Stack Developer & AI Engineer
+      </div>
+    </div>,
+    { width: 1200, height: 630 },
+  );
+}
+```
+
+សម្រាប់ការបង្ហោះប្លុក File ដដែលនៅក្នុង folder `[slug]` ទទួលយកនូវ `params` ដែលអាចផ្តល់អោយទៅក្នុងរូបភាពផ្ទាល់ខ្លួនដែលមានចំណងជើងនិងសម្រង់របស់វាផ្ទាល់នីមួយៗ។ មិនបាច់ប្រើប្រាស់ឧបករណ៍គូររូបភាពឡើយ (design tool) ហើយនិងមិនមានការជួបរូបភាពជាប់គាំងនៅពេលមានការដូរចំណងជើងទេ។
+
+ការប្រុងប្រយ័ត្នពីរយ៉ាង:
+
+1. សមាសធាតុ render (satori) គាំទ្រត្រឹមតែ flexbox ប៉ុណ្ណោះ — មិនមាន `display: grid` ទេ។
+2. ហ្វុន (font) ជាប់មានដែនកំណត់។ តួអក្សរ terminal-prompt `▸` របស់ខ្ញុំ បញ្ចេញមកជារាងប្រអប់ tofu (▯)។ គប្បីពិនិត្យមើលរូបភាពដោយភ្នែកពិតរបស់អ្នកមុនពេលដាក់ដំណើរការ (shipping)។
+
+## JSON-LD: ប្រាប់ Google អំពីអ្នក
+
+ទិន្នន័យមានរចនាសម្ព័ន្ធ (structured data) គឺជាផ្លាក `<script type="application/ld+json">`។ សម្រាប់ portfolio តារាង `Person` គឺជារឿងដែលអោយតម្លៃ:
+
+```tsx
+const personJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: siteConfig.name,
+  jobTitle: siteConfig.title,
+  url: siteConfig.url,
+  sameAs: [siteConfig.github, siteConfig.linkedin],
+};
+```
+
+ចំណាំសុវត្ថិភាពមួយ: ប្រសិនបើតម្លៃណាមួយអាចផ្ទុកនូវ input របស់អ្នកប្រើប្រាស់ ចូរគេចការបង្ហាញ `<` មុននឹងបញ្ចូល — `JSON.stringify(jsonLd).replace(/</g, "\\u003c")` — ការពារកុំឱ្យនរណាម្នាក់បិទផ្លាក script របស់អ្នកពីខាងក្នុង JSON។
+
+អត្ថបទប្លុកទទួលបានស្លាកយីហោ (schema) `BlogPosting` ដែលមាន `headline`, `datePublished` និង `author` បន្ថែម។ រៀបចំការត្រួតពិនិត្យរបស់អ្នកដោយប្រើគ្រាប់ឆែកជានៃ [Rich Results Test](https://search.google.com/test/rich-results)។
+
+## ការកត់សម្គាល់: ទម្រង់ចំណងជើងមិនដំណើរការនៅពេលសរសេរជា String
+
+ទម្រង់ពន្យល់ Next.js អនុញ្ញាតអោយទំព័រកូនចៅស្នង suffix:
+
+```ts
+// app/layout.tsx
+title: {
+  default: "Rithy Bondeth — Full Stack Developer & AI Engineer",
+  template: "%s — Rithy Bondeth",
+}
+```
+
+ការដាក់ប្លង់ប្លុករបស់ខ្ញុំទម្រង់ `title: "Blog"` — ដែលជា String ទទេរ។ ទូទាំងប្លុកអានដំណើរការបានល្អ ("Blog — Rithy Bondeth") ប៉ុន្តែ **រាល់អត្ថបទនៅខាងក្រោមវាបានបាត់ suffix យ៉ាងស្ងៀមស្ងាត់**។
+
+មូលហេតុ: ការបញ្ចូមរវាង metadata គឺរាក់ (shallow merging)។ នៅពេលដែលប្លង់កូនចៅកំណត់ `title` ជា String វាក៏បានបាត់ឈ្មោះគោលបំណងរបស់មេ — template ត្រូវបានជំនួសបាត់។ ដំណោះស្រាយគឹត្រូវតាំងជាថ្មីនៅកម្រិតនោះ:
+
+```ts
+// app/(main)/blog/layout.tsx
+title: {
+  default: "Blog",
+  template: "%s — Rithy Bondeth",
+}
+```
+
+ងាយស្រួលនៅពេលដែលដឹង; លាក់ខ្លួនយូរហូតយក `curl` ឆែកតែម្តង។
+
+## ការពិនិត្យជាមួយ curl មិនមែនតែវាយតម្លៃពីខាងក្រៅ
+
+រាល់ចំណុចខាងលើអាចឆែកបានស្រួលតាម terminal របស់អ្នក:
+
+```bash
+curl -s https://yoursite.com/sitemap.xml
+curl -s https://yoursite.com/robots.txt
+curl -s https://yoursite.com/blog/some-post | grep -o '<title>[^<]*</title>'
+```
+
+កំហុស metadata មិនបោះកំហុសទេ។ គ្រាន់តែជះឥទ្ធិពលអាក្រក់នៅពេលចេញស្វែងរក។ ត្រូវឆែករាល់ HTML ឱ្យច្បាស់ជាផ្នែកមួយនៃការធ្វើសកម្មភាពរបស់អ្នក!

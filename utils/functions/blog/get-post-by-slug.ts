@@ -3,6 +3,7 @@ import path from "path";
 import matter from "gray-matter";
 import { IPost } from "@/utils/interfaces/blog/blog.interface";
 import { getReadingTime } from "./get-reading-time";
+import type { TLocale } from "@/utils/i18n";
 
 const BLOG_DIR = path.join(process.cwd(), "content/blog");
 
@@ -13,8 +14,12 @@ const BLOG_DIR = path.join(process.cwd(), "content/blog");
  * @param slug - The MDX file name without the extension
  * @returns The parsed post, or null when no matching file exists
  */
-export async function getPostBySlug(slug: string): Promise<IPost | null> {
-  const filePath = path.join(BLOG_DIR, `${slug}.mdx`);
+export async function getPostBySlug(
+  slug: string,
+  lang: TLocale = "en",
+): Promise<IPost | null> {
+  const fileName = lang === "km" ? `${slug}.km.mdx` : `${slug}.mdx`;
+  const filePath = path.join(BLOG_DIR, fileName);
 
   if (!fs.existsSync(filePath)) {
     return null;

@@ -15,7 +15,7 @@ import Footer from "@/components/footer";
 import CommandPalette from "@/components/command-palette";
 import { ThemeProvider } from "@/components/utils/theme/theme-provider";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
-import { locales, hasLocale, type TLocale } from "@/utils/i18n";
+import { locales, hasLocale } from "@/utils/i18n";
 import { getSiteConfig } from "@/utils/i18n/content";
 
 const jetbrainsMono = JetBrains_Mono({
