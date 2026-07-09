@@ -11,9 +11,11 @@ import Link from "next/link";
 import { AnimateIn } from "@/components/utils/animations/animate-in";
 import { BlogCover } from "@/components/blog/blog-cover";
 import { mdxComponents } from "@/components/blog/mdx-components";
-import { CopyLinkButton } from "@/components/blog/copy-link-button";
 import { TableOfContents } from "@/components/blog/table-of-contents";
-import rehypePrettyCode, { type Options as PrettyCodeOptions } from "rehype-pretty-code";
+import { BlogShare } from "@/components/blog/blog-share";
+import rehypePrettyCode, {
+  type Options as PrettyCodeOptions,
+} from "rehype-pretty-code";
 import remarkGfm from "remark-gfm";
 import { hasLocale, getDictionary, locales } from "@/utils/i18n";
 import { getTableOfContents } from "@/utils/functions/blog/get-table-of-contents";
@@ -110,6 +112,7 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
       ? allPosts[currentIndex + 1]
       : null;
   const tableOfContents = getTableOfContents(post.content);
+  const articleUrl = `${siteConfig.url}/${lang}/blog/${post.slug}`;
 
   /* ------------------------------ Structured Data ----------------------------- */
   const blogPostJsonLd = {
@@ -232,11 +235,14 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
                     #{tag}
                   </Link>
                 ))}
-                <CopyLinkButton
-                  copyLabel={dict.blog.copyLink}
-                  copiedLabel={dict.blog.linkCopied}
-                />
               </div>
+
+              <BlogShare
+                title={post.title}
+                excerpt={post.excerpt}
+                url={articleUrl}
+                labels={dict.blog.share}
+              />
 
               {(olderPost || newerPost) && (
                 <nav
