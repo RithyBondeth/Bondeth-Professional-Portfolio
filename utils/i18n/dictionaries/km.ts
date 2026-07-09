@@ -122,6 +122,9 @@ export const km: TDictionary = {
     ragTitle: "RAG Retrieval Visualizer",
     ragDescription:
       "ស្វែងរកក្នុងសំណុំឯកសារពីរភាសា និងពិនិត្យ chunk ដែលបានរៀបចំលំដាប់ ពាក្យដែលត្រូវគ្នា និង context ដែលបានជ្រើសរើស។",
+    evalTitle: "LLM Evaluation Playground",
+    evalDescription:
+      "ប្រៀបធៀបចម្លើយពីរជាមួយតេស្តដែលមានលទ្ធផលថេរ និងស្វែងរក regression គុណភាពមុនពេលដាក់ប្រើប្រាស់។",
     openLab: "បើក Playground",
     backToLabs: "ត្រឡប់ទៅ Labs ទាំងអស់",
     playground: {
@@ -229,6 +232,87 @@ export const km: TDictionary = {
       ],
       relatedReading: "អត្ថបទបច្ចេកទេសពាក់ព័ន្ធ",
       relatedArticle: "RAG ជាមួយ Postgres និង pgvector",
+    },
+    evals: {
+      intro:
+        "ជ្រើសរើស test suite កែសម្រួលចម្លើយពីរ និងប្រៀបធៀបវាជាមួយ grader ដែលអាចធ្វើឡើងវិញបាន។ ពិន្ទុនីមួយៗមកពីច្បាប់ដែលអាចមើលឃើញ មិនមែនមតិរបស់ model ផ្សេងទេ។",
+      localMode: "Deterministic eval mode",
+      suiteHeading: "ជ្រើសរើស evaluation suite",
+      prompt: "សេចក្តីណែនាំភារកិច្ច",
+      candidate: "ចម្លើយ",
+      privacy:
+        "វាយតម្លៃក្នុងគេហទំព័រនេះ។ ចម្លើយមិនត្រូវបានផ្ញើទៅ model ខាងក្រៅ ឬរក្សាទុកទេ។",
+      run: "ដំណើរការការវាយតម្លៃ",
+      running: "កំពុងវាយតម្លៃ...",
+      resultsHeading: "របាយការណ៍ Regression",
+      emptyResults:
+        "ដំណើរការ suite ដើម្បីប្រៀបធៀបអត្រាជាប់ ពិន្ទុតាមទម្ងន់ និងតេស្តដែលបរាជ័យ។",
+      winner: "ឈ្នះ",
+      tie: "ចម្លើយទាំងពីរទទួលបានពិន្ទុដូចគ្នា។",
+      test: "តេស្ត",
+      weight: "ទម្ងន់",
+      pass: "ជាប់",
+      fail: "ធ្លាក់",
+      error: "មិនអាចបញ្ចប់ការវាយតម្លៃបានទេ។ សូមព្យាយាមម្តងទៀត។",
+      testLabels: {
+        "valid-json": "JSON ត្រឹមត្រូវ",
+        "required-keys": "Key ចាំបាច់",
+        "required-facts": "ព័ត៌មានចាំបាច់",
+        "forbidden-claims": "ការអះអាងហាមឃាត់",
+        citation: "មាន Citation",
+        "khmer-script": "ភាសាខ្មែរ",
+        "max-length": "ដែនកំណត់ប្រវែង",
+      },
+      presets: [
+        {
+          suiteId: "structured-json",
+          label: "Structured JSON",
+          prompt:
+            "បញ្ជូន JSON ដែលមាន status និង priority។ កុំប្រើភាសាមិនច្បាស់លាស់។",
+          candidateA: '{"status":"approved","priority":"high"}',
+          candidateB:
+            "The request is probably approved and maybe has high priority.",
+        },
+        {
+          suiteId: "grounded-answer",
+          label: "Grounded RAG",
+          prompt:
+            "ពន្យល់ retrieval stack ដោយប្រើតែ context ដែលបានផ្តល់ និងបញ្ចូល citation។",
+          candidateA:
+            "The system stores embeddings in PostgreSQL with pgvector and retrieves similar chunks before generation [1].",
+          candidateB:
+            "The system is guaranteed to be always correct and uses a proprietary vector database with zero risk.",
+        },
+        {
+          suiteId: "khmer-support",
+          label: "ការគាំទ្រភាសាខ្មែរ",
+          prompt:
+            "ឆ្លើយជាភាសាខ្មែរ៖ តើ Bondeth មានមូលដ្ឋាននៅទីណា និងមានវិជ្ជាជីវៈអ្វី?",
+          candidateA:
+            "រិទ្ធី បណ្ឌេត មានមូលដ្ឋាននៅរាជធានីភ្នំពេញ និងជាវិស្វករសូហ្វវែរ។",
+          candidateB:
+            "Bondeth is a product designer based in Bangkok.",
+        },
+      ],
+      steps: [
+        {
+          title: "កំណត់ការរំពឹងទុក",
+          description:
+            "បម្លែងតម្រូវការផលិតផលទៅជាការត្រួតពិនិត្យជាប់ ឬធ្លាក់ និងទម្ងន់ច្បាស់លាស់។",
+        },
+        {
+          title: "ប្រៀបធៀបចម្លើយ",
+          description:
+            "ដំណើរការ grader ដូចគ្នាលើ baseline និងចម្លើយថ្មី។",
+        },
+        {
+          title: "ចាប់ Regression",
+          description:
+            "ពិនិត្យតេស្តដែលបរាជ័យ ជំនួសឱ្យការជឿលើពិន្ទុសរុបតែមួយ។",
+        },
+      ],
+      relatedReading: "អត្ថបទបច្ចេកទេសពាក់ព័ន្ធ",
+      relatedArticle: "ការរចនា LLM Evals ដែលចាប់ Regression ពិតប្រាកដ",
     },
   },
   contact: {

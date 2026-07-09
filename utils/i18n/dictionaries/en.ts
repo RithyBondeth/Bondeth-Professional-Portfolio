@@ -116,6 +116,9 @@ export const en = {
     ragTitle: "RAG Retrieval Visualizer",
     ragDescription:
       "Search a bilingual document set and inspect ranked chunks, matched terms, and the context selected for generation.",
+    evalTitle: "LLM Evaluation Playground",
+    evalDescription:
+      "Compare two candidate responses with deterministic tests and reveal quality regressions before deployment.",
     openLab: "Open playground",
     backToLabs: "back to all labs",
     playground: {
@@ -223,6 +226,87 @@ export const en = {
       ],
       relatedReading: "Related technical article",
       relatedArticle: "RAG on Postgres You Already Have",
+    },
+    evals: {
+      intro:
+        "Choose a test suite, edit two candidate responses, and compare them with reproducible graders. Every score comes from visible rules rather than another model's opinion.",
+      localMode: "Deterministic eval mode",
+      suiteHeading: "Choose an evaluation suite",
+      prompt: "Task prompt",
+      candidate: "Candidate",
+      privacy:
+        "Evaluated locally by this site. No response is sent to an external model or stored.",
+      run: "Run evaluation",
+      running: "Evaluating...",
+      resultsHeading: "Regression report",
+      emptyResults:
+        "Run the suite to compare pass rates, weighted scores, and individual test failures.",
+      winner: "Winner",
+      tie: "Both candidates received the same weighted score.",
+      test: "Test",
+      weight: "Weight",
+      pass: "Pass",
+      fail: "Fail",
+      error: "The evaluation could not be completed. Please try again.",
+      testLabels: {
+        "valid-json": "Valid JSON",
+        "required-keys": "Required keys",
+        "required-facts": "Required facts",
+        "forbidden-claims": "Forbidden claims",
+        citation: "Citation present",
+        "khmer-script": "Khmer language",
+        "max-length": "Length limit",
+      },
+      presets: [
+        {
+          suiteId: "structured-json",
+          label: "Structured JSON",
+          prompt:
+            "Return JSON with status and priority. Do not include uncertain language.",
+          candidateA: '{"status":"approved","priority":"high"}',
+          candidateB:
+            "The request is probably approved and maybe has high priority.",
+        },
+        {
+          suiteId: "grounded-answer",
+          label: "Grounded RAG",
+          prompt:
+            "Explain the retrieval stack using only the supplied context and include a citation.",
+          candidateA:
+            "The system stores embeddings in PostgreSQL with pgvector and retrieves similar chunks before generation [1].",
+          candidateB:
+            "The system is guaranteed to be always correct and uses a proprietary vector database with zero risk.",
+        },
+        {
+          suiteId: "khmer-support",
+          label: "Khmer support",
+          prompt:
+            "Answer in Khmer: Where is Bondeth based and what is his profession?",
+          candidateA:
+            "រិទ្ធី បណ្ឌេត មានមូលដ្ឋាននៅរាជធានីភ្នំពេញ និងជាវិស្វករសូហ្វវែរ។",
+          candidateB:
+            "Bondeth is a product designer based in Bangkok.",
+        },
+      ],
+      steps: [
+        {
+          title: "Define expectations",
+          description:
+            "Turn product requirements into explicit pass/fail checks and weights.",
+        },
+        {
+          title: "Compare candidates",
+          description:
+            "Run the same graders against a baseline and a proposed response.",
+        },
+        {
+          title: "Catch regressions",
+          description:
+            "Inspect failed checks instead of trusting one aggregate score.",
+        },
+      ],
+      relatedReading: "Related technical article",
+      relatedArticle: "Designing LLM Evals That Catch Real Regressions",
     },
   },
   contact: {
