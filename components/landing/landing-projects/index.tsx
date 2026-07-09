@@ -200,15 +200,17 @@ function ProjectCard(props: { project: IProject; dict: TDictionary }) {
 
         {/* Links */}
         <div className="flex items-center gap-2 pt-2 border-t border-border/40">
-          <a
-            href={project.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded text-xs font-mono text-muted-foreground bg-muted/40 border border-border/50 hover:border-border hover:text-foreground transition-colors"
-          >
-            <GitHubIcon className="w-3.5 h-3.5" />
-            {dict.projects.source}
-          </a>
+          {project.github && (
+            <a
+              href={project.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded text-xs font-mono text-muted-foreground bg-muted/40 border border-border/50 hover:border-border hover:text-foreground transition-colors"
+            >
+              <GitHubIcon className="w-3.5 h-3.5" />
+              {dict.projects.source}
+            </a>
+          )}
 
           {project.live ? (
             <a

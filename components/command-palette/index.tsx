@@ -307,7 +307,7 @@ export default function CommandPalette(props: { lang: TLocale }) {
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[100] flex items-start justify-center p-4 pt-[14vh] bg-background/70 backdrop-blur-sm"
+      className="fixed inset-0 z-100 flex items-start justify-center p-4 pt-[14vh] bg-background/70 backdrop-blur-sm"
       role="button"
       tabIndex={-1}
       aria-label={cp.hintClose}

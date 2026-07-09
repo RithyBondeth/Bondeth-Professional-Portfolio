@@ -5,7 +5,8 @@ export interface IProject {
   description: string;
   tags: string[];
   category: TProjectCategory;
-  github: string;
+  /** URL to a public repository, or null for private/closed-source projects */
+  github: string | null;
   live: string | null;
   /** URL to a screenshot/preview image */
   image: string | null;

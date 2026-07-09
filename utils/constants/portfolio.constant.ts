@@ -26,7 +26,7 @@ export const siteConfig: ISiteConfig = {
   email: "rithybondeth999@gmail.com",
   github: "https://github.com/bondeth",
   linkedin: "https://linkedin.com/in/rithybondeth",
-  resume: "/resume.pdf",
+  resume: "/files/bondeth-resume.pdf",
 };
 
 /* --------------------------------- Nav Links -------------------------------- */
@@ -259,7 +259,7 @@ export const projects: IProject[] = [
       "Official website for the Digital Economy and Business Committee of Cambodia. Built to inform the public on digital economy policies, news, and government services.",
     tags: ["Next.js", "NestJS", "PostgreSQL", "Docker"],
     category: "Web",
-    github: "https://github.com/bondeth",
+    github: null,
     live: "https://digitaleconomy.gov.kh/?lang=kh",
     image: "/previews/debc-website.png",
     gradient: "from-blue-700/20 via-indigo-500/10 to-slate-800",
@@ -270,7 +270,7 @@ export const projects: IProject[] = [
       "A platform developed in collaboration with the Ministry of Economy and Finance (MEF) to register and support informal economy workers across Cambodia.",
     tags: ["Next.js", "NestJS", "PostgreSQL", "Docker"],
     category: "Web",
-    github: "https://github.com/bondeth",
+    github: null,
     live: "https://informal.digitaleconomy.gov.kh/km",
     image: "/previews/informal-economy.png",
     gradient: "from-amber-600/20 via-orange-500/10 to-slate-800",
