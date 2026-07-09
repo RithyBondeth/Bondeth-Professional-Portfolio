@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getAllPosts } from "@/utils/functions/blog";
+import { getAllCategories, getAllPosts } from "@/utils/functions/blog";
 import { getAllTags } from "@/utils/functions/blog/get-tags";
 import { AnimateIn } from "@/components/utils/animations/animate-in";
 import { BlogExplorer } from "@/components/blog/blog-explorer";
@@ -15,15 +15,27 @@ export default async function BlogPage({ params }: IBlogPageProps) {
   if (!hasLocale(lang)) notFound();
   const dict = getDictionary(lang);
   const posts = await getAllPosts(lang);
+  const categories = await getAllCategories(lang);
   const tags = await getAllTags(lang);
 
   // Strip MDX content before crossing to the client — the list only needs metadata.
   const listPosts = posts.map(
-    ({ slug, title, date, excerpt, tags, cover, coverAlt, readingTime }) => ({
+    ({
       slug,
       title,
       date,
       excerpt,
+      category,
+      tags,
+      cover,
+      coverAlt,
+      readingTime,
+    }) => ({
+      slug,
+      title,
+      date,
+      excerpt,
+      category,
       tags,
       cover,
       coverAlt,
@@ -69,6 +81,7 @@ export default async function BlogPage({ params }: IBlogPageProps) {
           <AnimateIn delay={0.15}>
             <BlogExplorer
               posts={listPosts}
+              categories={categories}
               tags={tags}
               lang={lang}
               labels={dict.blog}

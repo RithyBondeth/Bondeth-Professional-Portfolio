@@ -35,6 +35,7 @@ export const navLinks: INavLink[] = [
   { href: "/#skills", label: "Skills" },
   { href: "/#experience", label: "Experience" },
   { href: "/#education", label: "Education" },
+  { href: "/#services", label: "Services" },
   { href: "/#projects", label: "Projects" },
   { href: "/labs", label: "Labs" },
   { href: "/blog", label: "Blog" },

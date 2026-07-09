@@ -3,6 +3,8 @@ export interface IPost {
   title: string;
   date: string;
   excerpt: string;
+  /** Broad reader-facing category, e.g. "Tech", "Innovation", "Education". */
+  category: string;
   tags: string[];
   /** Optional cover image path (e.g. "/blog/my-post.svg"). When omitted, a
    *  branded terminal-style cover is generated from the post's metadata. */

@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { BlogCover } from "@/components/blog/blog-cover";
 import type { IPost } from "@/utils/interfaces/blog/blog.interface";
+import type { ICategoryCount } from "@/utils/functions/blog/get-categories";
 import type { ITagCount } from "@/utils/functions/blog/get-tags";
 import type { TDictionary, TLocale } from "@/utils/i18n";
 
@@ -11,6 +12,7 @@ type TListPost = Omit<IPost, "content">;
 
 interface IBlogExplorerProps {
   posts: TListPost[];
+  categories: ICategoryCount[];
   tags: ITagCount[];
   lang: TLocale;
   labels: TDictionary["blog"];
@@ -18,25 +20,32 @@ interface IBlogExplorerProps {
 
 export function BlogExplorer({
   posts,
+  categories,
   tags,
   lang,
   labels,
 }: IBlogExplorerProps) {
   /* -------------------------------- All States ------------------------------- */
   const [query, setQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
 
   /* ---------------------------------- Utils --------------------------------- */
   const normalized = query.trim().toLowerCase();
 
   const filtered = useMemo(() => {
-    if (!normalized) return posts;
-    return posts.filter((post) => {
-      const haystack = [post.title, post.excerpt, ...post.tags]
+    const byCategory =
+      selectedCategory === "all"
+        ? posts
+        : posts.filter((post) => post.category === selectedCategory);
+
+    if (!normalized) return byCategory;
+    return byCategory.filter((post) => {
+      const haystack = [post.title, post.excerpt, post.category, ...post.tags]
         .join(" ")
         .toLowerCase();
       return haystack.includes(normalized);
     });
-  }, [posts, normalized]);
+  }, [posts, normalized, selectedCategory]);
 
   const countLabel = `${filtered.length} ${
     filtered.length === 1 ? labels.postSingular : labels.postPlural
@@ -80,6 +89,44 @@ export function BlogExplorer({
           </p>
         )}
       </div>
+
+      {/* Category Filter Section */}
+      {categories.length > 0 && (
+        <div className="mb-10">
+          <p className="mb-3 font-mono text-xs uppercase tracking-[0.25em] text-muted-foreground">
+            <span className="text-primary">::</span> {labels.browseCategories}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => setSelectedCategory("all")}
+              aria-pressed={selectedCategory === "all"}
+              aria-label={`${labels.allCategories} (${posts.length})`}
+              className="rounded border border-border bg-card/60 px-3 py-1.5 font-mono text-xs text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground aria-pressed:border-primary/50 aria-pressed:bg-primary/10 aria-pressed:text-primary"
+            >
+              {labels.allCategories}
+              <span className="ml-1 text-muted-foreground">
+                {posts.length}
+              </span>
+            </button>
+            {categories.map((category) => (
+              <button
+                key={category.slug}
+                type="button"
+                onClick={() => setSelectedCategory(category.category)}
+                aria-pressed={selectedCategory === category.category}
+                aria-label={`${category.category} (${category.count})`}
+                className="rounded border border-border bg-card/60 px-3 py-1.5 font-mono text-xs text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground aria-pressed:border-primary/50 aria-pressed:bg-primary/10 aria-pressed:text-primary"
+              >
+                {category.category}
+                <span className="ml-1 text-muted-foreground">
+                  {category.count}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Browse-by-tag Section */}
       {tags.length > 0 && (
@@ -128,6 +175,9 @@ export function BlogExplorer({
                     { month: "short", day: "numeric", year: "numeric" },
                   )}
                 </time>
+                <span className="mb-3 inline-flex rounded-full border border-primary/20 bg-primary/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-primary">
+                  {post.category}
+                </span>
                 <h2 className="mb-2 text-xl font-bold text-foreground transition-colors group-hover:text-primary">
                   {post.title}
                 </h2>

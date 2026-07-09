@@ -20,11 +20,22 @@ export default async function TagPage({ params }: ITagPageProps) {
 
   // Strip MDX content before crossing to the client.
   const listPosts = posts.map(
-    ({ slug, title, date, excerpt, tags, cover, coverAlt, readingTime }) => ({
+    ({
       slug,
       title,
       date,
       excerpt,
+      category,
+      tags,
+      cover,
+      coverAlt,
+      readingTime,
+    }) => ({
+      slug,
+      title,
+      date,
+      excerpt,
+      category,
       tags,
       cover,
       coverAlt,
@@ -56,6 +67,7 @@ export default async function TagPage({ params }: ITagPageProps) {
             <AnimateIn delay={0.15}>
               <BlogExplorer
                 posts={listPosts}
+                categories={[]}
                 tags={[]}
                 lang={lang}
                 labels={dict.blog}

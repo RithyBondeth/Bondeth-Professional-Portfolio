@@ -37,6 +37,7 @@ export async function getAllPosts(lang: TLocale = "en"): Promise<IPost[]> {
         title: data.title,
         date: data.date,
         excerpt: data.excerpt,
+        category: data.category ?? "Tech",
         tags: data.tags,
         cover: data.cover ?? null,
         coverAlt: data.coverAlt ?? null,

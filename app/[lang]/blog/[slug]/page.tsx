@@ -167,6 +167,9 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
         {/* Post Header Section */}
         <AnimateIn delay={0.1} className="max-w-3xl">
           <div className="mb-2 flex flex-wrap items-center gap-3 font-mono text-xs text-primary dark:text-primary/60">
+            <span className="rounded-full border border-primary/25 bg-primary/10 px-2.5 py-1 text-[10px] uppercase tracking-[0.18em]">
+              {post.category}
+            </span>
             <time>
               {new Date(post.date).toLocaleDateString(
                 lang === "km" ? "km-KH" : "en-US",
