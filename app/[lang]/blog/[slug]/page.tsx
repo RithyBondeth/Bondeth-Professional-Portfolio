@@ -86,11 +86,7 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
     notFound();
   }
 
-  const relatedPosts = await getRelatedPosts(
-    post.slug,
-    post.tags,
-    lang,
-  );
+  const relatedPosts = await getRelatedPosts(post.slug, post.tags, lang);
 
   /* ------------------------------ Structured Data ----------------------------- */
   const blogPostJsonLd = {
@@ -138,7 +134,7 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
           <BlogCover
             post={post}
             priority
-            className="aspect-[2/1] sm:aspect-[5/2] mb-8"
+            className="aspect-2/1 sm:aspect-5/2 mb-8"
           />
         </AnimateIn>
 
@@ -212,7 +208,7 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
                     >
                       <BlogCover
                         post={related}
-                        className="aspect-[2/1] mb-3 transition-colors group-hover:border-primary/40"
+                        className="aspect-2/1 mb-3 transition-colors group-hover:border-primary/40"
                       />
                       <div className="flex items-center gap-2 text-[10px] font-mono text-muted-foreground dark:text-muted-foreground/60 mb-1.5">
                         <time>
