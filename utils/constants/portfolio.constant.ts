@@ -244,8 +244,8 @@ export const projects: IProject[] = [
     category: "AI",
     visibility: "public",
     github: "https://github.com/apsara-assistant/apsara-assistant",
-    live: null,
-    image: null,
+    live: "https://apsara-assistant.netlify.app/",
+    image: "/previews/apsara-assistant.png",
     gradient: "from-violet-600/20 via-purple-500/10 to-slate-800",
   },
   {
@@ -268,6 +268,27 @@ export const projects: IProject[] = [
     live: "https://apsara-agentic.netlify.app",
     image: "/previews/apsara-agentic.png",
     gradient: "from-emerald-600/20 via-teal-500/10 to-slate-800",
+  },
+  {
+    slug: "khodekh",
+    title: "Khode KH",
+    description:
+      "Khode KH is a first AI-powered coding platform built for Cambodian students. Learn Python, JavaScript, and more with KodeKH — your personal AI coding mentor that speaks Khmer.",
+    tags: [
+      "Next.js",
+      "Nest.js",
+      "PostgreSQL",
+      "Redis",
+      "MongoDB",
+      "OpenAI",
+      "Anthropic",
+    ],
+    category: "AI",
+    visibility: "public",
+    github: "https://github.com/apsara-agentic/khodekh-web",
+    live: "https://khodekh.netlify.app",
+    image: "/previews/khodekh.png",
+    gradient: "from-slate-600/20 via-gray-500/10 to-slate-800",
   },
   {
     slug: "debc-website",
