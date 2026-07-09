@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAllPosts } from "@/utils/functions/blog";
-import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
-import { BlogCover } from "@/components/blog/blog-cover";
+import { getAllTags } from "@/utils/functions/blog/get-tags";
+import { AnimateIn } from "@/components/utils/animations/animate-in";
+import { BlogExplorer } from "@/components/blog/blog-explorer";
 import { hasLocale, getDictionary } from "@/utils/i18n";
 
 interface IBlogPageProps {
@@ -15,6 +15,10 @@ export default async function BlogPage({ params }: IBlogPageProps) {
   if (!hasLocale(lang)) notFound();
   const dict = getDictionary(lang);
   const posts = await getAllPosts();
+  const tags = await getAllTags();
+
+  // Strip MDX content before crossing to the client — the list only needs metadata.
+  const listPosts = posts.map(({ content: _content, ...rest }) => rest);
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
@@ -43,58 +47,23 @@ export default async function BlogPage({ params }: IBlogPageProps) {
         <AnimateIn delay={0.12}>
           <a
             href="/feed.xml"
-            className="inline-flex items-center gap-2 text-xs font-mono text-muted-foreground hover:text-primary transition-colors mb-16"
+            className="inline-flex items-center gap-2 text-xs font-mono text-muted-foreground hover:text-primary transition-colors mb-12"
           >
             <span className="text-primary">⚡</span> {dict.blog.subscribeRss}
           </a>
         </AnimateIn>
 
-        {/* Post List Section */}
-        <StaggerIn
-          className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-12"
-          stagger={0.1}
-          delay={0.15}
-        >
-          {posts.map((post) => (
-            <article key={post.slug} className="group relative">
-              <Link href={`/${lang}/blog/${post.slug}`} className="block">
-                <BlogCover
-                  post={post}
-                  className="aspect-[2/1] mb-4 transition-colors group-hover:border-primary/40"
-                />
-                <time className="text-xs font-mono text-muted-foreground dark:text-muted-foreground/60 block mb-2">
-                  {new Date(post.date).toLocaleDateString(
-                    lang === "km" ? "km-KH" : "en-US",
-                    {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    },
-                  )}
-                </time>
-                <h2 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors mb-2">
-                  {post.title}
-                </h2>
-                <p className="text-muted-foreground text-sm leading-relaxed mb-4 line-clamp-2">
-                  {post.excerpt}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {post.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="text-[10px] font-mono text-primary dark:text-primary/70 bg-primary/5 px-2 py-0.5 rounded border border-primary/10"
-                    >
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
-              </Link>
-            </article>
-          ))}
-        </StaggerIn>
-
-        {/* Empty State Section */}
-        {posts.length === 0 && (
+        {/* Search + Tags + Post List Section */}
+        {listPosts.length > 0 ? (
+          <AnimateIn delay={0.15}>
+            <BlogExplorer
+              posts={listPosts}
+              tags={tags}
+              lang={lang}
+              labels={dict.blog}
+            />
+          </AnimateIn>
+        ) : (
           <div className="py-20 text-center border border-dashed border-border rounded">
             <p className="text-muted-foreground font-mono text-sm">
               {dict.blog.empty}
