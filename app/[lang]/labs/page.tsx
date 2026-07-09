@@ -94,6 +94,60 @@ export default async function LabsPage({ params }: ILabsPageProps) {
             </div>
           </article>
         </AnimateIn>
+
+        <AnimateIn from="up" delay={0.12}>
+          <article className="group mt-6 overflow-hidden rounded border border-border/60 bg-card transition-all hover:border-primary/30">
+            <div className="grid md:grid-cols-[0.8fr_1.2fr]">
+              <div className="relative min-h-56 overflow-hidden bg-[radial-gradient(circle_at_70%_25%,rgba(139,92,246,0.2),transparent_40%),radial-gradient(circle_at_25%_75%,rgba(34,211,238,0.16),transparent_42%),#050914] p-6">
+                <div className="absolute inset-x-6 top-6 space-y-2 font-code text-[10px]">
+                  {[92, 76, 48].map((score, index) => (
+                    <div
+                      key={score}
+                      className="rounded border border-border/40 bg-black/50 p-3"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">
+                          chunk_0{index + 1}
+                        </span>
+                        <span className="text-emerald-400">{score}%</span>
+                      </div>
+                      <div className="mt-2 h-1 overflow-hidden rounded bg-border">
+                        <div
+                          className="h-full rounded bg-emerald-400"
+                          style={{ width: `${score}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex flex-col p-6 sm:p-8">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="rounded border border-primary/20 bg-primary/5 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-primary">
+                    {labs.experimental}
+                  </span>
+                  <span className="rounded border border-emerald-500/20 bg-emerald-500/5 px-2 py-1 font-mono text-[10px] text-emerald-500">
+                    {labs.costFree}
+                  </span>
+                </div>
+                <h2 className="mt-5 text-2xl font-bold text-foreground">
+                  {labs.ragTitle}
+                </h2>
+                <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">
+                  {labs.ragDescription}
+                </p>
+                <Link
+                  href={`/${lang}/labs/rag-retrieval`}
+                  className="mt-7 inline-flex min-h-11 w-fit items-center gap-2 rounded bg-primary px-4 font-mono text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                >
+                  {labs.openLab}
+                  <span aria-hidden>→</span>
+                </Link>
+              </div>
+            </div>
+          </article>
+        </AnimateIn>
       </div>
     </main>
   );

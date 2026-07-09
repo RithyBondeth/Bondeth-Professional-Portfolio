@@ -55,6 +55,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           languages: languageAlternates("/labs/structured-output"),
         },
       },
+      {
+        url: `${siteConfig.url}/${locale}/labs/rag-retrieval`,
+        lastModified: new Date(),
+        changeFrequency: "monthly",
+        priority: 0.7,
+        alternates: {
+          languages: languageAlternates("/labs/rag-retrieval"),
+        },
+      },
     );
 
     entries.push(

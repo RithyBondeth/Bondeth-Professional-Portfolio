@@ -119,6 +119,9 @@ export const km: TDictionary = {
     structuredOutputTitle: "Structured Output Playground",
     structuredOutputDescription:
       "បម្លែងសំណើគម្រោងដែលមិនមានរចនាសម្ព័ន្ធទៅជា JSON ដែលអាចព្យាករបាន ហើយពិនិត្យ schema និងទិន្នន័យដែលខ្វះ។",
+    ragTitle: "RAG Retrieval Visualizer",
+    ragDescription:
+      "ស្វែងរកក្នុងសំណុំឯកសារពីរភាសា និងពិនិត្យ chunk ដែលបានរៀបចំលំដាប់ ពាក្យដែលត្រូវគ្នា និង context ដែលបានជ្រើសរើស។",
     openLab: "បើក Playground",
     backToLabs: "ត្រឡប់ទៅ Labs ទាំងអស់",
     playground: {
@@ -174,6 +177,58 @@ export const km: TDictionary = {
       ],
       relatedReading: "អត្ថបទបច្ចេកទេសពាក់ព័ន្ធ",
       relatedArticle: "ការទាញយក JSON ដែលអាចទុកចិត្តបានពី LLM",
+    },
+    rag: {
+      intro:
+        "សួរសំណួរអំពីសំណុំឯកសារ portfolio។ Retrieval endpoint ក្នុងតំបន់នឹងបំបែកសំណួរជាពាក្យ វាយតម្លៃ chunk នីមួយៗ និងបង្ហាញ context ដែលមានពិន្ទុខ្ពស់ជាមួយភស្តុតាងនៃការផ្គូផ្គង។",
+      localMode: "Local retrieval mode",
+      queryHeading: "សួរសំណួរទៅសំណុំឯកសារ",
+      queryLabel: "សំណួរស្វែងរក",
+      privacy:
+        "ប្រើសំណុំទិន្នន័យសាធារណៈថេរនៅលើគេហទំព័រនេះ។ មិនមានការហៅ embedding ឬ AI provider ខាងក្រៅទេ។",
+      search: "ស្វែងរក context",
+      searching: "កំពុងស្វែងរក...",
+      resultsHeading: "Context chunk តាមលំដាប់",
+      emptyResults:
+        "ដំណើរការការស្វែងរក ដើម្បីមើល chunk ដែលនឹងត្រូវផ្ញើទៅ LLM។",
+      noMatches:
+        "រកមិនឃើញ chunk ពាក់ព័ន្ធទេ។ សូមសាកល្បងសំណួរអំពីការងារ AI បច្ចេកវិទ្យា ការសិក្សា ឬទីតាំង។",
+      queryTerms: "ពាក្យសំណួរដែលបានធ្វើឱ្យស្តង់ដារ",
+      pipeline: "លំហូរការស្វែងរក",
+      error: "មិនអាចបញ្ចប់ការស្វែងរកបានទេ។ សូមព្យាយាមម្តងទៀត។",
+      presets: [
+        {
+          label: "ការផ្តោតលើ AI",
+          value: "What AI engineering topics does Bondeth work on?",
+        },
+        {
+          label: "ការសិក្សា",
+          value: "Where did he study and what scholarship did he receive?",
+        },
+        {
+          label: "សំណួរខ្មែរ",
+          value: "ការសិក្សា របស់ រិទ្ធី បណ្ឌេត",
+        },
+      ],
+      steps: [
+        {
+          title: "បំបែកពាក្យ",
+          description:
+            "បម្លែងសំណួរទៅជាពាក្យដែលអាចស្វែងរក និងដកពាក្យទូទៅចេញ។",
+        },
+        {
+          title: "ដាក់ពិន្ទុ និងរៀបលំដាប់",
+          description:
+            "វាស់ការគ្របដណ្តប់ និងចំនួនពាក្យដែលត្រូវគ្នានៅក្នុង chunk នីមួយៗ។",
+        },
+        {
+          title: "រៀបចំ context",
+          description:
+            "ជ្រើសរើស chunk ដែលមានពិន្ទុខ្ពស់សម្រាប់ជំហានបង្កើតចម្លើយបន្ទាប់។",
+        },
+      ],
+      relatedReading: "អត្ថបទបច្ចេកទេសពាក់ព័ន្ធ",
+      relatedArticle: "RAG ជាមួយ Postgres និង pgvector",
     },
   },
   contact: {

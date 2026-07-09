@@ -113,6 +113,9 @@ export const en = {
     structuredOutputTitle: "Structured Output Playground",
     structuredOutputDescription:
       "Turn an unstructured project inquiry into predictable JSON, then inspect schema validation and missing fields.",
+    ragTitle: "RAG Retrieval Visualizer",
+    ragDescription:
+      "Search a bilingual document set and inspect ranked chunks, matched terms, and the context selected for generation.",
     openLab: "Open playground",
     backToLabs: "back to all labs",
     playground: {
@@ -168,6 +171,58 @@ export const en = {
       ],
       relatedReading: "Related technical article",
       relatedArticle: "Getting Reliable JSON Out of an LLM",
+    },
+    rag: {
+      intro:
+        "Ask a question about the portfolio corpus. The local retrieval endpoint tokenizes the query, scores every chunk, and returns the highest-ranking context with transparent matching evidence.",
+      localMode: "Local retrieval mode",
+      queryHeading: "Ask the document set",
+      queryLabel: "Retrieval query",
+      privacy:
+        "Uses a fixed public corpus on this site. No embeddings or external AI provider are called.",
+      search: "Retrieve context",
+      searching: "Retrieving...",
+      resultsHeading: "Ranked context chunks",
+      emptyResults:
+        "Run retrieval to see which document chunks would be passed to an LLM.",
+      noMatches:
+        "No relevant chunks were found. Try a query about work, AI, technology, education, or location.",
+      queryTerms: "Normalized query terms",
+      pipeline: "Retrieval pipeline",
+      error: "The retrieval could not be completed. Please try again.",
+      presets: [
+        {
+          label: "AI focus",
+          value: "What AI engineering topics does Bondeth work on?",
+        },
+        {
+          label: "Education",
+          value: "Where did he study and what scholarship did he receive?",
+        },
+        {
+          label: "សំណួរខ្មែរ",
+          value: "ការសិក្សា របស់ រិទ្ធី បណ្ឌេត",
+        },
+      ],
+      steps: [
+        {
+          title: "Tokenize",
+          description:
+            "Normalize the question into searchable terms and remove common stop words.",
+        },
+        {
+          title: "Score and rank",
+          description:
+            "Measure term coverage and density across every available chunk.",
+        },
+        {
+          title: "Assemble context",
+          description:
+            "Select the highest-ranking chunks for a later generation step.",
+        },
+      ],
+      relatedReading: "Related technical article",
+      relatedArticle: "RAG on Postgres You Already Have",
     },
   },
   contact: {
