@@ -324,11 +324,54 @@ export const en = {
       relatedArticle: "Designing LLM Evals That Catch Real Regressions",
     },
   },
+  recommendations: {
+    heading: "Recommendations & professional references",
+    blurb:
+      "My work spans product teams, private companies, and public-sector organizations. Verified professional references can be shared when they are relevant to an opportunity.",
+    privacyTitle: "Trust without exposing confidential work",
+    privacyBody:
+      "Some collaborations involve internal or government systems. I protect that confidentiality while providing appropriate references and verifiable context when permitted.",
+    items: [
+      {
+        title: "Reliable delivery",
+        body: "References can speak to ownership, practical problem-solving, and delivering production software under real constraints.",
+      },
+      {
+        title: "Cross-functional collaboration",
+        body: "Experience working with technical teams, operational stakeholders, and decision-makers across different organizations.",
+      },
+      {
+        title: "Responsible engineering",
+        body: "A security-conscious and maintainable approach to web, mobile, data, and AI systems.",
+      },
+    ],
+    requestReference: "Request a reference",
+    viewLinkedIn: "View LinkedIn profile",
+  },
   contact: {
     heading: "Let's work together",
     blurb:
-      "I'm currently open to new opportunities. Whether you have a project in mind, a question, or just want to say hi — my inbox is always open.",
+      "Share the problem you are solving, your current stage, and where you need technical support. I will review the fit and reply with a practical next step.",
+    availability: "Open to selected collaborations",
+    fitLabel: "Best fit",
+    fitItems: ["Web platforms", "Mobile apps", "AI & RAG systems", "Technical consulting"],
+    nextHeading: "What happens next",
+    nextSteps: [
+      "You send a short project brief.",
+      "I review the scope and collaboration fit.",
+      "You receive a clear next step or a useful referral.",
+    ],
+    directEmail: "Prefer email?",
     form: {
+      projectType: "Project type",
+      projectTypePlaceholder: "Select the closest match",
+      projectTypes: [
+        "Web platform",
+        "Mobile application",
+        "AI or RAG system",
+        "Technical consultation",
+        "Other",
+      ],
       name: "Name",
       namePlaceholder: "Your Name",
       email: "Email",

@@ -119,6 +119,30 @@ export default function ContactForm(props: { lang: TLocale }) {
         </div>
       </div>
 
+      <div className="flex flex-col gap-1.5">
+        <label
+          htmlFor="projectType"
+          className="ml-1 font-mono text-[10px] uppercase text-muted-foreground"
+        >
+          {t.projectType}
+        </label>
+        <select
+          id="projectType"
+          name="projectType"
+          defaultValue=""
+          className="rounded border border-border/60 bg-background px-4 py-2.5 text-sm text-foreground transition-colors focus:border-primary/50 focus:outline-hidden"
+        >
+          <option value="" disabled>
+            {t.projectTypePlaceholder}
+          </option>
+          {t.projectTypes.map((type) => (
+            <option key={type} value={type}>
+              {type}
+            </option>
+          ))}
+        </select>
+      </div>
+
       {/* Message Section */}
       <div className="flex flex-col gap-1.5">
         <label

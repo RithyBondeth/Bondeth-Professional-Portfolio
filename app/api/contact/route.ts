@@ -16,6 +16,8 @@ export async function POST(request: Request) {
   const name = typeof payload.name === "string" ? payload.name.trim() : "";
   const email = typeof payload.email === "string" ? payload.email.trim() : "";
   const message = typeof payload.message === "string" ? payload.message.trim() : "";
+  const projectType =
+    typeof payload.projectType === "string" ? payload.projectType.trim() : "";
   const honeypot = typeof payload.company === "string" ? payload.company.trim() : "";
 
   /* ------------------------------ Spam Honeypot ------------------------------ */
@@ -37,6 +39,12 @@ export async function POST(request: Request) {
       { status: 400 }
     );
   }
+  if (projectType.length > 80) {
+    return NextResponse.json(
+      { error: "Please provide a valid project type." },
+      { status: 400 }
+    );
+  }
 
   /* -------------------------------- Send Email ------------------------------- */
   const apiKey = process.env.RESEND_API_KEY;
@@ -55,8 +63,8 @@ export async function POST(request: Request) {
     from: process.env.CONTACT_FROM_EMAIL ?? "Portfolio Contact <onboarding@resend.dev>",
     to: siteConfig.email,
     replyTo: email,
-    subject: `Portfolio contact from ${name}`,
-    text: `Name: ${name}\nEmail: ${email}\n\n${message}`,
+    subject: `${projectType ? `${projectType} — ` : ""}Portfolio contact from ${name}`,
+    text: `Name: ${name}\nEmail: ${email}\nProject type: ${projectType || "Not specified"}\n\n${message}`,
   });
 
   if (error) {

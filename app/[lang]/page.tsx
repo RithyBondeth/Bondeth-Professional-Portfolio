@@ -7,6 +7,7 @@ import LandingSkills from "@/components/landing/landing-skills";
 import LandingExperience from "@/components/landing/landing-experience";
 import LandingEducation from "@/components/landing/landing-education";
 import LandingProjects from "@/components/landing/landing-projects";
+import LandingRecommendations from "@/components/landing/landing-recommendations";
 import LandingContact from "@/components/landing/landing-contact";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
 import { hasLocale } from "@/utils/i18n";
@@ -93,7 +94,10 @@ export default async function IndexPage({ params }: IHomePageProps) {
       {/* Section 7: Projects */}
       <LandingProjects lang={lang} />
 
-      {/* Section 8: Contact */}
+      {/* Section 8: Recommendations */}
+      <LandingRecommendations lang={lang} />
+
+      {/* Section 9: Contact */}
       <LandingContact lang={lang} />
     </main>
   );
