@@ -30,6 +30,34 @@ export const en = {
       clients: "Happy Clients",
     },
   },
+  currentFocus: {
+    heading: "What I'm focused on now",
+    blurb:
+      "A snapshot of the work, technologies, and opportunities receiving my attention right now.",
+    status: "Open to meaningful collaborations",
+    items: [
+      {
+        label: "Building",
+        value:
+          "Production web and mobile services at the Digital Economy and Business Committee.",
+      },
+      {
+        label: "Exploring",
+        value:
+          "Reliable AI systems, agentic workflows, RAG, and practical LLM evaluation.",
+      },
+      {
+        label: "Collaborating",
+        value:
+          "Open to selected software, AI, and product collaborations where I can create measurable value.",
+      },
+      {
+        label: "Based in",
+        value:
+          "Phnom Penh, Cambodia — working in the UTC+7 time zone with local and remote teams.",
+      },
+    ],
+  },
   skills: {
     heading: "Technologies I work with",
     levels: {
