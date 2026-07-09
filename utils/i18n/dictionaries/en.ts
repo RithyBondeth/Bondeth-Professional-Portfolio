@@ -348,13 +348,36 @@ export const en = {
     requestReference: "Request a reference",
     viewLinkedIn: "View LinkedIn profile",
   },
+  services: {
+    heading: "Software solutions built for real needs",
+    blurb:
+      "I design and build reliable software solutions for organizations, teams, and growing products—from the first technical plan to production delivery.",
+    items: [
+      {
+        title: "Web development",
+        body: "Responsive websites, business platforms, dashboards, APIs, and full-stack web applications.",
+      },
+      {
+        title: "Mobile app development",
+        body: "Cross-platform mobile applications designed for practical workflows and dependable use.",
+      },
+      {
+        title: "AI solutions & integration",
+        body: "RAG systems, AI assistants, workflow automation, structured outputs, and evaluation pipelines.",
+      },
+      {
+        title: "Custom software systems",
+        body: "Secure internal tools and tailored digital systems for business or public-sector operations.",
+      },
+    ],
+    discussProject: "Discuss your project",
+    discussSolution: "Discuss this solution",
+  },
   contact: {
-    heading: "Let's work together",
+    heading: "Tell me about your project",
     blurb:
       "Share the problem you are solving, your current stage, and where you need technical support. I will review the fit and reply with a practical next step.",
-    availability: "Open to selected collaborations",
-    fitLabel: "Best fit",
-    fitItems: ["Web platforms", "Mobile apps", "AI & RAG systems", "Technical consulting"],
+    availability: "Available for selected software projects",
     nextHeading: "What happens next",
     nextSteps: [
       "You send a short project brief.",
@@ -366,10 +389,10 @@ export const en = {
       projectType: "Project type",
       projectTypePlaceholder: "Select the closest match",
       projectTypes: [
-        "Web platform",
-        "Mobile application",
-        "AI or RAG system",
-        "Technical consultation",
+        "Web development",
+        "Mobile app development",
+        "AI solution or integration",
+        "Custom software system",
         "Other",
       ],
       name: "Name",

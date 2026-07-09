@@ -6,6 +6,7 @@ import LandingCurrentFocus from "@/components/landing/landing-current-focus";
 import LandingSkills from "@/components/landing/landing-skills";
 import LandingExperience from "@/components/landing/landing-experience";
 import LandingEducation from "@/components/landing/landing-education";
+import LandingServices from "@/components/landing/landing-services";
 import LandingProjects from "@/components/landing/landing-projects";
 import LandingRecommendations from "@/components/landing/landing-recommendations";
 import LandingContact from "@/components/landing/landing-contact";
@@ -91,13 +92,16 @@ export default async function IndexPage({ params }: IHomePageProps) {
       {/* Section 6: Education */}
       <LandingEducation lang={lang} />
 
-      {/* Section 7: Projects */}
+      {/* Section 7: Services */}
+      <LandingServices lang={lang} />
+
+      {/* Section 8: Projects */}
       <LandingProjects lang={lang} />
 
-      {/* Section 8: Recommendations */}
+      {/* Section 9: Recommendations */}
       <LandingRecommendations lang={lang} />
 
-      {/* Section 9: Contact */}
+      {/* Section 10: Contact */}
       <LandingContact lang={lang} />
     </main>
   );

@@ -1,7 +1,7 @@
 import { siteConfig } from "@/utils/constants/portfolio.constant";
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
 import { GitHubIcon, LinkedInIcon, MailIcon } from "@/components/utils/icons";
-import { ArrowRight, Check, Clock3 } from "lucide-react";
+import { ArrowRight, Clock3 } from "lucide-react";
 import ContactForm from "./contact-form";
 import { getDictionary, type TLocale } from "@/utils/i18n";
 
@@ -39,24 +39,7 @@ export default function LandingContact(props: { lang: TLocale }) {
                 {dict.contact.availability}
               </div>
 
-              <div className="mt-8">
-                <h3 className="font-mono text-xs uppercase tracking-[0.18em] text-foreground">
-                  {dict.contact.fitLabel}
-                </h3>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {dict.contact.fitItems.map((item) => (
-                    <span
-                      key={item}
-                      className="inline-flex items-center gap-2 rounded border border-border/60 bg-card px-3 py-2 text-xs text-muted-foreground"
-                    >
-                      <Check aria-hidden className="size-3.5 text-primary" />
-                      {item}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mt-9">
+              <div className="mt-9 rounded-lg border border-border/60 bg-card p-5">
                 <h3 className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.18em] text-foreground">
                   <Clock3 aria-hidden className="size-4 text-primary" />
                   {dict.contact.nextHeading}
