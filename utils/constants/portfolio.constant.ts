@@ -20,7 +20,7 @@ export const siteConfig: ISiteConfig = {
     "I build elegant web applications and intelligent AI systems — from pixel-perfect UIs to production-ready ML pipelines.",
   bio: [
     "I'm Rithy Bondeth, a full stack developer and AI engineer based in Phnom Penh, Cambodia. I'm passionate about building high-quality digital experiences across web and mobile platforms.",
-    "I specialize in modern JavaScript ecosystems (React, Next.js, Vue, NestJS) and Python-based AI/ML workflows, with experience shipping products from internship to freelance to full-time at Digital Economy Business Committee under Ministry of Economy and Finance of Cambodia .",
+    "I specialize in modern JavaScript ecosystems (React, Next.js, Vue, NestJS) and Python-based AI/ML workflows, with experience shipping products from internship to freelance to full-time at Digital Economy Business Committee under Ministry of Economy and Finance of Cambodia.",
     "I believe the best technology is invisible — it just works, and works beautifully.",
   ],
   email: "rithybondeth999@gmail.com",

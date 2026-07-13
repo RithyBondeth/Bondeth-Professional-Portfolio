@@ -3,10 +3,25 @@ import {
   compareEvalCandidates,
   isEvalSuiteId,
 } from "@/utils/functions/labs/llm-evals";
+import { rateLimit, getClientId } from "@/utils/functions/rate-limit";
 
 const MAX_RESPONSE_LENGTH = 3000;
+const RATE_LIMIT = 30;
+const RATE_WINDOW_MS = 60_000;
 
 export async function POST(request: Request) {
+  const { allowed, retryAfter } = rateLimit(
+    `labs-evals:${getClientId(request)}`,
+    RATE_LIMIT,
+    RATE_WINDOW_MS,
+  );
+  if (!allowed) {
+    return NextResponse.json(
+      { error: "Too many requests. Please slow down." },
+      { status: 429, headers: { "Retry-After": String(retryAfter) } },
+    );
+  }
+
   let payload: unknown;
 
   try {

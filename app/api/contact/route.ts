@@ -1,10 +1,28 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
+import { rateLimit, getClientId } from "@/utils/functions/rate-limit";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+// Each POST sends an email via Resend, so keep this tight.
+const RATE_LIMIT = 5;
+const RATE_WINDOW_MS = 60_000;
+
 export async function POST(request: Request) {
+  /* ------------------------------- Rate Limit -------------------------------- */
+  const { allowed, retryAfter } = rateLimit(
+    `contact:${getClientId(request)}`,
+    RATE_LIMIT,
+    RATE_WINDOW_MS,
+  );
+  if (!allowed) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again shortly." },
+      { status: 429, headers: { "Retry-After": String(retryAfter) } },
+    );
+  }
+
   /* ------------------------------ Parse Payload ------------------------------ */
   let payload: Record<string, unknown>;
   try {
