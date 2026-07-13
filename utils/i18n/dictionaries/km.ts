@@ -141,6 +141,8 @@ export const km: TDictionary = {
       run: "ស្រង់ទិន្នន័យមានរចនាសម្ព័ន្ធ",
       running: "កំពុងស្រង់...",
       outputHeading: "លទ្ធផលដែលបានផ្ទៀងផ្ទាត់",
+      copyJson: "ចម្លង JSON",
+      copied: "បានចម្លង",
       emptyOutput: "ដំណើរការការស្រង់ ដើម្បីមើល JSON និងព័ត៌មានផ្ទៀងផ្ទាត់។",
       valid: "Schema ត្រឹមត្រូវ",
       incomplete: "លទ្ធផលមិនពេញលេញ",
@@ -445,6 +447,7 @@ export const km: TDictionary = {
     postSingular: "អត្ថបទ",
     postPlural: "អត្ថបទ",
     onThisPage: "ក្នុងអត្ថបទនេះ",
+    backToTop: "ត្រឡប់ទៅលើ",
     share: {
       heading: "ចែករំលែកអត្ថបទនេះ",
       native: "ចែករំលែក",

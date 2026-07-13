@@ -13,6 +13,7 @@ import { BlogCover } from "@/components/blog/blog-cover";
 import { mdxComponents } from "@/components/blog/mdx-components";
 import { TableOfContents } from "@/components/blog/table-of-contents";
 import { BlogShare } from "@/components/blog/blog-share";
+import { ReadingProgress } from "@/components/blog/reading-progress";
 import rehypePrettyCode, {
   type Options as PrettyCodeOptions,
 } from "rehype-pretty-code";
@@ -133,6 +134,7 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
   /* -------------------------------- Render UI ------------------------------- */
   return (
     <main id="main-content" tabIndex={-1} className="flex-1 pt-32 pb-24 px-6 bg-background font-sans">
+      <ReadingProgress backToTopLabel={dict.blog.backToTop} />
       <div className="mx-auto max-w-6xl">
         {/* Structured Data (JSON-LD) */}
         <script

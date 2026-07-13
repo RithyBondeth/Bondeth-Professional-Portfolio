@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { track } from "@vercel/analytics";
+import { Check, Copy } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { holdForSkeleton } from "@/utils/functions/labs/hold-for-skeleton";
 import type { IStructuredOutputResult } from "@/utils/functions/labs/structured-output";
@@ -17,6 +18,14 @@ export function StructuredOutputLab(props: {
   const [status, setStatus] = useState<TStatus>("idle");
   const [result, setResult] = useState<IStructuredOutputResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  function copyJson() {
+    if (!result) return;
+    navigator.clipboard?.writeText(JSON.stringify(result.data, null, 2));
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 2000);
+  }
 
   async function runExtraction() {
     if (!input.trim() || status === "loading") return;
@@ -176,6 +185,18 @@ export function StructuredOutputLab(props: {
                 {result.meta.processingMs}ms ·{" "}
                 {result.meta.detectedLanguage.toUpperCase()}
               </span>
+              <button
+                type="button"
+                onClick={copyJson}
+                className="ml-auto inline-flex items-center gap-1.5 rounded border border-border/60 bg-background px-2.5 py-1 font-mono text-[10px] text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
+              >
+                {copied ? (
+                  <Check className="size-3 text-emerald-400" aria-hidden />
+                ) : (
+                  <Copy className="size-3" aria-hidden />
+                )}
+                {copied ? labels.copied : labels.copyJson}
+              </button>
             </div>
 
             <pre className="mt-4 overflow-x-auto rounded border border-border/50 bg-black p-4 text-xs leading-6 text-emerald-300">

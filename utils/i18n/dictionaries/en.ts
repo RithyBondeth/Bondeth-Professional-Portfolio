@@ -134,6 +134,8 @@ export const en = {
       run: "Extract structured data",
       running: "Extracting...",
       outputHeading: "Validated result",
+      copyJson: "Copy JSON",
+      copied: "Copied",
       emptyOutput:
         "Run the extraction to see structured JSON and validation details.",
       valid: "Schema valid",
@@ -447,6 +449,7 @@ export const en = {
     postSingular: "post",
     postPlural: "posts",
     onThisPage: "On this page",
+    backToTop: "Back to top",
     share: {
       heading: "Share this article",
       native: "Share",
