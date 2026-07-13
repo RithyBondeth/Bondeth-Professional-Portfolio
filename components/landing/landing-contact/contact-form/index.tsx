@@ -46,6 +46,7 @@ export default function ContactForm(props: { lang: TLocale }) {
         setStatus("error");
       }
     } catch {
+      setErrorMessage(t.networkError);
       setStatus("error");
     }
   }

@@ -38,7 +38,7 @@ export default async function ProjectsPage({ params }: IProjectsPageProps) {
   const projects = getProjects(lang);
 
   return (
-    <main className="flex-1 bg-background px-6 pb-24 pt-32 font-sans">
+    <main id="main-content" tabIndex={-1} className="flex-1 bg-background px-6 pb-24 pt-32 font-sans">
       <div className="mx-auto max-w-6xl">
         <AnimateIn>
           <p className="font-mono text-xs uppercase tracking-[0.25em] text-primary">

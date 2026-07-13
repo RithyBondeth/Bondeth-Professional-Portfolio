@@ -15,7 +15,7 @@ import Footer from "@/components/footer";
 import CommandPalette from "@/components/command-palette";
 import { ThemeProvider } from "@/components/utils/theme/theme-provider";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
-import { locales, hasLocale } from "@/utils/i18n";
+import { locales, hasLocale, getDictionary } from "@/utils/i18n";
 import { getSiteConfig } from "@/utils/i18n/content";
 
 const jetbrainsMono = JetBrains_Mono({
@@ -106,6 +106,7 @@ export default async function RootLayout({
 }>) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
+  const dict = getDictionary(lang);
 
   return (
     <html
@@ -124,6 +125,12 @@ export default async function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <ThemeProvider>
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-primary focus:px-4 focus:py-2 focus:font-mono focus:text-sm focus:text-primary-foreground focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring"
+          >
+            {dict.nav.skipToContent}
+          </a>
           <Nav lang={lang} />
           {children}
           <Footer lang={lang} />

@@ -16,7 +16,7 @@ export default async function TagsPage({ params }: ITagsPageProps) {
   const tags = await getAllTags(lang);
 
   return (
-    <main className="flex-1 pt-32 pb-24 px-6 bg-background font-sans">
+    <main id="main-content" tabIndex={-1} className="flex-1 pt-32 pb-24 px-6 bg-background font-sans">
       <div className="max-w-4xl mx-auto">
         <AnimateIn>
           <Link

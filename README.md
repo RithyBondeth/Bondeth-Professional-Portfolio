@@ -1,6 +1,6 @@
 # Rithy Bondeth — Portfolio
 
-Personal portfolio and technical blog for **Rithy Bondeth**, a Full Stack Developer & AI Engineer based in Phnom Penh, Cambodia. A bilingual (English / Khmer) single-page site with an English MDX blog.
+Personal portfolio and technical blog for **Rithy Bondeth**, a Full Stack Developer & AI Engineer based in Phnom Penh, Cambodia. A bilingual (English / Khmer) single-page site with a bilingual MDX blog.
 
 🔗 **Live:** https://bondeth-professional-portfolio.vercel.app
 
@@ -54,7 +54,7 @@ See [`.env.example`](.env.example). Only `RESEND_API_KEY` is required (for the c
 app/
   [lang]/               Locale-prefixed routes (en | km)
     page.tsx            Single-page landing (hero, about, skills, …)
-    blog/               Blog index + [slug] posts (English-only)
+    blog/               Blog index + [slug] posts (en | km)
     layout.tsx          Fonts, theme, nav, footer, command palette
     opengraph-image.tsx Dynamic OG image
   api/contact/          Contact-form POST handler (Resend)

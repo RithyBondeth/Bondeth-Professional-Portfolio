@@ -10,6 +10,27 @@ export const size = {
 };
 export const contentType = "image/png";
 
+// Satori (next/og) ships only a Latin font, so Khmer text renders as tofu.
+// Fetch a subsetted Kantumruy Pro from Google Fonts for posts that need it.
+const KHMER_REGEX = /[ក-៿]/;
+
+async function loadKhmerFont(text: string): Promise<ArrayBuffer | null> {
+  try {
+    const css = await fetch(
+      `https://fonts.googleapis.com/css2?family=Kantumruy+Pro&text=${encodeURIComponent(text)}`,
+      { headers: { "User-Agent": "Mozilla/5.0" } },
+    ).then((response) => response.text());
+
+    const fontUrl = css.match(/src:\s*url\((.+?)\)/)?.[1];
+    if (!fontUrl) return null;
+
+    return await fetch(fontUrl).then((response) => response.arrayBuffer());
+  } catch {
+    // Never fail image generation over a font fetch — fall back to Latin.
+    return null;
+  }
+}
+
 export default async function Image({
   params,
 }: {
@@ -17,6 +38,15 @@ export default async function Image({
 }) {
   const { lang, slug } = await params;
   const post = await getPostBySlug(slug, hasLocale(lang) ? lang : "en");
+
+  const heading = post?.title ?? "Blog";
+  const excerpt = post?.excerpt ?? "";
+  const label = `${siteConfig.name} — Blog`;
+
+  const khmerFont = KHMER_REGEX.test(heading + excerpt)
+    ? await loadKhmerFont(`${label} ${heading} ${excerpt}`)
+    : null;
+  const fontFamily = khmerFont ? "'Kantumruy Pro', monospace" : "monospace";
 
   return new ImageResponse(
     <div
@@ -29,7 +59,7 @@ export default async function Image({
         padding: "80px",
         background: "#09090b",
         color: "#fafafa",
-        fontFamily: "monospace",
+        fontFamily,
       }}
     >
       <div
@@ -43,12 +73,12 @@ export default async function Image({
         }}
       >
         <span>&gt;</span>
-        <span>{siteConfig.name} — Blog</span>
+        <span>{label}</span>
       </div>
       <div style={{ fontSize: 64, fontWeight: 700, lineHeight: 1.15 }}>
-        {post?.title ?? "Blog"}
+        {heading}
       </div>
-      {post?.excerpt && (
+      {excerpt && (
         <div
           style={{
             fontSize: 30,
@@ -57,7 +87,7 @@ export default async function Image({
             lineHeight: 1.4,
           }}
         >
-          {post.excerpt}
+          {excerpt}
         </div>
       )}
       <div
@@ -71,6 +101,20 @@ export default async function Image({
         }}
       />
     </div>,
-    { ...size },
+    {
+      ...size,
+      ...(khmerFont
+        ? {
+            fonts: [
+              {
+                name: "Kantumruy Pro",
+                data: khmerFont,
+                style: "normal" as const,
+                weight: 400 as const,
+              },
+            ],
+          }
+        : {}),
+    },
   );
 }

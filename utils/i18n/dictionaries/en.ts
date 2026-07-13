@@ -13,6 +13,7 @@ export const en = {
     resumeMobile: "Resume.pdf",
     toggleMenu: "Toggle menu",
     toggleTheme: "Switch theme",
+    skipToContent: "Skip to content",
   },
   hero: {
     titles: ["Full Stack Developer", "AI Engineer", "Mobile App Developer"],
@@ -411,6 +412,8 @@ export const en = {
       sendAnother: "Send another message",
       errorFallback:
         "Oops! Something went wrong. Please try again or email me directly.",
+      networkError:
+        "Couldn't reach the server. Check your connection and try again.",
     },
   },
   footer: {

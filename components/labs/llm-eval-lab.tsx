@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { track } from "@vercel/analytics";
 import type {
   IEvalComparison,
   IEvalTestResult,
@@ -60,6 +61,7 @@ export function LlmEvalLab(props: {
 
       setResult(body);
       setStatus("success");
+      track("lab_run", { lab: "llm-evals", suite: selected.suiteId });
     } catch {
       setError(labels.error);
       setStatus("error");

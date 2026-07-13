@@ -65,7 +65,7 @@ export default async function IndexPage({ params }: IHomePageProps) {
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
-    <main>
+    <main id="main-content" tabIndex={-1}>
       {/* Structured Data (JSON-LD) */}
       <script
         type="application/ld+json"

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { track } from "@vercel/analytics";
 import type { IRetrievalResult } from "@/utils/functions/labs/rag-retrieval";
 import type { TDictionary } from "@/utils/i18n";
 
@@ -36,6 +37,7 @@ export function RagRetrievalLab(props: {
 
       setResult(body);
       setStatus("success");
+      track("lab_run", { lab: "rag-retrieval" });
     } catch {
       setError(labels.error);
       setStatus("error");

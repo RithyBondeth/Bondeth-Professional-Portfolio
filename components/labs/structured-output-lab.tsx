@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { track } from "@vercel/analytics";
 import type { IStructuredOutputResult } from "@/utils/functions/labs/structured-output";
 import type { TDictionary } from "@/utils/i18n";
 
@@ -37,6 +38,7 @@ export function StructuredOutputLab(props: {
 
       setResult(body);
       setStatus("success");
+      track("lab_run", { lab: "structured-output" });
     } catch {
       setError(labels.error);
       setStatus("error");

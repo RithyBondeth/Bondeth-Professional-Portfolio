@@ -84,7 +84,7 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
   };
 
   return (
-    <main className="flex-1 bg-background px-6 pb-24 pt-32 font-sans">
+    <main id="main-content" tabIndex={-1} className="flex-1 bg-background px-6 pb-24 pt-32 font-sans">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
