@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { track } from "@vercel/analytics";
+import { Skeleton } from "@/components/ui/skeleton";
+import { holdForSkeleton } from "@/utils/functions/labs/hold-for-skeleton";
 import type { IRetrievalResult } from "@/utils/functions/labs/rag-retrieval";
 import type { TDictionary } from "@/utils/i18n";
 
@@ -20,6 +22,7 @@ export function RagRetrievalLab(props: {
     if (!query.trim() || status === "loading") return;
     setStatus("loading");
     setError(null);
+    const startedAt = performance.now();
 
     try {
       const response = await fetch("/api/labs/rag-retrieval", {
@@ -28,6 +31,7 @@ export function RagRetrievalLab(props: {
         body: JSON.stringify({ query }),
       });
       const body = await response.json();
+      await holdForSkeleton(startedAt);
 
       if (!response.ok) {
         setError(body?.error ?? labels.error);
@@ -39,6 +43,7 @@ export function RagRetrievalLab(props: {
       setStatus("success");
       track("lab_run", { lab: "rag-retrieval" });
     } catch {
+      await holdForSkeleton(startedAt);
       setError(labels.error);
       setStatus("error");
     }
@@ -164,7 +169,30 @@ export function RagRetrievalLab(props: {
           )}
         </div>
 
-        {!result ? (
+        {status === "loading" ? (
+          <div className="mt-5 space-y-3" aria-hidden>
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div
+                key={i}
+                className="rounded border border-border/50 bg-black/40 p-4"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="w-full">
+                    <Skeleton className="h-3 w-24" />
+                    <Skeleton className="mt-2 h-4 w-1/2" />
+                  </div>
+                  <Skeleton className="h-4 w-10 shrink-0" />
+                </div>
+                <Skeleton className="mt-3 h-3 w-full" />
+                <Skeleton className="mt-2 h-3 w-11/12" />
+                <div className="mt-3 flex gap-1.5">
+                  <Skeleton className="h-4 w-14 rounded" />
+                  <Skeleton className="h-4 w-16 rounded" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : !result ? (
           <div className="mt-5 flex min-h-80 items-center justify-center rounded border border-dashed border-border/50 bg-black/30 p-8 text-center">
             <p className="max-w-sm font-mono text-xs leading-relaxed text-muted-foreground">
               {labels.emptyResults}

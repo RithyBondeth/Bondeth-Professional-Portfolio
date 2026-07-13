@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { track } from "@vercel/analytics";
+import { Skeleton } from "@/components/ui/skeleton";
+import { holdForSkeleton } from "@/utils/functions/labs/hold-for-skeleton";
 import type {
   IEvalComparison,
   IEvalTestResult,
@@ -40,6 +42,7 @@ export function LlmEvalLab(props: {
 
     setStatus("loading");
     setError(null);
+    const startedAt = performance.now();
 
     try {
       const response = await fetch("/api/labs/llm-evals", {
@@ -52,6 +55,7 @@ export function LlmEvalLab(props: {
         }),
       });
       const body = await response.json();
+      await holdForSkeleton(startedAt);
 
       if (!response.ok) {
         setError(body?.error ?? labels.error);
@@ -63,6 +67,7 @@ export function LlmEvalLab(props: {
       setStatus("success");
       track("lab_run", { lab: "llm-evals", suite: selected.suiteId });
     } catch {
+      await holdForSkeleton(startedAt);
       setError(labels.error);
       setStatus("error");
     }
@@ -165,7 +170,32 @@ export function LlmEvalLab(props: {
           {labels.resultsHeading}
         </h2>
 
-        {!result ? (
+        {status === "loading" ? (
+          <div className="mt-5" aria-hidden>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {Array.from({ length: 2 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="rounded border border-border/50 bg-black/30 p-5"
+                >
+                  <Skeleton className="h-3 w-24" />
+                  <Skeleton className="mt-3 h-10 w-20" />
+                  <Skeleton className="mt-3 h-2 w-full rounded-full" />
+                </div>
+              ))}
+            </div>
+            <div className="mt-5 space-y-3 rounded border border-border/50 p-4">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="flex items-center justify-between gap-4">
+                  <Skeleton className="h-4 w-1/3" />
+                  <Skeleton className="h-4 w-16" />
+                  <Skeleton className="h-4 w-16" />
+                  <Skeleton className="h-4 w-8" />
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : !result ? (
           <div className="mt-5 flex min-h-64 items-center justify-center rounded border border-dashed border-border/50 bg-black/30 p-8 text-center">
             <p className="max-w-sm font-mono text-xs leading-relaxed text-muted-foreground">
               {labels.emptyResults}

@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { track } from "@vercel/analytics";
+import { Skeleton } from "@/components/ui/skeleton";
+import { holdForSkeleton } from "@/utils/functions/labs/hold-for-skeleton";
 import type { IStructuredOutputResult } from "@/utils/functions/labs/structured-output";
 import type { TDictionary } from "@/utils/i18n";
 
@@ -21,6 +23,7 @@ export function StructuredOutputLab(props: {
 
     setStatus("loading");
     setError(null);
+    const startedAt = performance.now();
 
     try {
       const response = await fetch("/api/labs/structured-output", {
@@ -29,6 +32,7 @@ export function StructuredOutputLab(props: {
         body: JSON.stringify({ input }),
       });
       const body = await response.json();
+      await holdForSkeleton(startedAt);
 
       if (!response.ok) {
         setError(body?.error ?? labels.error);
@@ -40,6 +44,7 @@ export function StructuredOutputLab(props: {
       setStatus("success");
       track("lab_run", { lab: "structured-output" });
     } catch {
+      await holdForSkeleton(startedAt);
       setError(labels.error);
       setStatus("error");
     }
@@ -137,7 +142,23 @@ export function StructuredOutputLab(props: {
           {labels.outputHeading}
         </h2>
 
-        {result ? (
+        {status === "loading" ? (
+          <div className="mt-5" aria-hidden>
+            <div className="flex flex-wrap items-center gap-2">
+              <Skeleton className="h-6 w-24 rounded" />
+              <Skeleton className="h-4 w-28" />
+            </div>
+            <div className="mt-4 space-y-2 rounded border border-border/50 bg-black p-4">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <Skeleton
+                  key={i}
+                  className="h-3"
+                  style={{ width: `${80 - (i % 3) * 18}%` }}
+                />
+              ))}
+            </div>
+          </div>
+        ) : result ? (
           <>
             <div className="mt-5 flex flex-wrap items-center gap-2">
               <span
