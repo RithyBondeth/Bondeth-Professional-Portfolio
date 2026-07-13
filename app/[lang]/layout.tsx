@@ -17,6 +17,7 @@ import { ThemeProvider } from "@/components/utils/theme/theme-provider";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
 import { locales, hasLocale, getDictionary } from "@/utils/i18n";
 import { getSiteConfig } from "@/utils/i18n/content";
+import { getAllPosts } from "@/utils/functions/blog";
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
@@ -108,6 +109,14 @@ export default async function RootLayout({
   if (!hasLocale(lang)) notFound();
   const dict = getDictionary(lang);
 
+  // Index blog posts into the ⌘K command palette (metadata only, no content).
+  const posts = await getAllPosts(lang);
+  const palettePosts = posts.map(({ slug, title, tags }) => ({
+    slug,
+    title,
+    tags,
+  }));
+
   return (
     <html
       lang={lang}
@@ -127,14 +136,14 @@ export default async function RootLayout({
         <ThemeProvider>
           <a
             href="#main-content"
-            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-primary focus:px-4 focus:py-2 focus:font-mono focus:text-sm focus:text-primary-foreground focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring"
+            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-100 focus:rounded focus:bg-primary focus:px-4 focus:py-2 focus:font-mono focus:text-sm focus:text-primary-foreground focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring"
           >
             {dict.nav.skipToContent}
           </a>
           <Nav lang={lang} />
           {children}
           <Footer lang={lang} />
-          <CommandPalette lang={lang} />
+          <CommandPalette lang={lang} posts={palettePosts} />
         </ThemeProvider>
         <Analytics />
         <SpeedInsights />

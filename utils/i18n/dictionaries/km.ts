@@ -460,6 +460,7 @@ export const km: TDictionary = {
     placeholder: "វាយបញ្ចូលពាក្យបញ្ជា ឬស្វែងរក…",
     empty: "រកមិនឃើញលទ្ធផលទេ។",
     groupNav: "ការរុករក",
+    groupBlog: "អត្ថបទប្លុក",
     groupGeneral: "ទូទៅ",
     groupConnect: "ភ្ជាប់ទំនាក់ទំនង",
     toggleTheme: "ប្តូររចនាបទ",

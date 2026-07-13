@@ -462,6 +462,7 @@ export const en = {
     placeholder: "Type a command or search…",
     empty: "No results found.",
     groupNav: "Navigation",
+    groupBlog: "Blog posts",
     groupGeneral: "General",
     groupConnect: "Connect",
     toggleTheme: "Toggle theme",

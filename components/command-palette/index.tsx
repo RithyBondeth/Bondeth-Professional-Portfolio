@@ -92,7 +92,14 @@ function CheckIcon() {
 }
 
 /* --------------------------------- Types ----------------------------------- */
-type TGroup = "nav" | "general" | "connect";
+type TGroup = "nav" | "blog" | "general" | "connect";
+
+/** Minimal, serializable post shape passed from the server layout. */
+export interface ICommandPalettePost {
+  slug: string;
+  title: string;
+  tags: string[];
+}
 
 interface IAction {
   id: string;
@@ -107,9 +114,12 @@ interface IAction {
 }
 
 /* -------------------------------- Component -------------------------------- */
-export default function CommandPalette(props: { lang: TLocale }) {
+export default function CommandPalette(props: {
+  lang: TLocale;
+  posts: ICommandPalettePost[];
+}) {
   /* ---------------------------------- Props --------------------------------- */
-  const { lang } = props;
+  const { lang, posts } = props;
   const dict = getDictionary(lang);
   const cp = dict.commandPalette;
 
@@ -191,6 +201,15 @@ export default function CommandPalette(props: { lang: TLocale }) {
       };
     });
 
+    const blogActions: IAction[] = posts.map((post) => ({
+      id: `blog:${post.slug}`,
+      group: "blog",
+      label: post.title,
+      keywords: `${post.title} ${post.tags.join(" ")} blog post article`,
+      icon: <FileIcon />,
+      run: () => router.push(localizeHref(`/blog/${post.slug}`, lang)),
+    }));
+
     const isDark = resolvedTheme === "dark";
 
     const generalActions: IAction[] = [
@@ -245,8 +264,13 @@ export default function CommandPalette(props: { lang: TLocale }) {
       },
     ];
 
-    return [...navActions, ...generalActions, ...connectActions];
-  }, [lang, dict, router, resolvedTheme, setTheme, cp, copied]);
+    return [
+      ...navActions,
+      ...blogActions,
+      ...generalActions,
+      ...connectActions,
+    ];
+  }, [lang, dict, router, resolvedTheme, setTheme, cp, copied, posts]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -297,10 +321,11 @@ export default function CommandPalette(props: { lang: TLocale }) {
 
   const groupLabels: Record<TGroup, string> = {
     nav: cp.groupNav,
+    blog: cp.groupBlog,
     general: cp.groupGeneral,
     connect: cp.groupConnect,
   };
-  const groupOrder: TGroup[] = ["nav", "general", "connect"];
+  const groupOrder: TGroup[] = ["nav", "blog", "general", "connect"];
 
   /* -------------------------------- Render UI ------------------------------- */
   if (!mounted || !open) return null;
