@@ -115,7 +115,7 @@ export function AnimateIn(props: IRevealCommon) {
     className,
     from = "up",
     delay = 0,
-    duration = 1,
+    duration = 0.7,
     // House ease from ./gsap — long deceleration, feather-soft landing.
     ease = "smooth",
     scrub = false,
@@ -213,10 +213,10 @@ export function StaggerIn(
     children,
     className,
     from = "up",
-    stagger = 0.12,
+    stagger = 0.08,
     staggerFrom = "start",
     delay = 0,
-    duration = 0.9,
+    duration = 0.6,
     // House ease from ./gsap — long deceleration, feather-soft landing.
     ease = "smooth",
     scrub = false,

@@ -50,9 +50,9 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
           wrapper: wrapperRef.current,
           content: contentRef.current,
           // Catch-up lag in seconds. Keep this LOW — anything near 1 makes
-          // the page feel heavy and underwater; 0.4 keeps a hint of inertia
-          // while staying responsive to the wheel.
-          smooth: 0.4,
+          // the page feel heavy and underwater; 0.15 keeps just a whisper of
+          // inertia while tracking the wheel almost 1:1.
+          smooth: 0.15,
           effects: true,
           ignoreMobileResize: true,
         });
