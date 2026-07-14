@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { gsap } from "@/components/utils/animations/gsap";
 import {
   navLinks,
   primaryNavLinks,
@@ -102,19 +103,65 @@ export default function Navbar(props: { lang: TLocale }) {
   const [activeSection, setActiveSection] = useState("");
   const [progress, setProgress] = useState(0);
 
+  /* ---------------------------------- Utils --------------------------------- */
+  const navRef = useRef<HTMLElement>(null);
+  const linksRef = useRef<HTMLUListElement>(null);
+  const indicatorRef = useRef<HTMLSpanElement>(null);
+  const menuOpenRef = useRef(false);
+  const hiddenRef = useRef(false);
+  const lastYRef = useRef(0);
+
   /* --------------------------------- Effects -------------------------------- */
+  useEffect(() => {
+    menuOpenRef.current = menuOpen;
+    // Opening the menu must always bring the bar back.
+    if (menuOpen && hiddenRef.current) {
+      hiddenRef.current = false;
+      gsap.to(navRef.current, { yPercent: 0, duration: 0.4, ease: "smooth" });
+    }
+  }, [menuOpen]);
+
   useEffect(() => {
     const sectionIds = navLinks
       .map(({ href }) => href)
       .filter((href) => href.startsWith("/#"))
       .map((href) => href.replace("/#", ""));
 
+    const reduceMq = window.matchMedia("(prefers-reduced-motion: reduce)");
+
     const onScroll = () => {
-      setScrolled(window.scrollY > 20);
+      const y = window.scrollY;
+      setScrolled(y > 20);
 
       const scrollHeight =
         document.documentElement.scrollHeight - window.innerHeight;
-      setProgress(scrollHeight > 0 ? (window.scrollY / scrollHeight) * 100 : 0);
+      setProgress(scrollHeight > 0 ? (y / scrollHeight) * 100 : 0);
+
+      // Hide the bar while scrolling down through the page, bring it back the
+      // moment the user scrolls up — classic focus-on-content pattern.
+      // Reduced motion keeps the bar permanently visible.
+      if (!reduceMq.matches) {
+        const goingDown = y > lastYRef.current + 6;
+        const goingUp = y < lastYRef.current - 6;
+        if (goingDown && y > 400 && !menuOpenRef.current && !hiddenRef.current) {
+          hiddenRef.current = true;
+          gsap.to(navRef.current, {
+            yPercent: -100,
+            duration: 0.45,
+            ease: "smooth",
+            overwrite: "auto",
+          });
+        } else if ((goingUp || y <= 400) && hiddenRef.current) {
+          hiddenRef.current = false;
+          gsap.to(navRef.current, {
+            yPercent: 0,
+            duration: 0.45,
+            ease: "smooth",
+            overwrite: "auto",
+          });
+        }
+      }
+      lastYRef.current = y;
 
       const threshold = window.innerHeight * 0.35;
       let current = "";
@@ -139,6 +186,42 @@ export default function Navbar(props: { lang: TLocale }) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // One sliding underline glides between active links instead of each link
+  // painting its own — jumps instantly under reduced motion.
+  useEffect(() => {
+    const ul = linksRef.current;
+    const indicator = indicatorRef.current;
+    if (!ul || !indicator) return;
+
+    const place = (animate: boolean) => {
+      const active = ul.querySelector<HTMLAnchorElement>(
+        `a[data-nav-id="${activeSection}"]`,
+      );
+      if (!active) {
+        gsap.to(indicator, { opacity: 0, duration: 0.2 });
+        return;
+      }
+      const vars = {
+        x: active.offsetLeft + 10,
+        width: Math.max(0, active.offsetWidth - 20),
+        opacity: 1,
+      };
+      const reduce = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+      if (animate && !reduce) {
+        gsap.to(indicator, { ...vars, duration: 0.45, ease: "smooth" });
+      } else {
+        gsap.set(indicator, vars);
+      }
+    };
+
+    place(true);
+    const onResize = () => place(false);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [activeSection]);
+
   useEffect(() => {
     if (!menuOpen) return;
     const onKey = (e: KeyboardEvent) => {
@@ -151,7 +234,10 @@ export default function Navbar(props: { lang: TLocale }) {
   /* -------------------------------- Render UI ------------------------------- */
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      ref={navRef}
+      // Colors/shadow only — GSAP owns the transform for hide/reveal, and a
+      // CSS `transition-all` would double-ease it.
+      className={`fixed top-0 left-0 right-0 z-50 transition-[background-color,border-color,box-shadow] duration-300 ${
         scrolled || menuOpen
           ? "bg-background/95 backdrop-blur-md border-b border-border shadow-xl shadow-black/10 dark:shadow-black/40"
           : "bg-transparent"
@@ -174,7 +260,13 @@ export default function Navbar(props: { lang: TLocale }) {
         </a>
 
         {/* Desktop Links Section */}
-        <ul className="hidden lg:flex items-center gap-0.5 xl:gap-1">
+        <ul ref={linksRef} className="relative hidden lg:flex items-center gap-0.5 xl:gap-1">
+          {/* Sliding active-link underline (decorative) */}
+          <span
+            ref={indicatorRef}
+            aria-hidden
+            className="pointer-events-none absolute bottom-0 left-0 h-px w-0 rounded-full bg-primary/70 opacity-0"
+          />
           {primaryNavLinks.map(({ href }, i) => {
             const id = href.replace("/#", "").replace("/", "");
             const isActive = activeSection === id;
@@ -182,6 +274,7 @@ export default function Navbar(props: { lang: TLocale }) {
               <li key={href}>
                 <a
                   href={localizeNavHref(href, lang)}
+                  data-nav-id={id}
                   className={`relative px-2.5 xl:px-3 py-1.5 text-xs font-mono tracking-wide whitespace-nowrap transition-colors duration-200 rounded ${
                     isActive
                       ? "text-primary"
@@ -192,9 +285,6 @@ export default function Navbar(props: { lang: TLocale }) {
                     0{i + 1}.
                   </span>
                   {dict.nav[navKeyFromHref(href)]}
-                  {isActive && (
-                    <span className="absolute bottom-0 left-3 right-3 h-px bg-primary/60 rounded-full" />
-                  )}
                 </a>
               </li>
             );

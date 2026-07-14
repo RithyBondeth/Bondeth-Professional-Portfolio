@@ -13,10 +13,19 @@ interface IParticle {
 
 const PARTICLE_COUNT = 90;
 const MAX_CONNECT_DIST = 140;
+const POINTER_DIST = 170;
 const PARTICLE_COLOR = "96, 165, 250"; // blue-400 rgb
+const POINTER_COLOR = "34, 211, 238"; // primary cyan rgb
 
 /**
  * Animated particle-network canvas rendered behind the hero content.
+ *
+ * Behaviour contract:
+ * - Reduced motion → one static frame is drawn, then the loop never runs.
+ * - The loop pauses while the hero is offscreen or the tab is hidden.
+ * - Rendering is capped at 2× devicePixelRatio.
+ * - Desktop pointers gently attract nearby particles, which link to the
+ *   cursor with cyan threads.
  */
 export default function HeroBackground() {
   /* ---------------------------------- Utils --------------------------------- */
@@ -29,15 +38,24 @@ export default function HeroBackground() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    let raf: number;
+    let raf = 0;
+    let running = false;
     let w = 0;
     let h = 0;
     const particles: IParticle[] = [];
+    const pointer = { x: -1e4, y: -1e4, active: false };
+
+    const reduceMq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const finePointer = window.matchMedia("(pointer: fine)").matches;
 
     function resize() {
       if (!canvas) return;
-      w = canvas.width = canvas.offsetWidth;
-      h = canvas.height = canvas.offsetHeight;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = canvas.offsetWidth;
+      h = canvas.offsetHeight;
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
 
     function spawn() {
@@ -54,7 +72,7 @@ export default function HeroBackground() {
       }
     }
 
-    function draw() {
+    function drawFrame(advance: boolean) {
       ctx!.clearRect(0, 0, w, h);
 
       // Connection lines
@@ -90,7 +108,32 @@ export default function HeroBackground() {
           ctx!.fill();
         }
 
-        // Move
+        if (!advance) continue;
+
+        // Pointer interaction: a gentle pull toward the cursor plus a cyan
+        // thread while inside the influence radius.
+        if (pointer.active) {
+          const pdx = pointer.x - p.x;
+          const pdy = pointer.y - p.y;
+          const pdist = Math.sqrt(pdx * pdx + pdy * pdy);
+          if (pdist < POINTER_DIST && pdist > 0.001) {
+            const pull = ((POINTER_DIST - pdist) / POINTER_DIST) * 0.012;
+            p.vx += (pdx / pdist) * pull;
+            p.vy += (pdy / pdist) * pull;
+            ctx!.beginPath();
+            ctx!.strokeStyle = `rgba(${POINTER_COLOR}, ${
+              (1 - pdist / POINTER_DIST) * 0.18
+            })`;
+            ctx!.lineWidth = 0.7;
+            ctx!.moveTo(p.x, p.y);
+            ctx!.lineTo(pointer.x, pointer.y);
+            ctx!.stroke();
+          }
+        }
+
+        // Move (with a soft speed cap so pointer pulls never launch a particle)
+        p.vx = Math.max(-0.8, Math.min(0.8, p.vx));
+        p.vy = Math.max(-0.8, Math.min(0.8, p.vy));
         p.x += p.vx;
         p.y += p.vy;
         if (p.x < -10) p.x = w + 10;
@@ -98,23 +141,91 @@ export default function HeroBackground() {
         if (p.y < -10) p.y = h + 10;
         if (p.y > h + 10) p.y = -10;
       }
+    }
 
-      raf = requestAnimationFrame(draw);
+    function loop() {
+      drawFrame(true);
+      raf = requestAnimationFrame(loop);
+    }
+
+    function start() {
+      if (running || reduceMq.matches) return;
+      running = true;
+      raf = requestAnimationFrame(loop);
+    }
+
+    function stop() {
+      running = false;
+      cancelAnimationFrame(raf);
     }
 
     resize();
     spawn();
-    draw();
+
+    if (reduceMq.matches) {
+      // Static constellation — texture without motion.
+      drawFrame(false);
+    } else {
+      start();
+    }
+
+    // Pause while offscreen / tab hidden — no reason to burn frames.
+    const io = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && !document.hidden) start();
+      else stop();
+    });
+    io.observe(canvas);
+    const onVisibility = () => {
+      if (document.hidden) stop();
+      else start();
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+
+    // React to the user flipping their motion preference live.
+    const onReduceChange = () => {
+      if (reduceMq.matches) {
+        stop();
+        drawFrame(false);
+      } else {
+        start();
+      }
+    };
+    reduceMq.addEventListener("change", onReduceChange);
+
+    // Pointer tracking (desktop only) — listen on the section so the canvas
+    // never needs pointer-events of its own.
+    const host = canvas.parentElement;
+    const onMove = (e: PointerEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      pointer.x = e.clientX - rect.left;
+      pointer.y = e.clientY - rect.top;
+      pointer.active = true;
+    };
+    const onLeave = () => {
+      pointer.active = false;
+    };
+    if (finePointer && host) {
+      host.addEventListener("pointermove", onMove, { passive: true });
+      host.addEventListener("pointerleave", onLeave, { passive: true });
+    }
 
     const ro = new ResizeObserver(() => {
       resize();
       spawn();
+      if (reduceMq.matches) drawFrame(false);
     });
     ro.observe(canvas);
 
     return () => {
-      cancelAnimationFrame(raf);
+      stop();
+      io.disconnect();
       ro.disconnect();
+      document.removeEventListener("visibilitychange", onVisibility);
+      reduceMq.removeEventListener("change", onReduceChange);
+      if (finePointer && host) {
+        host.removeEventListener("pointermove", onMove);
+        host.removeEventListener("pointerleave", onLeave);
+      }
     };
   }, []);
 

@@ -85,7 +85,7 @@
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --radius: 0.375rem;
+  --radius: 0.5rem;
   --sidebar: #ffffff;
   --sidebar-foreground: #0f172a;
   --sidebar-primary: #0e7490;
@@ -143,6 +143,23 @@
     @apply font-mono;
     scroll-behavior: smooth;
     overflow-x: clip;
+  }
+  /* Editorial type pairing: big readable sans for headings and prose, mono
+     reserved for the terminal accents (eyebrows, nav, chips, code). Explicit
+     `font-mono` utilities still win over these base rules, and the Khmer
+     locale flows through the same --font-geist-sans remap. */
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-geist-sans), ui-sans-serif, sans-serif;
+    letter-spacing: -0.025em;
+  }
+  p,
+  li,
+  blockquote,
+  figcaption {
+    font-family: var(--font-geist-sans), ui-sans-serif, sans-serif;
   }
   /* Code always renders in JetBrains Mono, in every locale. Tailwind's
      Preflight resets these tags to `--font-mono`, which is remapped to
@@ -338,6 +355,87 @@ html[lang="km"] {
 .type-caret {
   animation: type-caret 1s steps(1) infinite;
 }
+
+/* ── Hero name gradient — lives on the whole h1 (no-JS / reduced-motion
+   fallback) AND on every SplitText char (.hero-char), because background-clip
+   can't reach across the per-char transform layers once the name is split.
+   Vertical so each character carries the identical fade. ── */
+.hero-name,
+.hero-char {
+  background-image: linear-gradient(180deg, #0f172a 0%, #334155 55%, #0e7490 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.dark .hero-name,
+.dark .hero-char {
+  background-image: linear-gradient(180deg, #ffffff 0%, #e2e8f0 55%, #a5f3fc 100%);
+}
+
+/* ── Film-grain noise: apply to an absolutely-positioned, pointer-events-none
+   overlay div to give flat dark surfaces a subtle physical texture. ── */
+.bg-noise {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+
+/* ── Aurora: slow drift for large blurred glow orbs (hero / section accents).
+   Pair with blur-3xl + low opacity; GPU-only transform so it stays cheap. ── */
+@keyframes aurora {
+  0%,
+  100% {
+    transform: translate3d(-6%, -4%, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(6%, 5%, 0) scale(1.18);
+  }
+}
+
+/* ── Animated conic border: a cyan/violet light beam orbiting a card's edge.
+   Use on cards that deserve a "live" premium frame. ── */
+@property --border-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+@keyframes border-spin {
+  to {
+    --border-angle: 360deg;
+  }
+}
+.animated-border {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--card), var(--card)) padding-box,
+    conic-gradient(
+        from var(--border-angle),
+        color-mix(in oklab, var(--border) 80%, transparent) 0%,
+        var(--primary) 12%,
+        color-mix(in oklab, var(--border) 80%, transparent) 28%,
+        color-mix(in oklab, var(--border) 80%, transparent) 55%,
+        var(--accent) 70%,
+        color-mix(in oklab, var(--border) 80%, transparent) 86%
+      )
+      border-box;
+  animation: border-spin 7s linear infinite;
+}
+
+/* ── Custom cursor: hide the native pointer while the GSAP cursor is mounted.
+   Text fields keep their I-beam for usability. ── */
+html.has-custom-cursor,
+html.has-custom-cursor *:not(input):not(textarea):not(select) {
+  cursor: none !important;
+}
+
+/* ── Theme switch: the circular wipe is driven from JS via the View
+   Transitions API; disable the default cross-fade so the clip-path reveal
+   is the only animation. ── */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -349,5 +447,12 @@ html[lang="km"] {
   .type-caret {
     animation: none;
     opacity: 0;
+  }
+  .animated-border {
+    animation: none;
+  }
+  [class*="animate-"] {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
   }
 }

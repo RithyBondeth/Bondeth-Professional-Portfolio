@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { ArrowRight, BadgeCheck, ShieldCheck } from "lucide-react";
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
+import { ScrambleText } from "@/components/utils/animations/scramble-text";
+import { SplitReveal } from "@/components/utils/animations/split-reveal";
 import { LinkedInIcon } from "@/components/utils/icons";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
 import { getDictionary, type TLocale } from "@/utils/i18n";
@@ -10,21 +12,22 @@ export default function LandingRecommendations(props: { lang: TLocale }) {
   const { recommendations } = getDictionary(lang);
 
   return (
-    <section className="overflow-hidden bg-card px-6 py-24">
+    <section id="recommendations" className="overflow-hidden bg-card px-6 py-24">
       <div className="mx-auto max-w-6xl">
         <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
           <div>
             <AnimateIn from="left" distance={40}>
               <p className="font-mono text-xs uppercase tracking-[0.25em] text-primary">
-                <span className="text-muted-foreground">{"//"}</span>{" "}
-                references.md
+                <ScrambleText text="// references.md" />
               </p>
             </AnimateIn>
-            <AnimateIn from="left" distance={40} delay={0.05}>
-              <h2 className="mt-3 text-3xl font-bold text-foreground sm:text-4xl">
-                {recommendations.heading}
-              </h2>
-            </AnimateIn>
+            <SplitReveal
+              as="h2"
+              type="lines"
+              className="mt-3 text-4xl font-bold text-foreground sm:text-5xl"
+            >
+              {recommendations.heading}
+            </SplitReveal>
             <AnimateIn from="up" delay={0.1}>
               <p className="mt-5 max-w-xl text-sm leading-7 text-muted-foreground">
                 {recommendations.blurb}

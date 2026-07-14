@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { gsap, ScrollTrigger } from "./gsap";
 
 /**
  * Pins the showcase to the viewport and translates its inner track sideways as
@@ -45,7 +44,6 @@ export function HorizontalScroll(props: {
 
   /* --------------------------------- Effects -------------------------------- */
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
     // Mobile browsers fire resize events as the URL bar shows/hides; ignoring
     // them keeps the pin from jumping mid-scroll on phones.
     ScrollTrigger.config({ ignoreMobileResize: true });

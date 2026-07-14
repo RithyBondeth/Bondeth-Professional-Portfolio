@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { AnimateIn } from "@/components/utils/animations/animate-in";
+import { ScrambleText } from "@/components/utils/animations/scramble-text";
 import { ProjectExplorer } from "@/components/projects/project-explorer";
 import { getProjects } from "@/utils/i18n/content";
 import { getDictionary, hasLocale } from "@/utils/i18n";
@@ -42,7 +43,7 @@ export default async function ProjectsPage({ params }: IProjectsPageProps) {
       <div className="mx-auto max-w-6xl">
         <AnimateIn>
           <p className="font-mono text-xs uppercase tracking-[0.25em] text-primary">
-            <span className="text-muted-foreground">$</span> ls projects/
+            <ScrambleText text="$ ls projects/" />
           </p>
           <h1 className="mt-3 text-4xl font-bold text-foreground sm:text-5xl">
             {dict.projects.allProjectsHeading}

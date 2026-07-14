@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { ScrambleText } from "@/components/utils/animations/scramble-text";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
 
 export const metadata: Metadata = {
@@ -14,14 +15,13 @@ export const metadata: Metadata = {
 export default function NotFound() {
   return (
     <main id="main-content" tabIndex={-1} className="flex-1 bg-background flex flex-col items-center justify-center px-6 py-32 text-center font-sans">
-      {/* Terminal prompt line */}
+      {/* Terminal prompt line — decrypts in on arrival */}
       <p className="text-primary font-mono text-xs tracking-[0.25em] uppercase mb-6">
-        <span className="text-muted-foreground">$</span> cd ~/page{" "}
-        <span className="text-muted-foreground">→</span> 404
+        <ScrambleText text="$ cd ~/page → 404" duration={1.2} />
       </p>
 
-      {/* Glowing number */}
-      <div className="relative select-none mb-8">
+      {/* Glowing number — with the hero's RGB-split glitch bursts */}
+      <div className="relative select-none mb-8 motion-safe:animate-[glitch_5s_linear_infinite]">
         <span className="text-[8rem] sm:text-[12rem] font-black text-foreground/10 leading-none">
           404
         </span>

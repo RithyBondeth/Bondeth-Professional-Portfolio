@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { gsap } from "./gsap";
 
 /* ------------------------------- Reveal types ------------------------------ */
 /**
@@ -116,8 +115,9 @@ export function AnimateIn(props: IRevealCommon) {
     className,
     from = "up",
     delay = 0,
-    duration = 0.9,
-    ease = "power3.out",
+    duration = 1,
+    // House ease from ./gsap — long deceleration, feather-soft landing.
+    ease = "smooth",
     scrub = false,
     start = "top 88%",
     once = false,
@@ -133,7 +133,6 @@ export function AnimateIn(props: IRevealCommon) {
 
   /* --------------------------------- Effects -------------------------------- */
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
     const el = ref.current;
     if (!el) return;
 
@@ -217,8 +216,9 @@ export function StaggerIn(
     stagger = 0.12,
     staggerFrom = "start",
     delay = 0,
-    duration = 0.8,
-    ease = "power3.out",
+    duration = 0.9,
+    // House ease from ./gsap — long deceleration, feather-soft landing.
+    ease = "smooth",
     scrub = false,
     start = "top 85%",
     once = false,
@@ -234,7 +234,6 @@ export function StaggerIn(
 
   /* --------------------------------- Effects -------------------------------- */
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
     const el = ref.current;
     if (!el) return;
 

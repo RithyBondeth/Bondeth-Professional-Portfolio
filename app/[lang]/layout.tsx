@@ -14,6 +14,8 @@ import Nav from "@/components/navbar";
 import Footer from "@/components/footer";
 import CommandPalette from "@/components/command-palette";
 import { ThemeProvider } from "@/components/utils/theme/theme-provider";
+import { SmoothScroll } from "@/components/utils/animations/smooth-scroll";
+import { CustomCursor } from "@/components/utils/cursor";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
 import { locales, hasLocale, getDictionary } from "@/utils/i18n";
 import { getSiteConfig } from "@/utils/i18n/content";
@@ -122,6 +124,9 @@ export default async function RootLayout({
       lang={lang}
       // next-themes mutates the class on <html> before hydration
       suppressHydrationWarning
+      // Next 16 no longer overrides CSS smooth-scroll during SPA navigations;
+      // this attribute restores instant scroll-to-top on route changes.
+      data-scroll-behavior="smooth"
       className={cn(
         "h-full",
         "antialiased",
@@ -141,9 +146,14 @@ export default async function RootLayout({
             {dict.nav.skipToContent}
           </a>
           <Nav lang={lang} />
-          {children}
-          <Footer lang={lang} />
+          {/* Everything that scrolls lives inside the smooth-scroll content;
+              the fixed navbar and the portaled command palette stay outside. */}
+          <SmoothScroll>
+            {children}
+            <Footer lang={lang} />
+          </SmoothScroll>
           <CommandPalette lang={lang} posts={palettePosts} />
+          <CustomCursor />
         </ThemeProvider>
         <Analytics />
         <SpeedInsights />

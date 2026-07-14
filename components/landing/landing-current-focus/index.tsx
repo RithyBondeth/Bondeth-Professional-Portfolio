@@ -1,4 +1,6 @@
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
+import { ScrambleText } from "@/components/utils/animations/scramble-text";
+import { SplitReveal } from "@/components/utils/animations/split-reveal";
 import Link from "next/link";
 import { getDictionary, type TLocale } from "@/utils/i18n";
 
@@ -13,6 +15,7 @@ export default function LandingCurrentFocus(props: { lang: TLocale }) {
     >
       <div
         aria-hidden
+        data-speed="0.92"
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,color-mix(in_oklab,var(--primary)_10%,transparent),transparent_35%)]"
       />
 
@@ -21,16 +24,17 @@ export default function LandingCurrentFocus(props: { lang: TLocale }) {
           <div>
             <AnimateIn from="left" distance={40}>
               <p className="mb-1 font-mono text-xs uppercase tracking-[0.25em] text-primary">
-                <span className="text-muted-foreground">{"//"}</span>{" "}
-                now.json
+                <ScrambleText text="// now.json" />
               </p>
             </AnimateIn>
 
-            <AnimateIn from="left" distance={50} delay={0.05}>
-              <h2 className="mt-3 text-3xl font-bold text-foreground sm:text-4xl">
-                {currentFocus.heading}
-              </h2>
-            </AnimateIn>
+            <SplitReveal
+              as="h2"
+              type="lines"
+              className="mt-3 text-4xl font-bold text-foreground sm:text-5xl"
+            >
+              {currentFocus.heading}
+            </SplitReveal>
 
             <AnimateIn from="up" delay={0.1}>
               <p className="mt-5 max-w-xl text-sm leading-relaxed text-muted-foreground">
@@ -40,7 +44,7 @@ export default function LandingCurrentFocus(props: { lang: TLocale }) {
 
             <AnimateIn from="up" delay={0.15}>
               <div className="mt-7 flex flex-wrap items-center gap-3">
-                <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5 font-mono text-[11px] text-emerald-500">
+                <div className="animated-border inline-flex items-center gap-2 rounded-full px-3 py-1.5 font-mono text-[11px] text-emerald-500">
                   <span className="relative flex h-2 w-2" aria-hidden>
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-50 motion-reduce:animate-none" />
                     <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />

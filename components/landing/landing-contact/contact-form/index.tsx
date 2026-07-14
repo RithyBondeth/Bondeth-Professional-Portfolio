@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { track } from "@vercel/analytics";
+import { gsap } from "@/components/utils/animations/gsap";
 import { getDictionary, type TLocale } from "@/utils/i18n";
 
 type TFormStatus = "idle" | "loading" | "success" | "error";
@@ -16,6 +17,73 @@ export default function ContactForm(props: { lang: TLocale }) {
   const [status, setStatus] = useState<TFormStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [message, setMessage] = useState("");
+
+  /* ---------------------------------- Utils --------------------------------- */
+  const successCardRef = useRef<HTMLDivElement>(null);
+  const loadingDotsRef = useRef<HTMLSpanElement>(null);
+  // The localized label already ends in "..." — the animated span owns the
+  // dots while loading, so trim them off the static text.
+  const sendingLabel = t.sending.replace(/[.…]+$/, "");
+
+  /* --------------------------------- Effects -------------------------------- */
+  // Success card entrance: "snap" scale/fade plus a subtle emerald glow pulse.
+  useEffect(() => {
+    if (status !== "success") return;
+    const card = successCardRef.current;
+    if (!card) return;
+
+    const mm = gsap.matchMedia();
+    mm.add("(prefers-reduced-motion: no-preference)", () => {
+      const tl = gsap.timeline();
+      tl.fromTo(
+        card,
+        { opacity: 0, scale: 0.94 },
+        { opacity: 1, scale: 1, duration: 0.5, ease: "snap" },
+      )
+        .fromTo(
+          card,
+          { boxShadow: "0 0 0 0 rgba(52, 211, 153, 0)" },
+          {
+            boxShadow: "0 0 32px 0 rgba(52, 211, 153, 0.25)",
+            duration: 0.45,
+            ease: "snap",
+          },
+          "-=0.2",
+        )
+        .to(card, {
+          boxShadow: "0 0 0 0 rgba(52, 211, 153, 0)",
+          duration: 0.9,
+          ease: "power2.out",
+          clearProps: "boxShadow",
+        });
+      return () => tl.kill();
+    });
+
+    return () => mm.revert();
+  }, [status]);
+
+  // Terminal-style ellipsis while sending: the dots tick ". .. ..." in place.
+  useEffect(() => {
+    if (status !== "loading") return;
+    const dots = loadingDotsRef.current;
+    if (!dots) return;
+
+    const mm = gsap.matchMedia();
+    mm.add("(prefers-reduced-motion: no-preference)", () => {
+      const frames = [".", "..", "..."];
+      const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.3 });
+      frames.forEach((frame, index) => {
+        tl.set(dots, { textContent: frame }, index * 0.3);
+      });
+      return () => {
+        tl.kill();
+        // Rest on the full ellipsis, matching the static label.
+        dots.textContent = "...";
+      };
+    });
+
+    return () => mm.revert();
+  }, [status]);
 
   /* --------------------------------- Methods -------------------------------- */
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -54,7 +122,10 @@ export default function ContactForm(props: { lang: TLocale }) {
   /* -------------------------------- Render UI ------------------------------- */
   if (status === "success") {
     return (
-      <div className="rounded border border-emerald-500/20 bg-emerald-500/5 p-8 text-center">
+      <div
+        ref={successCardRef}
+        className="rounded border border-emerald-500/20 bg-emerald-500/5 p-8 text-center"
+      >
         <h3 className="text-emerald-400 font-bold mb-2">{t.successTitle}</h3>
         <p className="text-muted-foreground text-sm">{t.successBody}</p>
         <button
@@ -186,7 +257,20 @@ export default function ContactForm(props: { lang: TLocale }) {
         className="mt-2 flex items-center justify-center gap-2 w-full px-6 py-3 bg-primary text-primary-foreground rounded font-mono text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <span className="text-primary-foreground/60">▸</span>
-        {status === "loading" ? t.sending : t.send}
+        {status === "loading" ? (
+          <span>
+            {sendingLabel}
+            <span
+              ref={loadingDotsRef}
+              aria-hidden
+              className="inline-block w-[3ch] text-left"
+            >
+              ...
+            </span>
+          </span>
+        ) : (
+          t.send
+        )}
       </button>
     </form>
   );

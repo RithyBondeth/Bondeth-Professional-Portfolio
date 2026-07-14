@@ -6,6 +6,9 @@ import {
 import { getDictionary, type TLocale } from "@/utils/i18n";
 import { AnimateIn } from "@/components/utils/animations/animate-in";
 import { MarqueeTrack } from "@/components/utils/animations/marquee-track";
+import { ScrambleText } from "@/components/utils/animations/scramble-text";
+import { SplitReveal } from "@/components/utils/animations/split-reveal";
+import { VelocitySkew } from "@/components/utils/animations/velocity-skew";
 import {
   SiReact,
   SiNextdotjs,
@@ -84,14 +87,16 @@ export default function LandingSkills(props: { lang: TLocale }) {
       <div className="max-w-6xl mx-auto px-6 mb-16">
         <AnimateIn from="zoom-in">
           <p className="text-primary font-mono text-xs tracking-[0.25em] uppercase mb-1">
-            <span className="text-muted-foreground">{"//"}</span> skills.ts
+            <ScrambleText text="// skills.ts" />
           </p>
         </AnimateIn>
-        <AnimateIn from="zoom-in" delay={0.05}>
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mt-3">
-            {dict.skills.heading}
-          </h2>
-        </AnimateIn>
+        <SplitReveal
+          as="h2"
+          type="lines"
+          className="text-4xl sm:text-5xl font-bold text-foreground mt-3"
+        >
+          {dict.skills.heading}
+        </SplitReveal>
 
         {/* Proficiency Legend Section */}
         <AnimateIn from="zoom-in" delay={0.1}>
@@ -111,8 +116,8 @@ export default function LandingSkills(props: { lang: TLocale }) {
         </AnimateIn>
       </div>
 
-      {/* Marquee Rows Section */}
-      <div className="space-y-3">
+      {/* Marquee Rows Section — rows lean with scroll velocity for inertia */}
+      <VelocitySkew className="space-y-3">
         {skillGroups.map(({ category, skills }, i) => {
           const direction = i % 2 === 0 ? "rtl" : "ltr";
           const half: ISkill[] = Array.from(
@@ -151,7 +156,7 @@ export default function LandingSkills(props: { lang: TLocale }) {
             </AnimateIn>
           );
         })}
-      </div>
+      </VelocitySkew>
     </section>
   );
 }
@@ -184,11 +189,14 @@ function SkillBadge(props: { skill: ISkill; levelLabel: string }) {
   /* -------------------------------- Render UI ------------------------------- */
   return (
     <div
-      className="flex items-center gap-2 px-3.5 py-2 rounded border border-border/50 bg-card whitespace-nowrap shrink-0 select-none hover:border-primary/20 transition-colors"
+      className="group flex items-center gap-2 px-3.5 py-2 rounded border border-border/50 bg-card whitespace-nowrap shrink-0 select-none transition-all duration-300 hover:border-primary/40 hover:shadow-[0_0_16px_rgba(34,211,238,0.12)] motion-safe:hover:-translate-y-0.5"
       title={`${skill.name} — ${levelLabel}`}
     >
       {Icon && (
-        <Icon className="w-4 h-4 shrink-0" style={{ color: skill.color }} />
+        <Icon
+          className="w-4 h-4 shrink-0 transition-transform duration-300 motion-safe:group-hover:scale-125"
+          style={{ color: skill.color }}
+        />
       )}
       <span className="text-xs font-mono text-muted-foreground">
         {skill.name}

@@ -5,6 +5,10 @@ import Image from "next/image";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
 import { Parallax } from "@/components/utils/animations/parallax";
+import { SplitReveal } from "@/components/utils/animations/split-reveal";
+import { ScrambleText } from "@/components/utils/animations/scramble-text";
+import { TiltCard } from "@/components/utils/animations/tilt-card";
+import { Magnetic } from "@/components/utils/animations/magnetic";
 import { GitHubIcon, LinkedInIcon } from "@/components/utils/icons";
 import { getDictionary, type TLocale } from "@/utils/i18n";
 import { getSiteConfig } from "@/utils/i18n/content";
@@ -264,56 +268,60 @@ function PortraitPanel(props: { alt: string }) {
       {/* Ambient Glow */}
       <div className="absolute -inset-6 bg-cyan-500/6 rounded-2xl blur-3xl pointer-events-none" />
 
-      {/* Editor Window */}
-      <div className="relative rounded-md border border-[#1a2e52] bg-[#0c1428] overflow-hidden shadow-2xl shadow-black/30 dark:shadow-black/60">
-        {/* Window Chrome */}
-        <div className="flex items-center gap-1.5 px-4 py-3 border-b border-[#1a2e52]/60 bg-black/30">
-          <span aria-hidden className="w-3 h-3 rounded-full bg-red-500/80" />
-          <span aria-hidden className="w-3 h-3 rounded-full bg-yellow-500/70" />
-          <span aria-hidden className="w-3 h-3 rounded-full bg-green-500/70" />
-          <span className="ml-3 text-slate-500 text-[11px] font-code select-none">
-            bondeth.png
-          </span>
-        </div>
+      {/* 3D tilt shell — relative + matching rounding so the glare sheen clips
+          to the editor window's corners. Desktop-only, reduced-motion safe. */}
+      <TiltCard maxTilt={5} hoverScale={1.01} className="relative rounded-md">
+        {/* Editor Window */}
+        <div className="relative rounded-md border border-[#1a2e52] bg-[#0c1428] overflow-hidden shadow-2xl shadow-black/30 dark:shadow-black/60">
+          {/* Window Chrome */}
+          <div className="flex items-center gap-1.5 px-4 py-3 border-b border-[#1a2e52]/60 bg-black/30">
+            <span aria-hidden className="w-3 h-3 rounded-full bg-red-500/80" />
+            <span aria-hidden className="w-3 h-3 rounded-full bg-yellow-500/70" />
+            <span aria-hidden className="w-3 h-3 rounded-full bg-green-500/70" />
+            <span className="ml-3 text-slate-500 text-[11px] font-code select-none">
+              bondeth.png
+            </span>
+          </div>
 
-        {/* Code editor behind + person in front. The person is a transparent
-            cut-out, so the code shows around him and is hidden behind him. */}
-        <div className="relative">
-          <CodeColumn
-            code={LEFT_CODE}
-            className="top-4 bottom-4 left-4 w-[47%]"
-            active={active}
-            cps={58}
-          />
-          <CodeColumn
-            code={RIGHT_CODE}
-            className="top-4 bottom-4 right-4 w-[47%]"
-            active={active}
-            cps={52}
-            delay={0.4}
-          />
-
-          {/* Person — a little padding so he doesn't touch the edges */}
-          <div className="relative mx-auto w-[86%] pt-6">
-            <Image
-              src="/bondeth.webp"
-              alt={props.alt}
-              width={819}
-              height={1157}
-              sizes="(min-width: 1024px) 340px, (min-width: 768px) 40vw, 86vw"
-              className="w-full h-auto block select-none"
+          {/* Code editor behind + person in front. The person is a transparent
+              cut-out, so the code shows around him and is hidden behind him. */}
+          <div className="relative">
+            <CodeColumn
+              code={LEFT_CODE}
+              className="top-4 bottom-4 left-4 w-[47%]"
+              active={active}
+              cps={58}
             />
+            <CodeColumn
+              code={RIGHT_CODE}
+              className="top-4 bottom-4 right-4 w-[47%]"
+              active={active}
+              cps={52}
+              delay={0.4}
+            />
+
+            {/* Person — a little padding so he doesn't touch the edges */}
+            <div className="relative mx-auto w-[86%] pt-6">
+              <Image
+                src="/bondeth.webp"
+                alt={props.alt}
+                width={819}
+                height={1157}
+                sizes="(min-width: 1024px) 340px, (min-width: 768px) 40vw, 86vw"
+                className="w-full h-auto block select-none"
+              />
+            </div>
+          </div>
+
+          {/* Status Bar */}
+          <div className="flex items-center justify-between px-4 py-2.5 border-t border-[#1a2e52]/60 bg-black/30 text-[10px] font-code text-slate-400">
+            <span>
+              <span className="text-emerald-400">▸</span> whoami
+            </span>
+            <span>Phnom Penh, KH</span>
           </div>
         </div>
-
-        {/* Status Bar */}
-        <div className="flex items-center justify-between px-4 py-2.5 border-t border-[#1a2e52]/60 bg-black/30 text-[10px] font-code text-slate-400">
-          <span>
-            <span className="text-emerald-400">▸</span> whoami
-          </span>
-          <span>Phnom Penh, KH</span>
-        </div>
-      </div>
+      </TiltCard>
 
       {/* Caption */}
       <figcaption className="mt-3 text-[11px] font-mono text-muted-foreground text-center lg:text-left">
@@ -414,7 +422,7 @@ export default function LandingAbout(props: { lang: TLocale }) {
       <div className="max-w-6xl mx-auto">
         <AnimateIn from="zoom-in">
           <p className="text-primary font-mono text-xs tracking-[0.25em] uppercase mb-1">
-            <span className="text-muted-foreground">{"//"}</span> about.tsx
+            <ScrambleText text="// about.tsx" />
           </p>
         </AnimateIn>
 
@@ -435,13 +443,17 @@ export default function LandingAbout(props: { lang: TLocale }) {
 
           {/* Bio Section */}
           <div className="lg:col-span-7">
-            <AnimateIn from="right" distance={50}>
-              <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-6 leading-snug">
-                {dict.about.heading}
-              </h2>
-            </AnimateIn>
+            {/* Masked line-by-line reveal — lines only: heading copy is
+                localized and Khmer must never be split mid-cluster. */}
+            <SplitReveal
+              as="h2"
+              type="lines"
+              className="text-4xl sm:text-5xl font-bold text-foreground mb-6 leading-snug"
+            >
+              {dict.about.heading}
+            </SplitReveal>
 
-            <StaggerIn from="right" distance={40} stagger={0.15} delay={0.1}>
+            <StaggerIn from="right" distance={40} stagger={0.18} blur={4} delay={0.1}>
               {localized.bio.map((paragraph, i) => (
                 <p
                   key={i}
@@ -454,24 +466,28 @@ export default function LandingAbout(props: { lang: TLocale }) {
 
             <AnimateIn delay={0.3}>
               <div className="mt-8 flex gap-4">
-                <a
-                  href={siteConfig.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-primary transition-colors"
-                  aria-label="GitHub"
-                >
-                  <GitHubIcon className="w-5 h-5" />
-                </a>
-                <a
-                  href={siteConfig.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-primary transition-colors"
-                  aria-label="LinkedIn"
-                >
-                  <LinkedInIcon className="w-5 h-5" />
-                </a>
+                <Magnetic strength={0.4} className="inline-block">
+                  <a
+                    href={siteConfig.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block p-1 text-muted-foreground hover:text-primary transition-colors"
+                    aria-label="GitHub"
+                  >
+                    <GitHubIcon className="w-5 h-5" />
+                  </a>
+                </Magnetic>
+                <Magnetic strength={0.4} className="inline-block">
+                  <a
+                    href={siteConfig.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block p-1 text-muted-foreground hover:text-primary transition-colors"
+                    aria-label="LinkedIn"
+                  >
+                    <LinkedInIcon className="w-5 h-5" />
+                  </a>
+                </Magnetic>
               </div>
             </AnimateIn>
           </div>

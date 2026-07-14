@@ -1,9 +1,15 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { flushSync } from "react-dom";
 import { useTheme } from "next-themes";
 
 const subscribe = () => () => {};
+
+/** View Transitions API — not yet in every TS lib. */
+type TDocWithViewTransition = Document & {
+  startViewTransition?: (cb: () => void) => { ready: Promise<void> };
+};
 
 /* --------------------------------- Utilities -------------------------------- */
 function SunIcon({ className }: { className?: string }) {
@@ -61,9 +67,59 @@ export default function ThemeToggle(props: { label: string }) {
 
   const isDark = resolvedTheme === "dark";
 
+  /**
+   * Theme switch with a circular View-Transition wipe expanding from the
+   * click point. Falls back to the plain instant toggle when the API is
+   * missing or the user prefers reduced motion. globals.css disables the
+   * default cross-fade so the clip-path reveal is the only animation.
+   */
+  const toggleTheme = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const next = isDark ? "light" : "dark";
+    const doc = document as TDocWithViewTransition;
+    const reduce = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    if (!doc.startViewTransition || reduce) {
+      setTheme(next);
+      return;
+    }
+
+    // Keyboard "clicks" report (0,0) — expand from the button instead.
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX || rect.left + rect.width / 2;
+    const y = e.clientY || rect.top + rect.height / 2;
+    const radius = Math.hypot(
+      Math.max(x, window.innerWidth - x),
+      Math.max(y, window.innerHeight - y),
+    );
+
+    const transition = doc.startViewTransition(() => {
+      flushSync(() => setTheme(next));
+    });
+    transition.ready
+      .then(() => {
+        document.documentElement.animate(
+          {
+            clipPath: [
+              `circle(0px at ${x}px ${y}px)`,
+              `circle(${radius}px at ${x}px ${y}px)`,
+            ],
+          },
+          {
+            duration: 500,
+            easing: "cubic-bezier(0.625, 0.05, 0, 1)",
+            pseudoElement: "::view-transition-new(root)",
+          },
+        );
+      })
+      .catch(() => {
+        /* transition was skipped — theme still switched */
+      });
+  };
+
   return (
     <button
-      onClick={() => setTheme(isDark ? "light" : "dark")}
+      onClick={toggleTheme}
       aria-label={label}
       title={label}
       className="flex size-11 items-center justify-center rounded border border-border/60 text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary lg:size-7"

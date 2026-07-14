@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { getAllCategories, getAllPosts } from "@/utils/functions/blog";
 import { getAllTags } from "@/utils/functions/blog/get-tags";
 import { AnimateIn } from "@/components/utils/animations/animate-in";
+import { ScrambleText } from "@/components/utils/animations/scramble-text";
 import { BlogExplorer } from "@/components/blog/blog-explorer";
 import { hasLocale, getDictionary } from "@/utils/i18n";
 
@@ -50,7 +51,7 @@ export default async function BlogPage({ params }: IBlogPageProps) {
         {/* Heading Section */}
         <AnimateIn>
           <p className="text-primary font-mono text-xs tracking-[0.25em] uppercase mb-1">
-            <span className="text-muted-foreground">$</span> ls content/blog
+            <ScrambleText text="$ ls content/blog" />
           </p>
         </AnimateIn>
 

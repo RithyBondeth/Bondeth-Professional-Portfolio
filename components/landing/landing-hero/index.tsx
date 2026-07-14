@@ -1,26 +1,43 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import gsap from "gsap";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { gsap, SplitText } from "@/components/utils/animations/gsap";
+import { Magnetic } from "@/components/utils/animations/magnetic";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
 import HeroBackground from "./hero-background";
 import { getDictionary, type TLocale } from "@/utils/i18n";
 import { getSiteConfig } from "@/utils/i18n/content";
 
 /* ---------------------------------- Hooks ---------------------------------- */
+/** Live subscription to the user's reduced-motion preference (false on SSR). */
+function useReducedMotion() {
+  return useSyncExternalStore(
+    (onChange) => {
+      const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+      mq.addEventListener("change", onChange);
+      return () => mq.removeEventListener("change", onChange);
+    },
+    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    () => false,
+  );
+}
+
 function useTypewriter(phrases: string[], startDelay = 1200) {
   const [displayed, setDisplayed] = useState("");
   const [phraseIdx, setPhraseIdx] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
   const [started, setStarted] = useState(false);
+  // Reduced motion: show the first title in full, never cycle.
+  const reduced = useReducedMotion();
 
   useEffect(() => {
+    if (reduced) return;
     const id = setTimeout(() => setStarted(true), startDelay);
     return () => clearTimeout(id);
-  }, [startDelay]);
+  }, [startDelay, reduced]);
 
   useEffect(() => {
-    if (!started) return;
+    if (!started || reduced) return;
     const full = phrases[phraseIdx];
     let wait: number;
     if (isDeleting) {
@@ -44,9 +61,9 @@ function useTypewriter(phrases: string[], startDelay = 1200) {
       }
     }, wait);
     return () => clearTimeout(id);
-  }, [displayed, isDeleting, phraseIdx, phrases, started]);
+  }, [displayed, isDeleting, phraseIdx, phrases, started, reduced]);
 
-  return displayed;
+  return reduced ? phrases[0] : displayed;
 }
 
 /* --------------------------------- Utilities -------------------------------- */
@@ -137,6 +154,19 @@ function CodeBlock() {
   );
 }
 
+/* --------------------------------- Boot intro ------------------------------- */
+const BOOT_KEY = "rb-boot-done";
+// Decorative terminal output — intentionally Latin, like every shell label on
+// the site.
+const BOOT_LINES = [
+  "init portfolio --profile=bondeth",
+  "load modules [gsap, next, tailwind]",
+  "render ui --theme=dark",
+  "ready ✓",
+];
+
+type TBootPhase = "deciding" | "playing" | "done";
+
 export default function LandingHero(props: { lang: TLocale }) {
   /* ---------------------------------- Props --------------------------------- */
   const { lang } = props;
@@ -145,13 +175,87 @@ export default function LandingHero(props: { lang: TLocale }) {
 
   /* ---------------------------------- Utils --------------------------------- */
   const containerRef = useRef<HTMLElement>(null);
+  const bootRef = useRef<HTMLDivElement>(null);
+  const nameRef = useRef<HTMLHeadingElement>(null);
   const typed = useTypewriter(dict.hero.titles);
 
+  /* -------------------------------- All States ------------------------------- */
+  const [boot, setBoot] = useState<TBootPhase>("deciding");
+
   /* --------------------------------- Effects -------------------------------- */
+  // Decide once per mount whether the boot sequence runs: first visit of the
+  // session only, never under reduced motion, never blocking repeat visits.
+  // Deferred a tick so the decision isn't a synchronous setState in the
+  // effect body (react-hooks/set-state-in-effect).
   useEffect(() => {
+    const id = window.setTimeout(() => {
+      const reduce = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+      const seen = window.sessionStorage.getItem(BOOT_KEY) === "1";
+      setBoot(reduce || seen ? "done" : "playing");
+    }, 0);
+    return () => window.clearTimeout(id);
+  }, []);
+
+  // Boot sequence: type the lines, fill the bar, wipe the overlay up.
+  // Click / keypress skips; a hard timeout guarantees it can never hang.
+  useEffect(() => {
+    if (boot !== "playing") return;
+    const overlay = bootRef.current;
+    if (!overlay) {
+      setBoot("done");
+      return;
+    }
+
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      try {
+        window.sessionStorage.setItem(BOOT_KEY, "1");
+      } catch {
+        /* storage may be unavailable — the intro just replays next time */
+      }
+      setBoot("done");
+    };
+
+    const q = gsap.utils.selector(overlay);
+    const tl = gsap.timeline({ onComplete: finish });
+    tl.to(q(".boot-line"), {
+      opacity: 1,
+      duration: 0.16,
+      stagger: 0.15,
+      ease: "none",
+    })
+      .to(q(".boot-bar-fill"), { scaleX: 1, duration: 0.4, ease: "power2.inOut" }, "-=0.1")
+      .to(overlay, { yPercent: -100, duration: 0.5, ease: "smooth" }, "+=0.08");
+
+    const skip = () => tl.progress(1);
+    window.addEventListener("pointerdown", skip);
+    window.addEventListener("keydown", skip);
+    // Never block the page for more than ~1.8s, no matter what.
+    const safety = window.setTimeout(() => {
+      tl.kill();
+      finish();
+    }, 1800);
+
+    return () => {
+      window.removeEventListener("pointerdown", skip);
+      window.removeEventListener("keydown", skip);
+      window.clearTimeout(safety);
+      tl.kill();
+    };
+  }, [boot]);
+
+  // Entrance choreography + scroll exit — runs once the boot intro is done.
+  useEffect(() => {
+    if (boot !== "done") return;
+
     const revealSelectors = [
       ".hero-label",
-      ".hero-word",
+      ".hero-char",
+      ".hero-name",
       ".hero-subtitle",
       ".hero-tagline",
       ".hero-cta-item",
@@ -159,43 +263,67 @@ export default function LandingHero(props: { lang: TLocale }) {
       ".hero-scroll",
     ];
 
+    // Exposed to the safety net below — must outlive the matchMedia closure.
+    let entranceTl: gsap.core.Timeline | null = null;
+
     const mm = gsap.matchMedia(containerRef);
     mm.add("(prefers-reduced-motion: no-preference)", () => {
-      const tl = gsap.timeline({ delay: 0.15 });
+      // Split the name into chars — Latin text, safe to split. Each char gets
+      // the .hero-char gradient (globals.css) and its own overflow mask.
+      // Split words AND chars: char masks nest inside word wrappers, so the
+      // name still wraps at word boundaries, never mid-word.
+      const split = nameRef.current
+        ? SplitText.create(nameRef.current, {
+            type: "words,chars",
+            mask: "chars",
+            charsClass: "hero-char",
+            aria: "auto",
+          })
+        : null;
+
+      const tl = gsap.timeline({ delay: 0.1 });
+      entranceTl = tl;
       tl.fromTo(
         ".hero-label",
         { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
+        { opacity: 1, y: 0, duration: 0.6, ease: "smooth" },
+      );
+      if (split) {
+        tl.from(
+          split.chars,
+          {
+            yPercent: 120,
+            rotate: 8,
+            duration: 0.9,
+            stagger: 0.035,
+            ease: "smooth",
+          },
+          "-=0.35",
+        );
+      }
+      tl.fromTo(
+        ".hero-subtitle",
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.5, ease: "smooth" },
+        "-=0.45",
       )
-        .fromTo(
-          ".hero-word",
-          { opacity: 0, y: 60 },
-          { opacity: 1, y: 0, duration: 0.6, stagger: 0.15, ease: "power3.out" },
-          "-=0.3",
-        )
-        .fromTo(
-          ".hero-subtitle",
-          { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" },
-          "-=0.2",
-        )
         .fromTo(
           ".hero-tagline",
           { opacity: 0, y: 25 },
-          { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
-          "-=0.25",
+          { opacity: 1, y: 0, duration: 0.6, ease: "smooth" },
+          "-=0.3",
         )
         .fromTo(
           ".hero-cta-item",
           { opacity: 0, y: 18 },
-          { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, ease: "power3.out" },
-          "-=0.25",
+          { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, ease: "smooth" },
+          "-=0.3",
         )
         .fromTo(
           ".hero-code",
           { opacity: 0, x: 30 },
-          { opacity: 1, x: 0, duration: 0.8, ease: "power3.out" },
-          "-=0.4",
+          { opacity: 1, x: 0, duration: 0.8, ease: "smooth" },
+          "-=0.45",
         )
         .fromTo(
           ".hero-scroll",
@@ -203,7 +331,53 @@ export default function LandingHero(props: { lang: TLocale }) {
           { opacity: 1, duration: 0.6, ease: "power2.out" },
           "-=0.1",
         );
-      return () => tl.kill();
+
+      // Scroll exit: the two columns drift up and dim at different rates as
+      // the hero scrolls away, so the page feels layered from the first wheel
+      // tick. The scroll hint fades out immediately.
+      const exits = [
+        gsap.to(".hero-exit-text", {
+          yPercent: -14,
+          opacity: 0.25,
+          ease: "none",
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top top",
+            end: "bottom 35%",
+            scrub: true,
+          },
+        }),
+        gsap.to(".hero-exit-code", {
+          yPercent: -7,
+          opacity: 0.35,
+          ease: "none",
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top top",
+            end: "bottom 35%",
+            scrub: true,
+          },
+        }),
+        gsap.to(".hero-scroll", {
+          opacity: 0,
+          ease: "none",
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top top",
+            end: "8% top",
+            scrub: true,
+          },
+        }),
+      ];
+
+      return () => {
+        exits.forEach((t) => {
+          t.scrollTrigger?.kill();
+          t.kill();
+        });
+        tl.kill();
+        split?.revert();
+      };
     });
     mm.add("(prefers-reduced-motion: reduce)", () => {
       gsap.set(revealSelectors.join(","), { opacity: 1, y: 0, x: 0 });
@@ -211,21 +385,27 @@ export default function LandingHero(props: { lang: TLocale }) {
 
     // Safety net: above-the-fold content must never be stranded invisible
     // (e.g. a tab backgrounded mid-load pauses GSAP's rAF ticker indefinitely).
+    // The stalled timeline is KILLED first — a merely-paused one would re-hide
+    // everything on the next ticker tick, overriding the set below.
     const safety = window.setTimeout(() => {
       const root = containerRef.current;
       if (!root) return;
+      if (entranceTl && entranceTl.progress() >= 1) return; // finished normally
+      entranceTl?.kill();
       gsap.set(root.querySelectorAll(revealSelectors.join(",")), {
         opacity: 1,
         y: 0,
         x: 0,
+        yPercent: 0,
+        rotate: 0,
       });
-    }, 4000);
+    }, 6000);
 
     return () => {
       mm.revert();
       window.clearTimeout(safety);
     };
-  }, []);
+  }, [boot]);
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
@@ -254,15 +434,20 @@ export default function LandingHero(props: { lang: TLocale }) {
       {/* Centre Radial Glow Section */}
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_70%_60%_at_50%_50%,rgba(34,211,238,0.05),transparent)]" />
 
-      {/* Ambient Orbs Section */}
+      {/* Ambient Orbs Section — parallax depth via ScrollSmoother data-speed,
+          slow aurora drift on top of the pulse. */}
       <div
-        className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/6 rounded-full blur-3xl pointer-events-none animate-pulse"
-        style={{ animationDuration: "6s" }}
+        data-speed="0.85"
+        className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/6 rounded-full blur-3xl pointer-events-none motion-safe:animate-[aurora_16s_ease-in-out_infinite]"
       />
       <div
-        className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-violet-500/6 rounded-full blur-3xl pointer-events-none animate-pulse"
-        style={{ animationDuration: "8s", animationDelay: "2s" }}
+        data-speed="1.15"
+        className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-violet-500/6 rounded-full blur-3xl pointer-events-none motion-safe:animate-[aurora_20s_ease-in-out_infinite]"
+        style={{ animationDelay: "3s" }}
       />
+
+      {/* Film grain — gives the flat navy a physical texture */}
+      <div className="absolute inset-0 pointer-events-none bg-noise opacity-[0.03] dark:opacity-[0.05]" />
 
       {/* Scan Line Section */}
       <div
@@ -282,22 +467,19 @@ export default function LandingHero(props: { lang: TLocale }) {
       <div className="relative w-full max-w-6xl mx-auto px-6 py-24 flex items-center min-h-screen">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 w-full items-center">
           {/* Left: Text */}
-          <div className="text-center lg:text-left">
+          <div className="hero-exit-text text-center lg:text-left">
             <p className="hero-label text-primary font-mono text-xs mb-5 tracking-[0.25em] uppercase">
               <span className="text-emerald-400">▸</span> whoami
             </p>
 
+            {/* Name — split into masked chars at runtime; the gradient lives on
+                .hero-name (whole-text fallback) AND .hero-char (per-char) so it
+                renders in every mode, including reduced motion and no-JS. */}
             <h1
-              className="text-5xl sm:text-6xl xl:text-7xl font-bold mb-4 overflow-hidden motion-safe:animate-[glitch_7s_linear_infinite]"
-              aria-label={siteConfig.name}
+              ref={nameRef}
+              className="hero-name text-6xl sm:text-7xl xl:text-8xl font-bold tracking-tight leading-[0.95] mb-5 motion-safe:animate-[glitch_7s_linear_infinite]"
             >
-              {siteConfig.name.split(" ").map((word, i) => (
-                <span key={i} className="inline-block mr-[0.25em] last:mr-0">
-                  <span className="hero-word inline-block bg-linear-to-r from-slate-900 via-slate-700 to-cyan-600 dark:from-white dark:via-slate-200 dark:to-cyan-200 bg-clip-text text-transparent">
-                    {word}
-                  </span>
-                </span>
-              ))}
+              {siteConfig.name}
             </h1>
 
             {/* Typewriter Subtitle */}
@@ -312,31 +494,37 @@ export default function LandingHero(props: { lang: TLocale }) {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
-              <a
-                href="#projects"
-                className="hero-cta-item px-6 py-2.5 bg-primary text-primary-foreground rounded font-mono text-sm font-medium hover:bg-primary/90 transition-colors"
-              >
-                {dict.hero.viewWork}
-              </a>
-              <a
-                href={siteConfig.resume}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hero-cta-item px-6 py-2.5 border border-primary/20 text-primary rounded font-mono text-sm font-medium hover:bg-primary/5 transition-colors"
-              >
-                {dict.hero.downloadCv}
-              </a>
-              <a
-                href="#contact"
-                className="hero-cta-item px-6 py-2.5 border border-border text-muted-foreground rounded font-mono text-sm font-medium hover:border-primary/50 hover:text-foreground transition-colors"
-              >
-                {dict.hero.getInTouch}
-              </a>
+              <Magnetic strength={0.3} className="hero-cta-item">
+                <a
+                  href="#projects"
+                  className="block px-6 py-2.5 bg-primary text-primary-foreground rounded font-mono text-sm font-medium hover:bg-primary/90 transition-colors text-center"
+                >
+                  {dict.hero.viewWork}
+                </a>
+              </Magnetic>
+              <Magnetic strength={0.3} className="hero-cta-item">
+                <a
+                  href={siteConfig.resume}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block px-6 py-2.5 border border-primary/20 text-primary rounded font-mono text-sm font-medium hover:bg-primary/5 transition-colors text-center"
+                >
+                  {dict.hero.downloadCv}
+                </a>
+              </Magnetic>
+              <Magnetic strength={0.3} className="hero-cta-item">
+                <a
+                  href="#contact"
+                  className="block px-6 py-2.5 border border-border text-muted-foreground rounded font-mono text-sm font-medium hover:border-primary/50 hover:text-foreground transition-colors text-center"
+                >
+                  {dict.hero.getInTouch}
+                </a>
+              </Magnetic>
             </div>
           </div>
 
           {/* Right: Code Block */}
-          <div className="hero-code hidden lg:flex items-center justify-center">
+          <div className="hero-code hero-exit-code hidden lg:flex items-center justify-center">
             <CodeBlock />
           </div>
         </div>
@@ -349,6 +537,30 @@ export default function LandingHero(props: { lang: TLocale }) {
         </span>
         <div className="w-px h-10 bg-linear-to-b from-border to-transparent" />
       </div>
+
+      {/* Boot intro overlay — first session visit only, skippable, wiped away
+          by its own timeline. Sits above hero content but below the fixed nav. */}
+      {boot === "playing" && (
+        <div
+          ref={bootRef}
+          role="presentation"
+          className="absolute inset-0 z-40 bg-background flex items-center justify-center px-6"
+        >
+          <div className="w-full max-w-md font-code text-xs sm:text-sm text-muted-foreground space-y-2">
+            {BOOT_LINES.map((line, i) => (
+              <div key={i} className="boot-line flex gap-2 opacity-0">
+                <span className="text-primary">$</span>
+                <span className={i === BOOT_LINES.length - 1 ? "text-emerald-400" : undefined}>
+                  {line}
+                </span>
+              </div>
+            ))}
+            <div className="mt-5 h-px w-full bg-border overflow-hidden">
+              <div className="boot-bar-fill h-full w-full bg-primary origin-left scale-x-0" />
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

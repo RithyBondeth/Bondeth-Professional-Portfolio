@@ -1,5 +1,8 @@
 import { siteConfig } from "@/utils/constants/portfolio.constant";
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
+import { ScrambleText } from "@/components/utils/animations/scramble-text";
+import { SplitReveal } from "@/components/utils/animations/split-reveal";
+import { Magnetic } from "@/components/utils/animations/magnetic";
 import { GitHubIcon, LinkedInIcon, MailIcon } from "@/components/utils/icons";
 import { ArrowRight, Clock3 } from "lucide-react";
 import ContactForm from "./contact-form";
@@ -17,15 +20,17 @@ export default function LandingContact(props: { lang: TLocale }) {
         {/* Heading Section */}
         <AnimateIn from="left">
           <p className="text-primary font-mono text-xs tracking-[0.25em] uppercase mb-1">
-            <span className="text-muted-foreground">$</span> contact --init
+            <ScrambleText text="$ contact --init" />
           </p>
         </AnimateIn>
 
-        <AnimateIn from="left" delay={0.05}>
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mt-3 mb-4">
-            {dict.contact.heading}
-          </h2>
-        </AnimateIn>
+        <SplitReveal
+          as="h2"
+          type="lines"
+          className="text-4xl sm:text-5xl font-bold text-foreground mt-3 mb-4"
+        >
+          {dict.contact.heading}
+        </SplitReveal>
 
         <div className="mt-10 grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
           <div>
@@ -118,14 +123,16 @@ function SocialLink(props: {
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label={label}
-      className="w-10 h-10 flex items-center justify-center rounded border border-border/60 text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors"
-    >
-      {icon}
-    </a>
+    <Magnetic strength={0.45} className="inline-block">
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={label}
+        className="w-10 h-10 flex items-center justify-center rounded border border-border/60 text-muted-foreground hover:text-primary hover:border-primary/40 hover:shadow-[0_0_16px_rgba(34,211,238,0.15)] transition-all"
+      >
+        {icon}
+      </a>
+    </Magnetic>
   );
 }

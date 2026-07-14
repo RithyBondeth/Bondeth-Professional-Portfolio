@@ -3,6 +3,9 @@ import { organizations } from "@/utils/constants/portfolio.constant";
 import { IOrganization } from "@/utils/interfaces/portfolio/organization.interface";
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
 import { MarqueeTrack } from "@/components/utils/animations/marquee-track";
+import { ScrambleText } from "@/components/utils/animations/scramble-text";
+import { SplitReveal } from "@/components/utils/animations/split-reveal";
+import { DrawLine } from "@/components/utils/animations/draw-line";
 import { getDictionary, type TLocale } from "@/utils/i18n";
 import { getExperiences } from "@/utils/i18n/content";
 
@@ -21,21 +24,26 @@ export default function LandingExperience(props: { lang: TLocale }) {
         {/* Heading Section */}
         <AnimateIn from="zoom-in">
           <p className="text-primary font-mono text-xs tracking-[0.25em] uppercase mb-1">
-            <span className="text-muted-foreground">{"//"}</span>{" "}
-            experience.json
+            <ScrambleText text="// experience.json" />
           </p>
         </AnimateIn>
 
-        <AnimateIn from="left" distance={50} delay={0.05}>
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mt-3 mb-12">
-            {dict.experience.heading}
-          </h2>
-        </AnimateIn>
+        <SplitReveal
+          as="h2"
+          type="lines"
+          className="text-4xl sm:text-5xl font-bold text-foreground mt-3 mb-12"
+        >
+          {dict.experience.heading}
+        </SplitReveal>
 
         {/* Timeline Section */}
         <div className="relative">
-          {/* Vertical Timeline Line */}
-          <div className="absolute left-0 top-0 bottom-0 w-px bg-border ml-[7px] hidden sm:block" />
+          {/* Vertical Timeline Line — a faint base rail plus a primary line
+              that draws itself downward as the reader travels the timeline */}
+          <div className="absolute left-0 top-0 bottom-0 w-px ml-[7px] hidden sm:block">
+            <div className="absolute inset-0 bg-border" />
+            <DrawLine className="absolute inset-0 bg-primary/60" />
+          </div>
 
           <StaggerIn
             className="space-y-8"
@@ -51,7 +59,7 @@ export default function LandingExperience(props: { lang: TLocale }) {
                   <div className="w-1.5 h-1.5 rounded-full bg-primary" />
                 </div>
 
-                <div className="bg-background rounded border border-border/60 p-5 hover:border-primary/25 hover:shadow-[0_0_20px_rgba(34,211,238,0.08)] transition-all duration-300">
+                <div className="bg-background rounded border border-border/60 p-5 hover:border-primary/25 hover:shadow-[0_0_20px_rgba(34,211,238,0.08)] transition-all duration-300 motion-safe:hover:translate-x-1">
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 mb-3">
                     <div>
                       <h3 className="text-foreground font-semibold text-base">

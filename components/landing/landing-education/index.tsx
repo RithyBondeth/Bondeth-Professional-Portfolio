@@ -1,4 +1,6 @@
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
+import { ScrambleText } from "@/components/utils/animations/scramble-text";
+import { SplitReveal } from "@/components/utils/animations/split-reveal";
 import { getDictionary, type TLocale } from "@/utils/i18n";
 import { getEducations, getTrainingCourses } from "@/utils/i18n/content";
 
@@ -16,15 +18,17 @@ export default function LandingEducation(props: { lang: TLocale }) {
         {/* Heading Section */}
         <AnimateIn from="zoom-in">
           <p className="text-primary font-mono text-xs tracking-[0.25em] uppercase mb-1">
-            <span className="text-muted-foreground">{"//"}</span> education.md
+            <ScrambleText text="// education.md" />
           </p>
         </AnimateIn>
 
-        <AnimateIn from="right" distance={50} delay={0.05}>
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mt-3 mb-12">
-            {dict.education.heading}
-          </h2>
-        </AnimateIn>
+        <SplitReveal
+          as="h2"
+          type="lines"
+          className="text-4xl sm:text-5xl font-bold text-foreground mt-3 mb-12"
+        >
+          {dict.education.heading}
+        </SplitReveal>
 
         {/* Degree Cards Section */}
         <StaggerIn
@@ -37,12 +41,12 @@ export default function LandingEducation(props: { lang: TLocale }) {
           {educations.map((edu) => (
             <div
               key={edu.degree}
-              className="rounded border border-border/60 bg-card hover:border-primary/25 transition-colors overflow-hidden"
+              className="group rounded border border-border/60 bg-card hover:border-primary/25 hover:shadow-[0_0_20px_rgba(34,211,238,0.07)] transition-all duration-300 overflow-hidden motion-safe:hover:-translate-y-0.5"
             >
               {/* Header */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-6 py-5 border-b border-border/50">
                 <div className="flex items-start gap-4">
-                  <div className="mt-0.5 shrink-0 w-9 h-9 rounded border border-primary/20 bg-primary/8 flex items-center justify-center">
+                  <div className="mt-0.5 shrink-0 w-9 h-9 rounded border border-primary/20 bg-primary/8 flex items-center justify-center transition-colors duration-300 group-hover:bg-primary/15 group-hover:border-primary/40">
                     <GraduationCapIcon className="w-4 h-4 text-primary" />
                   </div>
                   <div>
@@ -95,11 +99,16 @@ export default function LandingEducation(props: { lang: TLocale }) {
               <span className="text-muted-foreground">{"//"}</span>{" "}
               {dict.education.trainingCourses}
             </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+            <StaggerIn
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5"
+              from="zoom-in"
+              stagger={0.05}
+              staggerFrom="random"
+            >
               {trainingCourses.map((course) => (
                 <div
                   key={course.title}
-                  className="flex flex-col gap-1 px-4 py-3 rounded border border-border/50 bg-card hover:border-primary/20 transition-colors"
+                  className="flex flex-col gap-1 px-4 py-3 rounded border border-border/50 bg-card hover:border-primary/30 transition-all duration-300 motion-safe:hover:-translate-y-0.5"
                 >
                   <span className="text-foreground text-xs font-medium">
                     {course.title}
@@ -109,7 +118,7 @@ export default function LandingEducation(props: { lang: TLocale }) {
                   </span>
                 </div>
               ))}
-            </div>
+            </StaggerIn>
           </div>
         </AnimateIn>
       </div>

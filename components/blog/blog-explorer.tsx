@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { gsap, Flip } from "@/components/utils/animations/gsap";
 import { BlogCover } from "@/components/blog/blog-cover";
 import type { IPost } from "@/utils/interfaces/blog/blog.interface";
 import type { ICategoryCount } from "@/utils/functions/blog/get-categories";
@@ -32,6 +33,20 @@ export function BlogExplorer({
   /* ---------------------------------- Utils --------------------------------- */
   const normalized = query.trim().toLowerCase();
 
+  const gridRef = useRef<HTMLDivElement>(null);
+  // Layout snapshot taken just before a filter/search state change; consumed
+  // by the layout effect after React re-renders the list.
+  const flipState = useRef<ReturnType<typeof Flip.getState> | null>(null);
+
+  const captureFlip = () => {
+    if (
+      gridRef.current &&
+      window.matchMedia("(prefers-reduced-motion: no-preference)").matches
+    ) {
+      flipState.current = Flip.getState(gridRef.current.children);
+    }
+  };
+
   const filtered = useMemo(() => {
     const byCategory =
       selectedCategory === "all"
@@ -51,6 +66,29 @@ export function BlogExplorer({
     filtered.length === 1 ? labels.postSingular : labels.postPlural
   }`;
 
+  /* --------------------------------- Effects -------------------------------- */
+  // FLIP the post grid on filter/search changes: surviving cards glide to
+  // their new slots, newcomers fade in. Instant swap under reduced motion.
+  const visibleKey = filtered.map((post) => post.slug).join("|");
+  useLayoutEffect(() => {
+    const state = flipState.current;
+    flipState.current = null;
+    if (!state || !gridRef.current) return;
+    Flip.from(state, {
+      targets: gridRef.current.children,
+      duration: 0.55,
+      ease: "smooth",
+      stagger: 0.02,
+      absolute: true,
+      onEnter: (els) =>
+        gsap.fromTo(
+          els,
+          { opacity: 0, y: 16 },
+          { opacity: 1, y: 0, duration: 0.4, ease: "smooth" },
+        ),
+    });
+  }, [visibleKey]);
+
   /* -------------------------------- Render UI ------------------------------- */
   return (
     <div>
@@ -66,7 +104,10 @@ export function BlogExplorer({
           <input
             type="search"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              captureFlip();
+              setQuery(e.target.value);
+            }}
             placeholder={labels.searchPlaceholder}
             aria-label={labels.searchLabel}
             className="w-full rounded border border-border bg-card/50 py-2.5 pl-8 pr-24 font-mono text-sm text-foreground placeholder:text-muted-foreground/70 focus:border-primary/40 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-colors"
@@ -74,7 +115,10 @@ export function BlogExplorer({
           {query && (
             <button
               type="button"
-              onClick={() => setQuery("")}
+              onClick={() => {
+                captureFlip();
+                setQuery("");
+              }}
               className="absolute right-3 top-1/2 -translate-y-1/2 font-mono text-xs text-muted-foreground hover:text-primary transition-colors"
             >
               {labels.clearSearch}
@@ -99,7 +143,10 @@ export function BlogExplorer({
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
-              onClick={() => setSelectedCategory("all")}
+              onClick={() => {
+                captureFlip();
+                setSelectedCategory("all");
+              }}
               aria-pressed={selectedCategory === "all"}
               aria-label={`${labels.allCategories} (${posts.length})`}
               className="rounded border border-border bg-card/60 px-3 py-1.5 font-mono text-xs text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground aria-pressed:border-primary/50 aria-pressed:bg-primary/10 aria-pressed:text-primary"
@@ -113,7 +160,10 @@ export function BlogExplorer({
               <button
                 key={category.slug}
                 type="button"
-                onClick={() => setSelectedCategory(category.category)}
+                onClick={() => {
+                  captureFlip();
+                  setSelectedCategory(category.category);
+                }}
                 aria-pressed={selectedCategory === category.category}
                 aria-label={`${category.category} (${category.count})`}
                 className="rounded border border-border bg-card/60 px-3 py-1.5 font-mono text-xs text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground aria-pressed:border-primary/50 aria-pressed:bg-primary/10 aria-pressed:text-primary"
@@ -161,10 +211,15 @@ export function BlogExplorer({
 
       {/* Post List Section */}
       {filtered.length > 0 ? (
-        <div className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2">
+        <div ref={gridRef} className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2">
           {filtered.map((post) => (
-            <article key={post.slug} className="group relative">
-              <Link href={`/${lang}/blog/${post.slug}`} className="block">
+            <article key={post.slug} data-flip-id={post.slug} className="group relative">
+              {/* Hover lift lives on the inner link — the article itself is
+                  Flip's target and must not carry CSS transform transitions. */}
+              <Link
+                href={`/${lang}/blog/${post.slug}`}
+                className="block transition-transform duration-300 motion-safe:group-hover:-translate-y-1"
+              >
                 <BlogCover
                   post={post}
                   className="aspect-2/1 mb-4 transition-colors group-hover:border-primary/40"

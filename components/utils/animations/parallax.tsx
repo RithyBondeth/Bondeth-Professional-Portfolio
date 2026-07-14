@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { gsap } from "./gsap";
 
 /**
  * Drifts its children vertically as the section scrolls through the viewport,
@@ -25,7 +24,6 @@ export function Parallax(props: {
 
   /* --------------------------------- Effects -------------------------------- */
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
     const el = ref.current;
     if (!el) return;
 

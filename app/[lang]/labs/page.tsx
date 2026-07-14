@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AnimateIn } from "@/components/utils/animations/animate-in";
+import { ScrambleText } from "@/components/utils/animations/scramble-text";
+import { LabVignetteFx } from "@/components/labs/lab-vignette-fx";
 import { getDictionary, hasLocale } from "@/utils/i18n";
 
 interface ILabsPageProps {
@@ -39,7 +41,7 @@ export default async function LabsPage({ params }: ILabsPageProps) {
       <div className="mx-auto max-w-5xl">
         <AnimateIn>
           <p className="font-mono text-xs uppercase tracking-[0.25em] text-primary">
-            <span className="text-muted-foreground">$</span> ls labs/
+            <ScrambleText text="$ ls labs/" />
           </p>
           <h1 className="mt-3 text-4xl font-bold text-foreground sm:text-5xl">
             {labs.heading}
@@ -64,7 +66,10 @@ export default async function LabsPage({ params }: ILabsPageProps) {
                   <p className="pl-4 text-emerald-300">
                     &quot;urgency&quot;: &quot;high&quot;
                   </p>
-                  <p className="text-muted-foreground">{"}"}</p>
+                  <p className="text-muted-foreground">
+                    {"}"}
+                    <span className="type-caret ml-1 inline-block h-[1.05em] w-[0.5em] translate-y-[0.15em] bg-emerald-300/80" />
+                  </p>
                 </div>
               </div>
 
@@ -99,7 +104,7 @@ export default async function LabsPage({ params }: ILabsPageProps) {
           <article className="group mt-6 overflow-hidden rounded border border-border/60 bg-card transition-all hover:border-primary/30">
             <div className="grid md:grid-cols-[0.8fr_1.2fr]">
               <div className="relative min-h-56 overflow-hidden bg-[radial-gradient(circle_at_70%_25%,rgba(139,92,246,0.2),transparent_40%),radial-gradient(circle_at_25%_75%,rgba(34,211,238,0.16),transparent_42%),#050914] p-6">
-                <div className="absolute inset-x-6 top-6 space-y-2 font-code text-[10px]">
+                <LabVignetteFx className="absolute inset-x-6 top-6 space-y-2 font-code text-[10px]">
                   {[92, 76, 48].map((score, index) => (
                     <div
                       key={score}
@@ -113,13 +118,14 @@ export default async function LabsPage({ params }: ILabsPageProps) {
                       </div>
                       <div className="mt-2 h-1 overflow-hidden rounded bg-border">
                         <div
+                          data-lab-bar
                           className="h-full rounded bg-emerald-400"
                           style={{ width: `${score}%` }}
                         />
                       </div>
                     </div>
                   ))}
-                </div>
+                </LabVignetteFx>
               </div>
 
               <div className="flex flex-col p-6 sm:p-8">
@@ -153,8 +159,11 @@ export default async function LabsPage({ params }: ILabsPageProps) {
           <article className="group mt-6 overflow-hidden rounded border border-border/60 bg-card transition-all hover:border-primary/30">
             <div className="grid md:grid-cols-[0.8fr_1.2fr]">
               <div className="relative min-h-56 overflow-hidden bg-[radial-gradient(circle_at_30%_20%,rgba(34,211,238,0.16),transparent_40%),radial-gradient(circle_at_75%_75%,rgba(139,92,246,0.22),transparent_45%),#050914] p-6">
-                <div className="absolute inset-x-6 top-8 grid grid-cols-2 gap-3 font-code">
-                  <div className="rounded border border-emerald-500/30 bg-emerald-500/5 p-4 text-center">
+                <LabVignetteFx className="absolute inset-x-6 top-8 grid grid-cols-2 gap-3 font-code">
+                  <div
+                    data-lab-tile
+                    className="rounded border border-emerald-500/30 bg-emerald-500/5 p-4 text-center"
+                  >
                     <p className="text-[10px] text-muted-foreground">
                       candidate_A
                     </p>
@@ -165,14 +174,17 @@ export default async function LabsPage({ params }: ILabsPageProps) {
                       4/4 passed
                     </p>
                   </div>
-                  <div className="rounded border border-red-500/25 bg-red-500/5 p-4 text-center">
+                  <div
+                    data-lab-tile
+                    className="rounded border border-red-500/25 bg-red-500/5 p-4 text-center"
+                  >
                     <p className="text-[10px] text-muted-foreground">
                       candidate_B
                     </p>
                     <p className="mt-3 text-3xl font-bold text-red-400">20%</p>
                     <p className="mt-2 text-[10px] text-red-400">1/4 passed</p>
                   </div>
-                </div>
+                </LabVignetteFx>
               </div>
 
               <div className="flex flex-col p-6 sm:p-8">

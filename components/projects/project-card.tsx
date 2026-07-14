@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ExternalLinkIcon } from "@/components/utils/icons";
+import { TiltCard } from "@/components/utils/animations/tilt-card";
 import type { IProject } from "@/utils/interfaces/portfolio/project.interface";
 import type { TDictionary, TLocale } from "@/utils/i18n";
 
@@ -12,7 +13,9 @@ export function ProjectCard(props: {
   const { project, dict, lang } = props;
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded border border-border/60 bg-card transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_0_28px_rgba(34,211,238,0.1)]">
+    /* 3D tilt + glare shell — desktop pointers only, static elsewhere. */
+    <TiltCard maxTilt={6} className="relative h-full rounded">
+      <article className="group flex h-full flex-col overflow-hidden rounded border border-border/60 bg-card transition-all duration-300 hover:border-primary/30 hover:shadow-[0_0_28px_rgba(34,211,238,0.1)]">
       <div className="relative h-44 overflow-hidden">
         {project.image && project.visibility !== "confidential" ? (
           <Image
@@ -89,6 +92,7 @@ export function ProjectCard(props: {
             <Link
               href={`/${lang}/projects/${project.slug}`}
               aria-label={`${dict.projects.viewDetails}: ${project.title}`}
+              data-cursor-label="VIEW"
               className="inline-flex min-h-11 items-center gap-1.5 rounded border border-border/50 bg-muted/40 px-3 font-mono text-xs text-muted-foreground transition-colors hover:border-primary/30 hover:text-primary"
             >
               {dict.projects.viewDetails}
@@ -117,6 +121,7 @@ export function ProjectCard(props: {
           )}
         </div>
       </div>
-    </article>
+      </article>
+    </TiltCard>
   );
 }
