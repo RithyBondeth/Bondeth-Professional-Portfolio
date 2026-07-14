@@ -473,6 +473,8 @@ export const km: TDictionary = {
     openResume: "បើកប្រវត្តិរូប",
     viewGithub: "មើលគណនី GitHub",
     viewLinkedin: "មើលគណនី LinkedIn",
+    viewFacebook: "មើលគណនី Facebook",
+    viewInstagram: "មើលគណនី Instagram",
     hintNavigate: "រុករក",
     hintSelect: "ជ្រើសរើស",
     hintClose: "បិទ",

@@ -10,7 +10,13 @@ import { StaggerIn } from "@/components/utils/animations/animate-in";
 import { Magnetic } from "@/components/utils/animations/magnetic";
 import { MarqueeTrack } from "@/components/utils/animations/marquee-track";
 import { scrollToSection } from "@/components/utils/animations/smooth-scroll";
-import { GitHubIcon, LinkedInIcon, MailIcon } from "@/components/utils/icons";
+import {
+  GitHubIcon,
+  LinkedInIcon,
+  FacebookIcon,
+  InstagramIcon,
+  MailIcon,
+} from "@/components/utils/icons";
 import { Logo } from "@/components/utils/icons/logo";
 import {
   localizeNavHref,
@@ -109,6 +115,28 @@ export default function Footer(props: { lang: TLocale }) {
             </Magnetic>
             <Magnetic strength={0.45} className="inline-block">
               <a
+                href={siteConfig.facebook}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Facebook"
+                className="w-8 h-8 flex items-center justify-center rounded border border-border/60 text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors"
+              >
+                <FacebookIcon className="w-3.5 h-3.5" />
+              </a>
+            </Magnetic>
+            <Magnetic strength={0.45} className="inline-block">
+              <a
+                href={siteConfig.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="w-8 h-8 flex items-center justify-center rounded border border-border/60 text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors"
+              >
+                <InstagramIcon className="w-3.5 h-3.5" />
+              </a>
+            </Magnetic>
+            <Magnetic strength={0.45} className="inline-block">
+              <a
                 href={`mailto:${siteConfig.email}`}
                 aria-label="Email"
                 className="w-8 h-8 flex items-center justify-center rounded border border-border/60 text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors"
@@ -174,6 +202,26 @@ export default function Footer(props: { lang: TLocale }) {
                 className="text-muted-foreground hover:text-primary text-xs font-mono transition-colors"
               >
                 linkedin.com/in/rithybondeth
+              </a>
+            </li>
+            <li>
+              <a
+                href={siteConfig.facebook}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-primary text-xs font-mono transition-colors"
+              >
+                facebook.com/rithybondeth
+              </a>
+            </li>
+            <li>
+              <a
+                href={siteConfig.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-primary text-xs font-mono transition-colors"
+              >
+                instagram.com/rithybondeth
               </a>
             </li>
           </ul>

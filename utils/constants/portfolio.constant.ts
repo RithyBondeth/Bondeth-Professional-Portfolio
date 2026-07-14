@@ -26,6 +26,8 @@ export const siteConfig: ISiteConfig = {
   email: "rithybondeth999@gmail.com",
   github: "https://github.com/RithyBondeth",
   linkedin: "https://linkedin.com/in/hem-rithybondeth",
+  facebook: "https://www.facebook.com/profile.php?id=100094498908703",
+  instagram: "https://www.instagram.com/r.bondeth/",
   resume: "/files/bondeth-resume.pdf",
 };
 

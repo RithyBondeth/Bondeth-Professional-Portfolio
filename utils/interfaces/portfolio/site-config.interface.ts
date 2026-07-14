@@ -7,5 +7,7 @@ export interface ISiteConfig {
   email: string;
   github: string;
   linkedin: string;
+  facebook: string;
+  instagram: string;
   resume: string;
 }

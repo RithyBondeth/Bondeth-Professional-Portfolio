@@ -55,7 +55,12 @@ export default async function IndexPage({ params }: IHomePageProps) {
     jobTitle: localized.title,
     url: `${siteConfig.url}/${lang}`,
     email: `mailto:${siteConfig.email}`,
-    sameAs: [siteConfig.github, siteConfig.linkedin],
+    sameAs: [
+      siteConfig.github,
+      siteConfig.linkedin,
+      siteConfig.facebook,
+      siteConfig.instagram,
+    ],
     address: {
       "@type": "PostalAddress",
       addressLocality: "Phnom Penh",

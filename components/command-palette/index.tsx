@@ -13,7 +13,12 @@ import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { siteConfig, navLinks } from "@/utils/constants/portfolio.constant";
-import { GitHubIcon, LinkedInIcon } from "@/components/utils/icons";
+import {
+  GitHubIcon,
+  LinkedInIcon,
+  FacebookIcon,
+  InstagramIcon,
+} from "@/components/utils/icons";
 import {
   getDictionary,
   localizeHref,
@@ -261,6 +266,22 @@ export default function CommandPalette(props: {
         keywords: "linkedin professional network",
         icon: <LinkedInIcon className="w-4 h-4 shrink-0" />,
         run: () => window.open(siteConfig.linkedin, "_blank", "noopener"),
+      },
+      {
+        id: "facebook",
+        group: "connect",
+        label: cp.viewFacebook,
+        keywords: "facebook social profile",
+        icon: <FacebookIcon className="w-4 h-4 shrink-0" />,
+        run: () => window.open(siteConfig.facebook, "_blank", "noopener"),
+      },
+      {
+        id: "instagram",
+        group: "connect",
+        label: cp.viewInstagram,
+        keywords: "instagram social profile",
+        icon: <InstagramIcon className="w-4 h-4 shrink-0" />,
+        run: () => window.open(siteConfig.instagram, "_blank", "noopener"),
       },
     ];
 

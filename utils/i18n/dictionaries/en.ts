@@ -475,6 +475,8 @@ export const en = {
     openResume: "Open résumé",
     viewGithub: "View GitHub profile",
     viewLinkedin: "View LinkedIn profile",
+    viewFacebook: "View Facebook profile",
+    viewInstagram: "View Instagram profile",
     hintNavigate: "navigate",
     hintSelect: "select",
     hintClose: "close",

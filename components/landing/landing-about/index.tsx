@@ -9,7 +9,12 @@ import { SplitReveal } from "@/components/utils/animations/split-reveal";
 import { ScrambleText } from "@/components/utils/animations/scramble-text";
 import { TiltCard } from "@/components/utils/animations/tilt-card";
 import { Magnetic } from "@/components/utils/animations/magnetic";
-import { GitHubIcon, LinkedInIcon } from "@/components/utils/icons";
+import {
+  GitHubIcon,
+  LinkedInIcon,
+  FacebookIcon,
+  InstagramIcon,
+} from "@/components/utils/icons";
 import { getDictionary, type TLocale } from "@/utils/i18n";
 import { getSiteConfig } from "@/utils/i18n/content";
 
@@ -486,6 +491,28 @@ export default function LandingAbout(props: { lang: TLocale }) {
                     aria-label="LinkedIn"
                   >
                     <LinkedInIcon className="w-5 h-5" />
+                  </a>
+                </Magnetic>
+                <Magnetic strength={0.4} className="inline-block">
+                  <a
+                    href={siteConfig.facebook}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block p-1 text-muted-foreground hover:text-primary transition-colors"
+                    aria-label="Facebook"
+                  >
+                    <FacebookIcon className="w-5 h-5" />
+                  </a>
+                </Magnetic>
+                <Magnetic strength={0.4} className="inline-block">
+                  <a
+                    href={siteConfig.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block p-1 text-muted-foreground hover:text-primary transition-colors"
+                    aria-label="Instagram"
+                  >
+                    <InstagramIcon className="w-5 h-5" />
                   </a>
                 </Magnetic>
               </div>

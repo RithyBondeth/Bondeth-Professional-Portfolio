@@ -3,7 +3,13 @@ import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
 import { ScrambleText } from "@/components/utils/animations/scramble-text";
 import { SplitReveal } from "@/components/utils/animations/split-reveal";
 import { Magnetic } from "@/components/utils/animations/magnetic";
-import { GitHubIcon, LinkedInIcon, MailIcon } from "@/components/utils/icons";
+import {
+  GitHubIcon,
+  LinkedInIcon,
+  FacebookIcon,
+  InstagramIcon,
+  MailIcon,
+} from "@/components/utils/icons";
 import { ArrowRight, Clock3 } from "lucide-react";
 import ContactForm from "./contact-form";
 import { getDictionary, type TLocale } from "@/utils/i18n";
@@ -99,6 +105,16 @@ export default function LandingContact(props: { lang: TLocale }) {
               href={siteConfig.linkedin}
               label="LinkedIn"
               icon={<LinkedInIcon className="w-4 h-4" />}
+            />
+            <SocialLink
+              href={siteConfig.facebook}
+              label="Facebook"
+              icon={<FacebookIcon className="w-4 h-4" />}
+            />
+            <SocialLink
+              href={siteConfig.instagram}
+              label="Instagram"
+              icon={<InstagramIcon className="w-4 h-4" />}
             />
             <SocialLink
               href={`mailto:${siteConfig.email}`}
