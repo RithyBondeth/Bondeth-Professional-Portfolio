@@ -46,6 +46,28 @@ export const primaryNavLinks = navLinks.filter(
   ({ href }) => href !== "/#education",
 );
 
+/**
+ * Desktop navbar only: the homepage's own scroll-sections (About through
+ * Services) collapse into a single "Explore" dropdown so the bar isn't a
+ * wall of 8 text links — real destinations (Projects, Labs, Blog, Contact)
+ * stay directly clickable. The mobile menu and footer still use the full
+ * `navLinks` / `primaryNavLinks` lists since a vertical list has no clutter
+ * problem.
+ */
+const EXPLORE_HREFS = [
+  "/#about",
+  "/#skills",
+  "/#experience",
+  "/#education",
+  "/#services",
+];
+export const exploreNavLinks = navLinks.filter(({ href }) =>
+  EXPLORE_HREFS.includes(href),
+);
+export const topNavLinks = navLinks.filter(
+  ({ href }) => !EXPLORE_HREFS.includes(href),
+);
+
 /* -------------------------------- Skill Groups ------------------------------ */
 export const skillGroups: ISkillGroup[] = [
   {

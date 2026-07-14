@@ -1,5 +1,6 @@
 export const en = {
   nav: {
+    explore: "Explore",
     about: "About",
     skills: "Skills",
     experience: "Experience",

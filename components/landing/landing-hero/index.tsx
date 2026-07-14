@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { gsap, SplitText } from "@/components/utils/animations/gsap";
 import { Magnetic } from "@/components/utils/animations/magnetic";
+import { scrollToSection } from "@/components/utils/animations/smooth-scroll";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
 import HeroBackground from "./hero-background";
 import { getDictionary, type TLocale } from "@/utils/i18n";
@@ -497,6 +498,10 @@ export default function LandingHero(props: { lang: TLocale }) {
               <Magnetic strength={0.3} className="hero-cta-item">
                 <a
                   href="#projects"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollToSection("projects");
+                  }}
                   className="block px-6 py-2.5 bg-primary text-primary-foreground rounded font-mono text-sm font-medium hover:bg-primary/90 transition-colors text-center"
                 >
                   {dict.hero.viewWork}
@@ -515,6 +520,10 @@ export default function LandingHero(props: { lang: TLocale }) {
               <Magnetic strength={0.3} className="hero-cta-item">
                 <a
                   href="#contact"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollToSection("contact");
+                  }}
                   className="block px-6 py-2.5 border border-border text-muted-foreground rounded font-mono text-sm font-medium hover:border-primary/50 hover:text-foreground transition-colors text-center"
                 >
                   {dict.hero.getInTouch}

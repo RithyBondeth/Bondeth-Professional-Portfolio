@@ -4,9 +4,11 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { gsap } from "@/components/utils/animations/gsap";
+import { scrollToSection } from "@/components/utils/animations/smooth-scroll";
 import {
   navLinks,
-  primaryNavLinks,
+  exploreNavLinks,
+  topNavLinks,
   siteConfig,
 } from "@/utils/constants/portfolio.constant";
 import { MenuIcon, CloseIcon } from "@/components/utils/icons";
@@ -28,6 +30,13 @@ function navKeyFromHref(href: string): keyof TDictionary["nav"] {
     .replace("/", "") as keyof TDictionary["nav"];
 }
 
+// Section ids grouped under the desktop "Explore" dropdown — used to decide
+// whether the trigger button (rather than one of the now-hidden links)
+// should pick up the active-link underline.
+const EXPLORE_IDS: string[] = exploreNavLinks.map(({ href }) =>
+  navKeyFromHref(href),
+);
+
 function openCommandPalette() {
   window.dispatchEvent(new CustomEvent(OPEN_COMMAND_PALETTE));
 }
@@ -45,6 +54,22 @@ function SearchIcon({ className }: { className?: string }) {
     >
       <circle cx="11" cy="11" r="7" />
       <path d="m21 21-4.3-4.3" />
+    </svg>
+  );
+}
+
+function ChevronDownIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      viewBox="0 0 24 24"
+    >
+      <path d="m6 9 6 6 6-6" />
     </svg>
   );
 }
@@ -100,16 +125,54 @@ export default function Navbar(props: { lang: TLocale }) {
   /* -------------------------------- All States ------------------------------- */
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [exploreOpen, setExploreOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
   const [progress, setProgress] = useState(0);
 
   /* ---------------------------------- Utils --------------------------------- */
+  const pathname = usePathname();
   const navRef = useRef<HTMLElement>(null);
   const linksRef = useRef<HTMLUListElement>(null);
   const indicatorRef = useRef<HTMLSpanElement>(null);
+  const exploreRef = useRef<HTMLLIElement>(null);
   const menuOpenRef = useRef(false);
   const hiddenRef = useRef(false);
   const lastYRef = useRef(0);
+  const onHome = pathname === `/${lang}`;
+  const isExploreActive = EXPLORE_IDS.includes(activeSection);
+
+  // In-page section links ("/#about" etc.) only need scrollToSection when
+  // we're already on the homepage — the smoother's scrollTo replaces the
+  // native hash jump, which lands in the wrong spot once ScrollSmoother is
+  // virtualizing scroll. From any other route, let <Link> do a normal
+  // client-side navigation to "/{lang}#id"; SmoothScroll picks up the hash
+  // once the homepage content mounts.
+  function handleNavClick(e: React.MouseEvent, href: string) {
+    if (!href.startsWith("/#") || !onHome) return;
+    e.preventDefault();
+    scrollToSection(href.replace("/#", ""));
+    history.replaceState(null, "", `/${lang}${href.slice(1)}`);
+    setMenuOpen(false);
+  }
+
+  // Close the "Explore" dropdown on an outside click or Escape.
+  useEffect(() => {
+    if (!exploreOpen) return;
+    const onPointerDown = (e: MouseEvent) => {
+      if (exploreRef.current && !exploreRef.current.contains(e.target as Node)) {
+        setExploreOpen(false);
+      }
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setExploreOpen(false);
+    };
+    window.addEventListener("mousedown", onPointerDown);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("mousedown", onPointerDown);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [exploreOpen]);
 
   /* --------------------------------- Effects -------------------------------- */
   useEffect(() => {
@@ -194,8 +257,13 @@ export default function Navbar(props: { lang: TLocale }) {
     if (!ul || !indicator) return;
 
     const place = (animate: boolean) => {
-      const active = ul.querySelector<HTMLAnchorElement>(
-        `a[data-nav-id="${activeSection}"]`,
+      // Explore-grouped sections don't render their own top-level link — the
+      // underline should sit under the dropdown trigger instead.
+      const targetId = EXPLORE_IDS.includes(activeSection)
+        ? "explore-trigger"
+        : activeSection;
+      const active = ul.querySelector<HTMLElement>(
+        `[data-nav-id="${targetId}"]`,
       );
       if (!active) {
         gsap.to(indicator, { opacity: 0, duration: 0.2 });
@@ -250,14 +318,14 @@ export default function Navbar(props: { lang: TLocale }) {
       />
       <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
         {/* Brand Section */}
-        <a
+        <Link
           href={`/${lang}`}
           aria-label={siteConfig.name}
           className="flex items-center hover:opacity-80 transition-opacity"
         >
           <Logo className="text-base" />
           <span className="sr-only">{siteConfig.name}</span>
-        </a>
+        </Link>
 
         {/* Desktop Links Section */}
         <ul ref={linksRef} className="relative hidden lg:flex items-center gap-0.5 xl:gap-1">
@@ -267,14 +335,68 @@ export default function Navbar(props: { lang: TLocale }) {
             aria-hidden
             className="pointer-events-none absolute bottom-0 left-0 h-px w-0 rounded-full bg-primary/70 opacity-0"
           />
-          {primaryNavLinks.map(({ href }, i) => {
+          {/* Explore dropdown — groups the homepage's own scroll-sections
+              (About, Skills, Experience, Education, Services) so the bar
+              keeps real destinations front and center. */}
+          <li ref={exploreRef} className="relative">
+            <button
+              type="button"
+              data-nav-id="explore-trigger"
+              onClick={() => setExploreOpen((o) => !o)}
+              aria-haspopup="true"
+              aria-expanded={exploreOpen}
+              className={`relative flex items-center gap-1 px-2.5 xl:px-3 py-1.5 text-xs font-mono tracking-wide whitespace-nowrap transition-colors duration-200 rounded ${
+                isExploreActive
+                  ? "text-primary"
+                  : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
+              }`}
+            >
+              <span className="text-primary dark:text-primary/40 mr-1 text-[10px] hidden xl:inline">
+                01.
+              </span>
+              {dict.nav.explore}
+              <ChevronDownIcon
+                className={`w-3 h-3 transition-transform duration-200 ${exploreOpen ? "rotate-180" : ""}`}
+              />
+            </button>
+            <ul
+              className={`absolute left-0 top-full mt-2 min-w-40 flex-col gap-0.5 rounded border border-border bg-background/95 backdrop-blur-md p-1 shadow-xl shadow-black/10 dark:shadow-black/40 ${
+                exploreOpen ? "flex" : "hidden"
+              }`}
+            >
+              {exploreNavLinks.map(({ href }) => {
+                const id = href.replace("/#", "");
+                const isActive = activeSection === id;
+                return (
+                  <li key={href}>
+                    <Link
+                      href={localizeNavHref(href, lang)}
+                      onClick={(e) => {
+                        handleNavClick(e, href);
+                        setExploreOpen(false);
+                      }}
+                      className={`block rounded px-3 py-1.5 text-xs font-mono tracking-wide whitespace-nowrap transition-colors ${
+                        isActive
+                          ? "text-primary bg-primary/5"
+                          : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
+                      }`}
+                    >
+                      {dict.nav[navKeyFromHref(href)]}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </li>
+          {topNavLinks.map(({ href }, i) => {
             const id = href.replace("/#", "").replace("/", "");
             const isActive = activeSection === id;
             return (
               <li key={href}>
-                <a
+                <Link
                   href={localizeNavHref(href, lang)}
                   data-nav-id={id}
+                  onClick={(e) => handleNavClick(e, href)}
                   className={`relative px-2.5 xl:px-3 py-1.5 text-xs font-mono tracking-wide whitespace-nowrap transition-colors duration-200 rounded ${
                     isActive
                       ? "text-primary"
@@ -282,10 +404,10 @@ export default function Navbar(props: { lang: TLocale }) {
                   }`}
                 >
                   <span className="text-primary dark:text-primary/40 mr-1 text-[10px] hidden xl:inline">
-                    0{i + 1}.
+                    0{i + 2}.
                   </span>
                   {dict.nav[navKeyFromHref(href)]}
-                </a>
+                </Link>
               </li>
             );
           })}
@@ -362,9 +484,12 @@ export default function Navbar(props: { lang: TLocale }) {
               const isActive = activeSection === id;
               return (
                 <li key={href}>
-                  <a
+                  <Link
                     href={localizeNavHref(href, lang)}
-                    onClick={() => setMenuOpen(false)}
+                    onClick={(e) => {
+                      handleNavClick(e, href);
+                      setMenuOpen(false);
+                    }}
                     className={`flex min-h-11 items-center gap-2 rounded border-l px-3 text-xs font-mono transition-all ${
                       isActive
                         ? "text-primary bg-primary/5 border-primary"
@@ -375,7 +500,7 @@ export default function Navbar(props: { lang: TLocale }) {
                       0{i + 1}.
                     </span>
                     {dict.nav[navKeyFromHref(href)]}
-                  </a>
+                  </Link>
                 </li>
               );
             })}

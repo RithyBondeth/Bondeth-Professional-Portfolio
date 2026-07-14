@@ -5,6 +5,25 @@ import { usePathname } from "next/navigation";
 import { gsap, ScrollSmoother, ScrollTrigger } from "./gsap";
 
 /**
+ * Jumps to an in-page section by id, going through ScrollSmoother's own
+ * `scrollTo` when it's active. A native `scrollIntoView`/hash jump doesn't
+ * account for the smoother's virtualized scroll position and lands in the
+ * wrong spot, so every internal "#section" link must route through here
+ * instead of a plain anchor href.
+ */
+export function scrollToSection(id: string, animate = true) {
+  const el = document.getElementById(id);
+  if (!el) return false;
+  const smoother = ScrollSmoother.get();
+  if (smoother) {
+    smoother.scrollTo(el, animate, "top top");
+  } else {
+    el.scrollIntoView({ behavior: animate ? "smooth" : "auto", block: "start" });
+  }
+  return true;
+}
+
+/**
  * Site-wide inertial scrolling via GSAP ScrollSmoother. Wraps everything
  * that scrolls (page content + footer); the fixed navbar and portaled
  * command palette stay outside and are unaffected.
@@ -20,13 +39,18 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   // Route changes swap the content under the smoother: pick up any data-speed
-  // / data-lag elements the new page mounted, and re-measure triggers.
+  // / data-lag elements the new page mounted, re-measure triggers, and land
+  // on whatever section the URL hash points at (e.g. arriving at /en#about
+  // from a Link click on another route).
   useEffect(() => {
     const smoother = ScrollSmoother.get();
     if (!smoother) return;
     const id = requestAnimationFrame(() => {
       smoother.effects("[data-speed], [data-lag]");
       ScrollTrigger.refresh();
+      if (window.location.hash) {
+        scrollToSection(window.location.hash.slice(1), false);
+      }
     });
     return () => cancelAnimationFrame(id);
   }, [pathname]);
@@ -56,6 +80,11 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
           effects: true,
           ignoreMobileResize: true,
         });
+        if (window.location.hash) {
+          requestAnimationFrame(() =>
+            scrollToSection(window.location.hash.slice(1), false),
+          );
+        }
         return () => smoother.kill();
       },
     );

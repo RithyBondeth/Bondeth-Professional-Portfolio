@@ -2,6 +2,7 @@ import type { TDictionary } from "..";
 
 export const km: TDictionary = {
   nav: {
+    explore: "រុករក",
     about: "អំពីខ្ញុំ",
     skills: "ជំនាញ",
     experience: "បទពិសោធន៍",

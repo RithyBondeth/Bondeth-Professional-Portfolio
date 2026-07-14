@@ -1,3 +1,7 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   siteConfig,
   primaryNavLinks,
@@ -5,6 +9,7 @@ import {
 import { StaggerIn } from "@/components/utils/animations/animate-in";
 import { Magnetic } from "@/components/utils/animations/magnetic";
 import { MarqueeTrack } from "@/components/utils/animations/marquee-track";
+import { scrollToSection } from "@/components/utils/animations/smooth-scroll";
 import { GitHubIcon, LinkedInIcon, MailIcon } from "@/components/utils/icons";
 import { Logo } from "@/components/utils/icons/logo";
 import {
@@ -27,7 +32,18 @@ export default function Footer(props: { lang: TLocale }) {
   const localized = getSiteConfig(lang);
 
   /* ---------------------------------- Utils --------------------------------- */
+  const pathname = usePathname();
+  const onHome = pathname === `/${lang}`;
   const year = new Date().getFullYear();
+
+  // See components/navbar/index.tsx for why in-page section links need to
+  // go through scrollToSection instead of a plain hash href.
+  function handleNavClick(e: React.MouseEvent, href: string) {
+    if (!href.startsWith("/#") || !onHome) return;
+    e.preventDefault();
+    scrollToSection(href.replace("/#", ""));
+    history.replaceState(null, "", `/${lang}${href.slice(1)}`);
+  }
 
   /* ---------------------------------- Utils --------------------------------- */
   // Big outline-text sign-off — decorative Latin, duplicated for the -50%
@@ -111,15 +127,16 @@ export default function Footer(props: { lang: TLocale }) {
           <ul className="flex flex-col gap-2">
             {primaryNavLinks.map(({ href }, i) => (
               <li key={href}>
-                <a
+                <Link
                   href={localizeNavHref(href, lang)}
+                  onClick={(e) => handleNavClick(e, href)}
                   className="text-muted-foreground hover:text-primary text-xs font-mono transition-colors flex items-center gap-1.5"
                 >
                   <span className="text-primary dark:text-primary/30 text-[9px]">
                     0{i + 1}.
                   </span>
                   {dict.nav[navKeyFromHref(href)]}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
