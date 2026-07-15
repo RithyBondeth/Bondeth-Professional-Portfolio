@@ -81,7 +81,6 @@ export default function LandingProjects(props: { lang: TLocale }) {
         >
           <Link
             href={`/${lang}/projects`}
-            data-cursor-label="ALL"
             className="group flex h-full w-full flex-col items-center justify-center gap-4 rounded border border-dashed border-border/70 bg-card/40 p-8 text-center transition-colors hover:border-primary/40 hover:bg-primary/5"
           >
             <span className="font-mono text-4xl text-primary transition-transform duration-300 group-hover:translate-x-2 motion-reduce:transform-none">

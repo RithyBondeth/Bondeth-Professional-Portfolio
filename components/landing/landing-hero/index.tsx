@@ -6,6 +6,7 @@ import { Magnetic } from "@/components/utils/animations/magnetic";
 import { scrollToSection } from "@/components/utils/animations/smooth-scroll";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
 import HeroBackground from "./hero-background";
+import CodeRipple from "./code-ripple";
 import { getDictionary, type TLocale } from "@/utils/i18n";
 import { getSiteConfig } from "@/utils/i18n/content";
 
@@ -188,15 +189,39 @@ export default function LandingHero(props: { lang: TLocale }) {
   // session only, never under reduced motion, never blocking repeat visits.
   // Deferred a tick so the decision isn't a synchronous setState in the
   // effect body (react-hooks/set-state-in-effect).
+  //
+  // Hidden tabs defer the decision entirely: browsers suspend rAF while a tab
+  // is backgrounded, so GSAP timelines started there stall mid-flight and get
+  // force-completed by the safety nets — the user returns to a static hero
+  // with no intro at all. Waiting for visibility means the boot + entrance
+  // play in full the moment the tab is actually seen.
   useEffect(() => {
-    const id = window.setTimeout(() => {
+    const decide = () => {
       const reduce = window.matchMedia(
         "(prefers-reduced-motion: reduce)",
       ).matches;
       const seen = window.sessionStorage.getItem(BOOT_KEY) === "1";
       setBoot(reduce || seen ? "done" : "playing");
+    };
+
+    const onVisible = () => {
+      if (document.visibilityState !== "visible") return;
+      document.removeEventListener("visibilitychange", onVisible);
+      decide();
+    };
+
+    const id = window.setTimeout(() => {
+      if (document.visibilityState === "hidden") {
+        document.addEventListener("visibilitychange", onVisible);
+        return;
+      }
+      decide();
     }, 0);
-    return () => window.clearTimeout(id);
+
+    return () => {
+      window.clearTimeout(id);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
   }, []);
 
   // Boot sequence: type the lines, fill the bar, wipe the overlay up.
@@ -336,39 +361,59 @@ export default function LandingHero(props: { lang: TLocale }) {
       // Scroll exit: the two columns drift up and dim at different rates as
       // the hero scrolls away, so the page feels layered from the first wheel
       // tick. The scroll hint fades out immediately.
+      // These MUST be fromTo with explicit start values + immediateRender:
+      // false — a plain .to() scrub captures its start from the element's
+      // CURRENT opacity on every ScrollTrigger refresh, and a refresh landing
+      // mid-entrance (font/image load) would lock in the faded state and strand
+      // the element invisible at scroll-top forever.
       const exits = [
-        gsap.to(".hero-exit-text", {
-          yPercent: -14,
-          opacity: 0.25,
-          ease: "none",
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: "top top",
-            end: "bottom 35%",
-            scrub: true,
+        gsap.fromTo(
+          ".hero-exit-text",
+          { yPercent: 0, opacity: 1 },
+          {
+            yPercent: -14,
+            opacity: 0.25,
+            ease: "none",
+            immediateRender: false,
+            scrollTrigger: {
+              trigger: containerRef.current,
+              start: "top top",
+              end: "bottom 35%",
+              scrub: true,
+            },
           },
-        }),
-        gsap.to(".hero-exit-code", {
-          yPercent: -7,
-          opacity: 0.35,
-          ease: "none",
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: "top top",
-            end: "bottom 35%",
-            scrub: true,
+        ),
+        gsap.fromTo(
+          ".hero-exit-code",
+          { yPercent: 0, opacity: 1 },
+          {
+            yPercent: -7,
+            opacity: 0.35,
+            ease: "none",
+            immediateRender: false,
+            scrollTrigger: {
+              trigger: containerRef.current,
+              start: "top top",
+              end: "bottom 35%",
+              scrub: true,
+            },
           },
-        }),
-        gsap.to(".hero-scroll", {
-          opacity: 0,
-          ease: "none",
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: "top top",
-            end: "8% top",
-            scrub: true,
+        ),
+        gsap.fromTo(
+          ".hero-scroll",
+          { opacity: 1 },
+          {
+            opacity: 0,
+            ease: "none",
+            immediateRender: false,
+            scrollTrigger: {
+              trigger: containerRef.current,
+              start: "top top",
+              end: "8% top",
+              scrub: true,
+            },
           },
-        }),
+        ),
       ];
 
       return () => {
@@ -463,6 +508,10 @@ export default function LandingHero(props: { lang: TLocale }) {
 
       {/* Vignette Section (dark mode only) */}
       <div className="absolute inset-0 pointer-events-none hidden dark:block bg-[radial-gradient(ellipse_100%_100%_at_50%_50%,transparent_50%,rgba(3,8,18,0.7)_100%)]" />
+
+      {/* Interactive ASCII Ripple Section — reacts to pointer move / click,
+          layered above the ambient decor but below the hero content. */}
+      <CodeRipple />
 
       {/* Main Content Section */}
       <div className="relative w-full max-w-6xl mx-auto px-6 py-24 flex items-center min-h-screen">

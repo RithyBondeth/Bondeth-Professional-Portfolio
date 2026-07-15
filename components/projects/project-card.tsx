@@ -92,7 +92,6 @@ export function ProjectCard(props: {
             <Link
               href={`/${lang}/projects/${project.slug}`}
               aria-label={`${dict.projects.viewDetails}: ${project.title}`}
-              data-cursor-label="VIEW"
               className="inline-flex min-h-11 items-center gap-1.5 rounded border border-border/50 bg-muted/40 px-3 font-mono text-xs text-muted-foreground transition-colors hover:border-primary/30 hover:text-primary"
             >
               {dict.projects.viewDetails}

@@ -1,10 +1,5 @@
 import type { Metadata } from "next";
-import {
-  Geist,
-  Geist_Mono,
-  JetBrains_Mono,
-  Kantumruy_Pro,
-} from "next/font/google";
+import { JetBrains_Mono, Kantumruy_Pro, Noto_Serif } from "next/font/google";
 import { notFound } from "next/navigation";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -15,7 +10,6 @@ import Footer from "@/components/footer";
 import CommandPalette from "@/components/command-palette";
 import { ThemeProvider } from "@/components/utils/theme/theme-provider";
 import { SmoothScroll } from "@/components/utils/animations/smooth-scroll";
-import { CustomCursor } from "@/components/utils/cursor";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
 import { locales, hasLocale, getDictionary } from "@/utils/i18n";
 import { getSiteConfig } from "@/utils/i18n/content";
@@ -26,14 +20,9 @@ const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains",
 });
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const notoSerif = Noto_Serif({
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: "--font-serif",
 });
 
 const kantumruyPro = Kantumruy_Pro({
@@ -130,8 +119,7 @@ export default async function RootLayout({
       className={cn(
         "h-full",
         "antialiased",
-        geistSans.variable,
-        geistMono.variable,
+        notoSerif.variable,
         "font-mono",
         jetbrainsMono.variable,
         kantumruyPro.variable,
@@ -153,7 +141,6 @@ export default async function RootLayout({
             <Footer lang={lang} />
           </SmoothScroll>
           <CommandPalette lang={lang} posts={palettePosts} />
-          <CustomCursor />
         </ThemeProvider>
         <Analytics />
         <SpeedInsights />

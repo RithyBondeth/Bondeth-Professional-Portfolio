@@ -8,12 +8,13 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-serif);
   --font-mono: var(--font-mono);
-  --font-heading: var(--font-mono);
+  --font-heading: var(--font-serif);
   /* Always true monospace, never remapped by locale — for code, the RB mark,
      and terminal-style covers, which are Latin and must look identical in
-     every language. */
+     every language. This is the ONLY family that stays monospace now that the
+     rest of the English UI has moved to Noto Serif. */
   --font-code: var(--font-jetbrains), "JetBrains Mono", ui-monospace, monospace;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -55,10 +56,12 @@
 
 /* ── Light mode (html always has class="dark", so this is rarely active) ── */
 :root {
-  /* JetBrains Mono is now bound to --font-jetbrains; --font-mono is derived
-     from it here so the html[lang="km"] override below can swap in Kantumruy
-     Pro for UI text without affecting --font-code. */
-  --font-mono: var(--font-jetbrains), "JetBrains Mono", ui-monospace, monospace;
+  /* Noto Serif (--font-serif) is the English text font. --font-mono drives
+     every terminal-style accent (nav, buttons, chips, eyebrows) as well as the
+     page's base text, so it's remapped to Noto Serif here too — everything
+     except code now reads as serif. The html[lang="km"] override below swaps in
+     Kantumruy Pro for Khmer; neither remap touches --font-code. */
+  --font-mono: var(--font-serif), ui-serif, Georgia, serif;
   --background: #ffffff;
   --foreground: #0f172a;
   --card: #f8fafc;
@@ -144,22 +147,23 @@
     scroll-behavior: smooth;
     overflow-x: clip;
   }
-  /* Editorial type pairing: big readable sans for headings and prose, mono
-     reserved for the terminal accents (eyebrows, nav, chips, code). Explicit
-     `font-mono` utilities still win over these base rules, and the Khmer
-     locale flows through the same --font-geist-sans remap. */
+  /* Editorial type pairing: Noto Serif for headings and prose, true monospace
+     (--font-code) reserved for code and the RB mark. The terminal accents
+     (eyebrows, nav, chips) use the `font-mono` utility, which now also resolves
+     to Noto Serif; only --font-code stays monospace. The Khmer locale flows
+     through the same --font-serif remap. */
   h1,
   h2,
   h3,
   h4 {
-    font-family: var(--font-geist-sans), ui-sans-serif, sans-serif;
+    font-family: var(--font-serif), ui-serif, Georgia, serif;
     letter-spacing: -0.025em;
   }
   p,
   li,
   blockquote,
   figcaption {
-    font-family: var(--font-geist-sans), ui-sans-serif, sans-serif;
+    font-family: var(--font-serif), ui-serif, Georgia, serif;
   }
   /* Code always renders in JetBrains Mono, in every locale. Tailwind's
      Preflight resets these tags to `--font-mono`, which is remapped to
@@ -173,12 +177,12 @@
   }
 }
 
-/* ── Khmer locale: JetBrains Mono / Geist have no Khmer glyphs, so put
+/* ── Khmer locale: JetBrains Mono / Noto Serif have no Khmer glyphs, so put
    Kantumruy Pro first in every stack when the page language is Khmer.
    Kept OUTSIDE @layer so it can override next/font's unlayered variables. ── */
 html[lang="km"] {
   --font-mono: var(--font-khmer), "JetBrains Mono", ui-monospace, monospace;
-  --font-geist-sans: var(--font-khmer), ui-sans-serif, sans-serif;
+  --font-serif: var(--font-khmer), ui-serif, serif;
 }
 
 /* ── Code: JetBrains Mono on a true-black background, in every locale.
@@ -418,13 +422,6 @@ html[lang="km"] {
       )
       border-box;
   animation: border-spin 7s linear infinite;
-}
-
-/* ── Custom cursor: hide the native pointer while the GSAP cursor is mounted.
-   Text fields keep their I-beam for usability. ── */
-html.has-custom-cursor,
-html.has-custom-cursor *:not(input):not(textarea):not(select) {
-  cursor: none !important;
 }
 
 /* ── Theme switch: the circular wipe is driven from JS via the View
