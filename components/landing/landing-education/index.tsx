@@ -1,4 +1,5 @@
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
+import { SectionBackdrop } from "@/components/utils/animations/section-backdrop";
 import { ScrambleText } from "@/components/utils/animations/scramble-text";
 import { SplitReveal } from "@/components/utils/animations/split-reveal";
 import { getDictionary, type TLocale } from "@/utils/i18n";
@@ -13,7 +14,9 @@ export default function LandingEducation(props: { lang: TLocale }) {
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
-    <section id="education" className="py-24 px-6 bg-background">
+    <section id="education" className="relative isolate py-24 px-6 bg-background">
+      <SectionBackdrop />
+
       <div className="max-w-6xl mx-auto">
         {/* Heading Section */}
         <AnimateIn from="zoom-in">

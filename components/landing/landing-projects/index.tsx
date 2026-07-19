@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SectionBackdrop } from "@/components/utils/animations/section-backdrop";
 import { AnimateIn } from "@/components/utils/animations/animate-in";
 import { ScrambleText } from "@/components/utils/animations/scramble-text";
 import { SplitReveal } from "@/components/utils/animations/split-reveal";
@@ -63,7 +64,9 @@ export default function LandingProjects(props: { lang: TLocale }) {
     /* The pinned panel owns the vertical rhythm — the sideways journey through
        the featured work IS the section. Reduced motion / no-JS falls back to a
        native swipe strip via HorizontalScroll itself. */
-    <section id="projects" className="bg-background">
+    <section id="projects" className="relative isolate bg-background">
+      <SectionBackdrop />
+
       <HorizontalScroll header={header} trackClassName="items-stretch py-2">
         {featured.map((project) => (
           <div

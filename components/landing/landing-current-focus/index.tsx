@@ -1,4 +1,5 @@
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
+import { SectionBackdrop } from "@/components/utils/animations/section-backdrop";
 import { ScrambleText } from "@/components/utils/animations/scramble-text";
 import { SplitReveal } from "@/components/utils/animations/split-reveal";
 import Link from "next/link";
@@ -11,8 +12,10 @@ export default function LandingCurrentFocus(props: { lang: TLocale }) {
   return (
     <section
       id="current-focus"
-      className="relative overflow-hidden bg-card px-6 py-20"
+      className="relative isolate overflow-hidden bg-card px-6 py-20"
     >
+      <SectionBackdrop />
+
       <div
         aria-hidden
         data-speed="0.92"

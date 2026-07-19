@@ -1,4 +1,5 @@
 import { siteConfig } from "@/utils/constants/portfolio.constant";
+import { SectionBackdrop } from "@/components/utils/animations/section-backdrop";
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
 import { ScrambleText } from "@/components/utils/animations/scramble-text";
 import { SplitReveal } from "@/components/utils/animations/split-reveal";
@@ -21,7 +22,9 @@ export default function LandingContact(props: { lang: TLocale }) {
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
-    <section id="contact" className="bg-background px-6 py-24">
+    <section id="contact" className="relative isolate bg-background px-6 py-24">
+      <SectionBackdrop />
+
       <div className="mx-auto max-w-6xl">
         {/* Heading Section */}
         <AnimateIn from="left">
