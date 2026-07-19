@@ -131,7 +131,8 @@ export const en = {
       localMode: "Local demo mode",
       inputLabel: "Input",
       inputHeading: "Describe a project inquiry",
-      privacy: "Processed locally by this site. No external AI provider is called.",
+      privacy:
+        "Processed locally by this site. No external AI provider is called.",
       run: "Extract structured data",
       running: "Extracting...",
       outputHeading: "Validated result",
@@ -164,8 +165,7 @@ export const en = {
       steps: [
         {
           title: "Extract",
-          description:
-            "Identify candidate values from natural-language input.",
+          description: "Identify candidate values from natural-language input.",
         },
         {
           title: "Normalize",
@@ -304,8 +304,7 @@ export const en = {
             "Answer in Khmer: Where is Bondeth based and what is his profession?",
           candidateA:
             "រិទ្ធី បណ្ឌេត មានមូលដ្ឋាននៅរាជធានីភ្នំពេញ និងជាវិស្វករសូហ្វវែរ។",
-          candidateB:
-            "Bondeth is a product designer based in Bangkok.",
+          candidateB: "Bondeth is a product designer based in Bangkok.",
         },
       ],
       steps: [
