@@ -10,9 +10,9 @@ import { getDictionary, type TLocale } from "@/utils/i18n";
 
 const FEATURED_SLUGS = [
   "apsara-agentic",
+  "apsara-assistant",
+  "apsara-elearning",
   "apsara-talent",
-  "debc-website",
-  "informal-economy",
 ];
 
 export default function LandingProjects(props: { lang: TLocale }) {

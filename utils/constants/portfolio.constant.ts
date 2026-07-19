@@ -322,7 +322,7 @@ export const projects: IProject[] = [
     gradient: "from-emerald-600/20 via-teal-500/10 to-slate-800",
   },
   {
-    slug: "Apsara Elearning",
+    slug: "apsara-elearning",
     title: "Apsara Elearning",
     description:
       "Apsara Elearning is a first AI-powered elearning platform built for Cambodian students. Learn Math, Physics, Chemistry, and more with Apsara Elearning — your personal AI mentor that speaks Khmer.",
