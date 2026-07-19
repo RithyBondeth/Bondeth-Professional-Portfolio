@@ -6,12 +6,7 @@ import { AnimateIn } from "@/components/utils/animations/animate-in";
 import { ExternalLinkIcon } from "@/components/utils/icons";
 import { projects, siteConfig } from "@/utils/constants/portfolio.constant";
 import { getProjects } from "@/utils/i18n/content";
-import {
-  getDictionary,
-  hasLocale,
-  locales,
-  type TLocale,
-} from "@/utils/i18n";
+import { getDictionary, hasLocale, locales, type TLocale } from "@/utils/i18n";
 
 interface IProjectPageProps {
   params: Promise<{ lang: string; slug: string }>;
@@ -19,8 +14,7 @@ interface IProjectPageProps {
 
 function getProject(slug: string, lang: TLocale) {
   return getProjects(lang).find(
-    (project) =>
-      project.slug === slug && project.visibility !== "confidential",
+    (project) => project.slug === slug && project.visibility !== "confidential",
   );
 }
 
@@ -84,7 +78,11 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
   };
 
   return (
-    <main id="main-content" tabIndex={-1} className="flex-1 bg-background px-6 pb-24 pt-32 font-sans">
+    <main
+      id="main-content"
+      tabIndex={-1}
+      className="flex-1 bg-background px-6 pb-24 pt-32 font-sans"
+    >
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -220,7 +218,7 @@ function ProjectPreview(props: {
   const { title, image, gradient } = props;
 
   return (
-    <div className="relative aspect-[16/10] overflow-hidden rounded border border-border/60 bg-card shadow-2xl shadow-black/10">
+    <div className="relative aspect-16/10 overflow-hidden rounded border border-border/60 bg-card shadow-2xl shadow-black/10">
       {image ? (
         <Image
           src={image}
@@ -237,7 +235,9 @@ function ProjectPreview(props: {
             <span className="h-2 w-2 rounded-full bg-green-500/70" />
           </div>
           <div className="absolute inset-0 top-8 flex items-center justify-center">
-            <span className="font-mono text-sm text-foreground/70">{title}</span>
+            <span className="font-mono text-sm text-foreground/70">
+              {title}
+            </span>
           </div>
         </div>
       )}

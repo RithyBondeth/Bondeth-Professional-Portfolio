@@ -61,6 +61,9 @@ export const en = {
           "Phnom Penh, Cambodia — working in the UTC+7 time zone with local and remote teams.",
       },
     ],
+    globe: {
+      pinLabel: "Phnom Penh, Cambodia",
+    },
   },
   skills: {
     heading: "Technologies I work with",

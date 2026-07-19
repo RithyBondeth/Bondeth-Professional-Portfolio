@@ -4,6 +4,7 @@ import { ScrambleText } from "@/components/utils/animations/scramble-text";
 import { SplitReveal } from "@/components/utils/animations/split-reveal";
 import Link from "next/link";
 import { getDictionary, type TLocale } from "@/utils/i18n";
+import { Globe } from "./globe";
 
 export default function LandingCurrentFocus(props: { lang: TLocale }) {
   const { lang } = props;
@@ -23,7 +24,7 @@ export default function LandingCurrentFocus(props: { lang: TLocale }) {
       />
 
       <div className="relative mx-auto max-w-6xl">
-        <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
+        <div className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
           <div>
             <AnimateIn from="left" distance={40}>
               <p className="mb-1 font-mono text-xs uppercase tracking-[0.25em] text-primary">
@@ -65,12 +66,20 @@ export default function LandingCurrentFocus(props: { lang: TLocale }) {
             </AnimateIn>
           </div>
 
-          <StaggerIn
-            className="grid grid-cols-2 gap-3 sm:gap-4"
-            from="up"
-            stagger={0.1}
-            delay={0.1}
-          >
+          <AnimateIn from="right" delay={0.15} distance={40}>
+            <Globe
+              label={currentFocus.globe.pinLabel}
+              className="mx-auto -my-6 max-w-[380px] lg:my-0 lg:max-w-[440px]"
+            />
+          </AnimateIn>
+        </div>
+
+        <StaggerIn
+          className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 lg:mt-10 xl:grid-cols-4"
+          from="up"
+          stagger={0.1}
+          delay={0.1}
+        >
             {currentFocus.items.map((item, index) => (
               <article
                 key={item.label}
@@ -93,8 +102,7 @@ export default function LandingCurrentFocus(props: { lang: TLocale }) {
                 </p>
               </article>
             ))}
-          </StaggerIn>
-        </div>
+        </StaggerIn>
       </div>
     </section>
   );

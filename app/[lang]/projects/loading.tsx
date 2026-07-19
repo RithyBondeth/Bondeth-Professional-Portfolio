@@ -32,7 +32,7 @@ export default function ProjectsLoading() {
               key={i}
               className="overflow-hidden rounded border border-border/60 bg-card"
             >
-              <Skeleton className="aspect-[16/10] w-full rounded-none" />
+              <Skeleton className="aspect-16/10 w-full rounded-none" />
               <div className="p-5">
                 <Skeleton className="h-5 w-3/4" />
                 <Skeleton className="mt-3 h-4 w-full" />
