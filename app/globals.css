@@ -370,17 +370,37 @@ html[lang="km"] {
 /* ── Hero name gradient — lives on the whole h1 (no-JS / reduced-motion
    fallback) AND on every SplitText char (.hero-char), because background-clip
    can't reach across the per-char transform layers once the name is split.
-   Vertical so each character carries the identical fade. ── */
+
+   This is apsara-agentic's `.landing-gradient-text` treatment: the four-stop
+   spectrum raked across 125deg. Background-size stays `auto`, so — exactly as
+   on apsara — every character paints the FULL spectrum inside its own box
+   rather than showing one slice of a gradient spanning the whole word.
+
+   Light mode uses apsara's darkened variant of the same four hues (L≈42–52
+   instead of 68–83); the bright stops sit around 1.5:1 on a near-white ground
+   and would be unreadable. ── */
 .hero-name,
 .hero-char {
-  background-image: linear-gradient(180deg, #13141d 0%, #3a3d4a 55%, #4f46e5 100%);
+  background-image: linear-gradient(
+    125deg,
+    #438900,
+    #008dad 38%,
+    #7842e5 70%,
+    #c52fa6
+  );
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 .dark .hero-name,
 .dark .hero-char {
-  background-image: linear-gradient(180deg, #ffffff 0%, #edf0f8 55%, #94a2ff 100%);
+  background-image: linear-gradient(
+    125deg,
+    #98e448,
+    #06d8f4 38%,
+    #b295ff 70%,
+    #f87fd8
+  );
 }
 
 /* ── Film-grain noise: apply to an absolutely-positioned, pointer-events-none
