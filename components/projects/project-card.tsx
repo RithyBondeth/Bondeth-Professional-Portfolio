@@ -64,7 +64,7 @@ export function ProjectCard(props: {
               {project.title}
             </h3>
             {project.visibility !== "public" && (
-              <span className="ml-auto rounded border border-amber-500/20 bg-amber-500/5 px-1.5 py-0.5 text-right font-mono text-[9px] text-amber-500">
+              <span className="ml-auto rounded border border-amber-500/20 bg-amber-500/5 px-1.5 py-0.5 text-left font-mono text-[9px] text-amber-500">
                 {project.visibility === "limited"
                   ? dict.projects.limitedProject
                   : dict.projects.confidentialProject}

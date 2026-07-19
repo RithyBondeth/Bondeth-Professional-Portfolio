@@ -282,8 +282,14 @@ function PortraitPanel(props: { alt: string }) {
           {/* Window Chrome */}
           <div className="flex items-center gap-1.5 px-4 py-3 border-b border-[#34322e]/60 bg-black/30">
             <span aria-hidden className="w-3 h-3 rounded-full bg-red-500/80" />
-            <span aria-hidden className="w-3 h-3 rounded-full bg-yellow-500/70" />
-            <span aria-hidden className="w-3 h-3 rounded-full bg-green-500/70" />
+            <span
+              aria-hidden
+              className="w-3 h-3 rounded-full bg-yellow-500/70"
+            />
+            <span
+              aria-hidden
+              className="w-3 h-3 rounded-full bg-green-500/70"
+            />
             <span className="ml-3 text-slate-500 text-[11px] font-code select-none">
               bondeth.png
             </span>
@@ -394,8 +400,8 @@ function StatCard(props: {
 const stats = [
   { key: "yearsExp", value: "3+", varName: "yearsExp" },
   { key: "projects", value: "20+", varName: "projects" },
-  { key: "techStack", value: "15+", varName: "techStack" },
-  { key: "clients", value: "10+", varName: "clients" },
+  { key: "techStack", value: "20+", varName: "techStack" },
+  { key: "clients", value: "15+", varName: "clients" },
 ] as const;
 
 export default function LandingAbout(props: { lang: TLocale }) {
@@ -461,7 +467,13 @@ export default function LandingAbout(props: { lang: TLocale }) {
               {dict.about.heading}
             </SplitReveal>
 
-            <StaggerIn from="right" distance={40} stagger={0.18} blur={4} delay={0.1}>
+            <StaggerIn
+              from="right"
+              distance={40}
+              stagger={0.18}
+              blur={4}
+              delay={0.1}
+            >
               {localized.bio.map((paragraph, i) => (
                 <p
                   key={i}

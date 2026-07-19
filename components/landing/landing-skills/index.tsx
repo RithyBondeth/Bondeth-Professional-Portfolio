@@ -13,58 +13,82 @@ import { VelocitySkew } from "@/components/utils/animations/velocity-skew";
 import {
   SiReact,
   SiNextdotjs,
+  SiVuedotjs,
+  SiNuxt,
   SiTypescript,
   SiTailwindcss,
-  SiHtml5,
   SiPython,
   SiNodedotjs,
+  SiNestjs,
   SiPostgresql,
+  SiMongodb,
+  SiRedis,
   SiGraphql,
   SiFastapi,
-  SiPytorch,
-  SiTensorflow,
+  SiRabbitmq,
   SiOpenai,
+  SiAnthropic,
+  SiGooglegemini,
   SiLangchain,
+  SiLanggraph,
+  SiOllama,
   SiHuggingface,
   SiFlutter,
-  SiDart,
-  SiFirebase,
-  SiAndroid,
-  SiXcode,
+  SiSwift,
+  SiKotlin,
   SiGit,
   SiDocker,
   SiGithub,
   SiVercel,
+  SiNetlify,
+  SiDigitalocean,
+  SiGooglecloud,
+  SiCloudflare,
+  SiNginx,
+  SiGithubactions,
   SiLinux,
 } from "react-icons/si";
+import { FaAws } from "react-icons/fa";
 import type { IconType } from "react-icons";
 
 const ICON_MAP: Record<string, IconType> = {
+  SiTypescript,
   SiReact,
   SiNextdotjs,
-  SiTypescript,
+  SiVuedotjs,
+  SiNuxt,
   SiTailwindcss,
-  SiHtml5,
   SiPython,
   SiNodedotjs,
+  SiNestjs,
   SiPostgresql,
+  SiMongodb,
+  SiRedis,
   SiGraphql,
   SiFastapi,
-  SiPytorch,
-  SiTensorflow,
+  SiRabbitmq,
   SiOpenai,
+  SiAnthropic,
+  SiGooglegemini,
   SiLangchain,
+  SiLanggraph,
+  SiOllama,
   SiHuggingface,
   SiFlutter,
-  SiDart,
-  SiFirebase,
-  SiAndroid,
-  SiXcode,
+  SiSwift,
+  SiKotlin,
   SiGit,
   SiDocker,
   SiGithub,
   SiVercel,
+  SiNetlify,
+  SiDigitalocean,
+  SiGooglecloud,
+  SiCloudflare,
+  SiNginx,
+  SiGithubactions,
   SiLinux,
+  FaAws,
 };
 
 const COPIES_PER_HALF = 8;
@@ -83,7 +107,10 @@ export default function LandingSkills(props: { lang: TLocale }) {
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
-    <section id="skills" className="relative isolate py-24 bg-background overflow-hidden">
+    <section
+      id="skills"
+      className="relative isolate py-24 bg-background overflow-hidden"
+    >
       <SectionBackdrop />
 
       {/* Heading Section */}

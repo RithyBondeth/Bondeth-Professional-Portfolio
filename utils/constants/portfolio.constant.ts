@@ -75,16 +75,17 @@ export const skillGroups: ISkillGroup[] = [
   {
     category: "Frontend",
     skills: [
-      { name: "React", icon: "SiReact", color: "#61DAFB", level: 3 },
-      { name: "Next.js", icon: "SiNextdotjs", color: "#FFFFFF", level: 3 },
       { name: "TypeScript", icon: "SiTypescript", color: "#3178C6", level: 3 },
+      { name: "React.js", icon: "SiReact", color: "#61DAFB", level: 3 },
+      { name: "Next.js", icon: "SiNextdotjs", color: "#FFFFFF", level: 3 },
+      { name: "Vue.js", icon: "SiVuedotjs", color: "#4FC08D", level: 3 },
+      { name: "Nuxt.js", icon: "SiNuxt", color: "#4FC08D", level: 3 },
       {
         name: "Tailwind CSS",
         icon: "SiTailwindcss",
         color: "#06B6D4",
         level: 3,
       },
-      { name: "HTML5", icon: "SiHtml5", color: "#E34F26", level: 3 },
     ],
   },
   {
@@ -92,18 +93,37 @@ export const skillGroups: ISkillGroup[] = [
     skills: [
       { name: "Python", icon: "SiPython", color: "#3776AB", level: 3 },
       { name: "Node.js", icon: "SiNodedotjs", color: "#339933", level: 3 },
-      { name: "PostgreSQL", icon: "SiPostgresql", color: "#4169E1", level: 3 },
-      { name: "GraphQL", icon: "SiGraphql", color: "#E10098", level: 2 },
+      { name: "NestJS", icon: "SiNestjs", color: "#E0234E", level: 3 },
       { name: "FastAPI", icon: "SiFastapi", color: "#009688", level: 2 },
+      { name: "GraphQL", icon: "SiGraphql", color: "#E10098", level: 2 },
+    ],
+  },
+  {
+    category: "Databases",
+    skills: [
+      { name: "PostgreSQL", icon: "SiPostgresql", color: "#4169E1", level: 3 },
+      { name: "MongoDB", icon: "SiMongodb", color: "#47A248", level: 2 },
+      { name: "Redis", icon: "SiRedis", color: "#FF4438", level: 2 },
+    ],
+  },
+  {
+    category: "APIs & Messaging",
+    skills: [
+      { name: "REST", icon: "", color: "#22C55E", level: 3 },
+      { name: "WebSocket", icon: "", color: "#38BDF8", level: 2 },
+      { name: "gRPC", icon: "", color: "#7C4DFF", level: 2 },
+      { name: "RabbitMQ", icon: "SiRabbitmq", color: "#FF6600", level: 2 },
     ],
   },
   {
     category: "AI & ML",
     skills: [
-      { name: "PyTorch", icon: "SiPytorch", color: "#EE4C2C", level: 2 },
-      { name: "TensorFlow", icon: "SiTensorflow", color: "#FF6F00", level: 2 },
       { name: "OpenAI", icon: "SiOpenai", color: "#FFFFFF", level: 3 },
+      { name: "Anthropic", icon: "SiAnthropic", color: "#D97757", level: 2 },
+      { name: "Gemini", icon: "SiGooglegemini", color: "#8E75B2", level: 2 },
       { name: "LangChain", icon: "SiLangchain", color: "#10B981", level: 2 },
+      { name: "LangGraph", icon: "SiLanggraph", color: "#26A69A", level: 2 },
+      { name: "Ollama", icon: "SiOllama", color: "#FFFFFF", level: 2 },
       {
         name: "Hugging Face",
         icon: "SiHuggingface",
@@ -116,19 +136,39 @@ export const skillGroups: ISkillGroup[] = [
     category: "Mobile",
     skills: [
       { name: "Flutter", icon: "SiFlutter", color: "#54C5F8", level: 3 },
-      { name: "Dart", icon: "SiDart", color: "#0175C2", level: 3 },
-      { name: "Firebase", icon: "SiFirebase", color: "#FFCA28", level: 2 },
-      { name: "Android", icon: "SiAndroid", color: "#3DDC84", level: 2 },
-      { name: "Xcode", icon: "SiXcode", color: "#147EFB", level: 1 },
+      { name: "Swift", icon: "SiSwift", color: "#F05138", level: 1 },
+      { name: "Kotlin", icon: "SiKotlin", color: "#7F52FF", level: 1 },
     ],
   },
   {
-    category: "Tools & DevOps",
+    category: "Cloud",
     skills: [
-      { name: "Git", icon: "SiGit", color: "#F05032", level: 3 },
-      { name: "Docker", icon: "SiDocker", color: "#2496ED", level: 2 },
-      { name: "GitHub", icon: "SiGithub", color: "#FFFFFF", level: 3 },
       { name: "Vercel", icon: "SiVercel", color: "#FFFFFF", level: 3 },
+      { name: "Netlify", icon: "SiNetlify", color: "#00C7B7", level: 2 },
+      {
+        name: "DigitalOcean",
+        icon: "SiDigitalocean",
+        color: "#0080FF",
+        level: 2,
+      },
+      { name: "AWS", icon: "FaAws", color: "#FF9900", level: 2 },
+      { name: "GCP", icon: "SiGooglecloud", color: "#4285F4", level: 2 },
+      { name: "Cloudflare", icon: "SiCloudflare", color: "#F38020", level: 2 },
+    ],
+  },
+  {
+    category: "DevOps & Tools",
+    skills: [
+      { name: "Docker", icon: "SiDocker", color: "#2496ED", level: 2 },
+      { name: "Nginx", icon: "SiNginx", color: "#009639", level: 2 },
+      {
+        name: "GitHub Actions",
+        icon: "SiGithubactions",
+        color: "#2088FF",
+        level: 2,
+      },
+      { name: "Git", icon: "SiGit", color: "#F05032", level: 3 },
+      { name: "GitHub", icon: "SiGithub", color: "#FFFFFF", level: 3 },
       { name: "Linux", icon: "SiLinux", color: "#FCC624", level: 2 },
     ],
   },
@@ -402,6 +442,19 @@ export const projects: IProject[] = [
     live: "https://informal.digitaleconomy.gov.kh/km",
     image: "/previews/informal-economy.png",
     gradient: "from-amber-600/20 via-orange-500/10 to-slate-800",
+  },
+  {
+    slug: "cambodia-investment-platform",
+    title: "Cambodia Investment Platform",
+    description:
+      "Landing page for Cambodia Investment Platform — a platform that connects startups, MSMEs, investors, and the public through trusted digital financing mechanisms to support entrepreneurship, innovation, business growth, and economic development.",
+    tags: ["Typescript", "Next.js", "Tailwind CSS", "Vercel"],
+    category: "Web",
+    visibility: "limited",
+    github: null,
+    live: "https://edf-cip-website-dev.intechdevkh.com/en",
+    image: "/previews/cambodia-investment-platform.png",
+    gradient: "from-emerald-700/20 via-green-500/10 to-slate-800",
   },
   {
     slug: "code-hub",
