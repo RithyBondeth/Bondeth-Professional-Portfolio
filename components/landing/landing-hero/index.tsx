@@ -73,12 +73,12 @@ function CodeBlock() {
   return (
     <div className="relative w-full max-w-sm xl:max-w-md">
       {/* Ambient Glow Section */}
-      <div className="absolute -inset-6 bg-cyan-500/6 rounded-2xl blur-3xl pointer-events-none" />
+      <div className="absolute -inset-6 bg-primary/6 rounded-2xl blur-3xl pointer-events-none" />
 
       {/* Editor Window Section — stays dark in both themes, like a real editor */}
-      <div className="relative rounded-md border border-[#1a2e52] bg-[#0c1428] overflow-hidden shadow-2xl shadow-black/30 dark:shadow-black/60">
+      <div className="relative rounded-md border border-[#34322e] bg-[#0f1117] overflow-hidden shadow-2xl shadow-black/30 dark:shadow-black/60">
         {/* Window Chrome Section */}
-        <div className="flex items-center gap-1.5 px-4 py-3 border-b border-[#1a2e52]/60 bg-black/30">
+        <div className="flex items-center gap-1.5 px-4 py-3 border-b border-[#34322e]/60 bg-black/30">
           <span className="w-3 h-3 rounded-full bg-red-500/80" />
           <span className="w-3 h-3 rounded-full bg-yellow-500/70" />
           <span className="w-3 h-3 rounded-full bg-green-500/70" />
@@ -90,7 +90,7 @@ function CodeBlock() {
         {/* Line Numbers + Code Section */}
         <div className="flex text-xs font-code leading-6 overflow-x-auto">
           {/* Line Numbers */}
-          <div className="select-none text-right pr-4 pl-4 py-5 text-[#1a2e52] border-r border-[#1a2e52]/40 shrink-0">
+          <div className="select-none text-right pr-4 pl-4 py-5 text-[#34322e] border-r border-[#34322e]/40 shrink-0">
             {Array.from({ length: 18 }, (_, i) => (
               <div key={i}>{i + 1}</div>
             ))}
@@ -460,15 +460,15 @@ export default function LandingHero(props: { lang: TLocale }) {
       className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground relative overflow-hidden"
     >
       {/* Base Gradient Section */}
-      <div className="absolute inset-0 bg-linear-to-br from-slate-100 via-white to-cyan-50 dark:from-[#030812] dark:via-[#060d1f] dark:to-[#070d22] pointer-events-none" />
+      <div className="absolute inset-0 bg-linear-to-br from-slate-100 via-white to-indigo-50 dark:from-[#05060a] dark:via-[#07090e] dark:to-[#0b0d13] pointer-events-none" />
 
       {/* CSS Grid Overlay Section */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           backgroundImage: `
-            linear-gradient(rgba(34,211,238,0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(34,211,238,0.03) 1px, transparent 1px)
+            linear-gradient(rgba(148,162,255,0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(148,162,255,0.03) 1px, transparent 1px)
           `,
           backgroundSize: "72px 72px",
         }}
@@ -478,13 +478,13 @@ export default function LandingHero(props: { lang: TLocale }) {
       <HeroBackground />
 
       {/* Centre Radial Glow Section */}
-      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_70%_60%_at_50%_50%,rgba(34,211,238,0.05),transparent)]" />
+      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_70%_60%_at_50%_50%,rgba(148,162,255,0.05),transparent)]" />
 
       {/* Ambient Orbs Section — parallax depth via ScrollSmoother data-speed,
           slow aurora drift on top of the pulse. */}
       <div
         data-speed="0.85"
-        className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/6 rounded-full blur-3xl pointer-events-none motion-safe:animate-[aurora_16s_ease-in-out_infinite]"
+        className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/6 rounded-full blur-3xl pointer-events-none motion-safe:animate-[aurora_16s_ease-in-out_infinite]"
       />
       <div
         data-speed="1.15"
@@ -500,14 +500,14 @@ export default function LandingHero(props: { lang: TLocale }) {
         className="absolute inset-x-0 h-px pointer-events-none"
         style={{
           background:
-            "linear-gradient(90deg, transparent, rgba(34,211,238,0.25), transparent)",
+            "linear-gradient(90deg, transparent, rgba(148,162,255,0.25), transparent)",
           animation: "scan 8s linear infinite",
           animationDelay: "1s",
         }}
       />
 
       {/* Vignette Section (dark mode only) */}
-      <div className="absolute inset-0 pointer-events-none hidden dark:block bg-[radial-gradient(ellipse_100%_100%_at_50%_50%,transparent_50%,rgba(3,8,18,0.7)_100%)]" />
+      <div className="absolute inset-0 pointer-events-none hidden dark:block bg-[radial-gradient(ellipse_100%_100%_at_50%_50%,transparent_50%,rgba(7,9,14,0.7)_100%)]" />
 
       {/* Interactive ASCII Ripple Section — reacts to pointer move / click,
           layered above the ambient decor but below the hero content. */}

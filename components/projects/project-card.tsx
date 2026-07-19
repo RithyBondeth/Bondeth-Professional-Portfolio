@@ -15,7 +15,7 @@ export function ProjectCard(props: {
   return (
     /* 3D tilt + glare shell — desktop pointers only, static elsewhere. */
     <TiltCard maxTilt={6} className="relative h-full rounded">
-      <article className="group flex h-full flex-col overflow-hidden rounded border border-border/60 bg-card transition-all duration-300 hover:border-primary/30 hover:shadow-[0_0_28px_rgba(34,211,238,0.1)]">
+      <article className="group flex h-full flex-col overflow-hidden rounded border border-border/60 bg-card transition-all duration-300 hover:border-primary/30 hover:shadow-[0_0_28px_rgba(148,162,255,0.1)]">
       <div className="relative h-44 overflow-hidden">
         {project.image && project.visibility !== "confidential" ? (
           <Image

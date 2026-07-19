@@ -150,7 +150,7 @@ export function RagRetrievalLab(props: {
 
       <section
         aria-live="polite"
-        className="rounded border border-border/60 bg-[#050914] p-5 sm:p-6"
+        className="rounded border border-border/60 bg-[#05060a] p-5 sm:p-6"
       >
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>

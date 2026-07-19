@@ -192,7 +192,7 @@ function SkillBadge(props: { skill: ISkill; levelLabel: string }) {
   /* -------------------------------- Render UI ------------------------------- */
   return (
     <div
-      className="group flex items-center gap-2 px-3.5 py-2 rounded border border-border/50 bg-card whitespace-nowrap shrink-0 select-none transition-all duration-300 hover:border-primary/40 hover:shadow-[0_0_16px_rgba(34,211,238,0.12)] motion-safe:hover:-translate-y-0.5"
+      className="group flex items-center gap-2 px-3.5 py-2 rounded border border-border/50 bg-card whitespace-nowrap shrink-0 select-none transition-all duration-300 hover:border-primary/40 hover:shadow-[0_0_16px_rgba(148,162,255,0.12)] motion-safe:hover:-translate-y-0.5"
       title={`${skill.name} — ${levelLabel}`}
     >
       {Icon && (

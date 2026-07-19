@@ -161,7 +161,7 @@ export function LlmEvalLab(props: {
 
       <section
         aria-live="polite"
-        className="mt-6 rounded border border-border/60 bg-[#050914] p-5 sm:p-6"
+        className="mt-6 rounded border border-border/60 bg-[#05060a] p-5 sm:p-6"
       >
         <p className="font-code text-[10px] uppercase tracking-[0.2em] text-primary">
           02 / evaluation-report

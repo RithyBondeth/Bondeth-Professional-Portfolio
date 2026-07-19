@@ -242,7 +242,7 @@ function CodeColumn(props: {
                 );
               })}
               {caretHere && (
-                <span className="type-caret ml-px inline-block h-[1.05em] w-[0.5em] translate-y-[0.15em] bg-cyan-300/80" />
+                <span className="type-caret ml-px inline-block h-[1.05em] w-[0.5em] translate-y-[0.15em] bg-primary/80" />
               )}
             </code>
           </div>
@@ -272,15 +272,15 @@ function PortraitPanel(props: { alt: string }) {
       className="relative w-full max-w-sm mx-auto lg:max-w-none"
     >
       {/* Ambient Glow */}
-      <div className="absolute -inset-6 bg-cyan-500/6 rounded-2xl blur-3xl pointer-events-none" />
+      <div className="absolute -inset-6 bg-primary/6 rounded-2xl blur-3xl pointer-events-none" />
 
       {/* 3D tilt shell — relative + matching rounding so the glare sheen clips
           to the editor window's corners. Desktop-only, reduced-motion safe. */}
       <TiltCard maxTilt={5} hoverScale={1.01} className="relative rounded-md">
         {/* Editor Window */}
-        <div className="relative rounded-md border border-[#1a2e52] bg-[#0c1428] overflow-hidden shadow-2xl shadow-black/30 dark:shadow-black/60">
+        <div className="relative rounded-md border border-[#34322e] bg-[#0f1117] overflow-hidden shadow-2xl shadow-black/30 dark:shadow-black/60">
           {/* Window Chrome */}
-          <div className="flex items-center gap-1.5 px-4 py-3 border-b border-[#1a2e52]/60 bg-black/30">
+          <div className="flex items-center gap-1.5 px-4 py-3 border-b border-[#34322e]/60 bg-black/30">
             <span aria-hidden className="w-3 h-3 rounded-full bg-red-500/80" />
             <span aria-hidden className="w-3 h-3 rounded-full bg-yellow-500/70" />
             <span aria-hidden className="w-3 h-3 rounded-full bg-green-500/70" />
@@ -320,7 +320,7 @@ function PortraitPanel(props: { alt: string }) {
           </div>
 
           {/* Status Bar */}
-          <div className="flex items-center justify-between px-4 py-2.5 border-t border-[#1a2e52]/60 bg-black/30 text-[10px] font-code text-slate-400">
+          <div className="flex items-center justify-between px-4 py-2.5 border-t border-[#34322e]/60 bg-black/30 text-[10px] font-code text-slate-400">
             <span>
               <span className="text-emerald-400">▸</span> whoami
             </span>
@@ -377,7 +377,7 @@ function StatCard(props: {
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
-    <div className="rounded border border-border/60 bg-background p-5 hover:border-primary/30 hover:shadow-[0_0_24px_rgba(34,211,238,0.09)] transition-all duration-300 group">
+    <div className="rounded border border-border/60 bg-background p-5 hover:border-primary/30 hover:shadow-[0_0_24px_rgba(148,162,255,0.09)] transition-all duration-300 group">
       <p className="text-[10px] font-mono text-muted-foreground mb-3 group-hover:text-primary dark:group-hover:text-primary/60 transition-colors">
         <span className="text-violet-400">const</span>{" "}
         <span className="text-sky-300">{varName}</span>

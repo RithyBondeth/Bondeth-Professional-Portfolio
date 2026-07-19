@@ -44,7 +44,7 @@ export default function LandingEducation(props: { lang: TLocale }) {
           {educations.map((edu) => (
             <div
               key={edu.degree}
-              className="group rounded border border-border/60 bg-card hover:border-primary/25 hover:shadow-[0_0_20px_rgba(34,211,238,0.07)] transition-all duration-300 overflow-hidden motion-safe:hover:-translate-y-0.5"
+              className="group rounded border border-border/60 bg-card hover:border-primary/25 hover:shadow-[0_0_20px_rgba(148,162,255,0.07)] transition-all duration-300 overflow-hidden motion-safe:hover:-translate-y-0.5"
             >
               {/* Header */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-6 py-5 border-b border-border/50">

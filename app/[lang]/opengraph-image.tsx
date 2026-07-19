@@ -19,8 +19,8 @@ export default function Image() {
           flexDirection: "column",
           justifyContent: "center",
           padding: "80px",
-          background: "#09090b",
-          color: "#fafafa",
+          background: "#07090e",
+          color: "#edf0f8",
           fontFamily: "monospace",
         }}
       >
@@ -43,7 +43,7 @@ export default function Image() {
         <div
           style={{
             fontSize: 40,
-            color: "#a1a1aa",
+            color: "#979ba9",
             marginTop: 24,
           }}
         >

@@ -54,7 +54,7 @@ export default async function LabsPage({ params }: ILabsPageProps) {
         <AnimateIn from="up" delay={0.08}>
           <article className="group mt-12 overflow-hidden rounded border border-border/60 bg-card transition-all hover:border-primary/30">
             <div className="grid md:grid-cols-[0.8fr_1.2fr]">
-              <div className="relative min-h-56 overflow-hidden bg-[radial-gradient(circle_at_30%_30%,rgba(34,211,238,0.18),transparent_45%),radial-gradient(circle_at_70%_70%,rgba(139,92,246,0.16),transparent_45%),#050914] p-6">
+              <div className="relative min-h-56 overflow-hidden bg-[radial-gradient(circle_at_30%_30%,rgba(148,162,255,0.18),transparent_45%),radial-gradient(circle_at_70%_70%,rgba(178,149,255,0.16),transparent_45%),#05060a] p-6">
                 <div className="absolute inset-x-6 top-6 rounded border border-border/40 bg-black/50 p-4 font-code text-[11px] leading-6">
                   <p className="text-muted-foreground">{"{"}</p>
                   <p className="pl-4 text-emerald-300">
@@ -103,7 +103,7 @@ export default async function LabsPage({ params }: ILabsPageProps) {
         <AnimateIn from="up" delay={0.12}>
           <article className="group mt-6 overflow-hidden rounded border border-border/60 bg-card transition-all hover:border-primary/30">
             <div className="grid md:grid-cols-[0.8fr_1.2fr]">
-              <div className="relative min-h-56 overflow-hidden bg-[radial-gradient(circle_at_70%_25%,rgba(139,92,246,0.2),transparent_40%),radial-gradient(circle_at_25%_75%,rgba(34,211,238,0.16),transparent_42%),#050914] p-6">
+              <div className="relative min-h-56 overflow-hidden bg-[radial-gradient(circle_at_70%_25%,rgba(178,149,255,0.2),transparent_40%),radial-gradient(circle_at_25%_75%,rgba(148,162,255,0.16),transparent_42%),#05060a] p-6">
                 <LabVignetteFx className="absolute inset-x-6 top-6 space-y-2 font-code text-[10px]">
                   {[92, 76, 48].map((score, index) => (
                     <div
@@ -158,7 +158,7 @@ export default async function LabsPage({ params }: ILabsPageProps) {
         <AnimateIn from="up" delay={0.16}>
           <article className="group mt-6 overflow-hidden rounded border border-border/60 bg-card transition-all hover:border-primary/30">
             <div className="grid md:grid-cols-[0.8fr_1.2fr]">
-              <div className="relative min-h-56 overflow-hidden bg-[radial-gradient(circle_at_30%_20%,rgba(34,211,238,0.16),transparent_40%),radial-gradient(circle_at_75%_75%,rgba(139,92,246,0.22),transparent_45%),#050914] p-6">
+              <div className="relative min-h-56 overflow-hidden bg-[radial-gradient(circle_at_30%_20%,rgba(148,162,255,0.16),transparent_40%),radial-gradient(circle_at_75%_75%,rgba(178,149,255,0.22),transparent_45%),#05060a] p-6">
                 <LabVignetteFx className="absolute inset-x-6 top-8 grid grid-cols-2 gap-3 font-code">
                   <div
                     data-lab-tile

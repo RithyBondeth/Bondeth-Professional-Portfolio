@@ -148,7 +148,7 @@ function SocialLink(props: {
         target="_blank"
         rel="noopener noreferrer"
         aria-label={label}
-        className="w-10 h-10 flex items-center justify-center rounded border border-border/60 text-muted-foreground hover:text-primary hover:border-primary/40 hover:shadow-[0_0_16px_rgba(34,211,238,0.15)] transition-all"
+        className="w-10 h-10 flex items-center justify-center rounded border border-border/60 text-muted-foreground hover:text-primary hover:border-primary/40 hover:shadow-[0_0_16px_rgba(148,162,255,0.15)] transition-all"
       >
         {icon}
       </a>

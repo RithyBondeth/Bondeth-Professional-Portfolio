@@ -14,8 +14,8 @@ interface IParticle {
 const PARTICLE_COUNT = 90;
 const MAX_CONNECT_DIST = 140;
 const POINTER_DIST = 170;
-const PARTICLE_COLOR = "96, 165, 250"; // blue-400 rgb
-const POINTER_COLOR = "34, 211, 238"; // primary cyan rgb
+const PARTICLE_COLOR = "148, 162, 255"; // apsara --l-accent periwinkle
+const POINTER_COLOR = "6, 216, 244"; // apsara --l-spectrum-2 cyan
 
 /**
  * Animated particle-network canvas rendered behind the hero content.

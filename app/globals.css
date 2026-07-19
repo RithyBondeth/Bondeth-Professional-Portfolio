@@ -62,27 +62,30 @@
      except code now reads as serif. The html[lang="km"] override below swaps in
      Kantumruy Pro for Khmer; neither remap touches --font-code. */
   --font-mono: var(--font-serif), ui-serif, Georgia, serif;
-  --background: #ffffff;
-  --foreground: #0f172a;
-  --card: #f8fafc;
-  --card-foreground: #0f172a;
+  --background: #f3f4f9;
+  --foreground: #13141d;
+  --card: #ffffff;
+  --card-foreground: #13141d;
   --popover: #ffffff;
-  --popover-foreground: #0f172a;
-  /* cyan-700, not the brighter cyan-500 used in dark mode — the bright
-     shade drops to ~2.4:1 against a white background, failing WCAG AA
-     even at full opacity, since it's tuned for a near-black backdrop */
-  --primary: #0e7490;
+  --popover-foreground: #13141d;
+  /* indigo-600 — apsara's light-mode accent. Lands at ~6.5:1 on the #f3f4f9
+     ground, so unlike the old bright cyan it clears WCAG AA for body text
+     without needing a darkened variant. */
+  --primary: #4f46e5;
   --primary-foreground: #ffffff;
-  --secondary: #f1f5f9;
-  --secondary-foreground: #0f172a;
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
-  --accent: #8b5cf6;
-  --accent-foreground: #0f172a;
+  --secondary: #f4f2ee;
+  --secondary-foreground: #13141d;
+  --muted: #f4f2ee;
+  --muted-foreground: #646772;
+  /* Kept as a SATURATED colour, unlike apsara's own --accent (a near-neutral
+     hover surface). This codebase treats --accent as a vivid highlight, so it
+     maps to the spectrum's periwinkle rather than apsara's surface token. */
+  --accent: #6d7bee;
+  --accent-foreground: #13141d;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: #e2e8f0;
-  --input: #e2e8f0;
-  --ring: #0e7490;
+  --border: #e3ded5;
+  --input: #f1eee9;
+  --ring: #4f46e5;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -90,48 +93,52 @@
   --chart-5: oklch(0.269 0 0);
   --radius: 0.5rem;
   --sidebar: #ffffff;
-  --sidebar-foreground: #0f172a;
-  --sidebar-primary: #0e7490;
+  --sidebar-foreground: #13141d;
+  --sidebar-primary: #4f46e5;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f1f5f9;
-  --sidebar-accent-foreground: #0f172a;
-  --sidebar-border: #e2e8f0;
-  --sidebar-ring: #0e7490;
+  --sidebar-accent: #f4f2ee;
+  --sidebar-accent-foreground: #13141d;
+  --sidebar-border: #e3ded5;
+  --sidebar-ring: #4f46e5;
 }
 
-/* ── Dark mode ─ deep navy + electric cyan + violet accent ── */
+/* ── Dark mode ─ neutral charcoal + periwinkle, ported from apsara-agentic ── */
 .dark {
-  --background: #060d1f;
-  --foreground: #e2e8f0;
-  --card: #0c1428;
-  --card-foreground: #e2e8f0;
-  --popover: #0c1428;
-  --popover-foreground: #e2e8f0;
-  --primary: #22d3ee;
-  --primary-foreground: #060d1f;
-  --secondary: #0f2040;
-  --secondary-foreground: #94a3b8;
-  --muted: #0f2040;
-  --muted-foreground: #64748b;
-  --accent: #8b5cf6;
-  --accent-foreground: #e2e8f0;
+  --background: #07090e;
+  --foreground: #edf0f8;
+  --card: #0f1117;
+  --card-foreground: #edf0f8;
+  --popover: #0f1117;
+  --popover-foreground: #edf0f8;
+  --primary: #94a2ff;
+  --primary-foreground: #111110;
+  --secondary: #161921;
+  --secondary-foreground: #edf0f8;
+  --muted: #161921;
+  --muted-foreground: #979ba9;
+  /* Saturated highlight, not apsara's neutral --accent surface — see the
+     light-mode note above. */
+  --accent: #b295ff;
+  --accent-foreground: #edf0f8;
   --destructive: oklch(0.704 0.191 22.216);
-  --border: #1a2e52;
-  --input: #1a2e52;
-  --ring: #22d3ee;
+  /* Apsara's borders are warm-neutral, which is what keeps its dark UI from
+     reading as blue. Deliberately NOT the old #1a2e52 navy. */
+  --border: #34322e;
+  --input: #2a2926;
+  --ring: #94a2ff;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --sidebar: #060d1f;
-  --sidebar-foreground: #94a3b8;
-  --sidebar-primary: #22d3ee;
-  --sidebar-primary-foreground: #060d1f;
-  --sidebar-accent: #0f2040;
-  --sidebar-accent-foreground: #e2e8f0;
-  --sidebar-border: #1a2e52;
-  --sidebar-ring: #22d3ee;
+  --sidebar: #07090e;
+  --sidebar-foreground: #979ba9;
+  --sidebar-primary: #94a2ff;
+  --sidebar-primary-foreground: #111110;
+  --sidebar-accent: #161921;
+  --sidebar-accent-foreground: #edf0f8;
+  --sidebar-border: #34322e;
+  --sidebar-ring: #94a2ff;
 }
 
 @layer base {
@@ -207,11 +214,11 @@ html[lang="km"] {
       color-mix(in oklab, var(--primary) 10%, transparent),
       transparent 4.25rem
     ),
-    #030712;
+    #07090e;
   box-shadow:
     0 24px 60px rgb(0 0 0 / 0.28),
     inset 0 1px 0 rgb(255 255 255 / 0.06);
-  color: #d1d5db;
+  color: #dcdfe8;
   line-height: 1.75;
   padding: 3.25rem 1.25rem 1.25rem;
 }
@@ -237,7 +244,7 @@ html[lang="km"] {
   border: 1px solid rgb(255 255 255 / 0.1);
   background: rgb(255 255 255 / 0.06);
   padding: 0.2rem 0.55rem;
-  color: #94a3b8;
+  color: #979ba9;
   font-family: var(--font-code);
   font-size: 0.65rem;
   font-weight: 600;
@@ -314,15 +321,15 @@ html[lang="km"] {
     transform: none;
   }
   75% {
-    filter: drop-shadow(-3px 0 #22d3ee) drop-shadow(3px 0 #8b5cf6);
+    filter: drop-shadow(-3px 0 #06d8f4) drop-shadow(3px 0 #b295ff);
     transform: translateX(-2px);
   }
   76% {
-    filter: drop-shadow(3px 0 #22d3ee) drop-shadow(-3px 0 #8b5cf6);
+    filter: drop-shadow(3px 0 #06d8f4) drop-shadow(-3px 0 #b295ff);
     transform: translateX(2px) skewX(-1deg);
   }
   77% {
-    filter: drop-shadow(-1px 0 #22d3ee);
+    filter: drop-shadow(-1px 0 #06d8f4);
     transform: translateX(-1px);
   }
   78% {
@@ -338,11 +345,11 @@ html[lang="km"] {
     transform: none;
   }
   91% {
-    filter: drop-shadow(-2px 0 rgba(34,211,238,0.8)) drop-shadow(2px 0 rgba(139,92,246,0.6));
+    filter: drop-shadow(-2px 0 rgba(6,216,244,0.8)) drop-shadow(2px 0 rgba(178,149,255,0.6));
     transform: translateX(-1px) skewX(-0.5deg);
   }
   92% {
-    filter: drop-shadow(1px 0 rgba(139,92,246,0.8));
+    filter: drop-shadow(1px 0 rgba(178,149,255,0.8));
     transform: translateX(1px);
   }
 }
@@ -366,14 +373,14 @@ html[lang="km"] {
    Vertical so each character carries the identical fade. ── */
 .hero-name,
 .hero-char {
-  background-image: linear-gradient(180deg, #0f172a 0%, #334155 55%, #0e7490 100%);
+  background-image: linear-gradient(180deg, #13141d 0%, #3a3d4a 55%, #4f46e5 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 .dark .hero-name,
 .dark .hero-char {
-  background-image: linear-gradient(180deg, #ffffff 0%, #e2e8f0 55%, #a5f3fc 100%);
+  background-image: linear-gradient(180deg, #ffffff 0%, #edf0f8 55%, #94a2ff 100%);
 }
 
 /* ── Film-grain noise: apply to an absolutely-positioned, pointer-events-none

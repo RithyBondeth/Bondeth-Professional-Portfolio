@@ -28,7 +28,7 @@ const AI_TAGS = new Set([
 ]);
 
 function pickAccent(tags: string[]): string {
-  return tags.some((t) => AI_TAGS.has(t.toLowerCase())) ? "#8b5cf6" : "#22d3ee";
+  return tags.some((t) => AI_TAGS.has(t.toLowerCase())) ? "#b295ff" : "#94a2ff";
 }
 
 /* --------------------------------- Component -------------------------------- */
@@ -50,7 +50,7 @@ export function BlogCover({
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-lg border border-border bg-[#060d1f]",
+        "relative overflow-hidden rounded-lg border border-border bg-[#07090e]",
         className,
       )}
     >
@@ -72,7 +72,7 @@ export function BlogCover({
             className="absolute inset-0"
             style={{
               backgroundImage:
-                "linear-gradient(rgba(148,163,184,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.06) 1px, transparent 1px)",
+                "linear-gradient(rgba(151,155,169,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(151,155,169,0.06) 1px, transparent 1px)",
               backgroundSize: "26px 26px",
             }}
           />
