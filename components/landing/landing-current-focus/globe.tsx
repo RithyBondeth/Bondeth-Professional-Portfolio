@@ -100,7 +100,7 @@ export function Globe(props: { label?: string; className?: string }) {
     /* ------------------------------- Colours ------------------------------ */
     /* Theme tokens resolve through the canvas's computed style, so any format
        the tokens are authored in comes back as plain rgb() numbers. */
-    let primary = "148, 162, 255";
+    let primary = "255, 255, 255";
     let border = "52, 50, 46";
     let foreground = "237, 240, 248";
     let muted = "151, 155, 169";

@@ -65,10 +65,10 @@ export default function LandingServices(props: { lang: TLocale }) {
             return (
               <article
                 key={service.title}
-                className="group rounded-lg border border-border/60 bg-background/70 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-primary/35 hover:shadow-[0_12px_40px_rgba(148,162,255,0.06)] motion-reduce:transform-none sm:p-6"
+                className="group rounded-lg border border-border/60 bg-background/70 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-primary/35 hover:shadow-[0_12px_40px_rgba(255, 255, 255,0.06)] motion-reduce:transform-none sm:p-6"
               >
                 <div className="flex items-start justify-between gap-4">
-                  <span className="flex size-10 items-center justify-center rounded border border-primary/20 bg-primary/5 text-primary transition-all duration-300 group-hover:border-primary/50 group-hover:bg-primary/10 group-hover:shadow-[0_0_14px_rgba(148,162,255,0.25)]">
+                  <span className="flex size-10 items-center justify-center rounded border border-primary/20 bg-primary/5 text-primary transition-all duration-300 group-hover:border-primary/50 group-hover:bg-primary/10 group-hover:shadow-[0_0_14px_rgba(255, 255, 255,0.25)]">
                     <Icon
                       aria-hidden
                       className="size-5 transition-transform duration-300 motion-safe:group-hover:scale-110 motion-safe:group-hover:-rotate-6"

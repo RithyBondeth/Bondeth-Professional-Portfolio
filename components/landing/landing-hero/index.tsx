@@ -75,7 +75,7 @@ function CodeBlock() {
       <div className="absolute -inset-6 bg-primary/6 rounded-2xl blur-3xl pointer-events-none" />
 
       {/* Editor Window Section — stays dark in both themes, like a real editor */}
-      <div className="relative rounded-md border border-[#34322e] bg-[#0f1117] overflow-hidden shadow-2xl shadow-black/30 dark:shadow-black/60">
+      <div className="relative rounded-md border border-[#34322e] bg-black overflow-hidden shadow-2xl shadow-black/30 dark:shadow-black/60">
         {/* Window Chrome Section */}
         <div className="flex items-center gap-1.5 px-4 py-3 border-b border-[#34322e]/60 bg-black/30">
           <span className="w-3 h-3 rounded-full bg-red-500/80" />
@@ -95,55 +95,57 @@ function CodeBlock() {
             ))}
           </div>
 
-          {/* Code Content */}
-          <pre className="py-5 pl-4 pr-6 text-slate-300">
+          {/* Code Content — syntax colors match the site's canonical code
+              palette (see landing-about's tokenizer): violet-400 keywords,
+              sky-300 identifiers, emerald-400 strings, slate-500 comments. */}
+          <pre className="py-5 pl-4 pr-6 text-slate-400">
             <span className="text-slate-500">{"// Developer profile"}</span>
             {"\n"}
             <span className="text-violet-400">{"const"}</span>{" "}
             <span className="text-sky-300">{"developer"}</span>
             {" = {\n"}
             {"  "}
-            <span className="text-blue-300">{"name"}</span>
+            <span className="text-sky-300">{"name"}</span>
             {": "}
-            <span className="text-cyan-300">{'"Rithy Bondeth"'}</span>
+            <span className="text-emerald-400">{'"Rithy Bondeth"'}</span>
             {",\n"}
             {"  "}
-            <span className="text-blue-300">{"role"}</span>
+            <span className="text-sky-300">{"role"}</span>
             {": [\n"}
             {"    "}
-            <span className="text-cyan-300">{'"Full Stack Dev"'}</span>
+            <span className="text-emerald-400">{'"Full Stack Dev"'}</span>
             {",\n"}
             {"    "}
-            <span className="text-cyan-300">{'"AI Engineer"'}</span>
+            <span className="text-emerald-400">{'"AI Engineer"'}</span>
             {",\n"}
             {"  ],\n"}
             {"  "}
-            <span className="text-blue-300">{"location"}</span>
+            <span className="text-sky-300">{"location"}</span>
             {": "}
-            <span className="text-cyan-300">{'"Phnom Penh, KH"'}</span>
+            <span className="text-emerald-400">{'"Phnom Penh, KH"'}</span>
             {",\n"}
             {"  "}
-            <span className="text-blue-300">{"stack"}</span>
+            <span className="text-sky-300">{"stack"}</span>
             {": [\n"}
             {"    "}
-            <span className="text-cyan-300">{'"Next.js"'}</span>
+            <span className="text-emerald-400">{'"Next.js"'}</span>
             {", "}
-            <span className="text-cyan-300">{'"FastAPI"'}</span>
+            <span className="text-emerald-400">{'"FastAPI"'}</span>
             {",\n"}
             {"    "}
-            <span className="text-cyan-300">{'"PyTorch"'}</span>
+            <span className="text-emerald-400">{'"PyTorch"'}</span>
             {", "}
-            <span className="text-cyan-300">{'"Flutter"'}</span>
+            <span className="text-emerald-400">{'"Flutter"'}</span>
             {",\n"}
             {"  ],\n"}
             {"  "}
-            <span className="text-blue-300">{"available"}</span>
+            <span className="text-sky-300">{"available"}</span>
             {": "}
-            <span className="text-orange-300">{"true"}</span>
+            <span className="text-violet-400">{"true"}</span>
             {",\n"}
             {"} "}
             <span className="text-violet-400">{"satisfies"}</span>{" "}
-            <span className="text-yellow-300">{"Developer"}</span>
+            <span className="text-sky-300">{"Developer"}</span>
             {";\n\n"}
             <span className="text-emerald-400 animate-[blink_1s_step-end_infinite]">
               {"▊"}
@@ -463,7 +465,7 @@ export default function LandingHero(props: { lang: TLocale }) {
       <SectionBackdrop />
 
       {/* Centre Radial Glow Section */}
-      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_70%_60%_at_50%_50%,rgba(148,162,255,0.05),transparent)]" />
+      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_70%_60%_at_50%_50%,rgba(255, 255, 255,0.05),transparent)]" />
 
       {/* Ambient Orbs Section — parallax depth via ScrollSmoother data-speed,
           slow aurora drift on top of the pulse. */}
@@ -485,7 +487,7 @@ export default function LandingHero(props: { lang: TLocale }) {
         className="absolute inset-x-0 h-px pointer-events-none"
         style={{
           background:
-            "linear-gradient(90deg, transparent, rgba(148,162,255,0.25), transparent)",
+            "linear-gradient(90deg, transparent, rgba(255, 255, 255,0.25), transparent)",
           animation: "scan 8s linear infinite",
           animationDelay: "1s",
         }}

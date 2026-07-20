@@ -62,7 +62,7 @@ export default function LandingExperience(props: { lang: TLocale }) {
                   <div className="w-1.5 h-1.5 rounded-full bg-primary" />
                 </div>
 
-                <div className="bg-background rounded border border-border/60 p-5 hover:border-primary/25 hover:shadow-[0_0_20px_rgba(148,162,255,0.08)] transition-all duration-300 motion-safe:hover:translate-x-1">
+                <div className="bg-background rounded border border-border/60 p-5 hover:border-primary/25 hover:shadow-[0_0_20px_rgba(255, 255, 255,0.08)] transition-all duration-300 motion-safe:hover:translate-x-1">
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 mb-3">
                     <div>
                       <h3 className="text-foreground font-semibold text-base">

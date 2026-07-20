@@ -83,7 +83,7 @@ export default function LandingCurrentFocus(props: { lang: TLocale }) {
             {currentFocus.items.map((item, index) => (
               <article
                 key={item.label}
-                className="group rounded border border-border/60 bg-background/70 p-4 transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_12px_40px_rgba(148,162,255,0.07)] motion-reduce:transform-none sm:p-5"
+                className="group rounded border border-border/60 bg-background/70 p-4 transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_12px_40px_rgba(255, 255, 255,0.07)] motion-reduce:transform-none sm:p-5"
               >
                 <div className="mb-4 flex items-center justify-between">
                   <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">

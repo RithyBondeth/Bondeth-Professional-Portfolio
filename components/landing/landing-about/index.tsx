@@ -278,7 +278,7 @@ function PortraitPanel(props: { alt: string }) {
           to the editor window's corners. Desktop-only, reduced-motion safe. */}
       <TiltCard maxTilt={5} hoverScale={1.01} className="relative rounded-md">
         {/* Editor Window */}
-        <div className="relative rounded-md border border-[#34322e] bg-[#0f1117] overflow-hidden shadow-2xl shadow-black/30 dark:shadow-black/60">
+        <div className="relative rounded-md border border-[#34322e] bg-black overflow-hidden shadow-2xl shadow-black/30 dark:shadow-black/60">
           {/* Window Chrome */}
           <div className="flex items-center gap-1.5 px-4 py-3 border-b border-[#34322e]/60 bg-black/30">
             <span aria-hidden className="w-3 h-3 rounded-full bg-red-500/80" />
@@ -383,7 +383,7 @@ function StatCard(props: {
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
-    <div className="rounded border border-border/60 bg-background p-5 hover:border-primary/30 hover:shadow-[0_0_24px_rgba(148,162,255,0.09)] transition-all duration-300 group">
+    <div className="rounded border border-border/60 bg-background p-5 hover:border-primary/30 hover:shadow-[0_0_24px_rgba(255, 255, 255,0.09)] transition-all duration-300 group">
       <p className="text-[10px] font-mono text-muted-foreground mb-3 group-hover:text-primary dark:group-hover:text-primary/60 transition-colors">
         <span className="text-violet-400">const</span>{" "}
         <span className="text-sky-300">{varName}</span>

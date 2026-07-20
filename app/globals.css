@@ -62,30 +62,27 @@
      except code now reads as serif. The html[lang="km"] override below swaps in
      Kantumruy Pro for Khmer; neither remap touches --font-code. */
   --font-mono: var(--font-serif), ui-serif, Georgia, serif;
-  --background: #f3f4f9;
-  --foreground: #13141d;
+  /* Black & white theme — a pure neutral grayscale ramp, no hue. In light mode
+     the "primary/accent" highlight is black; skill logos and the profile.ts
+     code block keep their own colours (set outside these tokens). */
+  --background: #fafafa;
+  --foreground: #0a0a0a;
   --card: #ffffff;
-  --card-foreground: #13141d;
+  --card-foreground: #0a0a0a;
   --popover: #ffffff;
-  --popover-foreground: #13141d;
-  /* indigo-600 — apsara's light-mode accent. Lands at ~6.5:1 on the #f3f4f9
-     ground, so unlike the old bright cyan it clears WCAG AA for body text
-     without needing a darkened variant. */
-  --primary: #4f46e5;
-  --primary-foreground: #ffffff;
-  --secondary: #f4f2ee;
-  --secondary-foreground: #13141d;
-  --muted: #f4f2ee;
-  --muted-foreground: #646772;
-  /* Kept as a SATURATED colour, unlike apsara's own --accent (a near-neutral
-     hover surface). This codebase treats --accent as a vivid highlight, so it
-     maps to the spectrum's periwinkle rather than apsara's surface token. */
-  --accent: #6d7bee;
-  --accent-foreground: #13141d;
+  --popover-foreground: #0a0a0a;
+  --primary: #0a0a0a;
+  --primary-foreground: #fafafa;
+  --secondary: #f0f0f0;
+  --secondary-foreground: #0a0a0a;
+  --muted: #f0f0f0;
+  --muted-foreground: #5c5c5c;
+  --accent: #171717;
+  --accent-foreground: #fafafa;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: #e3ded5;
-  --input: #f1eee9;
-  --ring: #4f46e5;
+  --border: #e4e4e4;
+  --input: #ededed;
+  --ring: #0a0a0a;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -93,52 +90,50 @@
   --chart-5: oklch(0.269 0 0);
   --radius: 0.5rem;
   --sidebar: #ffffff;
-  --sidebar-foreground: #13141d;
-  --sidebar-primary: #4f46e5;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f4f2ee;
-  --sidebar-accent-foreground: #13141d;
-  --sidebar-border: #e3ded5;
-  --sidebar-ring: #4f46e5;
+  --sidebar-foreground: #0a0a0a;
+  --sidebar-primary: #0a0a0a;
+  --sidebar-primary-foreground: #fafafa;
+  --sidebar-accent: #f0f0f0;
+  --sidebar-accent-foreground: #0a0a0a;
+  --sidebar-border: #e4e4e4;
+  --sidebar-ring: #0a0a0a;
 }
 
 /* ── Dark mode ─ neutral charcoal + periwinkle, ported from apsara-agentic ── */
 .dark {
-  --background: #07090e;
-  --foreground: #edf0f8;
-  --card: #0f1117;
-  --card-foreground: #edf0f8;
-  --popover: #0f1117;
-  --popover-foreground: #edf0f8;
-  --primary: #94a2ff;
-  --primary-foreground: #111110;
-  --secondary: #161921;
-  --secondary-foreground: #edf0f8;
-  --muted: #161921;
-  --muted-foreground: #979ba9;
-  /* Saturated highlight, not apsara's neutral --accent surface — see the
-     light-mode note above. */
-  --accent: #b295ff;
-  --accent-foreground: #edf0f8;
+  /* Black & white theme — near-black ground, white text, white highlight.
+     Skill logos and the profile.ts code block keep their own colours. */
+  --background: #0a0a0a;
+  --foreground: #fafafa;
+  --card: #141414;
+  --card-foreground: #fafafa;
+  --popover: #141414;
+  --popover-foreground: #fafafa;
+  --primary: #fafafa;
+  --primary-foreground: #0a0a0a;
+  --secondary: #1c1c1c;
+  --secondary-foreground: #fafafa;
+  --muted: #1c1c1c;
+  --muted-foreground: #a1a1a1;
+  --accent: #e5e5e5;
+  --accent-foreground: #0a0a0a;
   --destructive: oklch(0.704 0.191 22.216);
-  /* Apsara's borders are warm-neutral, which is what keeps its dark UI from
-     reading as blue. Deliberately NOT the old #1a2e52 navy. */
-  --border: #34322e;
-  --input: #2a2926;
-  --ring: #94a2ff;
+  --border: #2a2a2a;
+  --input: #262626;
+  --ring: #fafafa;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --sidebar: #07090e;
-  --sidebar-foreground: #979ba9;
-  --sidebar-primary: #94a2ff;
-  --sidebar-primary-foreground: #111110;
-  --sidebar-accent: #161921;
-  --sidebar-accent-foreground: #edf0f8;
-  --sidebar-border: #34322e;
-  --sidebar-ring: #94a2ff;
+  --sidebar: #0a0a0a;
+  --sidebar-foreground: #a1a1a1;
+  --sidebar-primary: #fafafa;
+  --sidebar-primary-foreground: #0a0a0a;
+  --sidebar-accent: #1c1c1c;
+  --sidebar-accent-foreground: #fafafa;
+  --sidebar-border: #2a2a2a;
+  --sidebar-ring: #fafafa;
 }
 
 @layer base {
@@ -383,10 +378,10 @@ html[lang="km"] {
 .hero-char {
   background-image: linear-gradient(
     125deg,
-    #438900,
-    #008dad 38%,
-    #7842e5 70%,
-    #c52fa6
+    #0a0a0a,
+    #3f3f3f 38%,
+    #171717 70%,
+    #525252
   );
   -webkit-background-clip: text;
   background-clip: text;
@@ -396,10 +391,10 @@ html[lang="km"] {
 .dark .hero-char {
   background-image: linear-gradient(
     125deg,
-    #98e448,
-    #06d8f4 38%,
-    #b295ff 70%,
-    #f87fd8
+    #ffffff,
+    #c8c8c8 38%,
+    #f0f0f0 70%,
+    #a8a8a8
   );
 }
 
