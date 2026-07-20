@@ -3,7 +3,12 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
+/* The theme lives in `data-theme` on <html>, not a class: the root layout
+   renders `className` on <html>, so a theme *class* set by the pre-hydration
+   script gets wiped when React reconciles that className during hydration —
+   which is exactly the light-flash-then-dark on reload. React never touches
+   an attribute it did not render, so `data-theme` survives hydration. */
+@custom-variant dark (&:is([data-theme="dark"] *));
 
 @theme inline {
   --color-background: var(--background);
@@ -54,7 +59,7 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* ── Light mode (html always has class="dark", so this is rarely active) ── */
+/* ── Light mode (the default; overridden by [data-theme="dark"] below) ── */
 :root {
   /* Noto Serif (--font-serif) is the English text font. --font-mono drives
      every terminal-style accent (nav, buttons, chips, eyebrows) as well as the
@@ -100,7 +105,7 @@
 }
 
 /* ── Dark mode ─ neutral charcoal + periwinkle, ported from apsara-agentic ── */
-.dark {
+[data-theme="dark"] {
   /* Black & white theme — near-black ground, white text, white highlight.
      Skill logos and the profile.ts code block keep their own colours. */
   --background: #0a0a0a;
@@ -387,8 +392,8 @@ html[lang="km"] {
   background-clip: text;
   color: transparent;
 }
-.dark .hero-name,
-.dark .hero-char {
+[data-theme="dark"] .hero-name,
+[data-theme="dark"] .hero-char {
   background-image: linear-gradient(
     125deg,
     #ffffff,

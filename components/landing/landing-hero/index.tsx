@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { gsap, SplitText } from "@/components/utils/animations/gsap";
 import { Magnetic } from "@/components/utils/animations/magnetic";
+import { TiltCard } from "@/components/utils/animations/tilt-card";
 import { scrollToSection } from "@/components/utils/animations/smooth-scroll";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
 import { SectionBackdrop } from "@/components/utils/animations/section-backdrop";
@@ -70,89 +71,108 @@ function useTypewriter(phrases: string[], startDelay = 1200) {
 /* --------------------------------- Utilities -------------------------------- */
 function CodeBlock() {
   return (
-    <div className="relative w-full max-w-sm xl:max-w-md">
-      {/* Ambient Glow Section */}
-      <div className="absolute -inset-6 bg-primary/6 rounded-2xl blur-3xl pointer-events-none" />
+    <div className="group relative w-full max-w-sm xl:max-w-md">
+      {/* Ambient Glow Section — swells and brightens while hovered, so the
+          window feels lit from behind rather than just tilting.
+          The tint comes from opacity, NOT a bg-primary/6 → /12 swap, and the
+          transition is scoped to opacity+scale: `transition-all` would also
+          animate background-color, which is derived from --primary and flips
+          on a theme switch — leaving this glow fading for 500ms after the
+          rest of the page had already snapped through the view transition. */}
+      <div className="absolute -inset-6 bg-primary rounded-2xl blur-3xl pointer-events-none opacity-[0.06] transition-[opacity,scale] duration-500 group-hover:opacity-[0.12] motion-safe:group-hover:scale-105" />
 
-      {/* Editor Window Section — stays dark in both themes, like a real editor */}
-      <div className="relative rounded-md border border-[#34322e] bg-black overflow-hidden shadow-2xl shadow-black/30 dark:shadow-black/60">
-        {/* Window Chrome Section */}
-        <div className="flex items-center gap-1.5 px-4 py-3 border-b border-[#34322e]/60 bg-black/30">
-          <span className="w-3 h-3 rounded-full bg-red-500/80" />
-          <span className="w-3 h-3 rounded-full bg-yellow-500/70" />
-          <span className="w-3 h-3 rounded-full bg-green-500/70" />
-          <span className="ml-3 text-slate-500 text-[11px] font-code select-none">
-            profile.ts
-          </span>
-        </div>
-
-        {/* Line Numbers + Code Section */}
-        <div className="flex text-xs font-code leading-6 overflow-x-auto">
-          {/* Line Numbers */}
-          <div className="select-none text-right pr-4 pl-4 py-5 text-[#34322e] border-r border-[#34322e]/40 shrink-0">
-            {Array.from({ length: 18 }, (_, i) => (
-              <div key={i}>{i + 1}</div>
-            ))}
+      {/* 3D tilt shell — the same pointer-tracking lean + specular glare the
+          About panel's editor uses, so both windows react identically.
+          Desktop pointers only, disabled under reduced motion. */}
+      <TiltCard maxTilt={6} hoverScale={1.015} className="relative rounded-md">
+        {/* Editor Window Section — stays dark in both themes, like a real editor */}
+        <div className="relative rounded-md border border-[#34322e] bg-black overflow-hidden shadow-2xl shadow-black/30 dark:shadow-black/60 transition-colors duration-500 group-hover:border-[#4a4740]">
+          {/* Window Chrome Section — the traffic lights pick up a soft bloom on
+              hover, the one place colour is allowed in this monochrome theme. */}
+          <div className="flex items-center gap-1.5 px-4 py-3 border-b border-[#34322e]/60 bg-black/30">
+            <span className="w-3 h-3 rounded-full bg-red-500/80 transition-shadow duration-300 group-hover:shadow-[0_0_8px_rgb(239_68_68_/_0.7)]" />
+            <span className="w-3 h-3 rounded-full bg-yellow-500/70 transition-shadow duration-300 group-hover:shadow-[0_0_8px_rgb(234_179_8_/_0.7)]" />
+            <span className="w-3 h-3 rounded-full bg-green-500/70 transition-shadow duration-300 group-hover:shadow-[0_0_8px_rgb(34_197_94_/_0.7)]" />
+            <span className="ml-3 text-slate-500 text-[11px] font-code select-none transition-colors duration-300 group-hover:text-slate-300">
+              profile.ts
+            </span>
           </div>
 
-          {/* Code Content — syntax colors match the site's canonical code
-              palette (see landing-about's tokenizer): violet-400 keywords,
-              sky-300 identifiers, emerald-400 strings, slate-500 comments. */}
-          <pre className="py-5 pl-4 pr-6 text-slate-400">
-            <span className="text-slate-500">{"// Developer profile"}</span>
-            {"\n"}
-            <span className="text-violet-400">{"const"}</span>{" "}
-            <span className="text-sky-300">{"developer"}</span>
-            {" = {\n"}
-            {"  "}
-            <span className="text-sky-300">{"name"}</span>
-            {": "}
-            <span className="text-emerald-400">{'"Rithy Bondeth"'}</span>
-            {",\n"}
-            {"  "}
-            <span className="text-sky-300">{"role"}</span>
-            {": [\n"}
-            {"    "}
-            <span className="text-emerald-400">{'"Full Stack Dev"'}</span>
-            {",\n"}
-            {"    "}
-            <span className="text-emerald-400">{'"AI Engineer"'}</span>
-            {",\n"}
-            {"  ],\n"}
-            {"  "}
-            <span className="text-sky-300">{"location"}</span>
-            {": "}
-            <span className="text-emerald-400">{'"Phnom Penh, KH"'}</span>
-            {",\n"}
-            {"  "}
-            <span className="text-sky-300">{"stack"}</span>
-            {": [\n"}
-            {"    "}
-            <span className="text-emerald-400">{'"Next.js"'}</span>
-            {", "}
-            <span className="text-emerald-400">{'"FastAPI"'}</span>
-            {",\n"}
-            {"    "}
-            <span className="text-emerald-400">{'"PyTorch"'}</span>
-            {", "}
-            <span className="text-emerald-400">{'"Flutter"'}</span>
-            {",\n"}
-            {"  ],\n"}
-            {"  "}
-            <span className="text-sky-300">{"available"}</span>
-            {": "}
-            <span className="text-violet-400">{"true"}</span>
-            {",\n"}
-            {"} "}
-            <span className="text-violet-400">{"satisfies"}</span>{" "}
-            <span className="text-sky-300">{"Developer"}</span>
-            {";\n\n"}
-            <span className="text-emerald-400 animate-[blink_1s_step-end_infinite]">
-              {"▊"}
-            </span>
-          </pre>
+          {/* Line Numbers + Code Section */}
+          <div className="flex text-xs font-code leading-6 overflow-x-auto">
+            {/* Line Numbers — brighten slightly so the gutter reads on hover */}
+            <div className="select-none text-right pr-4 pl-4 py-5 text-[#34322e] border-r border-[#34322e]/40 shrink-0 transition-colors duration-500 group-hover:text-[#4a4740]">
+              {Array.from({ length: 18 }, (_, i) => (
+                <div key={i}>{i + 1}</div>
+              ))}
+            </div>
+
+            {/* Code Content — syntax colors match the site's canonical code
+                palette (see landing-about's tokenizer): violet-400 keywords,
+                sky-300 identifiers, emerald-400 strings, slate-500 comments. */}
+            <pre className="py-5 pl-4 pr-6 text-slate-400">
+              <span className="text-slate-500">{"// Developer profile"}</span>
+              {"\n"}
+              <span className="text-violet-400">{"const"}</span>{" "}
+              <span className="text-sky-300">{"developer"}</span>
+              {" = {\n"}
+              {"  "}
+              <span className="text-sky-300">{"name"}</span>
+              {": "}
+              <span className="text-emerald-400">{'"Hem RithyBondeth"'}</span>
+              {",\n"}
+              {"  "}
+              <span className="text-sky-300">{"role"}</span>
+              {": [\n"}
+              {"    "}
+              <span className="text-emerald-400">{'"Full Stack Dev"'}</span>
+              {",\n"}
+              {"    "}
+              <span className="text-emerald-400">{'"AI Engineer"'}</span>
+              {",\n"}
+              {"  ],\n"}
+              {"  "}
+              <span className="text-sky-300">{"location"}</span>
+              {": "}
+              <span className="text-emerald-400">
+                {'"Phnom Penh, Cambodia"'}
+              </span>
+              {",\n"}
+              {"  "}
+              <span className="text-sky-300">{"stack"}</span>
+              {": [\n"}
+              {"    "}
+              <span className="text-emerald-400">{'"Next.js"'}</span>
+              {", "}
+              <span className="text-emerald-400">{'"Nuxt.js"'}</span>
+              {",\n"}
+              {"    "}
+              <span className="text-emerald-400">{'"FastAPI"'}</span>
+              {", "}
+              <span className="text-emerald-400">{'"Nest.js"'}</span>
+              {",\n"}
+              {"    "}
+              <span className="text-emerald-400">{'"MongoDB"'}</span>
+              {", "}
+              <span className="text-emerald-400">{'"Flutter"'}</span>
+              {",\n"}
+              {"  ],\n"}
+              {"  "}
+              <span className="text-sky-300">{"available"}</span>
+              {": "}
+              <span className="text-violet-400">{"true"}</span>
+              {",\n"}
+              {"} "}
+              <span className="text-violet-400">{"satisfies"}</span>{" "}
+              <span className="text-sky-300">{"Developer"}</span>
+              {";\n\n"}
+              <span className="text-emerald-400 animate-[blink_1s_step-end_infinite]">
+                {"▊"}
+              </span>
+            </pre>
+          </div>
         </div>
-      </div>
+      </TiltCard>
     </div>
   );
 }
@@ -255,7 +275,11 @@ export default function LandingHero(props: { lang: TLocale }) {
       stagger: 0.15,
       ease: "none",
     })
-      .to(q(".boot-bar-fill"), { scaleX: 1, duration: 0.4, ease: "power2.inOut" }, "-=0.1")
+      .to(
+        q(".boot-bar-fill"),
+        { scaleX: 1, duration: 0.4, ease: "power2.inOut" },
+        "-=0.1",
+      )
       .to(overlay, { yPercent: -100, duration: 0.5, ease: "smooth" }, "+=0.08");
 
     const skip = () => tl.progress(1);
@@ -518,7 +542,9 @@ export default function LandingHero(props: { lang: TLocale }) {
             {/* Typewriter Subtitle */}
             <h2 className="hero-subtitle text-lg sm:text-xl text-muted-foreground mb-6 font-mono h-7 flex items-center lg:justify-start justify-center gap-0.5">
               <span className="text-primary dark:text-primary/60 mr-1">$</span>
-              <span className="text-slate-600 dark:text-slate-300">{typed}</span>
+              <span className="text-slate-600 dark:text-slate-300">
+                {typed}
+              </span>
               <span className="inline-block w-0.5 h-5 bg-primary ml-0.5 animate-[blink_1s_step-end_infinite]" />
             </h2>
 
@@ -591,7 +617,11 @@ export default function LandingHero(props: { lang: TLocale }) {
             {BOOT_LINES.map((line, i) => (
               <div key={i} className="boot-line flex gap-2 opacity-0">
                 <span className="text-primary">$</span>
-                <span className={i === BOOT_LINES.length - 1 ? "text-emerald-400" : undefined}>
+                <span
+                  className={
+                    i === BOOT_LINES.length - 1 ? "text-emerald-400" : undefined
+                  }
+                >
                   {line}
                 </span>
               </div>

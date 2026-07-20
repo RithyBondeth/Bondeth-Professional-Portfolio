@@ -11,7 +11,7 @@ import {
 
 /* -------------------------------- Site Config ------------------------------- */
 export const siteConfig: ISiteConfig = {
-  name: "Rithy Bondeth",
+  name: "Bondeth",
   url:
     process.env.NEXT_PUBLIC_SITE_URL ??
     "https://bondeth-professional-portfolio.vercel.app",
@@ -104,15 +104,6 @@ export const skillGroups: ISkillGroup[] = [
       { name: "PostgreSQL", icon: "SiPostgresql", color: "#4169E1", level: 3 },
       { name: "MongoDB", icon: "SiMongodb", color: "#47A248", level: 2 },
       { name: "Redis", icon: "SiRedis", color: "#FF4438", level: 2 },
-    ],
-  },
-  {
-    category: "APIs & Messaging",
-    skills: [
-      { name: "REST", icon: "", color: "#22C55E", level: 3 },
-      { name: "WebSocket", icon: "", color: "#38BDF8", level: 2 },
-      { name: "gRPC", icon: "", color: "#7C4DFF", level: 2 },
-      { name: "RabbitMQ", icon: "SiRabbitmq", color: "#FF6600", level: 2 },
     ],
   },
   {

@@ -28,13 +28,12 @@ interface ThemeContextValue {
 const listeners = new Set<() => void>();
 let cached: Theme | null = null;
 
-/** The pre-hydration script in the root layout has already set the class, so
+/** The pre-hydration script in the root layout has already set `data-theme`, so
  *  the DOM is the source of truth; localStorage is only a fallback. */
 function read(): Theme {
   if (typeof document === "undefined") return "dark";
-  const root = document.documentElement;
-  if (root.classList.contains("light")) return "light";
-  if (root.classList.contains("dark")) return "dark";
+  const current = document.documentElement.dataset.theme;
+  if (current === "light" || current === "dark") return current;
   try {
     const stored = localStorage.getItem("theme");
     if (stored === "light" || stored === "dark") return stored;
@@ -50,6 +49,12 @@ function subscribe(listener: () => void) {
     listeners.delete(listener);
   };
 }
+
+// Seed the store at module-evaluation time — before React's hydration render,
+// and long before any effect can run. If this is left to the first getSnapshot
+// call, the hydration pass reads the *server* snapshot instead and the store
+// latches onto whatever the DOM says at that moment.
+if (typeof document !== "undefined") cached = read();
 
 function getSnapshot(): Theme {
   cached ??= read();
@@ -69,8 +74,8 @@ function setTheme(next: Theme) {
     /* persistence is best-effort */
   }
   const root = document.documentElement;
-  root.classList.remove("light", "dark");
-  root.classList.add(next);
+  root.dataset.theme = next;
+  root.style.colorScheme = next;
   listeners.forEach((listener) => listener());
 }
 
@@ -110,15 +115,21 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     getServerSnapshot,
   );
 
-  // Navigating between locales re-renders <html> with the className from the
-  // layout, which wipes the light/dark class the pre-hydration script added at
-  // runtime — leaving the site in light mode. Re-assert it on every commit.
-  // A layout effect runs before the browser paints, so nothing flashes.
+  // Switching locale navigates /en <-> /km and re-renders <html>, which drops
+  // the `data-theme` the pre-hydration script set. Re-assert it on every commit;
+  // a layout effect runs before paint, so the correction never flashes.
+  //
+  // Critically this writes `getSnapshot()` — the store — and NOT `resolvedTheme`.
+  // On the hydration commit `resolvedTheme` is still the *server* snapshot
+  // ("dark"), so writing it would stomp the correct value the script just set,
+  // and the store would then latch onto that wrong value. That was the bug: a
+  // stored light theme came back dark, and a stored dark theme flashed light.
   useIsomorphicLayoutEffect(() => {
+    const theme = getSnapshot();
     const root = document.documentElement;
-    if (root.classList.contains(resolvedTheme)) return;
-    root.classList.remove("light", "dark");
-    root.classList.add(resolvedTheme);
+    if (root.dataset.theme === theme) return;
+    root.dataset.theme = theme;
+    root.style.colorScheme = theme;
   });
 
   return (

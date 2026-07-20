@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import { useState } from "react";
 
 /**
@@ -12,9 +13,10 @@ export function MarqueeTrack(props: {
   direction?: "rtl" | "ltr";
   /** seconds per full loop */
   duration?: number;
+  className?: string;
 }) {
   /* ---------------------------------- Props --------------------------------- */
-  const { children, direction = "rtl", duration = 30 } = props;
+  const { children, direction = "rtl", duration = 30, className } = props;
 
   /* -------------------------------- All States ------------------------------- */
   const [paused, setPaused] = useState(false);
@@ -22,7 +24,7 @@ export function MarqueeTrack(props: {
   /* -------------------------------- Render UI ------------------------------- */
   return (
     <div
-      className="overflow-hidden"
+      className={cn("overflow-hidden", className)}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocusCapture={() => setPaused(true)}

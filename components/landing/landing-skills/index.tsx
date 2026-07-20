@@ -165,7 +165,7 @@ export default function LandingSkills(props: { lang: TLocale }) {
             >
               <div className="relative">
                 {/* Left Fade + Category Label */}
-                <div className="absolute inset-y-0 left-0 w-40 sm:w-52 bg-linear-to-r from-background via-background/80 to-transparent z-10 pointer-events-none flex items-center pl-6">
+                <div className=" absolute inset-y-0 left-0 w-40 sm:w-52 bg-linear-to-r from-background via-background/80 to-transparent z-10 pointer-events-none flex items-center pl-6">
                   <span className="text-[10px] font-mono text-muted-foreground dark:text-muted-foreground/60 uppercase tracking-[0.2em] select-none">
                     {category}
                   </span>
@@ -173,7 +173,11 @@ export default function LandingSkills(props: { lang: TLocale }) {
                 {/* Right Fade */}
                 <div className="absolute inset-y-0 right-0 w-24 bg-linear-to-l from-background to-transparent z-10 pointer-events-none" />
 
-                <MarqueeTrack direction={direction} duration={60}>
+                <MarqueeTrack
+                  direction={direction}
+                  duration={60}
+                  className="py-2"
+                >
                   {track.map((skill, j) => (
                     <SkillBadge
                       key={j}

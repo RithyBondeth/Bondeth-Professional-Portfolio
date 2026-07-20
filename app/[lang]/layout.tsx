@@ -126,7 +126,11 @@ export default async function RootLayout({
       )}
     >
       <body className="min-h-full flex flex-col">
-        {/* Prevent theme flash: applies the stored class before anything paints.
+        {/* Prevent theme flash: sets `data-theme` on <html> before anything
+            paints. It must be an attribute React does not render itself —
+            writing a class here instead would be undone when React reconciles
+            <html className={...}> during hydration, flashing light before the
+            provider's layout effect put the class back.
             `async` is what makes this legal — React only hoists and executes a
             script it renders itself when the script is async; a sync one throws
             on the client during navigations such as the language switch. Inline
@@ -134,7 +138,7 @@ export default async function RootLayout({
         <script
           async
           dangerouslySetInnerHTML={{
-            __html: `try{var t=localStorage.getItem('theme');document.documentElement.classList.add(t==='light'||t==='dark'?t:'dark')}catch(e){document.documentElement.classList.add('dark')}`,
+            __html: `try{var t=localStorage.getItem('theme');t=t==='light'||t==='dark'?t:'dark';document.documentElement.dataset.theme=t;document.documentElement.style.colorScheme=t}catch(e){document.documentElement.dataset.theme='dark';document.documentElement.style.colorScheme='dark'}`,
           }}
         />
         <ThemeProvider>
