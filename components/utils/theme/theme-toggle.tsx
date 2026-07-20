@@ -2,13 +2,16 @@
 
 import { useSyncExternalStore } from "react";
 import { flushSync } from "react-dom";
-import { useTheme } from "next-themes";
+import { useTheme } from "@/components/utils/theme/theme-provider";
 
 const subscribe = () => () => {};
 
 /** View Transitions API — not yet in every TS lib. */
 type TDocWithViewTransition = Document & {
-  startViewTransition?: (cb: () => void) => { ready: Promise<void> };
+  startViewTransition?: (cb: () => void | Promise<void>) => {
+    ready: Promise<void>;
+    finished: Promise<void>;
+  };
 };
 
 /* --------------------------------- Utilities -------------------------------- */
@@ -93,8 +96,15 @@ export default function ThemeToggle(props: { label: string }) {
       Math.max(y, window.innerHeight - y),
     );
 
+    // Marks this transition as the theme switch so globals.css suppresses the
+    // default cross-fade only here, leaving the language switch free to fade.
+    document.documentElement.classList.add("theme-switching");
+
     const transition = doc.startViewTransition(() => {
       flushSync(() => setTheme(next));
+    });
+    transition.finished.finally(() => {
+      document.documentElement.classList.remove("theme-switching");
     });
     transition.ready
       .then(() => {

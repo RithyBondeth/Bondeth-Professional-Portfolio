@@ -32,7 +32,7 @@ export function ProjectCard(props: {
                 <span className="h-2 w-2 rounded-full bg-red-500/70" />
                 <span className="h-2 w-2 rounded-full bg-yellow-500/70" />
                 <span className="h-2 w-2 rounded-full bg-green-500/70" />
-                <div className="ml-2 h-3 max-w-[140px] flex-1 rounded-sm bg-border/60" />
+                <div className="ml-2 h-3 max-w-35 flex-1 rounded-sm bg-border/60" />
               </div>
               <div className="absolute inset-0 top-7 flex flex-col gap-2 p-4">
                 <div className="h-2.5 w-3/4 rounded bg-foreground/10" />

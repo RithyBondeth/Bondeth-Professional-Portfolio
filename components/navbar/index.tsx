@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { gsap } from "@/components/utils/animations/gsap";
 import { scrollToSection } from "@/components/utils/animations/smooth-scroll";
 import {
@@ -75,17 +75,87 @@ function ChevronDownIcon({ className }: { className?: string }) {
 }
 
 /* -------------------------------- Components -------------------------------- */
+/** View Transitions API — not yet in every TS lib. */
+type TDocWithViewTransition = Document & {
+  startViewTransition?: (cb: () => void | Promise<void>) => {
+    finished: Promise<void>;
+  };
+};
+
+/**
+ * Resolver that ends the in-flight locale view transition.
+ *
+ * Module scope is deliberate: switching locale remounts LanguageSwitcher, so a
+ * ref would be torn down with the old instance and the transition would never
+ * be told the new page had arrived — it would hang until the browser's 4s
+ * timeout. The module survives the remount, so the newly mounted instance can
+ * resolve the transition its predecessor started.
+ */
+let endLocaleTransition: (() => void) | null = null;
+
+function resolveLocaleTransition() {
+  endLocaleTransition?.();
+  endLocaleTransition = null;
+}
+
 function LanguageSwitcher(props: { lang: TLocale }) {
   /* ---------------------------------- Props --------------------------------- */
   const { lang } = props;
 
   /* ---------------------------------- Utils --------------------------------- */
   const pathname = usePathname();
+  const router = useRouter();
   const labels: Record<TLocale, string> = { en: "EN", km: "ខ្មែរ" };
 
   function switchedPath(target: TLocale): string {
     const rest = pathname.replace(/^\/(en|km)(?=\/|$)/, "");
     return `/${target}${rest}`;
+  }
+
+  /**
+   * Changing locale swaps the `[lang]` route segment, which remounts the whole
+   * subtree — nav, footer and every entry animation rebuild at once, so the
+   * switch lands with a hard snap. A view transition cross-fades the old page
+   * into the new one instead.
+   *
+   * `router.push` resolves before the new page paints, so the transition is
+   * held open by a promise that only settles once the pathname has changed.
+   */
+  useEffect(() => {
+    resolveLocaleTransition();
+  }, [pathname]);
+
+  function handleSwitch(
+    e: React.MouseEvent<HTMLAnchorElement>,
+    target: TLocale,
+  ) {
+    document.cookie = `NEXT_LOCALE=${target};path=/;max-age=31536000`;
+    if (target === lang) return;
+
+    const doc = document as TDocWithViewTransition;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // Without the API, or with reduced motion, let <Link> navigate as usual.
+    if (!doc.startViewTransition || reduce) return;
+
+    e.preventDefault();
+    const root = document.documentElement;
+    root.classList.add("locale-switching");
+
+    const transition = doc.startViewTransition(
+      () =>
+        new Promise<void>((resolve) => {
+          endLocaleTransition = resolve;
+          // Never hold the frozen snapshot for long: if the new page is slow,
+          // drop the cross-fade rather than leave the page looking hung.
+          setTimeout(() => {
+            if (endLocaleTransition === resolve) resolveLocaleTransition();
+          }, 600);
+          router.push(switchedPath(target));
+        }),
+    );
+    transition.finished.finally(() => {
+      root.classList.remove("locale-switching");
+    });
   }
 
   /* -------------------------------- Render UI ------------------------------- */
@@ -100,9 +170,7 @@ function LanguageSwitcher(props: { lang: TLocale }) {
           )}
           <Link
             href={switchedPath(locale)}
-            onClick={() => {
-              document.cookie = `NEXT_LOCALE=${locale};path=/;max-age=31536000`;
-            }}
+            onClick={(e) => handleSwitch(e, locale)}
             className={`flex min-h-11 items-center rounded px-1.5 font-mono text-[11px] transition-colors lg:min-h-0 lg:py-0.5 ${
               lang === locale
                 ? "text-primary"

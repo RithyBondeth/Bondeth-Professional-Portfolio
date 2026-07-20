@@ -11,7 +11,7 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
-import { useTheme } from "next-themes";
+import { useTheme } from "@/components/utils/theme/theme-provider";
 import { siteConfig, navLinks } from "@/utils/constants/portfolio.constant";
 import {
   GitHubIcon,

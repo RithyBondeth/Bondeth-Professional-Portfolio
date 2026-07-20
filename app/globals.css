@@ -453,11 +453,20 @@ html[lang="km"] {
 
 /* ── Theme switch: the circular wipe is driven from JS via the View
    Transitions API; disable the default cross-fade so the clip-path reveal
-   is the only animation. ── */
-::view-transition-old(root),
-::view-transition-new(root) {
+   is the only animation. Scoped to the theme switch so that other view
+   transitions — notably the language switch — keep their cross-fade. ── */
+html.theme-switching::view-transition-old(root),
+html.theme-switching::view-transition-new(root) {
   animation: none;
   mix-blend-mode: normal;
+}
+
+/* ── Language switch: the whole [lang] subtree remounts, so cross-fade the
+   old and new page instead of letting it snap. ── */
+html.locale-switching::view-transition-old(root),
+html.locale-switching::view-transition-new(root) {
+  animation-duration: 260ms;
+  animation-timing-function: cubic-bezier(0.625, 0.05, 0, 1);
 }
 
 @media (prefers-reduced-motion: reduce) {

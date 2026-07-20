@@ -126,6 +126,17 @@ export default async function RootLayout({
       )}
     >
       <body className="min-h-full flex flex-col">
+        {/* Prevent theme flash: applies the stored class before anything paints.
+            `async` is what makes this legal — React only hoists and executes a
+            script it renders itself when the script is async; a sync one throws
+            on the client during navigations such as the language switch. Inline
+            scripts ignore async for ordering, so it still runs immediately. */}
+        <script
+          async
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem('theme');document.documentElement.classList.add(t==='light'||t==='dark'?t:'dark')}catch(e){document.documentElement.classList.add('dark')}`,
+          }}
+        />
         <ThemeProvider>
           <a
             href="#main-content"

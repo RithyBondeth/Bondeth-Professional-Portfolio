@@ -73,7 +73,7 @@ export default function Footer(props: { lang: TLocale }) {
               className="shrink-0 whitespace-nowrap pr-8 text-6xl font-black uppercase tracking-tight text-transparent [-webkit-text-stroke:1px_var(--border)] transition-[-webkit-text-stroke-color] duration-500 group-hover:[-webkit-text-stroke-color:color-mix(in_oklab,var(--primary)_55%,transparent)] sm:text-7xl"
             >
               <span className="font-code">{signOffName.toUpperCase()}</span>
-              <span className="font-[family-name:var(--font-khmer)]">
+              <span className="font-(family-name:--font-khmer)">
                 {signOffTitle}
               </span>
             </span>

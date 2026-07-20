@@ -6,7 +6,6 @@ import { Magnetic } from "@/components/utils/animations/magnetic";
 import { scrollToSection } from "@/components/utils/animations/smooth-scroll";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
 import HeroBackground from "./hero-background";
-import CodeRipple from "./code-ripple";
 import { getDictionary, type TLocale } from "@/utils/i18n";
 import { getSiteConfig } from "@/utils/i18n/content";
 
@@ -462,19 +461,7 @@ export default function LandingHero(props: { lang: TLocale }) {
       {/* Base Gradient Section */}
       <div className="absolute inset-0 bg-linear-to-br from-slate-100 via-white to-indigo-50 dark:from-[#05060a] dark:via-[#07090e] dark:to-[#0b0d13] pointer-events-none" />
 
-      {/* CSS Grid Overlay Section */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          backgroundImage: `
-            linear-gradient(rgba(148,162,255,0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(148,162,255,0.03) 1px, transparent 1px)
-          `,
-          backgroundSize: "72px 72px",
-        }}
-      />
-
-      {/* Particle Network Canvas Section */}
+      {/* 3D Dot-Wave Canvas Section */}
       <HeroBackground />
 
       {/* Centre Radial Glow Section */}
@@ -508,10 +495,6 @@ export default function LandingHero(props: { lang: TLocale }) {
 
       {/* Vignette Section (dark mode only) */}
       <div className="absolute inset-0 pointer-events-none hidden dark:block bg-[radial-gradient(ellipse_100%_100%_at_50%_50%,transparent_50%,rgba(7,9,14,0.7)_100%)]" />
-
-      {/* Interactive ASCII Ripple Section — reacts to pointer move / click,
-          layered above the ambient decor but below the hero content. */}
-      <CodeRipple />
 
       {/* Main Content Section */}
       <div className="relative w-full max-w-6xl mx-auto px-6 py-24 flex items-center min-h-screen">
