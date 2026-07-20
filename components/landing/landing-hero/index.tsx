@@ -5,7 +5,7 @@ import { gsap, SplitText } from "@/components/utils/animations/gsap";
 import { Magnetic } from "@/components/utils/animations/magnetic";
 import { scrollToSection } from "@/components/utils/animations/smooth-scroll";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
-import HeroBackground from "./hero-background";
+import { SectionBackdrop } from "@/components/utils/animations/section-backdrop";
 import { getDictionary, type TLocale } from "@/utils/i18n";
 import { getSiteConfig } from "@/utils/i18n/content";
 
@@ -456,13 +456,11 @@ export default function LandingHero(props: { lang: TLocale }) {
   return (
     <section
       ref={containerRef}
-      className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground relative overflow-hidden"
+      className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground relative isolate overflow-hidden"
     >
-      {/* Base Gradient Section */}
-      <div className="absolute inset-0 bg-linear-to-br from-slate-100 via-white to-indigo-50 dark:from-[#05060a] dark:via-[#07090e] dark:to-[#0b0d13] pointer-events-none" />
-
-      {/* 3D Dot-Wave Canvas Section */}
-      <HeroBackground />
+      {/* Section Backdrop — the same dot-matrix bloom every other section uses,
+          so the hero shares one consistent background treatment. */}
+      <SectionBackdrop />
 
       {/* Centre Radial Glow Section */}
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_70%_60%_at_50%_50%,rgba(148,162,255,0.05),transparent)]" />

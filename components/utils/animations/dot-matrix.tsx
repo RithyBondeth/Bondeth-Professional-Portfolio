@@ -33,7 +33,7 @@ function rand(x: number, y: number, seed: number) {
  * Animated dot-matrix rendered on a 2D canvas — dots fade in from the centre
  * outward, then twinkle by resampling their alpha on a slow cycle.
  *
- * Behaviour contract (mirrors HeroBackground):
+ * Behaviour contract (the house canvas contract):
  * - Reduced motion → one settled frame is drawn, then the loop never runs.
  * - The loop pauses while offscreen or the tab is hidden.
  * - Rendering is capped at 2× devicePixelRatio and {@link MAX_FPS}.
