@@ -105,9 +105,9 @@ export default function Footer(props: { lang: TLocale }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="GitHub"
-                className="w-8 h-8 flex items-center justify-center rounded border border-border/60 text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors"
+                className="btn-fx btn-fx-icon w-8 h-8 flex items-center justify-center rounded border border-border/60 text-muted-foreground hover:text-primary hover:border-primary/40"
               >
-                <GitHubIcon className="w-3.5 h-3.5" />
+                <GitHubIcon data-btn-glyph className="w-3.5 h-3.5" />
               </a>
             </Magnetic>
             <Magnetic strength={0.45} className="inline-block">
@@ -116,9 +116,9 @@ export default function Footer(props: { lang: TLocale }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn"
-                className="w-8 h-8 flex items-center justify-center rounded border border-border/60 text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors"
+                className="btn-fx btn-fx-icon w-8 h-8 flex items-center justify-center rounded border border-border/60 text-muted-foreground hover:text-primary hover:border-primary/40"
               >
-                <LinkedInIcon className="w-3.5 h-3.5" />
+                <LinkedInIcon data-btn-glyph className="w-3.5 h-3.5" />
               </a>
             </Magnetic>
             <Magnetic strength={0.45} className="inline-block">
@@ -127,9 +127,9 @@ export default function Footer(props: { lang: TLocale }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Facebook"
-                className="w-8 h-8 flex items-center justify-center rounded border border-border/60 text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors"
+                className="btn-fx btn-fx-icon w-8 h-8 flex items-center justify-center rounded border border-border/60 text-muted-foreground hover:text-primary hover:border-primary/40"
               >
-                <FacebookIcon className="w-3.5 h-3.5" />
+                <FacebookIcon data-btn-glyph className="w-3.5 h-3.5" />
               </a>
             </Magnetic>
             <Magnetic strength={0.45} className="inline-block">
@@ -138,18 +138,18 @@ export default function Footer(props: { lang: TLocale }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
-                className="w-8 h-8 flex items-center justify-center rounded border border-border/60 text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors"
+                className="btn-fx btn-fx-icon w-8 h-8 flex items-center justify-center rounded border border-border/60 text-muted-foreground hover:text-primary hover:border-primary/40"
               >
-                <InstagramIcon className="w-3.5 h-3.5" />
+                <InstagramIcon data-btn-glyph className="w-3.5 h-3.5" />
               </a>
             </Magnetic>
             <Magnetic strength={0.45} className="inline-block">
               <a
                 href={`mailto:${siteConfig.email}`}
                 aria-label="Email"
-                className="w-8 h-8 flex items-center justify-center rounded border border-border/60 text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors"
+                className="btn-fx btn-fx-icon w-8 h-8 flex items-center justify-center rounded border border-border/60 text-muted-foreground hover:text-primary hover:border-primary/40"
               >
-                <MailIcon className="w-3.5 h-3.5" />
+                <MailIcon data-btn-glyph className="w-3.5 h-3.5" />
               </a>
             </Magnetic>
           </div>

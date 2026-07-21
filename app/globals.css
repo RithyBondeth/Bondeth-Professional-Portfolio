@@ -102,6 +102,20 @@
   --sidebar-accent-foreground: #0a0a0a;
   --sidebar-border: #e4e4e4;
   --sidebar-ring: #0a0a0a;
+
+  /* Card hover glow. Light mode lifts a card off the page with a soft *dark*
+     shadow — the white glow used in dark mode is invisible on #fafafa, which
+     is why this is a token and not a literal in the utility below. */
+  --card-glow: 0 12px 40px rgb(10 10 10 / 0.1), 0 2px 8px rgb(10 10 10 / 0.06);
+  --card-glow-sm: 0 0 0 1px rgb(10 10 10 / 0.04);
+  --card-sheen: rgb(10 10 10 / 0.06);
+
+  /* Button sheen is the INVERSE of the card sheen: a filled primary button is
+     dark-on-light here, so its sheen has to be white to read at all. --btn-wipe
+     tints outline buttons, which sit on the page background, so it follows
+     --primary instead. */
+  --btn-sheen: rgb(255 255 255 / 0.18);
+  --btn-wipe: rgb(10 10 10 / 0.05);
 }
 
 /* ── Dark mode ─ neutral charcoal + periwinkle, ported from apsara-agentic ── */
@@ -139,6 +153,17 @@
   --sidebar-accent-foreground: #fafafa;
   --sidebar-border: #2a2a2a;
   --sidebar-ring: #fafafa;
+
+  /* Dark mode glows outward in white rather than casting a shadow — a dark
+     shadow is invisible against #0a0a0a. */
+  --card-glow: 0 12px 40px rgb(255 255 255 / 0.07), 0 0 14px rgb(255 255 255 / 0.04);
+  --card-glow-sm: 0 0 0 1px rgb(255 255 255 / 0.06);
+  --card-sheen: rgb(255 255 255 / 0.08);
+
+  /* Inverted again: dark mode's primary button is light-on-dark, so the sheen
+     that sweeps across it must be dark. */
+  --btn-sheen: rgb(10 10 10 / 0.14);
+  --btn-wipe: rgb(255 255 255 / 0.07);
 }
 
 @layer base {
@@ -419,6 +444,303 @@ html[lang="km"] {
   }
   50% {
     transform: translate3d(6%, 5%, 0) scale(1.18);
+  }
+}
+
+/* ── Touch devices: freeze the ambient background loops ────────────────────
+   The claim above that aurora is "GPU-only, so it stays cheap" holds on
+   desktop but not on phones. `scale` on a `blur-3xl` layer is not a free
+   compositor transform — a 64px blur has to be re-rasterised at each new
+   scale, every frame, for a 384px orb. Paired with the `scan` sweep that
+   repaints a full-width strip on a loop, it keeps the raster thread busy
+   during scroll, which is exactly when a phone can least afford it.
+
+   Scoped to `pointer: coarse` rather than a width breakpoint: this is about
+   what the device's GPU can absorb, not how narrow the window is, so a small
+   desktop window keeps the full treatment. The orbs and the scan line stay
+   rendered — they read as ambient colour, and only their motion stops. ── */
+.hero-scanline {
+  animation: scan 8s linear infinite;
+  animation-delay: 1s;
+}
+
+@media (pointer: coarse) {
+  [class*="animate-[aurora"],
+  .hero-scanline {
+    animation: none;
+  }
+}
+
+/* ── Card hover: the single shared treatment for every interactive card ─────
+   Every card surface used to hand-roll its own hover (lift distances of 1px /
+   0.5px / a sideways 1px, three different durations, and glow shadows written
+   as `shadow-[0_12px_40px_rgba(255, 255, 255,0.06)]` — arbitrary values with
+   spaces in them, which Tailwind cannot parse, so those glows never compiled).
+   This class is the one place that behaviour is defined.
+
+   Composition: a 4px lift, the border warming toward --primary, a theme-aware
+   glow, and a sheen that wipes across the card once on enter. Children opted in
+   with `data-card-arrow` / `data-card-media` shift in sympathy.
+
+   `--card-lift` lets a card override the distance without forking the rest. ── */
+.card-interactive {
+  --card-lift: -4px;
+  position: relative;
+  transition:
+    translate 320ms cubic-bezier(0.5, 0.05, 0.2, 1),
+    border-color 320ms cubic-bezier(0.5, 0.05, 0.2, 1),
+    box-shadow 320ms cubic-bezier(0.5, 0.05, 0.2, 1),
+    background-color 320ms cubic-bezier(0.5, 0.05, 0.2, 1);
+}
+
+/* The sheen lives on a pseudo-element so it never disturbs card layout or
+   intercepts pointer events. `inherit` keeps it flush inside rounded corners. */
+.card-interactive::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    var(--card-sheen) 50%,
+    transparent 65%
+  );
+  background-size: 250% 100%;
+  background-position: 100% 0;
+  transition: opacity 220ms ease-out;
+}
+
+.card-interactive [data-card-arrow],
+.card-interactive [data-card-media],
+.card-interactive [data-card-icon] {
+  transition:
+    transform 320ms cubic-bezier(0.5, 0.05, 0.2, 1),
+    color 320ms cubic-bezier(0.5, 0.05, 0.2, 1),
+    border-color 320ms cubic-bezier(0.5, 0.05, 0.2, 1);
+}
+
+/* The lift uses the `translate` longhand, never `transform`, and is !important.
+   Most of these cards are entrance-animated by AnimateIn / StaggerIn, and GSAP
+   writes its resting state as INLINE `transform: translate(0,0); translate: none`
+   (there is no clearProps — the reveals reverse on scroll-up and need to keep
+   their values). An inline declaration beats any stylesheet rule on specificity
+   alone, so a `transform:` hover here would silently never fire, and a plain
+   `translate:` would lose to the inline `none`. Using a longhand GSAP only
+   neutralises, plus !important to outrank the inline value, keeps the two
+   systems composable: GSAP owns `transform`, hover owns `translate`. */
+@media (hover: hover) and (pointer: fine) {
+  .card-interactive:hover {
+    translate: 0 var(--card-lift) !important;
+    border-color: color-mix(in oklab, var(--primary) 35%, transparent);
+    box-shadow: var(--card-glow);
+  }
+  .card-interactive:hover::after {
+    opacity: 1;
+    background-position: 0 0;
+    transition:
+      opacity 220ms ease-out,
+      background-position 700ms cubic-bezier(0.625, 0.05, 0, 1);
+  }
+  .card-interactive:hover [data-card-arrow] {
+    transform: translateX(4px);
+  }
+  .card-interactive:hover [data-card-media] {
+    transform: scale(1.04);
+  }
+  .card-interactive:hover [data-card-icon] {
+    transform: scale(1.08) rotate(-5deg);
+    border-color: color-mix(in oklab, var(--primary) 50%, transparent);
+  }
+}
+
+/* Keyboard parity: the card is often wrapped in (or is) a link, so mirror the
+   hover state when focus lands inside it. */
+.card-interactive:focus-visible,
+.card-interactive:has(:focus-visible) {
+  translate: 0 var(--card-lift) !important;
+  border-color: color-mix(in oklab, var(--primary) 35%, transparent);
+  box-shadow: var(--card-glow);
+}
+
+/* Sideways variant for cards anchored to a timeline rail, where a vertical
+   lift would break the alignment with the rail's node. */
+.card-interactive-inline:hover,
+.card-interactive-inline:has(:focus-visible) {
+  translate: 4px 0 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-interactive,
+  .card-interactive::after,
+  .card-interactive [data-card-arrow],
+  .card-interactive [data-card-media],
+  .card-interactive [data-card-icon] {
+    transition: none;
+  }
+  /* Colour and glow still communicate the hover; only movement is dropped. */
+  .card-interactive:hover,
+  .card-interactive-inline:hover,
+  .card-interactive:focus-visible,
+  .card-interactive:has(:focus-visible),
+  .card-interactive-inline:has(:focus-visible) {
+    translate: none !important;
+  }
+  .card-interactive:hover::after {
+    opacity: 0;
+  }
+  .card-interactive:hover [data-card-arrow],
+  .card-interactive:hover [data-card-media],
+  .card-interactive:hover [data-card-icon] {
+    transform: none;
+  }
+}
+
+/* ── Buttons: the shared treatment for every clickable control ──────────────
+   Same story as the cards — the primary CTA class string was duplicated
+   near-verbatim in seven places, each doing nothing but `transition-colors
+   hover:bg-primary/90`. This is the one place button motion is defined.
+
+   `.btn-fx` is the base every control gets (press on :active, focus parity,
+   icon shift). Layer exactly one flavour class on top:
+     .btn-fx-primary  filled CTA  — specular sheen sweeps across the fill
+     .btn-fx-outline  bordered    — tinted fill wipes in from the left
+     .btn-fx-chip     filter chip — subtle scale, no fill (they carry state
+                                    via aria-pressed and must stay readable)
+     .btn-fx-icon     icon button — the glyph scales and tilts, not the box
+
+   Motion is gated on a real pointer: on touch, `:hover` sticks after a tap.
+   Keyboard users get the same affordance through :focus-visible. ── */
+.btn-fx {
+  position: relative;
+  isolation: isolate;
+  transition:
+    translate 200ms cubic-bezier(0.5, 0.05, 0.2, 1),
+    scale 200ms cubic-bezier(0.5, 0.05, 0.2, 1),
+    background-color 200ms cubic-bezier(0.5, 0.05, 0.2, 1),
+    border-color 200ms cubic-bezier(0.5, 0.05, 0.2, 1),
+    color 200ms cubic-bezier(0.5, 0.05, 0.2, 1),
+    box-shadow 200ms cubic-bezier(0.5, 0.05, 0.2, 1);
+}
+
+/* Icons inside any button drift with the label. Opt in per icon so decorative
+   glyphs (spinners, status dots) are not dragged along. */
+.btn-fx [data-btn-arrow],
+.btn-fx [data-btn-glyph] {
+  transition: transform 200ms cubic-bezier(0.5, 0.05, 0.2, 1);
+}
+
+/* The press. Deliberately not gated on pointer:fine — a touch tap should feel
+   like it depressed too, and :active does not stick the way :hover does. */
+.btn-fx:active:not(:disabled) {
+  translate: 0 1px;
+}
+
+/* ---- Primary: specular sheen sweeps across the fill ---- */
+.btn-fx-primary::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background-image: linear-gradient(
+    105deg,
+    transparent 35%,
+    var(--btn-sheen) 50%,
+    transparent 65%
+  );
+  background-size: 250% 100%;
+  background-position: 100% 0;
+  transition: opacity 200ms ease-out;
+}
+
+/* ---- Outline: tinted fill wipes in from the left ---- */
+.btn-fx-outline::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  background-color: var(--btn-wipe);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 260ms cubic-bezier(0.625, 0.05, 0, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .btn-fx-primary:hover::after,
+  .btn-fx-primary:focus-visible::after {
+    opacity: 1;
+    background-position: 0 0;
+    transition:
+      opacity 200ms ease-out,
+      background-position 620ms cubic-bezier(0.625, 0.05, 0, 1);
+  }
+
+  .btn-fx-outline:hover,
+  .btn-fx-outline:focus-visible {
+    border-color: color-mix(in oklab, var(--primary) 40%, transparent);
+  }
+  .btn-fx-outline:hover::before,
+  .btn-fx-outline:focus-visible::before {
+    transform: scaleX(1);
+  }
+
+  .btn-fx-chip:hover {
+    scale: 1.03;
+    border-color: color-mix(in oklab, var(--primary) 40%, transparent);
+  }
+
+  .btn-fx-icon:hover [data-btn-glyph],
+  .btn-fx-icon:focus-visible [data-btn-glyph] {
+    transform: scale(1.12) rotate(-6deg);
+  }
+
+  .btn-fx:hover [data-btn-arrow],
+  .btn-fx:focus-visible [data-btn-arrow] {
+    transform: translateX(3px);
+  }
+}
+
+/* Keyboard parity for the transforms the hover block gates behind a pointer. */
+.btn-fx-chip:focus-visible {
+  scale: 1.03;
+  border-color: color-mix(in oklab, var(--primary) 40%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-fx,
+  .btn-fx::before,
+  .btn-fx::after,
+  .btn-fx [data-btn-arrow],
+  .btn-fx [data-btn-glyph] {
+    transition: none;
+  }
+  /* Colour still communicates the state; only movement is dropped. */
+  .btn-fx:active:not(:disabled),
+  .btn-fx-chip:hover,
+  .btn-fx-chip:focus-visible {
+    translate: none;
+    scale: none;
+  }
+  .btn-fx-primary:hover::after,
+  .btn-fx-primary:focus-visible::after {
+    opacity: 0;
+  }
+  .btn-fx-outline:hover::before,
+  .btn-fx-outline:focus-visible::before {
+    transform: scaleX(1);
+  }
+  .btn-fx:hover [data-btn-arrow],
+  .btn-fx:focus-visible [data-btn-arrow],
+  .btn-fx-icon:hover [data-btn-glyph],
+  .btn-fx-icon:focus-visible [data-btn-glyph] {
+    transform: none;
   }
 }
 

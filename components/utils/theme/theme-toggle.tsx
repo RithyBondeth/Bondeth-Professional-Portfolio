@@ -132,12 +132,12 @@ export default function ThemeToggle(props: { label: string }) {
       onClick={toggleTheme}
       aria-label={label}
       title={label}
-      className="flex size-11 items-center justify-center rounded border border-border/60 text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary lg:size-7"
+      className="btn-fx btn-fx-icon flex size-11 items-center justify-center rounded border border-border/60 text-muted-foreground hover:border-primary/40 hover:text-primary lg:size-7"
     >
       {isDark ? (
-        <SunIcon className="w-3.5 h-3.5" />
+        <SunIcon data-btn-glyph className="w-3.5 h-3.5" />
       ) : (
-        <MoonIcon className="w-3.5 h-3.5" />
+        <MoonIcon data-btn-glyph className="w-3.5 h-3.5" />
       )}
     </button>
   );

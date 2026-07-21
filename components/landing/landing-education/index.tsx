@@ -14,7 +14,7 @@ export default function LandingEducation(props: { lang: TLocale }) {
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
-    <section id="education" className="relative isolate py-24 px-6 bg-background">
+    <section id="education" className="relative isolate py-16 sm:py-20 lg:py-24 px-6 bg-background">
       <SectionBackdrop />
 
       <div className="max-w-6xl mx-auto">
@@ -28,7 +28,7 @@ export default function LandingEducation(props: { lang: TLocale }) {
         <SplitReveal
           as="h2"
           type="lines"
-          className="text-4xl sm:text-5xl font-bold text-foreground mt-3 mb-12"
+          className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mt-3 mb-12"
         >
           {dict.education.heading}
         </SplitReveal>
@@ -44,12 +44,15 @@ export default function LandingEducation(props: { lang: TLocale }) {
           {educations.map((edu) => (
             <div
               key={edu.degree}
-              className="group rounded border border-border/60 bg-card hover:border-primary/25 hover:shadow-[0_0_20px_rgba(255, 255, 255,0.07)] transition-all duration-300 overflow-hidden motion-safe:hover:-translate-y-0.5"
+              className="card-interactive group rounded border border-border/60 bg-card overflow-hidden"
             >
               {/* Header */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-6 py-5 border-b border-border/50">
                 <div className="flex items-start gap-4">
-                  <div className="mt-0.5 shrink-0 w-9 h-9 rounded border border-primary/20 bg-primary/8 flex items-center justify-center transition-colors duration-300 group-hover:bg-primary/15 group-hover:border-primary/40">
+                  <div
+                    data-card-icon
+                    className="mt-0.5 shrink-0 w-9 h-9 rounded border border-primary/20 bg-primary/8 flex items-center justify-center"
+                  >
                     <GraduationCapIcon className="w-4 h-4 text-primary" />
                   </div>
                   <div>
@@ -111,7 +114,7 @@ export default function LandingEducation(props: { lang: TLocale }) {
               {trainingCourses.map((course) => (
                 <div
                   key={course.title}
-                  className="flex flex-col gap-1 px-4 py-3 rounded border border-border/50 bg-card hover:border-primary/30 transition-all duration-300 motion-safe:hover:-translate-y-0.5"
+                  className="card-interactive flex flex-col gap-1 px-4 py-3 rounded border border-border/50 bg-card [--card-lift:-2px]"
                 >
                   <span className="text-foreground text-xs font-medium">
                     {course.title}

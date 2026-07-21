@@ -485,9 +485,9 @@ export default function Navbar(props: { lang: TLocale }) {
               type="button"
               onClick={openCommandPalette}
               aria-label={dict.commandPalette.open}
-              className="flex items-center gap-2 pl-2.5 pr-2 py-1.5 text-xs font-mono text-muted-foreground border border-border/60 rounded hover:text-foreground hover:border-primary/40 transition-colors"
+              className="btn-fx btn-fx-outline flex items-center gap-2 pl-2.5 pr-2 py-1.5 text-xs font-mono text-muted-foreground border border-border/60 rounded hover:text-foreground"
             >
-              <SearchIcon className="w-3.5 h-3.5" />
+              <SearchIcon data-btn-glyph className="w-3.5 h-3.5" />
               <kbd className="text-[10px] text-muted-foreground dark:text-muted-foreground/70">
                 ⌘K
               </kbd>
@@ -517,22 +517,22 @@ export default function Navbar(props: { lang: TLocale }) {
             type="button"
             onClick={openCommandPalette}
             aria-label={dict.commandPalette.open}
-            className="flex size-11 items-center justify-center rounded border border-border/60 text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
+            className="btn-fx btn-fx-icon flex size-11 items-center justify-center rounded border border-border/60 text-muted-foreground hover:border-primary/40 hover:text-primary"
           >
-            <SearchIcon className="w-3.5 h-3.5" />
+            <SearchIcon data-btn-glyph className="w-3.5 h-3.5" />
           </button>
           <LanguageSwitcher lang={lang} />
           <ThemeToggle label={dict.nav.toggleTheme} />
           <button
-            className="flex size-11 items-center justify-center rounded text-muted-foreground transition-colors hover:bg-foreground/5 hover:text-foreground"
+            className="btn-fx btn-fx-icon flex size-11 items-center justify-center rounded text-muted-foreground hover:bg-foreground/5 hover:text-foreground"
             onClick={() => setMenuOpen((o) => !o)}
             aria-label={dict.nav.toggleMenu}
             aria-expanded={menuOpen}
           >
             {menuOpen ? (
-              <CloseIcon className="w-5 h-5" />
+              <CloseIcon data-btn-glyph className="w-5 h-5" />
             ) : (
-              <MenuIcon className="w-5 h-5" />
+              <MenuIcon data-btn-glyph className="w-5 h-5" />
             )}
           </button>
         </div>

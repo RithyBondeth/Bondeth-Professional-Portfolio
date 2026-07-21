@@ -112,7 +112,7 @@ export function ProjectExplorer(props: {
             type="button"
             onClick={() => applyFilter(category)}
             aria-pressed={filter === category}
-            className={`relative z-10 min-h-11 shrink-0 rounded px-4 font-mono text-xs transition-colors duration-300 ${
+            className={`btn-fx relative z-10 min-h-11 shrink-0 rounded px-4 font-mono text-xs ${
               filter === category
                 ? "text-primary-foreground"
                 : "text-muted-foreground hover:bg-foreground/5 hover:text-foreground"

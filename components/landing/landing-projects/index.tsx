@@ -36,7 +36,7 @@ export default function LandingProjects(props: { lang: TLocale }) {
           <SplitReveal
             as="h2"
             type="lines"
-            className="mt-3 text-4xl font-bold text-foreground sm:text-5xl"
+            className="mt-3 text-3xl font-bold text-foreground sm:text-4xl lg:text-5xl"
           >
             {dict.projects.heading}
           </SplitReveal>

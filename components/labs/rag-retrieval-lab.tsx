@@ -123,7 +123,7 @@ export function RagRetrievalLab(props: {
           type="button"
           disabled={!query.trim() || status === "loading"}
           onClick={runRetrieval}
-          className="mt-6 flex min-h-12 w-full items-center justify-center gap-2 rounded bg-primary px-5 font-mono text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-6 flex min-h-12 w-full items-center justify-center gap-2 btn-fx btn-fx-primary rounded bg-primary px-5 font-mono text-sm font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50"
         >
           <span aria-hidden>⌕</span>
           {status === "loading" ? labels.searching : labels.search}

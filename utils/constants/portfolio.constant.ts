@@ -77,7 +77,13 @@ export const skillGroups: ISkillGroup[] = [
     skills: [
       { name: "TypeScript", icon: "SiTypescript", color: "#3178C6", level: 3 },
       { name: "React.js", icon: "SiReact", color: "#61DAFB", level: 3 },
-      { name: "Next.js", icon: "SiNextdotjs", color: "#FFFFFF", level: 3 },
+      {
+        name: "Next.js",
+        icon: "SiNextdotjs",
+        color: "#FFFFFF",
+        colorLight: "#0A0A0A",
+        level: 3,
+      },
       { name: "Vue.js", icon: "SiVuedotjs", color: "#4FC08D", level: 3 },
       { name: "Nuxt.js", icon: "SiNuxt", color: "#4FC08D", level: 3 },
       {
@@ -109,12 +115,24 @@ export const skillGroups: ISkillGroup[] = [
   {
     category: "AI & ML",
     skills: [
-      { name: "OpenAI", icon: "SiOpenai", color: "#FFFFFF", level: 3 },
+      {
+        name: "OpenAI",
+        icon: "SiOpenai",
+        color: "#FFFFFF",
+        colorLight: "#0A0A0A",
+        level: 3,
+      },
       { name: "Anthropic", icon: "SiAnthropic", color: "#D97757", level: 2 },
       { name: "Gemini", icon: "SiGooglegemini", color: "#8E75B2", level: 2 },
       { name: "LangChain", icon: "SiLangchain", color: "#10B981", level: 2 },
       { name: "LangGraph", icon: "SiLanggraph", color: "#26A69A", level: 2 },
-      { name: "Ollama", icon: "SiOllama", color: "#FFFFFF", level: 2 },
+      {
+        name: "Ollama",
+        icon: "SiOllama",
+        color: "#FFFFFF",
+        colorLight: "#0A0A0A",
+        level: 2,
+      },
       {
         name: "Hugging Face",
         icon: "SiHuggingface",
@@ -134,7 +152,13 @@ export const skillGroups: ISkillGroup[] = [
   {
     category: "Cloud",
     skills: [
-      { name: "Vercel", icon: "SiVercel", color: "#FFFFFF", level: 3 },
+      {
+        name: "Vercel",
+        icon: "SiVercel",
+        color: "#FFFFFF",
+        colorLight: "#0A0A0A",
+        level: 3,
+      },
       { name: "Netlify", icon: "SiNetlify", color: "#00C7B7", level: 2 },
       {
         name: "DigitalOcean",
@@ -159,7 +183,13 @@ export const skillGroups: ISkillGroup[] = [
         level: 2,
       },
       { name: "Git", icon: "SiGit", color: "#F05032", level: 3 },
-      { name: "GitHub", icon: "SiGithub", color: "#FFFFFF", level: 3 },
+      {
+        name: "GitHub",
+        icon: "SiGithub",
+        color: "#FFFFFF",
+        colorLight: "#181717",
+        level: 3,
+      },
       { name: "Linux", icon: "SiLinux", color: "#FCC624", level: 2 },
     ],
   },

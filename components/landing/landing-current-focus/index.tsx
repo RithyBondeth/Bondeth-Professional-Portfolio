@@ -13,7 +13,7 @@ export default function LandingCurrentFocus(props: { lang: TLocale }) {
   return (
     <section
       id="current-focus"
-      className="relative isolate overflow-hidden bg-card px-6 py-20"
+      className="relative isolate overflow-hidden bg-card px-6 py-14 sm:py-16 lg:py-20"
     >
       <SectionBackdrop />
 
@@ -35,7 +35,7 @@ export default function LandingCurrentFocus(props: { lang: TLocale }) {
             <SplitReveal
               as="h2"
               type="lines"
-              className="mt-3 text-4xl font-bold text-foreground sm:text-5xl"
+              className="mt-3 text-3xl font-bold text-foreground sm:text-4xl lg:text-5xl"
             >
               {currentFocus.heading}
             </SplitReveal>
@@ -69,7 +69,11 @@ export default function LandingCurrentFocus(props: { lang: TLocale }) {
           <AnimateIn from="right" delay={0.15} distance={40}>
             <Globe
               label={currentFocus.globe.pinLabel}
-              className="mx-auto -my-6 max-w-[380px] lg:my-0 lg:max-w-[440px]"
+              photo={{
+                src: "/bondeth-profile.webp",
+                caption: currentFocus.globe.photoCaption,
+              }}
+              className="mx-auto -my-6 max-w-95 lg:my-0 lg:max-w-110"
             />
           </AnimateIn>
         </div>
@@ -80,28 +84,28 @@ export default function LandingCurrentFocus(props: { lang: TLocale }) {
           stagger={0.1}
           delay={0.1}
         >
-            {currentFocus.items.map((item, index) => (
-              <article
-                key={item.label}
-                className="group rounded border border-border/60 bg-background/70 p-4 transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_12px_40px_rgba(255, 255, 255,0.07)] motion-reduce:transform-none sm:p-5"
-              >
-                <div className="mb-4 flex items-center justify-between">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
-                    0{index + 1}
-                  </span>
-                  <span
-                    aria-hidden
-                    className="h-px w-8 bg-border transition-all duration-300 group-hover:w-12 group-hover:bg-primary/50"
-                  />
-                </div>
-                <h3 className="text-sm font-semibold text-foreground">
-                  {item.label}
-                </h3>
-                <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                  {item.value}
-                </p>
-              </article>
-            ))}
+          {currentFocus.items.map((item, index) => (
+            <article
+              key={item.label}
+              className="card-interactive group rounded border border-border/60 bg-background/70 p-4 sm:p-5"
+            >
+              <div className="mb-4 flex items-center justify-between">
+                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
+                  0{index + 1}
+                </span>
+                <span
+                  aria-hidden
+                  className="h-px w-8 bg-border transition-all duration-300 group-hover:w-12 group-hover:bg-primary/50"
+                />
+              </div>
+              <h3 className="text-sm font-semibold text-foreground">
+                {item.label}
+              </h3>
+              <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                {item.value}
+              </p>
+            </article>
+          ))}
         </StaggerIn>
       </div>
     </section>

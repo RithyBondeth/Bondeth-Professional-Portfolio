@@ -90,18 +90,21 @@ function CodeBlock() {
           {/* Window Chrome Section — the traffic lights pick up a soft bloom on
               hover, the one place colour is allowed in this monochrome theme. */}
           <div className="flex items-center gap-1.5 px-4 py-3 border-b border-[#34322e]/60 bg-black/30">
-            <span className="w-3 h-3 rounded-full bg-red-500/80 transition-shadow duration-300 group-hover:shadow-[0_0_8px_rgb(239_68_68_/_0.7)]" />
-            <span className="w-3 h-3 rounded-full bg-yellow-500/70 transition-shadow duration-300 group-hover:shadow-[0_0_8px_rgb(234_179_8_/_0.7)]" />
-            <span className="w-3 h-3 rounded-full bg-green-500/70 transition-shadow duration-300 group-hover:shadow-[0_0_8px_rgb(34_197_94_/_0.7)]" />
+            <span className="w-3 h-3 rounded-full bg-red-500/80 transition-shadow duration-300 group-hover:shadow-[0_0_8px_rgb(239_68_68/0.7)]" />
+            <span className="w-3 h-3 rounded-full bg-yellow-500/70 transition-shadow duration-300 group-hover:shadow-[0_0_8px_rgb(234_179_8/0.7)]" />
+            <span className="w-3 h-3 rounded-full bg-green-500/70 transition-shadow duration-300 group-hover:shadow-[0_0_8px_rgb(34_197_94/0.7)]" />
             <span className="ml-3 text-slate-500 text-[11px] font-code select-none transition-colors duration-300 group-hover:text-slate-300">
               profile.ts
             </span>
           </div>
 
-          {/* Line Numbers + Code Section */}
-          <div className="flex text-xs font-code leading-6 overflow-x-auto">
+          {/* Line Numbers + Code Section — the type steps down a notch on
+              phones so the widest line (`location`) clears 375px without
+              needing a horizontal scroll, and the tighter leading keeps the
+              whole window from dominating the stacked mobile hero. */}
+          <div className="flex text-[10px] min-[360px]:text-[11px] sm:text-xs font-code leading-[1.75] sm:leading-6 overflow-x-auto">
             {/* Line Numbers — brighten slightly so the gutter reads on hover */}
-            <div className="select-none text-right pr-4 pl-4 py-5 text-[#34322e] border-r border-[#34322e]/40 shrink-0 transition-colors duration-500 group-hover:text-[#4a4740]">
+            <div className="select-none text-right pr-3 pl-3 sm:pr-4 sm:pl-4 py-4 sm:py-5 text-[#34322e] border-r border-[#34322e]/40 shrink-0 transition-colors duration-500 group-hover:text-[#4a4740]">
               {Array.from({ length: 18 }, (_, i) => (
                 <div key={i}>{i + 1}</div>
               ))}
@@ -110,7 +113,7 @@ function CodeBlock() {
             {/* Code Content — syntax colors match the site's canonical code
                 palette (see landing-about's tokenizer): violet-400 keywords,
                 sky-300 identifiers, emerald-400 strings, slate-500 comments. */}
-            <pre className="py-5 pl-4 pr-6 text-slate-400">
+            <pre className="py-4 sm:py-5 pl-3 sm:pl-4 pr-2 min-[360px]:pr-4 sm:pr-6 text-slate-400">
               <span className="text-slate-500">{"// Developer profile"}</span>
               {"\n"}
               <span className="text-violet-400">{"const"}</span>{" "}
@@ -489,7 +492,9 @@ export default function LandingHero(props: { lang: TLocale }) {
       <SectionBackdrop />
 
       {/* Centre Radial Glow Section */}
-      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_70%_60%_at_50%_50%,rgba(255, 255, 255,0.05),transparent)]" />
+      {/* Spaces inside a Tailwind arbitrary value break the class name, so the
+          colour uses the space-free `rgb(255_255_255/0.05)` form. */}
+      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_70%_60%_at_50%_50%,rgb(255_255_255/0.05),transparent)]" />
 
       {/* Ambient Orbs Section — parallax depth via ScrollSmoother data-speed,
           slow aurora drift on top of the pulse. */}
@@ -506,14 +511,14 @@ export default function LandingHero(props: { lang: TLocale }) {
       {/* Film grain — gives the flat navy a physical texture */}
       <div className="absolute inset-0 pointer-events-none bg-noise opacity-[0.03] dark:opacity-[0.05]" />
 
-      {/* Scan Line Section */}
+      {/* Scan Line Section — the sweep is a named class, not an inline
+          `animation`, so the touch-device freeze in globals.css can switch it
+          off without having to out-specify an inline style. */}
       <div
-        className="absolute inset-x-0 h-px pointer-events-none"
+        className="hero-scanline absolute inset-x-0 h-px pointer-events-none"
         style={{
           background:
             "linear-gradient(90deg, transparent, rgba(255, 255, 255,0.25), transparent)",
-          animation: "scan 8s linear infinite",
-          animationDelay: "1s",
         }}
       />
 
@@ -521,8 +526,11 @@ export default function LandingHero(props: { lang: TLocale }) {
       <div className="absolute inset-0 pointer-events-none hidden dark:block bg-[radial-gradient(ellipse_100%_100%_at_50%_50%,transparent_50%,rgba(7,9,14,0.7)_100%)]" />
 
       {/* Main Content Section */}
-      <div className="relative w-full max-w-6xl mx-auto px-6 py-24 flex items-center min-h-screen">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 w-full items-center">
+      {/* `min-h-screen` is the floor, not the ceiling: once the code window
+          stacks under the text on phones the hero is allowed to grow past one
+          viewport rather than cramming both rows into it. */}
+      <div className="relative w-full max-w-6xl mx-auto px-6 py-20 sm:py-24 flex items-center min-h-screen">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-12 lg:gap-16 w-full items-center">
           {/* Left: Text */}
           <div className="hero-exit-text text-center lg:text-left">
             <p className="hero-label text-primary font-mono text-xs mb-5 tracking-[0.25em] uppercase">
@@ -534,7 +542,7 @@ export default function LandingHero(props: { lang: TLocale }) {
                 renders in every mode, including reduced motion and no-JS. */}
             <h1
               ref={nameRef}
-              className="hero-name text-6xl sm:text-7xl xl:text-8xl font-bold tracking-tight leading-[0.95] mb-5 motion-safe:animate-[glitch_7s_linear_infinite]"
+              className="hero-name text-5xl sm:text-7xl xl:text-8xl font-bold tracking-tight leading-[0.95] mb-4 sm:mb-5 motion-safe:animate-[glitch_7s_linear_infinite]"
             >
               {siteConfig.name}
             </h1>
@@ -548,7 +556,7 @@ export default function LandingHero(props: { lang: TLocale }) {
               <span className="inline-block w-0.5 h-5 bg-primary ml-0.5 animate-[blink_1s_step-end_infinite]" />
             </h2>
 
-            <p className="hero-tagline text-muted-foreground text-base max-w-lg mx-auto lg:mx-0 mb-10 leading-relaxed">
+            <p className="hero-tagline text-muted-foreground text-base max-w-lg mx-auto lg:mx-0 mb-7 sm:mb-10 leading-relaxed">
               {localized.tagline}
             </p>
 
@@ -560,7 +568,7 @@ export default function LandingHero(props: { lang: TLocale }) {
                     e.preventDefault();
                     scrollToSection("projects");
                   }}
-                  className="block px-6 py-2.5 bg-primary text-primary-foreground rounded font-mono text-sm font-medium hover:bg-primary/90 transition-colors text-center"
+                  className="btn-fx btn-fx-primary block px-6 py-2.5 bg-primary text-primary-foreground rounded font-mono text-sm font-medium text-center"
                 >
                   {dict.hero.viewWork}
                 </a>
@@ -570,7 +578,7 @@ export default function LandingHero(props: { lang: TLocale }) {
                   href={siteConfig.resume}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block px-6 py-2.5 border border-primary/20 text-primary rounded font-mono text-sm font-medium hover:bg-primary/5 transition-colors text-center"
+                  className="btn-fx btn-fx-outline block px-6 py-2.5 border border-primary/20 text-primary rounded font-mono text-sm font-medium text-center"
                 >
                   {dict.hero.downloadCv}
                 </a>
@@ -582,7 +590,7 @@ export default function LandingHero(props: { lang: TLocale }) {
                     e.preventDefault();
                     scrollToSection("contact");
                   }}
-                  className="block px-6 py-2.5 border border-border text-muted-foreground rounded font-mono text-sm font-medium hover:border-primary/50 hover:text-foreground transition-colors text-center"
+                  className="btn-fx btn-fx-outline block px-6 py-2.5 border border-border text-muted-foreground rounded font-mono text-sm font-medium hover:text-foreground text-center"
                 >
                   {dict.hero.getInTouch}
                 </a>
@@ -590,8 +598,10 @@ export default function LandingHero(props: { lang: TLocale }) {
             </div>
           </div>
 
-          {/* Right: Code Block */}
-          <div className="hero-code hero-exit-code hidden lg:flex items-center justify-center">
+          {/* Right: Code Block — shown at every width. Below `lg` it stacks
+              under the text as the second grid row; the TiltCard inside is
+              already inert on coarse pointers, so it costs nothing on touch. */}
+          <div className="hero-code hero-exit-code flex items-center justify-center">
             <CodeBlock />
           </div>
         </div>

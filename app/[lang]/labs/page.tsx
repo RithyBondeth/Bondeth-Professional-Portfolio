@@ -52,7 +52,7 @@ export default async function LabsPage({ params }: ILabsPageProps) {
         </AnimateIn>
 
         <AnimateIn from="up" delay={0.08}>
-          <article className="group mt-12 overflow-hidden rounded border border-border/60 bg-card transition-all hover:border-primary/30">
+          <article className="card-interactive group mt-12 overflow-hidden rounded border border-border/60 bg-card">
             <div className="grid md:grid-cols-[0.8fr_1.2fr]">
               <div className="relative min-h-56 overflow-hidden bg-[radial-gradient(circle_at_30%_30%,rgba(148,162,255,0.18),transparent_45%),radial-gradient(circle_at_70%_70%,rgba(178,149,255,0.16),transparent_45%),#05060a] p-6">
                 <div className="absolute inset-x-6 top-6 rounded border border-border/40 bg-black/50 p-4 font-code text-[11px] leading-6">
@@ -90,10 +90,12 @@ export default async function LabsPage({ params }: ILabsPageProps) {
                 </p>
                 <Link
                   href={`/${lang}/labs/structured-output`}
-                  className="mt-7 inline-flex min-h-11 w-fit items-center gap-2 rounded bg-primary px-4 font-mono text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                  className="btn-fx btn-fx-primary mt-7 inline-flex min-h-11 w-fit items-center gap-2 rounded bg-primary px-4 font-mono text-xs font-medium text-primary-foreground"
                 >
                   {labs.openLab}
-                  <span aria-hidden>→</span>
+                  <span aria-hidden data-card-arrow>
+                    →
+                  </span>
                 </Link>
               </div>
             </div>
@@ -101,7 +103,7 @@ export default async function LabsPage({ params }: ILabsPageProps) {
         </AnimateIn>
 
         <AnimateIn from="up" delay={0.12}>
-          <article className="group mt-6 overflow-hidden rounded border border-border/60 bg-card transition-all hover:border-primary/30">
+          <article className="card-interactive group mt-6 overflow-hidden rounded border border-border/60 bg-card">
             <div className="grid md:grid-cols-[0.8fr_1.2fr]">
               <div className="relative min-h-56 overflow-hidden bg-[radial-gradient(circle_at_70%_25%,rgba(178,149,255,0.2),transparent_40%),radial-gradient(circle_at_25%_75%,rgba(148,162,255,0.16),transparent_42%),#05060a] p-6">
                 <LabVignetteFx className="absolute inset-x-6 top-6 space-y-2 font-code text-[10px]">
@@ -145,10 +147,12 @@ export default async function LabsPage({ params }: ILabsPageProps) {
                 </p>
                 <Link
                   href={`/${lang}/labs/rag-retrieval`}
-                  className="mt-7 inline-flex min-h-11 w-fit items-center gap-2 rounded bg-primary px-4 font-mono text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                  className="btn-fx btn-fx-primary mt-7 inline-flex min-h-11 w-fit items-center gap-2 rounded bg-primary px-4 font-mono text-xs font-medium text-primary-foreground"
                 >
                   {labs.openLab}
-                  <span aria-hidden>→</span>
+                  <span aria-hidden data-card-arrow>
+                    →
+                  </span>
                 </Link>
               </div>
             </div>
@@ -156,7 +160,7 @@ export default async function LabsPage({ params }: ILabsPageProps) {
         </AnimateIn>
 
         <AnimateIn from="up" delay={0.16}>
-          <article className="group mt-6 overflow-hidden rounded border border-border/60 bg-card transition-all hover:border-primary/30">
+          <article className="card-interactive group mt-6 overflow-hidden rounded border border-border/60 bg-card">
             <div className="grid md:grid-cols-[0.8fr_1.2fr]">
               <div className="relative min-h-56 overflow-hidden bg-[radial-gradient(circle_at_30%_20%,rgba(148,162,255,0.16),transparent_40%),radial-gradient(circle_at_75%_75%,rgba(178,149,255,0.22),transparent_45%),#05060a] p-6">
                 <LabVignetteFx className="absolute inset-x-6 top-8 grid grid-cols-2 gap-3 font-code">
@@ -204,10 +208,12 @@ export default async function LabsPage({ params }: ILabsPageProps) {
                 </p>
                 <Link
                   href={`/${lang}/labs/llm-evals`}
-                  className="mt-7 inline-flex min-h-11 w-fit items-center gap-2 rounded bg-primary px-4 font-mono text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                  className="btn-fx btn-fx-primary mt-7 inline-flex min-h-11 w-fit items-center gap-2 rounded bg-primary px-4 font-mono text-xs font-medium text-primary-foreground"
                 >
                   {labs.openLab}
-                  <span aria-hidden>→</span>
+                  <span aria-hidden data-card-arrow>
+                    →
+                  </span>
                 </Link>
               </div>
             </div>

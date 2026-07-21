@@ -157,50 +157,48 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
           </Link>
         </AnimateIn>
 
-        {/* Cover Section */}
+        {/* Post Header Section — editorial order: kicker → title → byline →
+            cover. The category leads as a plain uppercase kicker (the pill it
+            used to sit in fought the title for weight), the title is the hero,
+            and the meta reads as one quiet byline row underneath. */}
         <AnimateIn delay={0.05} className="max-w-3xl">
-          <BlogCover
-            post={post}
-            priority
-            className="aspect-2/1 sm:aspect-5/2 mb-8"
-          />
-        </AnimateIn>
+          <p className="mb-4 font-mono text-xs uppercase tracking-[0.25em] text-primary dark:text-primary/70">
+            {post.category}
+          </p>
+          <h1 className="mb-5 text-3xl font-bold leading-tight text-foreground sm:text-4xl lg:text-5xl">
+            {post.title}
+          </h1>
+          <p className="text-base leading-relaxed text-muted-foreground">
+            {post.excerpt}
+          </p>
 
-        {/* Post Header Section */}
-        <AnimateIn delay={0.1} className="max-w-3xl">
-          <div className="mb-2 flex flex-wrap items-center gap-3 font-mono text-xs text-primary dark:text-primary/60">
-            <span className="rounded-full border border-primary/25 bg-primary/10 px-2.5 py-1 text-[10px] uppercase tracking-[0.18em]">
-              {post.category}
+          <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 border-y border-border/40 py-4 font-mono text-xs text-muted-foreground dark:text-muted-foreground/70">
+            <span className="text-foreground">
+              {dict.blog.writtenBy}{" "}
+              <span className="font-semibold">{siteConfig.name}</span>
+            </span>
+            <span aria-hidden className="text-muted-foreground/40">
+              ·
             </span>
             <time>
               {new Date(post.date).toLocaleDateString(
                 lang === "km" ? "km-KH" : "en-US",
-                {
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
-                },
+                { month: "long", day: "numeric", year: "numeric" },
               )}
             </time>
             <span aria-hidden className="text-muted-foreground/40">
               ·
             </span>
-            <span className="text-muted-foreground dark:text-muted-foreground/60">
+            <span>
               {post.readingTime} {dict.blog.minRead}
             </span>
-            <span aria-hidden className="text-muted-foreground/40">
-              ·
-            </span>
-            <span className="text-muted-foreground dark:text-muted-foreground/60">
-              {dict.blog.writtenBy}{" "}
-              <span className="font-semibold text-foreground">
-                {siteConfig.name}
-              </span>
-            </span>
           </div>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-8 leading-tight">
-            {post.title}
-          </h1>
+        </AnimateIn>
+
+        {/* Cover Section — sits under the byline, framing the article rather
+            than shouting above the title. */}
+        <AnimateIn delay={0.1} className="mt-8 mb-10 max-w-3xl">
+          <BlogCover post={post} priority className="aspect-2/1" />
         </AnimateIn>
 
         <TableOfContents

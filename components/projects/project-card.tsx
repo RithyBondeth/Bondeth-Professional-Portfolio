@@ -15,14 +15,18 @@ export function ProjectCard(props: {
   return (
     /* 3D tilt + glare shell — desktop pointers only, static elsewhere. */
     <TiltCard maxTilt={6} className="relative h-full rounded">
-      <article className="group flex h-full flex-col overflow-hidden rounded border border-border/60 bg-card transition-all duration-300 hover:border-primary/30 hover:shadow-[0_0_28px_rgba(255, 255, 255,0.1)]">
+      {/* TiltCard owns the 3D lean, so this card opts out of the shared lift
+          (the two transforms would fight) and keeps only the border warm-up,
+          glow, and sheen. */}
+      <article className="card-interactive group flex h-full flex-col overflow-hidden rounded border border-border/60 bg-card [--card-lift:0px]">
         <div className="relative h-44 overflow-hidden">
           {project.image && project.visibility !== "confidential" ? (
             <Image
               src={project.image}
               alt={`${project.title} preview`}
               fill
-              className="object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transform-none"
+              data-card-media
+              className="object-cover"
             />
           ) : (
             <div
@@ -106,7 +110,7 @@ export function ProjectCard(props: {
                 href={project.live}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="ml-auto flex size-11 items-center justify-center rounded bg-primary text-primary-foreground transition-colors hover:bg-primary/90"
+                className="btn-fx btn-fx-primary ml-auto flex size-11 items-center justify-center rounded bg-primary text-primary-foreground"
                 aria-label={`${dict.projects.demo}: ${project.title}`}
               >
                 <ExternalLinkIcon className="h-3.5 w-3.5" />

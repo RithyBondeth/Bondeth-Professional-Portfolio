@@ -195,7 +195,7 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
                     href={project.live}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded bg-primary px-4 py-2.5 font-mono text-xs text-primary-foreground transition-colors hover:bg-primary/90"
+                    className="btn-fx btn-fx-primary inline-flex items-center gap-2 rounded bg-primary px-4 py-2.5 font-mono text-xs text-primary-foreground"
                   >
                     {dict.projects.liveProduct}
                     <ExternalLinkIcon className="h-3.5 w-3.5" />

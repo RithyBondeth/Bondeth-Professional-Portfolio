@@ -46,7 +46,7 @@ export default function NotFound() {
       {/* CTA */}
       <Link
         href="/"
-        className="group inline-flex items-center gap-2 px-6 py-3 rounded bg-primary text-primary-foreground hover:bg-primary/90 font-mono text-sm tracking-wide transition-colors"
+        className="btn-fx btn-fx-primary group inline-flex items-center gap-2 px-6 py-3 rounded bg-primary text-primary-foreground font-mono text-sm tracking-wide"
       >
         <span aria-hidden className="transition-transform group-hover:-translate-x-1">
           ←

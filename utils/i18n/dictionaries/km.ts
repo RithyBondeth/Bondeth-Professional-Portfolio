@@ -69,6 +69,7 @@ export const km: TDictionary = {
     ],
     globe: {
       pinLabel: "ភ្នំពេញ កម្ពុជា",
+      photoCaption: "ភ្នំពេញ",
     },
   },
   skills: {

@@ -254,7 +254,7 @@ export default function ContactForm(props: { lang: TLocale }) {
       <button
         disabled={status === "loading"}
         type="submit"
-        className="mt-2 flex items-center justify-center gap-2 w-full px-6 py-3 bg-primary text-primary-foreground rounded font-mono text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="btn-fx btn-fx-primary mt-2 flex items-center justify-center gap-2 w-full px-6 py-3 bg-primary text-primary-foreground rounded font-mono text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <span className="text-primary-foreground/60">▸</span>
         {status === "loading" ? (

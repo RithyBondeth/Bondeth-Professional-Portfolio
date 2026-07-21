@@ -149,7 +149,7 @@ export function BlogExplorer({
               }}
               aria-pressed={selectedCategory === "all"}
               aria-label={`${labels.allCategories} (${posts.length})`}
-              className="rounded border border-border bg-card/60 px-3 py-1.5 font-mono text-xs text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground aria-pressed:border-primary/50 aria-pressed:bg-primary/10 aria-pressed:text-primary"
+              className="btn-fx btn-fx-chip rounded border border-border bg-card/60 px-3 py-1.5 font-mono text-xs text-muted-foreground hover:text-foreground aria-pressed:border-primary/50 aria-pressed:bg-primary/10 aria-pressed:text-primary"
             >
               {labels.allCategories}
               <span className="ml-1 text-muted-foreground">
@@ -166,7 +166,7 @@ export function BlogExplorer({
                 }}
                 aria-pressed={selectedCategory === category.category}
                 aria-label={`${category.category} (${category.count})`}
-                className="rounded border border-border bg-card/60 px-3 py-1.5 font-mono text-xs text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground aria-pressed:border-primary/50 aria-pressed:bg-primary/10 aria-pressed:text-primary"
+                className="btn-fx btn-fx-chip rounded border border-border bg-card/60 px-3 py-1.5 font-mono text-xs text-muted-foreground hover:text-foreground aria-pressed:border-primary/50 aria-pressed:bg-primary/10 aria-pressed:text-primary"
               >
                 {category.category}
                 <span className="ml-1 text-muted-foreground">
@@ -211,43 +211,84 @@ export function BlogExplorer({
 
       {/* Post List Section */}
       {filtered.length > 0 ? (
-        <div ref={gridRef} className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2">
+        <div
+          ref={gridRef}
+          className="grid grid-cols-1 items-stretch gap-5 sm:grid-cols-2 sm:gap-6"
+        >
           {filtered.map((post) => (
-            <article key={post.slug} data-flip-id={post.slug} className="group relative">
+            <article
+              key={post.slug}
+              data-flip-id={post.slug}
+              className="group relative h-full"
+            >
               {/* Hover lift lives on the inner link — the article itself is
-                  Flip's target and must not carry CSS transform transitions. */}
+                  Flip's target and must not carry CSS transform transitions.
+
+                  The card is now a real surface (border + fill), so it opts
+                  back into the shared glow and sheen it used to switch off:
+                  those were disabled only because the old bare card would have
+                  drawn a floating rectangle around loose text.
+
+                  `h-full` + `flex-col` + `flex-1` on the body make every card
+                  in a row end at the same baseline regardless of title length,
+                  which the old auto-height cards did not. */}
               <Link
                 href={`/${lang}/blog/${post.slug}`}
-                className="block transition-transform duration-300 motion-safe:group-hover:-translate-y-1"
+                className="card-interactive flex h-full flex-col overflow-hidden rounded-lg border border-border/60 bg-card/40"
               >
                 <BlogCover
                   post={post}
-                  className="aspect-2/1 mb-4 transition-colors group-hover:border-primary/40"
+                  data-card-media
+                  className="aspect-2/1 shrink-0 rounded-none border-0 border-b border-border/60"
                 />
-                <time className="mb-2 block font-mono text-xs text-muted-foreground dark:text-muted-foreground/60">
-                  {new Date(post.date).toLocaleDateString(
-                    lang === "km" ? "km-KH" : "en-US",
-                    { month: "short", day: "numeric", year: "numeric" },
-                  )}
-                </time>
-                <span className="mb-3 inline-flex rounded-full border border-primary/20 bg-primary/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-primary">
-                  {post.category}
-                </span>
-                <h2 className="mb-2 text-xl font-bold text-foreground transition-colors group-hover:text-primary">
-                  {post.title}
-                </h2>
-                <p className="mb-4 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
-                  {post.excerpt}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {post.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded border border-primary/10 bg-primary/5 px-2 py-0.5 font-mono text-[10px] text-primary dark:text-primary/70"
-                    >
-                      #{tag}
+
+                <div className="flex flex-1 flex-col p-5">
+                  {/* Meta line — date, reading time and category on one row.
+                      The category used to be a second stacked pill; folding it
+                      in here reclaims a whole line of vertical space. */}
+                  <div className="mb-3 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[11px] text-muted-foreground dark:text-muted-foreground/60">
+                    <time>
+                      {new Date(post.date).toLocaleDateString(
+                        lang === "km" ? "km-KH" : "en-US",
+                        { month: "short", day: "numeric", year: "numeric" },
+                      )}
+                    </time>
+                    <span aria-hidden className="text-muted-foreground/40">
+                      ·
                     </span>
-                  ))}
+                    <span>
+                      {post.readingTime} {labels.minRead}
+                    </span>
+                    <span className="ml-auto uppercase tracking-[0.16em] text-primary dark:text-primary/70">
+                      {post.category}
+                    </span>
+                  </div>
+
+                  <h2 className="mb-2 text-lg font-bold leading-snug text-foreground transition-colors group-hover:text-primary sm:text-xl">
+                    {post.title}
+                  </h2>
+                  <p className="mb-4 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+                    {post.excerpt}
+                  </p>
+
+                  {/* Tags pinned to the bottom of the card body, capped at 3 —
+                      posts carry up to five, which wrapped to a second row and
+                      left the grid visibly ragged. */}
+                  <div className="mt-auto flex flex-wrap items-center gap-1.5 pt-1">
+                    {post.tags.slice(0, 3).map((tag) => (
+                      <span
+                        key={tag}
+                        className="rounded border border-border/60 bg-muted/30 px-2 py-0.5 font-mono text-[10px] text-muted-foreground"
+                      >
+                        #{tag}
+                      </span>
+                    ))}
+                    {post.tags.length > 3 && (
+                      <span className="font-mono text-[10px] text-muted-foreground/70">
+                        +{post.tags.length - 3}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </Link>
             </article>

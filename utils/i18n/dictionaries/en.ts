@@ -63,6 +63,7 @@ export const en = {
     ],
     globe: {
       pinLabel: "Phnom Penh, Cambodia",
+      photoCaption: "Bondeth👨🏼‍💻",
     },
   },
   skills: {

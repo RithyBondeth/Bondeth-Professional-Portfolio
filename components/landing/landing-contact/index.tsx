@@ -22,7 +22,7 @@ export default function LandingContact(props: { lang: TLocale }) {
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
-    <section id="contact" className="relative isolate bg-background px-6 py-24">
+    <section id="contact" className="relative isolate bg-background px-6 py-16 sm:py-20 lg:py-24">
       <SectionBackdrop />
 
       <div className="mx-auto max-w-6xl">
@@ -36,7 +36,7 @@ export default function LandingContact(props: { lang: TLocale }) {
         <SplitReveal
           as="h2"
           type="lines"
-          className="text-4xl sm:text-5xl font-bold text-foreground mt-3 mb-4"
+          className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mt-3 mb-4"
         >
           {dict.contact.heading}
         </SplitReveal>
@@ -148,7 +148,7 @@ function SocialLink(props: {
         target="_blank"
         rel="noopener noreferrer"
         aria-label={label}
-        className="w-10 h-10 flex items-center justify-center rounded border border-border/60 text-muted-foreground hover:text-primary hover:border-primary/40 hover:shadow-[0_0_16px_rgba(255, 255, 255,0.15)] transition-all"
+        className="btn-fx btn-fx-icon w-10 h-10 flex items-center justify-center rounded border border-border/60 text-muted-foreground hover:text-primary hover:border-primary/40"
       >
         {icon}
       </a>

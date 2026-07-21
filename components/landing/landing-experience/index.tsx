@@ -3,6 +3,7 @@ import { SectionBackdrop } from "@/components/utils/animations/section-backdrop"
 import { organizations } from "@/utils/constants/portfolio.constant";
 import { IOrganization } from "@/utils/interfaces/portfolio/organization.interface";
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
+import { EarlierRoles } from "@/components/landing/landing-experience/earlier-roles";
 import { MarqueeTrack } from "@/components/utils/animations/marquee-track";
 import { ScrambleText } from "@/components/utils/animations/scramble-text";
 import { SplitReveal } from "@/components/utils/animations/split-reveal";
@@ -20,7 +21,7 @@ export default function LandingExperience(props: { lang: TLocale }) {
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
-    <section id="experience" className="relative isolate py-24 px-6 bg-card">
+    <section id="experience" className="relative isolate py-16 sm:py-20 lg:py-24 px-6 bg-card">
       <SectionBackdrop />
 
       <div className="max-w-6xl mx-auto">
@@ -34,7 +35,7 @@ export default function LandingExperience(props: { lang: TLocale }) {
         <SplitReveal
           as="h2"
           type="lines"
-          className="text-4xl sm:text-5xl font-bold text-foreground mt-3 mb-12"
+          className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mt-3 mb-12"
         >
           {dict.experience.heading}
         </SplitReveal>
@@ -62,7 +63,9 @@ export default function LandingExperience(props: { lang: TLocale }) {
                   <div className="w-1.5 h-1.5 rounded-full bg-primary" />
                 </div>
 
-                <div className="bg-background rounded border border-border/60 p-5 hover:border-primary/25 hover:shadow-[0_0_20px_rgba(255, 255, 255,0.08)] transition-all duration-300 motion-safe:hover:translate-x-1">
+                {/* Anchored to the timeline rail, so it slides sideways rather
+                    than lifting — a vertical lift would drift off its node. */}
+                <div className="card-interactive card-interactive-inline bg-background rounded border border-border/60 p-5">
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 mb-3">
                     <div>
                       <h3 className="text-foreground font-semibold text-base">
@@ -96,42 +99,10 @@ export default function LandingExperience(props: { lang: TLocale }) {
 
           {earlierExperiences.length > 0 && (
             <AnimateIn from="up" delay={0.1}>
-              <details className="group mt-8 sm:ml-10">
-                <summary className="flex min-h-11 cursor-pointer list-none items-center justify-center gap-2 rounded border border-border/60 bg-background px-4 font-mono text-xs text-muted-foreground transition-colors hover:border-primary/30 hover:text-primary">
-                  <span>{dict.experience.earlierRoles}</span>
-                  <span
-                    aria-hidden
-                    className="transition-transform group-open:rotate-180"
-                  >
-                    ↓
-                  </span>
-                </summary>
-                <div className="mt-4 space-y-4">
-                  {earlierExperiences.map((exp) => (
-                    <article
-                      key={`${exp.role}-${exp.company}`}
-                      className="rounded border border-border/60 bg-background p-5"
-                    >
-                      <div className="flex flex-col justify-between gap-1 sm:flex-row">
-                        <div>
-                          <h3 className="text-sm font-semibold text-foreground">
-                            {exp.role}
-                          </h3>
-                          <p className="mt-0.5 font-mono text-xs text-primary">
-                            {exp.company}
-                          </p>
-                        </div>
-                        <span className="font-mono text-xs text-muted-foreground">
-                          {exp.period}
-                        </span>
-                      </div>
-                      <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-                        {exp.description}
-                      </p>
-                    </article>
-                  ))}
-                </div>
-              </details>
+              <EarlierRoles
+                experiences={earlierExperiences}
+                label={dict.experience.earlierRoles}
+              />
             </AnimateIn>
           )}
         </div>

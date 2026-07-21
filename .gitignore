@@ -16,6 +16,13 @@
 
 # next.js
 /.next/
+# Custom NEXT_DIST_DIR build dirs (see .claude/launch.json: .next-preview,
+# .next-preview-8901, .next-prodtest, …). Tailwind v4 auto-scans the project
+# and honours .gitignore, so an un-ignored build dir gets scanned — its
+# compiled chunks and source-map binaries yield garbled class candidates that
+# crash the CSS build. This glob keeps every variant out of both git and the
+# Tailwind source scan.
+/.next-*/
 /out/
 
 # production

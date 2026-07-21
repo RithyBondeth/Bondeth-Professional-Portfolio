@@ -13,7 +13,7 @@ export default function LandingRecommendations(props: { lang: TLocale }) {
   const { recommendations } = getDictionary(lang);
 
   return (
-    <section id="recommendations" className="relative isolate overflow-hidden bg-card px-6 py-24">
+    <section id="recommendations" className="relative isolate overflow-hidden bg-card px-6 py-16 sm:py-20 lg:py-24">
       <SectionBackdrop />
 
       <div className="mx-auto max-w-6xl">
@@ -27,7 +27,7 @@ export default function LandingRecommendations(props: { lang: TLocale }) {
             <SplitReveal
               as="h2"
               type="lines"
-              className="mt-3 text-4xl font-bold text-foreground sm:text-5xl"
+              className="mt-3 text-3xl font-bold text-foreground sm:text-4xl lg:text-5xl"
             >
               {recommendations.heading}
             </SplitReveal>
@@ -66,7 +66,7 @@ export default function LandingRecommendations(props: { lang: TLocale }) {
           {recommendations.items.map((item) => (
             <article
               key={item.title}
-              className="rounded-lg border border-border/60 bg-background/70 p-5"
+              className="card-interactive rounded-lg border border-border/60 bg-background/70 p-5"
             >
               <BadgeCheck aria-hidden className="size-5 text-primary" />
               <h3 className="mt-5 text-base font-semibold text-foreground">
@@ -83,10 +83,10 @@ export default function LandingRecommendations(props: { lang: TLocale }) {
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               href={`/${lang}/#contact`}
-              className="inline-flex min-h-11 items-center gap-2 rounded bg-primary px-4 font-mono text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              className="inline-flex min-h-11 items-center gap-2 btn-fx btn-fx-primary rounded bg-primary px-4 font-mono text-xs font-medium text-primary-foreground"
             >
               {recommendations.requestReference}
-              <ArrowRight aria-hidden className="size-3.5" />
+              <ArrowRight aria-hidden data-btn-arrow className="size-3.5" />
             </Link>
             <a
               href={siteConfig.linkedin}

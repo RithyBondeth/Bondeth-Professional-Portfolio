@@ -383,7 +383,7 @@ function StatCard(props: {
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
-    <div className="rounded border border-border/60 bg-background p-5 hover:border-primary/30 hover:shadow-[0_0_24px_rgba(255, 255, 255,0.09)] transition-all duration-300 group">
+    <div className="card-interactive group rounded border border-border/60 bg-background p-5">
       <p className="text-[10px] font-mono text-muted-foreground mb-3 group-hover:text-primary dark:group-hover:text-primary/60 transition-colors">
         <span className="text-violet-400">const</span>{" "}
         <span className="text-sky-300">{varName}</span>
@@ -430,7 +430,7 @@ export default function LandingAbout(props: { lang: TLocale }) {
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
-    <section id="about" className="relative isolate py-24 px-6 bg-card">
+    <section id="about" className="relative isolate py-16 sm:py-20 lg:py-24 px-6 bg-card">
       <SectionBackdrop />
 
       <div className="max-w-6xl mx-auto">
@@ -462,7 +462,7 @@ export default function LandingAbout(props: { lang: TLocale }) {
             <SplitReveal
               as="h2"
               type="lines"
-              className="text-4xl sm:text-5xl font-bold text-foreground mb-6 leading-snug"
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-6 leading-snug"
             >
               {dict.about.heading}
             </SplitReveal>
