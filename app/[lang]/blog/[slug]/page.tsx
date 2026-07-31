@@ -3,6 +3,8 @@ import {
   getPostBySlug,
   getAllPosts,
   getRelatedPosts,
+  getTableOfContents,
+  slugifyTag,
 } from "@/utils/functions/blog";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
 import { notFound } from "next/navigation";
@@ -19,8 +21,6 @@ import rehypePrettyCode, {
 } from "rehype-pretty-code";
 import remarkGfm from "remark-gfm";
 import { hasLocale, getDictionary, locales } from "@/utils/i18n";
-import { getTableOfContents } from "@/utils/functions/blog/get-table-of-contents";
-import { slugifyTag } from "@/utils/functions/blog/slugify-tag";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
 interface IBlogPostPageProps {

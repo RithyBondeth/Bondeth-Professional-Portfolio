@@ -3,7 +3,7 @@ import { SectionBackdrop } from "@/components/utils/animations/section-backdrop"
 import {
   ISkill,
   type TSkillLevel,
-} from "@/utils/interfaces/portfolio/skill.interface";
+} from "@/utils/interfaces/portfolio";
 import { getDictionary, type TLocale } from "@/utils/i18n";
 import { AnimateIn } from "@/components/utils/animations/animate-in";
 import { MarqueeTrack } from "@/components/utils/animations/marquee-track";

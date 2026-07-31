@@ -2,7 +2,7 @@
 
 Personal portfolio and technical blog for **Rithy Bondeth**, a Full Stack Developer & AI Engineer based in Phnom Penh, Cambodia. A bilingual (English / Khmer) single-page site with a bilingual MDX blog.
 
-🔗 **Live:** https://bondeth-professional-portfolio.vercel.app
+🔗 **Live:** https://bondeth.dev
 
 ## Tech Stack
 

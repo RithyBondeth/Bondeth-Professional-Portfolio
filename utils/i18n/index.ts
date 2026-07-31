@@ -29,7 +29,3 @@ export function localizeHref(href: string, lang: TLocale): string {
   if (href.startsWith("/#")) return `/${lang}${href.slice(1)}`;
   return `/${lang}${href}`;
 }
-
-export function localizeNavHref(href: string, lang: TLocale): string {
-  return localizeHref(href, lang);
-}

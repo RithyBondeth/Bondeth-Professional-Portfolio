@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { SectionBackdrop } from "@/components/utils/animations/section-backdrop";
 import { organizations } from "@/utils/constants/portfolio.constant";
-import { IOrganization } from "@/utils/interfaces/portfolio/organization.interface";
+import { IOrganization } from "@/utils/interfaces/portfolio";
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
 import { EarlierRoles } from "@/components/landing/landing-experience/earlier-roles";
 import { MarqueeTrack } from "@/components/utils/animations/marquee-track";

@@ -1,6 +1,9 @@
 import { notFound } from "next/navigation";
-import { getAllCategories, getAllPosts } from "@/utils/functions/blog";
-import { getAllTags } from "@/utils/functions/blog/get-tags";
+import {
+  getAllCategories,
+  getAllPosts,
+  getAllTags,
+} from "@/utils/functions/blog";
 import { AnimateIn } from "@/components/utils/animations/animate-in";
 import { ScrambleText } from "@/components/utils/animations/scramble-text";
 import { BlogExplorer } from "@/components/blog/blog-explorer";

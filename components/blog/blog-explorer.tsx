@@ -4,9 +4,8 @@ import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { gsap, Flip } from "@/components/utils/animations/gsap";
 import { BlogCover } from "@/components/blog/blog-cover";
-import type { IPost } from "@/utils/interfaces/blog/blog.interface";
-import type { ICategoryCount } from "@/utils/functions/blog/get-categories";
-import type { ITagCount } from "@/utils/functions/blog/get-tags";
+import type { IPost } from "@/utils/interfaces/blog";
+import type { ICategoryCount, ITagCount } from "@/utils/functions/blog";
 import type { TDictionary, TLocale } from "@/utils/i18n";
 
 type TListPost = Omit<IPost, "content">;

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getPostsByTag } from "@/utils/functions/blog/get-tags";
+import { getPostsByTag } from "@/utils/functions/blog";
 import { AnimateIn } from "@/components/utils/animations/animate-in";
 import { BlogExplorer } from "@/components/blog/blog-explorer";
 import { hasLocale, getDictionary } from "@/utils/i18n";

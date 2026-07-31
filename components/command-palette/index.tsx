@@ -12,6 +12,7 @@ import {
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { useTheme } from "@/components/utils/theme/theme-provider";
+import { useMounted } from "@/components/utils/hooks/use-mounted";
 import { siteConfig, navLinks } from "@/utils/constants/portfolio.constant";
 import {
   GitHubIcon,
@@ -22,7 +23,6 @@ import {
 import {
   getDictionary,
   localizeHref,
-  localizeNavHref,
   type TLocale,
 } from "@/utils/i18n";
 
@@ -129,10 +129,10 @@ export default function CommandPalette(props: {
   const cp = dict.commandPalette;
 
   /* -------------------------------- All States ------------------------------ */
-  const [mounted, setMounted] = useState(false);
+  const mounted = useMounted();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [storedActiveIndex, setActiveIndex] = useState(0);
   const [copied, setCopied] = useState(false);
 
   const router = useRouter();
@@ -142,8 +142,6 @@ export default function CommandPalette(props: {
   const restoreFocusRef = useRef<HTMLElement | null>(null);
 
   /* --------------------------------- Effects -------------------------------- */
-  useEffect(() => setMounted(true), []);
-
   const close = useCallback(() => {
     setOpen(false);
     setQuery("");
@@ -197,12 +195,7 @@ export default function CommandPalette(props: {
         // language even when the visible label is Khmer.
         keywords: `${dict.nav[key]} ${link.label} ${link.href}`,
         icon: link.href === "/blog" ? <BookIcon /> : <HashIcon />,
-        run: () =>
-          router.push(
-            link.href === "/blog"
-              ? localizeNavHref(link.href, lang)
-              : localizeHref(link.href, lang),
-          ),
+        run: () => router.push(localizeHref(link.href, lang)),
       };
     });
 
@@ -299,10 +292,10 @@ export default function CommandPalette(props: {
     return actions.filter((a) => a.keywords.toLowerCase().includes(q));
   }, [actions, query]);
 
-  // Keep the highlighted row valid as the filtered set shrinks/grows.
-  useEffect(() => {
-    setActiveIndex((prev) => (prev >= filtered.length ? 0 : prev));
-  }, [filtered.length]);
+  // Keep the highlighted row valid as the filtered set shrinks/grows. Derived
+  // rather than clamped in an effect, so narrowing the query can't render a
+  // frame with the highlight pointing past the end of the list.
+  const activeIndex = storedActiveIndex >= filtered.length ? 0 : storedActiveIndex;
 
   // Scroll the active row into view when it changes.
   useEffect(() => {
@@ -328,11 +321,13 @@ export default function CommandPalette(props: {
       close();
     } else if (e.key === "ArrowDown") {
       e.preventDefault();
-      setActiveIndex((i) => (filtered.length ? (i + 1) % filtered.length : 0));
+      setActiveIndex(filtered.length ? (activeIndex + 1) % filtered.length : 0);
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
-      setActiveIndex((i) =>
-        filtered.length ? (i - 1 + filtered.length) % filtered.length : 0,
+      setActiveIndex(
+        filtered.length
+          ? (activeIndex - 1 + filtered.length) % filtered.length
+          : 0,
       );
     } else if (e.key === "Enter") {
       e.preventDefault();

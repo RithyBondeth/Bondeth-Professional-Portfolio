@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
-import { IPost } from "@/utils/interfaces/blog/blog.interface";
+import { IPost } from "@/utils/interfaces/blog";
 import { getReadingTime } from "./get-reading-time";
 import type { TLocale } from "@/utils/i18n";
 

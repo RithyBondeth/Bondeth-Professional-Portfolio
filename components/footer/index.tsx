@@ -19,7 +19,7 @@ import {
 } from "@/components/utils/icons";
 import { Logo } from "@/components/utils/icons/logo";
 import {
-  localizeNavHref,
+  localizeHref,
   getDictionary,
   type TLocale,
   type TDictionary,
@@ -164,7 +164,7 @@ export default function Footer(props: { lang: TLocale }) {
             {primaryNavLinks.map(({ href }, i) => (
               <li key={href}>
                 <Link
-                  href={localizeNavHref(href, lang)}
+                  href={localizeHref(href, lang)}
                   onClick={(e) => handleNavClick(e, href)}
                   className="text-muted-foreground hover:text-primary text-xs font-mono transition-colors flex items-center gap-1.5"
                 >

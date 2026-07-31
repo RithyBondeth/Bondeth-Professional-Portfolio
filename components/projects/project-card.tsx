@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ExternalLinkIcon } from "@/components/utils/icons";
 import { TiltCard } from "@/components/utils/animations/tilt-card";
-import type { IProject } from "@/utils/interfaces/portfolio/project.interface";
+import type { IProject } from "@/utils/interfaces/portfolio";
 import type { TDictionary, TLocale } from "@/utils/i18n";
 
 export function ProjectCard(props: {

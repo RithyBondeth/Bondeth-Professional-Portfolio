@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
-import type { IExperience } from "@/utils/interfaces/portfolio/experience.interface";
+import type { IExperience } from "@/utils/interfaces/portfolio";
 
 /**
  * Collapsible "earlier roles" panel.

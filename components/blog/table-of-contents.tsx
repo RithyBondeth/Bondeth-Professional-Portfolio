@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "@/components/utils/animations/gsap";
-import type { ITableOfContentsItem } from "@/utils/functions/blog/get-table-of-contents";
+import type { ITableOfContentsItem } from "@/utils/functions/blog";
 
 interface ITableOfContentsProps {
   items: ITableOfContentsItem[];

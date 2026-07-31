@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
@@ -10,6 +10,11 @@ import { ScrambleText } from "@/components/utils/animations/scramble-text";
 import { TiltCard } from "@/components/utils/animations/tilt-card";
 import { Magnetic } from "@/components/utils/animations/magnetic";
 import { SectionBackdrop } from "@/components/utils/animations/section-backdrop";
+import {
+  useAnimationFrameValue,
+  useCountUp,
+  useReducedMotion,
+} from "@/components/utils/animations/use-motion";
 import {
   GitHubIcon,
   LinkedInIcon,
@@ -130,11 +135,16 @@ const KEYWORDS = new Set([
   "catch",
 ]);
 
+interface IToken {
+  text: string;
+  cls: string;
+}
+
 // Lightweight tokeniser — good enough for a decorative code backdrop.
-function tokenize(line: string) {
+function tokenize(line: string): IToken[] {
   const re =
     /(\/\/.*$)|('[^']*'|"[^"]*"|`[^`]*`)|\b(\d+)\b|([A-Za-z_$][\w$]*)|(\s+)|([^\s\w])/g;
-  const out: { text: string; cls: string }[] = [];
+  const out: IToken[] = [];
   let m: RegExpExecArray | null;
   while ((m = re.exec(line))) {
     if (m[1])
@@ -157,31 +167,20 @@ function tokenize(line: string) {
 // prefers-reduced-motion (shows everything at once) and resets when inactive so
 // the animation replays each time the panel re-enters view.
 function useTypewriter(total: number, cps: number, active: boolean, delay = 0) {
-  const [typed, setTyped] = useState(0);
-  useEffect(() => {
-    if (!active) {
-      setTyped(0);
-      return;
-    }
-    const reduce =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) {
-      setTyped(total);
-      return;
-    }
-    let raf = 0;
-    let startTime = 0;
-    const tick = (now: number) => {
-      if (!startTime) startTime = now;
-      const elapsed = (now - startTime) / 1000 - delay;
-      const c = elapsed <= 0 ? 0 : Math.min(Math.floor(elapsed * cps), total);
-      setTyped(c);
-      if (c < total) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [total, cps, active, delay]);
+  const frame = useCallback(
+    (elapsedMs: number) => {
+      const elapsed = elapsedMs / 1000 - delay;
+      const value = elapsed <= 0 ? 0 : Math.min(Math.floor(elapsed * cps), total);
+      return { value, done: value >= total };
+    },
+    [total, cps, delay],
+  );
+
+  const reduce = useReducedMotion();
+  const typed = useAnimationFrameValue(active && !reduce, frame);
+
+  // Reduced motion: no typing pass, the code is simply there.
+  if (reduce) return active ? total : 0;
   return typed;
 }
 
@@ -197,12 +196,13 @@ function CodeColumn(props: {
   // Pre-tokenise each line and record its character offset in the full source
   // so we can map the running "typed" count onto a prefix of the code.
   const lines = useMemo(() => {
-    let acc = 0;
-    return code.split("\n").map((raw) => {
-      const offset = acc;
-      acc += raw.length + 1; // + newline
-      return { tokens: tokenize(raw), len: raw.length, offset };
-    });
+    const out: { tokens: IToken[]; len: number; offset: number }[] = [];
+    let offset = 0;
+    for (const raw of code.split("\n")) {
+      out.push({ tokens: tokenize(raw), len: raw.length, offset });
+      offset += raw.length + 1; // + newline
+    }
+    return out;
   }, [code]);
 
   const total = code.length;
@@ -341,29 +341,6 @@ function PortraitPanel(props: { alt: string }) {
       </figcaption>
     </figure>
   );
-}
-
-/* ---------------------------------- Hooks ---------------------------------- */
-function useCountUp(target: number, duration: number, started: boolean) {
-  const [count, setCount] = useState(0);
-  useEffect(() => {
-    // Reset to zero whenever the stats leave view so the count replays from
-    // scratch the next time they scroll back in.
-    if (!started) {
-      setCount(0);
-      return;
-    }
-    let raf = 0;
-    const startTime = performance.now();
-    const tick = (now: number) => {
-      const p = Math.min((now - startTime) / duration, 1);
-      setCount(Math.round((1 - Math.pow(1 - p, 3)) * target));
-      if (p < 1) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [target, duration, started]);
-  return count;
 }
 
 /* --------------------------------- Utilities -------------------------------- */

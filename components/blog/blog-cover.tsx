@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import type { IPost } from "@/utils/interfaces/blog/blog.interface";
+import type { IPost } from "@/utils/interfaces/blog";
 
 /* -------------------------------- Seeding --------------------------------- */
 /** Cheap deterministic hash of the slug — stable across server and client, so

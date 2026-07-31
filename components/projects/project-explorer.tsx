@@ -3,8 +3,8 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { gsap, Flip } from "@/components/utils/animations/gsap";
 import { ProjectCard } from "@/components/projects/project-card";
-import type { IProject } from "@/utils/interfaces/portfolio/project.interface";
-import type { TProjectCategory } from "@/utils/types/portfolio/project-category.type";
+import type { IProject } from "@/utils/interfaces/portfolio";
+import type { TProjectCategory } from "@/utils/types/portfolio";
 import type { TDictionary, TLocale } from "@/utils/i18n";
 
 const CATEGORIES = ["All", "Web", "AI", "Mobile"] as const;

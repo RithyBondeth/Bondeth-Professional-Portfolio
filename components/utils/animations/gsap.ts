@@ -42,6 +42,19 @@ if (typeof window !== "undefined") {
  */
 export const SCRAMBLE_CHARS = "!<>-_\\/[]{}—=+*^?#01";
 
+/**
+ * One-shot read of the user's motion preference, for animations driven by hand
+ * (rAF loops, canvas) rather than by GSAP. Inside a GSAP timeline prefer
+ * `gsap.matchMedia()`, which also handles the preference changing mid-session.
+ *
+ * Returns false during SSR, so the server renders the animated variant and the
+ * client decides on mount.
+ */
+export function prefersReducedMotion(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
 export {
   gsap,
   ScrollTrigger,

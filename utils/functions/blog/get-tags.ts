@@ -1,4 +1,4 @@
-import type { IPost } from "@/utils/interfaces/blog/blog.interface";
+import type { IPost } from "@/utils/interfaces/blog";
 import { getAllPosts } from "./get-all-posts";
 import { slugifyTag } from "./slugify-tag";
 import type { TLocale } from "@/utils/i18n";

@@ -17,7 +17,7 @@ import ThemeToggle from "@/components/utils/theme/theme-toggle";
 import { OPEN_COMMAND_PALETTE } from "@/components/command-palette";
 import {
   locales,
-  localizeNavHref,
+  localizeHref,
   getDictionary,
   type TLocale,
   type TDictionary,
@@ -39,6 +39,11 @@ const EXPLORE_IDS: string[] = exploreNavLinks.map(({ href }) =>
 
 function openCommandPalette() {
   window.dispatchEvent(new CustomEvent(OPEN_COMMAND_PALETTE));
+}
+
+/** Persists the chosen locale so the middleware can honour it on the next visit. */
+function persistLocaleCookie(target: TLocale) {
+  document.cookie = `NEXT_LOCALE=${target};path=/;max-age=31536000`;
 }
 
 function SearchIcon({ className }: { className?: string }) {
@@ -129,7 +134,7 @@ function LanguageSwitcher(props: { lang: TLocale }) {
     e: React.MouseEvent<HTMLAnchorElement>,
     target: TLocale,
   ) {
-    document.cookie = `NEXT_LOCALE=${target};path=/;max-age=31536000`;
+    persistLocaleCookie(target);
     if (target === lang) return;
 
     const doc = document as TDocWithViewTransition;
@@ -438,7 +443,7 @@ export default function Navbar(props: { lang: TLocale }) {
                 return (
                   <li key={href}>
                     <Link
-                      href={localizeNavHref(href, lang)}
+                      href={localizeHref(href, lang)}
                       onClick={(e) => {
                         handleNavClick(e, href);
                         setExploreOpen(false);
@@ -462,7 +467,7 @@ export default function Navbar(props: { lang: TLocale }) {
             return (
               <li key={href}>
                 <Link
-                  href={localizeNavHref(href, lang)}
+                  href={localizeHref(href, lang)}
                   data-nav-id={id}
                   onClick={(e) => handleNavClick(e, href)}
                   className={`relative px-2.5 xl:px-3 py-1.5 text-xs font-mono tracking-wide whitespace-nowrap transition-colors duration-200 rounded ${
@@ -553,7 +558,7 @@ export default function Navbar(props: { lang: TLocale }) {
               return (
                 <li key={href}>
                   <Link
-                    href={localizeNavHref(href, lang)}
+                    href={localizeHref(href, lang)}
                     onClick={(e) => {
                       handleNavClick(e, href);
                       setMenuOpen(false);

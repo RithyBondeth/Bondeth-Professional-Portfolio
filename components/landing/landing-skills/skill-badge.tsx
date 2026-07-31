@@ -7,7 +7,7 @@ import {
 import {
   ISkill,
   type TSkillLevel,
-} from "@/utils/interfaces/portfolio/skill.interface";
+} from "@/utils/interfaces/portfolio";
 import {
   SiReact,
   SiNextdotjs,

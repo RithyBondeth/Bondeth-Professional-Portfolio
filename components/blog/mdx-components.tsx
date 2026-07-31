@@ -5,7 +5,7 @@ import {
   type ComponentPropsWithoutRef,
   type ReactNode,
 } from "react";
-import { slugifyHeading } from "@/utils/functions/blog/get-table-of-contents";
+import { slugifyHeading } from "@/utils/functions/blog";
 
 function getTextContent(node: ReactNode): string {
   return Children.toArray(node)
