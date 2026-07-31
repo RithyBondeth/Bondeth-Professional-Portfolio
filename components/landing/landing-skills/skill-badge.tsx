@@ -156,13 +156,13 @@ export function SkillBadge(props: { skill: ISkill; levelLabel: string }) {
 
       <span className="relative z-1 flex items-center gap-2.5">
         {Icon && (
-          <Icon className="w-5 h-5 shrink-0 text-[var(--brand)] transition-transform duration-300 motion-safe:group-hover:scale-125" />
+          <Icon className="w-5 h-5 shrink-0 text-(--brand) transition-transform duration-300 motion-safe:group-hover:scale-125" />
         )}
         <span className="text-sm font-mono text-muted-foreground transition-colors duration-300 group-hover:text-foreground">
           {skill.name}
         </span>
         <span className="sr-only">{levelLabel}</span>
-        <span className="ml-0.5 shrink-0 text-[var(--brand)]" aria-hidden>
+        <span className="ml-0.5 shrink-0 text-(--brand)" aria-hidden>
           <ProficiencyDots level={skill.level} />
         </span>
       </span>
