@@ -1,275 +1,810 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useTheme } from "@/components/utils/theme/theme-provider";
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   WebGL mesh gradient — the Stripe-style `MiniGl` renderer.
+
+   A plane is subdivided into a grid, each vertex is displaced by 3D simplex
+   noise, and the wave colours are blended per-vertex and interpolated across
+   the triangles. The soft ribbons are the *mesh itself* bending, not a blurred
+   2D drawing, which is why it moves like liquid rather than like sliding bands.
+
+   The renderer below is the reference implementation. What is deliberately
+   different from the version it came from:
+
+   - `Gradient` owns no `resize` listener. The original attached one in `init()`
+     and never removed it, so every remount (a theme switch, a route change,
+     StrictMode's double-invoke) left a listener holding a dead GL context
+     alive. Resizing is now driven by the component, which can unsubscribe.
+   - `destroy()` releases the GL context via WEBGL_lose_context. Browsers cap
+     live contexts (~16) and silently kill the oldest, so leaking one per
+     remount eventually blanks the background.
+   - The palette is a module constant, not a prop with an inline default array.
+     A fresh `["#38bdf8", …]` literal on every render is a new identity, so an
+     effect keyed on it would tear down and rebuild the entire GL context on
+     every parent render.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+/* The renderer's uniform system dispatches on a runtime `type` string to pick a
+   `gl.uniform*` call and to generate GLSL declarations, so its values genuinely
+   have no static type — `any` here is the shape of the problem, not laziness.
+   Scoped to the renderer; the React component below is linted normally. */
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-this-alias */
+
+function normalizeColor(hexCode: number): number[] {
+  return [
+    ((hexCode >> 16) & 255) / 255,
+    ((hexCode >> 8) & 255) / 255,
+    (255 & hexCode) / 255,
+  ];
+}
+
+class MiniGl {
+  canvas: HTMLCanvasElement;
+  gl: WebGLRenderingContext;
+  meshes: any[] = [];
+  commonUniforms: any;
+  width?: number;
+  height?: number;
+  Material: any;
+  Uniform: any;
+  PlaneGeometry: any;
+  Mesh: any;
+  Attribute: any;
+
+  constructor(canvas: HTMLCanvasElement) {
+    this.canvas = canvas;
+    const gl = this.canvas.getContext("webgl", { antialias: true });
+    if (!gl) throw new Error("WebGL not supported");
+    this.gl = gl;
+
+    const context = this.gl;
+    const _miniGl = this;
+
+    this.Uniform = class {
+      type: string = "float";
+      value: any;
+      typeFn!: string;
+      excludeFrom?: string;
+      transpose?: boolean;
+
+      constructor(e: any) {
+        Object.assign(this, e);
+        const typeMap: Record<string, string> = {
+          float: "1f",
+          int: "1i",
+          vec2: "2fv",
+          vec3: "3fv",
+          vec4: "4fv",
+          mat4: "Matrix4fv",
+        };
+        this.typeFn = typeMap[this.type] || "1f";
+      }
+
+      update(location: any): void {
+        if (this.value === undefined || location === null) return;
+        const isMatrix = this.typeFn.indexOf("Matrix") === 0;
+        const fn = `uniform${this.typeFn}`;
+        if (isMatrix) {
+          (context as any)[fn](location, this.transpose || false, this.value);
+        } else {
+          (context as any)[fn](location, this.value);
+        }
+      }
+
+      getDeclaration(name: string, type: string, length?: number): string {
+        if (this.excludeFrom === type) return "";
+
+        if (this.type === "array") {
+          return (
+            this.value[0].getDeclaration(name, type, this.value.length) +
+            `\nconst int ${name}_length = ${this.value.length};`
+          );
+        }
+
+        if (this.type === "struct") {
+          let nameNoPrefix = name.replace("u_", "");
+          nameNoPrefix =
+            nameNoPrefix.charAt(0).toUpperCase() + nameNoPrefix.slice(1);
+          const fields = Object.entries(this.value)
+            .map(([n, u]: [string, any]) =>
+              u.getDeclaration(n, type).replace(/^uniform/, ""),
+            )
+            .join("");
+          return `uniform struct ${nameNoPrefix} \n{\n${fields}\n} ${name}${length ? `[${length}]` : ""};`;
+        }
+
+        return `uniform ${this.type} ${name}${length ? `[${length}]` : ""};`;
+      }
+    };
+
+    this.Attribute = class {
+      type: number = context.FLOAT;
+      normalized: boolean = false;
+      buffer: WebGLBuffer;
+      target!: number;
+      size!: number;
+      values?: Float32Array | Uint16Array;
+
+      constructor(e: any) {
+        this.buffer = context.createBuffer()!;
+        Object.assign(this, e);
+      }
+
+      update(): void {
+        if (this.values) {
+          context.bindBuffer(this.target, this.buffer);
+          context.bufferData(this.target, this.values, context.STATIC_DRAW);
+        }
+      }
+
+      attach(e: string, t: WebGLProgram): number {
+        const n = context.getAttribLocation(t, e);
+        if (this.target === context.ARRAY_BUFFER) {
+          context.bindBuffer(this.target, this.buffer);
+          context.enableVertexAttribArray(n);
+          context.vertexAttribPointer(
+            n,
+            this.size,
+            this.type,
+            this.normalized,
+            0,
+            0,
+          );
+        }
+        return n;
+      }
+
+      use(e: number): void {
+        context.bindBuffer(this.target, this.buffer);
+        if (this.target === context.ARRAY_BUFFER) {
+          context.enableVertexAttribArray(e);
+          context.vertexAttribPointer(
+            e,
+            this.size,
+            this.type,
+            this.normalized,
+            0,
+            0,
+          );
+        }
+      }
+    };
+
+    this.Material = class {
+      uniforms: any;
+      uniformInstances: any[] = [];
+      program!: WebGLProgram;
+
+      constructor(vertexShaders: string, fragments: string, uniforms: any = {}) {
+        const material = this;
+
+        function getShader(type: number, source: string): WebGLShader {
+          const shader = context.createShader(type)!;
+          context.shaderSource(shader, source);
+          context.compileShader(shader);
+          if (!context.getShaderParameter(shader, context.COMPILE_STATUS)) {
+            console.error(context.getShaderInfoLog(shader));
+            throw new Error("Shader compilation error");
+          }
+          return shader;
+        }
+
+        function getUniformDeclarations(uniforms: any, type: string): string {
+          return Object.entries(uniforms)
+            .map(([uniform, value]: [string, any]) =>
+              value.getDeclaration(uniform, type),
+            )
+            .join("\n");
+        }
+
+        material.uniforms = uniforms;
+        const prefix = "precision highp float;";
+
+        const vertexSource = `
+          ${prefix}
+          attribute vec4 position;
+          attribute vec2 uv;
+          attribute vec2 uvNorm;
+          ${getUniformDeclarations(_miniGl.commonUniforms, "vertex")}
+          ${getUniformDeclarations(uniforms, "vertex")}
+          ${vertexShaders}
+        `;
+
+        const fragmentSource = `
+          ${prefix}
+          ${getUniformDeclarations(_miniGl.commonUniforms, "fragment")}
+          ${getUniformDeclarations(uniforms, "fragment")}
+          ${fragments}
+        `;
+
+        material.program = context.createProgram()!;
+        context.attachShader(
+          material.program,
+          getShader(context.VERTEX_SHADER, vertexSource),
+        );
+        context.attachShader(
+          material.program,
+          getShader(context.FRAGMENT_SHADER, fragmentSource),
+        );
+        context.linkProgram(material.program);
+
+        if (!context.getProgramParameter(material.program, context.LINK_STATUS)) {
+          console.error(context.getProgramInfoLog(material.program));
+          throw new Error("Program linking error");
+        }
+
+        context.useProgram(material.program);
+        material.attachUniforms(undefined, _miniGl.commonUniforms);
+        material.attachUniforms(undefined, material.uniforms);
+      }
+
+      attachUniforms(name: string | undefined, uniforms: any): void {
+        if (name === undefined) {
+          Object.entries(uniforms).forEach(([n, u]) => this.attachUniforms(n, u));
+        } else if (uniforms.type === "array") {
+          uniforms.value.forEach((u: any, i: number) =>
+            this.attachUniforms(`${name}[${i}]`, u),
+          );
+        } else if (uniforms.type === "struct") {
+          Object.entries(uniforms.value).forEach(([u, i]) =>
+            this.attachUniforms(`${name}.${u}`, i),
+          );
+        } else {
+          this.uniformInstances.push({
+            uniform: uniforms,
+            location: context.getUniformLocation(this.program, name),
+          });
+        }
+      }
+    };
+
+    this.PlaneGeometry = class {
+      width: number = 1;
+      height: number = 1;
+      attributes: any;
+      vertexCount: number = 0;
+      xSegCount: number = 0;
+      ySegCount: number = 0;
+
+      constructor() {
+        this.attributes = {
+          position: new _miniGl.Attribute({
+            target: context.ARRAY_BUFFER,
+            size: 3,
+          }),
+          uv: new _miniGl.Attribute({ target: context.ARRAY_BUFFER, size: 2 }),
+          uvNorm: new _miniGl.Attribute({
+            target: context.ARRAY_BUFFER,
+            size: 2,
+          }),
+          index: new _miniGl.Attribute({
+            target: context.ELEMENT_ARRAY_BUFFER,
+            size: 3,
+            type: context.UNSIGNED_SHORT,
+          }),
+        };
+      }
+
+      setTopology(xSegs = 1, ySegs = 1): void {
+        this.xSegCount = xSegs;
+        this.ySegCount = ySegs;
+        this.vertexCount = (this.xSegCount + 1) * (this.ySegCount + 1);
+        const quadCount = this.xSegCount * this.ySegCount * 2;
+
+        this.attributes.uv.values = new Float32Array(2 * this.vertexCount);
+        this.attributes.uvNorm.values = new Float32Array(2 * this.vertexCount);
+        this.attributes.index.values = new Uint16Array(3 * quadCount);
+
+        for (let y = 0; y <= this.ySegCount; y++) {
+          for (let x = 0; x <= this.xSegCount; x++) {
+            const i = y * (this.xSegCount + 1) + x;
+            this.attributes.uv.values[2 * i] = x / this.xSegCount;
+            this.attributes.uv.values[2 * i + 1] = 1 - y / this.ySegCount;
+            this.attributes.uvNorm.values[2 * i] = (x / this.xSegCount) * 2 - 1;
+            this.attributes.uvNorm.values[2 * i + 1] =
+              1 - (y / this.ySegCount) * 2;
+
+            if (x < this.xSegCount && y < this.ySegCount) {
+              const s = y * this.xSegCount + x;
+              this.attributes.index.values[6 * s] = i;
+              this.attributes.index.values[6 * s + 1] = i + 1 + this.xSegCount;
+              this.attributes.index.values[6 * s + 2] = i + 1;
+              this.attributes.index.values[6 * s + 3] = i + 1;
+              this.attributes.index.values[6 * s + 4] = i + 1 + this.xSegCount;
+              this.attributes.index.values[6 * s + 5] = i + 2 + this.xSegCount;
+            }
+          }
+        }
+
+        this.attributes.uv.update();
+        this.attributes.uvNorm.update();
+        this.attributes.index.update();
+      }
+
+      setSize(width = 1, height = 1): void {
+        this.width = width;
+        this.height = height;
+        this.attributes.position.values = new Float32Array(3 * this.vertexCount);
+
+        const offsetX = width / -2;
+        const offsetY = height / -2;
+        const segWidth = width / this.xSegCount;
+        const segHeight = height / this.ySegCount;
+
+        for (let y = 0; y <= this.ySegCount; y++) {
+          const posY = offsetY + y * segHeight;
+          for (let x = 0; x <= this.xSegCount; x++) {
+            const posX = offsetX + x * segWidth;
+            const idx = y * (this.xSegCount + 1) + x;
+            this.attributes.position.values[3 * idx] = posX;
+            this.attributes.position.values[3 * idx + 1] = -posY;
+            this.attributes.position.values[3 * idx + 2] = 0;
+          }
+        }
+
+        this.attributes.position.update();
+      }
+    };
+
+    this.Mesh = class {
+      geometry: any;
+      material: any;
+      attributeInstances: any[] = [];
+
+      constructor(geometry: any, material: any) {
+        this.geometry = geometry;
+        this.material = material;
+
+        Object.entries(this.geometry.attributes).forEach(
+          ([e, attribute]: [string, any]) => {
+            this.attributeInstances.push({
+              attribute: attribute,
+              location: attribute.attach(e, this.material.program),
+            });
+          },
+        );
+
+        _miniGl.meshes.push(this);
+      }
+
+      draw(): void {
+        context.useProgram(this.material.program);
+        this.material.uniformInstances.forEach(({ uniform, location }: any) =>
+          uniform.update(location),
+        );
+        this.attributeInstances.forEach(({ attribute, location }: any) =>
+          attribute.use(location),
+        );
+        context.drawElements(
+          context.TRIANGLES,
+          this.geometry.attributes.index.values.length,
+          context.UNSIGNED_SHORT,
+          0,
+        );
+      }
+    };
+
+    const identityMatrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+    this.commonUniforms = {
+      projectionMatrix: new this.Uniform({
+        type: "mat4",
+        value: identityMatrix,
+      }),
+      modelViewMatrix: new this.Uniform({
+        type: "mat4",
+        value: identityMatrix,
+      }),
+      resolution: new this.Uniform({ type: "vec2", value: [1, 1] }),
+      aspectRatio: new this.Uniform({ type: "float", value: 1 }),
+    };
+  }
+
+  setSize(w = 640, h = 480): void {
+    this.width = w;
+    this.height = h;
+    this.canvas.width = w;
+    this.canvas.height = h;
+    this.gl.viewport(0, 0, w, h);
+    this.commonUniforms.resolution.value = [w, h];
+    this.commonUniforms.aspectRatio.value = w / h;
+  }
+
+  setOrthographicCamera(): void {
+    this.commonUniforms.projectionMatrix.value = [
+      2 / this.width!, 0, 0, 0,
+      0, 2 / this.height!, 0, 0,
+      0, 0, -0.001, 0,
+      0, 0, 0, 1,
+    ];
+  }
+
+  render(): void {
+    this.gl.clearColor(0, 0, 0, 0);
+    this.gl.clearDepth(1);
+    this.meshes.forEach((m) => m.draw());
+  }
+}
+
+class Gradient {
+  canvas: HTMLCanvasElement;
+  colors: string[];
+  minigl: MiniGl;
+  mesh: any;
+  time = 0;
+  last = 0;
+  animationId?: number;
+  isPlaying = false;
+
+  constructor(canvas: HTMLCanvasElement, colors: string[]) {
+    this.canvas = canvas;
+    this.colors = colors;
+    this.minigl = new MiniGl(canvas);
+    this.init();
+  }
+
+  init(): void {
+    const sectionColors = this.colors.map((hex) =>
+      normalizeColor(parseInt(hex.replace("#", "0x"), 16)),
+    );
+
+    const uniforms: any = {
+      u_time: new this.minigl.Uniform({ value: 0 }),
+      u_shadow_power: new this.minigl.Uniform({ value: 5 }),
+      u_darken_top: new this.minigl.Uniform({ value: 0 }),
+      // A vec4, and the shader reads `u_active_colors[i + 1]` for each wave
+      // layer — so this caps the palette at ONE base colour plus THREE layers.
+      // A longer palette indexes past .w, which is out of range in GLSL ES 1.0
+      // and either fails to compile or reads garbage. See PALETTES below.
+      u_active_colors: new this.minigl.Uniform({
+        value: [1, 1, 1, 1],
+        type: "vec4",
+      }),
+      u_global: new this.minigl.Uniform({
+        value: {
+          noiseFreq: new this.minigl.Uniform({
+            value: [0.00014, 0.00029],
+            type: "vec2",
+          }),
+          noiseSpeed: new this.minigl.Uniform({ value: 0.000005 }),
+        },
+        type: "struct",
+      }),
+      u_vertDeform: new this.minigl.Uniform({
+        value: {
+          incline: new this.minigl.Uniform({ value: 0 }),
+          offsetTop: new this.minigl.Uniform({ value: -0.5 }),
+          offsetBottom: new this.minigl.Uniform({ value: -0.5 }),
+          noiseFreq: new this.minigl.Uniform({ value: [3, 4], type: "vec2" }),
+          noiseAmp: new this.minigl.Uniform({ value: 320 }),
+          noiseSpeed: new this.minigl.Uniform({ value: 10 }),
+          noiseFlow: new this.minigl.Uniform({ value: 3 }),
+          noiseSeed: new this.minigl.Uniform({ value: 5 }),
+        },
+        type: "struct",
+        excludeFrom: "fragment",
+      }),
+      u_baseColor: new this.minigl.Uniform({
+        value: sectionColors[0],
+        type: "vec3",
+        excludeFrom: "fragment",
+      }),
+      u_waveLayers: new this.minigl.Uniform({
+        value: [],
+        excludeFrom: "fragment",
+        type: "array",
+      }),
+    };
+
+    for (let i = 1; i < sectionColors.length; i++) {
+      uniforms.u_waveLayers.value.push(
+        new this.minigl.Uniform({
+          value: {
+            color: new this.minigl.Uniform({
+              value: sectionColors[i],
+              type: "vec3",
+            }),
+            noiseFreq: new this.minigl.Uniform({
+              value: [
+                2 + i / sectionColors.length,
+                3 + i / sectionColors.length,
+              ],
+              type: "vec2",
+            }),
+            noiseSpeed: new this.minigl.Uniform({ value: 11 + 0.3 * i }),
+            noiseFlow: new this.minigl.Uniform({ value: 6.5 + 0.3 * i }),
+            noiseSeed: new this.minigl.Uniform({ value: 5 + 10 * i }),
+            noiseFloor: new this.minigl.Uniform({ value: 0.1 }),
+            noiseCeil: new this.minigl.Uniform({ value: 0.63 + 0.07 * i }),
+          },
+          type: "struct",
+        }),
+      );
+    }
+
+    const vertexShader = `
+vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+vec4 permute(vec4 x) { return mod289(((x*34.0)+1.0)*x); }
+vec4 taylorInvSqrt(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
+
+float snoise(vec3 v) {
+  const vec2 C = vec2(1.0/6.0, 1.0/3.0);
+  const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
+  vec3 i  = floor(v + dot(v, C.yyy));
+  vec3 x0 = v - i + dot(i, C.xxx);
+  vec3 g = step(x0.yzx, x0.xyz);
+  vec3 l = 1.0 - g;
+  vec3 i1 = min(g.xyz, l.zxy);
+  vec3 i2 = max(g.xyz, l.zxy);
+  vec3 x1 = x0 - i1 + C.xxx;
+  vec3 x2 = x0 - i2 + C.yyy;
+  vec3 x3 = x0 - D.yyy;
+  i = mod289(i);
+  vec4 p = permute(permute(permute(i.z + vec4(0.0, i1.z, i2.z, 1.0)) + i.y + vec4(0.0, i1.y, i2.y, 1.0)) + i.x + vec4(0.0, i1.x, i2.x, 1.0));
+  float n_ = 0.142857142857;
+  vec3 ns = n_ * D.wyz - D.xzx;
+  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
+  vec4 x_ = floor(j * ns.z);
+  vec4 y_ = floor(j - 7.0 * x_);
+  vec4 x = x_ *ns.x + ns.yyyy;
+  vec4 y = y_ *ns.x + ns.yyyy;
+  vec4 h = 1.0 - abs(x) - abs(y);
+  vec4 b0 = vec4(x.xy, y.xy);
+  vec4 b1 = vec4(x.zw, y.zw);
+  vec4 s0 = floor(b0)*2.0 + 1.0;
+  vec4 s1 = floor(b1)*2.0 + 1.0;
+  vec4 sh = -step(h, vec4(0.0));
+  vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy;
+  vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww;
+  vec3 p0 = vec3(a0.xy,h.x);
+  vec3 p1 = vec3(a0.zw,h.y);
+  vec3 p2 = vec3(a1.xy,h.z);
+  vec3 p3 = vec3(a1.zw,h.w);
+  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));
+  p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
+  vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
+  m = m * m;
+  return 42.0 * dot(m*m, vec4(dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3)));
+}
+
+vec3 blendNormal(vec3 base, vec3 blend) { return blend; }
+vec3 blendNormal(vec3 base, vec3 blend, float opacity) { return (blend * opacity + base * (1.0 - opacity)); }
+
+varying vec3 v_color;
+
+void main() {
+  float time = u_time * u_global.noiseSpeed;
+  vec2 noiseCoord = resolution * uvNorm * u_global.noiseFreq;
+  float tilt = resolution.y / 2.0 * uvNorm.y;
+  float incline = resolution.x * uvNorm.x / 2.0 * u_vertDeform.incline;
+  float offset = resolution.x / 2.0 * u_vertDeform.incline * mix(u_vertDeform.offsetBottom, u_vertDeform.offsetTop, uv.y);
+
+  float noise = snoise(vec3(
+    noiseCoord.x * u_vertDeform.noiseFreq.x + time * u_vertDeform.noiseFlow,
+    noiseCoord.y * u_vertDeform.noiseFreq.y,
+    time * u_vertDeform.noiseSpeed + u_vertDeform.noiseSeed
+  )) * u_vertDeform.noiseAmp;
+
+  noise *= 1.0 - pow(abs(uvNorm.y), 2.0);
+  noise = max(0.0, noise);
+
+  vec3 pos = vec3(position.x, position.y + tilt + incline + noise - offset, position.z);
+
+  v_color = u_baseColor;
+
+  for (int i = 0; i < u_waveLayers_length; i++) {
+    if (u_active_colors[i + 1] == 1.) {
+      WaveLayers layer = u_waveLayers[i];
+      float layerNoise = smoothstep(
+        layer.noiseFloor,
+        layer.noiseCeil,
+        snoise(vec3(
+          noiseCoord.x * layer.noiseFreq.x + time * layer.noiseFlow,
+          noiseCoord.y * layer.noiseFreq.y,
+          time * layer.noiseSpeed + layer.noiseSeed
+        )) / 2.0 + 0.5
+      );
+      v_color = blendNormal(v_color, layer.color, pow(layerNoise, 4.));
+    }
+  }
+
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+}`;
+
+    const fragmentShader = `
+varying vec3 v_color;
+
+void main() {
+  vec3 color = v_color;
+  if (u_darken_top == 1.0) {
+    vec2 st = gl_FragCoord.xy/resolution.xy;
+    color.g -= pow(st.y + sin(-12.0) * st.x, u_shadow_power) * 0.4;
+  }
+  gl_FragColor = vec4(color, 1.0);
+}`;
+
+    const material = new this.minigl.Material(
+      vertexShader,
+      fragmentShader,
+      uniforms,
+    );
+    const geometry = new this.minigl.PlaneGeometry();
+    this.mesh = new this.minigl.Mesh(geometry, material);
+
+    this.resize();
+  }
+
+  resize(): void {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    this.minigl.setSize(width, height);
+    this.minigl.setOrthographicCamera();
+
+    const xSegCount = Math.ceil(width * 0.02);
+    const ySegCount = Math.ceil(height * 0.05);
+    this.mesh.geometry.setTopology(xSegCount, ySegCount);
+    this.mesh.geometry.setSize(width, height);
+    this.mesh.material.uniforms.u_shadow_power.value = width < 600 ? 5 : 6;
+  }
+
+  animate = (timestamp: number): void => {
+    if (!this.isPlaying) return;
+    // Clamp the delta so a backgrounded tab (or a long frame) does not jump the
+    // noise field forward by seconds the moment it becomes visible again.
+    this.time += Math.min(timestamp - this.last, 1000 / 15);
+    this.last = timestamp;
+    this.mesh.material.uniforms.u_time.value = this.time;
+    this.minigl.render();
+    this.animationId = requestAnimationFrame(this.animate);
+  };
+
+  start(): void {
+    if (this.isPlaying) return;
+    this.isPlaying = true;
+    // Re-seed `last` on every start; otherwise resuming after a hidden tab
+    // feeds `animate` a timestamp measured against a stale origin.
+    this.last = performance.now();
+    this.animationId = requestAnimationFrame(this.animate);
+  }
+
+  stop(): void {
+    this.isPlaying = false;
+    if (this.animationId) cancelAnimationFrame(this.animationId);
+  }
+
+  /** Draw a single frame at a fixed point in the noise field, without looping. */
+  renderStaticFrame(time = 6000): void {
+    this.mesh.material.uniforms.u_time.value = time;
+    this.minigl.render();
+  }
+
+  destroy(): void {
+    this.stop();
+    // Browsers cap concurrent WebGL contexts and silently drop the oldest, so
+    // an unreleased context per remount eventually blanks the background.
+    this.minigl.gl.getExtension("WEBGL_lose_context")?.loseContext();
+  }
+}
+
+/* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-this-alias */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Palette. Exactly four entries per theme — one base colour plus three wave
+   layers — because `u_active_colors` is a vec4 (see the uniform above).
+
+   Both ends are bounded by contrast, because the mesh paints an OPAQUE
+   background — these colours are the literal ground every piece of body copy
+   sits on, and `--muted-foreground` is the text that gets closest to failing.
+
+   Light is capped at `#93cff3`: at a full sky-400 (#38bdf8) secondary text
+   scores ~3.7:1, under AA, where against #93cff3 it clears ~4.9:1.
+   Dark is capped at `#1a3454` for the same reason from the other side — the
+   dark `--muted-foreground` (#a1a1a1) holds ~4.8:1 there. The first pass at
+   this was near-flat #0a0a0a and read as no gradient at all.
+   ──────────────────────────────────────────────────────────────────────────── */
+const PALETTES: Record<"light" | "dark", string[]> = {
+  light: ["#a8daf8", "#ffffff", "#93cff3", "#ffffff"],
+  dark: ["#0a0f18", "#14283f", "#0d1726", "#1a3454"],
+};
+
+/** Vertex-displacement settings — the shape of the sweep, shared by both themes. */
+const DEFORM = { incline: 0.5, noiseAmp: 250, noiseFlow: 5 } as const;
+const NOISE_FREQUENCY: [number, number] = [0.0001, 0.0009];
+const NOISE_SPEED = 0.00001;
 
 interface IGradientWaveProps {
-  /** Overall strength, `0` → invisible, `1` → full. Scales every ribbon's alpha. */
-  intensity?: number;
-  /** Drift-rate multiplier. `1` is the house default (~30s per cycle). */
-  speed?: number;
-  /** Extra classes for the wrapper. */
+  /** Extra classes for the fixed wrapper. */
   className?: string;
 }
 
 /**
- * The ribbons, back to front.
+ * The site's ambient background — an animated WebGL mesh gradient.
  *
- * Each one is the band between two sine composites — NOT a fill from a curve
- * down to the floor. Filling to the floor stacks every layer at the bottom of
- * the frame, which is what made the old version darkest along its own bottom
- * edge; discrete ribbons let white space run between them, which is the whole
- * character of this effect.
+ * Mounted ONCE, fixed to the viewport, in the root layout. It is deliberately
+ * not per-section: a copy per section put a seam at every section boundary
+ * where one instance ended and the next started over. Landing and index pages
+ * carry no background of their own and let this show through.
  *
- * The gaps between them matter as much as the ribbons: three bands totalling
- * ~0.86 of the height leave real white showing, and because `amp` is close to
- * each band's own thickness, the ribbons swing across those gaps and close them
- * on one side of the frame while opening them on the other. That is what makes
- * the white read as diagonal wedges rather than as flat horizontal stripes.
- *
- * `top`/`thickness` are fractions of height, `amp` is the sine's swing (also a
- * fraction of height), `freq` is cycles across the width, `speed` is cycles per
- * second, and `phase` offsets each ribbon so their crests never line up.
- *
- * Frequencies stay well under 1 — a full sine cycle across the viewport reads
- * as a mechanical ripple, while two-thirds of one reads as a single sweep
- * crossing the frame, which is the shape the reference is built from.
- */
-const RIBBONS = [
-  { top: -0.08, thickness: 0.24, amp: 0.15, freq: 0.62, speed: 0.02, phase: 0 },
-  { top: 0.32, thickness: 0.28, amp: 0.17, freq: 0.5, speed: 0.031, phase: 2.2 },
-  { top: 0.7, thickness: 0.34, amp: 0.13, freq: 0.72, speed: 0.024, phase: 4.1 },
-] as const;
-
-/**
- * One hue, several alphas — the reference is monochrome sky blue on white, and
- * the depth in it comes entirely from ribbons overlapping at different opacities,
- * not from a spectrum. Mixing hues (the earlier cyan/violet/rose version) reads
- * as a different effect altogether.
- *
- * Light mode paints sky blue onto near-white. Dark mode keeps the same hue but
- * drops it to roughly a third of the alpha: over #0a0a0a the ribbons have to
- * read as a glow, and anything near the light-mode alpha turns the page navy.
- */
-const PALETTES = {
-  light: { rgb: [96, 178, 235], alphas: [0.3, 0.4, 0.36] },
-  dark: { rgb: [56, 140, 210], alphas: [0.13, 0.18, 0.16] },
-} as const;
-
-/**
- * Backing-store scale, as a fraction of CSS pixels — deliberately NOT keyed to
- * devicePixelRatio.
- *
- * The ribbons are enormous, low-frequency and translucent, so a fifth-resolution
- * buffer upscaled by the compositor is indistinguishable from a full-resolution
- * one once the wrapper's blur lands on top, at a twenty-fifth of the fill cost.
- */
-const RENDER_SCALE = 0.2;
-/** Redraw rate. The drift is slow enough that 24fps reads as continuous. */
-const MAX_FPS = 24;
-/** Elapsed time the single static frame is drawn at (reduced motion / touch). */
-const SETTLED_TIME = 8;
-/** Horizontal sampling pitch, in backing-store pixels. */
-const STEP = 4;
-
-/**
- * Flowing sky-blue ribbons on a 2D canvas — the site's ambient background.
- *
- * This is mounted ONCE, fixed to the viewport, in the root layout. It is
- * deliberately not per-section: a copy per section meant every section boundary
- * carried a seam where one instance's bloom faded out and the next one's began.
- * Sections are transparent and let this single layer show through instead.
- *
- * Behaviour contract (the house canvas contract, as in `DotMatrix`):
- * - Reduced motion → one settled frame is drawn, then the loop never runs.
- * - Coarse pointers → likewise static. This is a blurred, full-bleed layer whose
- *   contents change every frame; re-rasterising that during scroll is exactly
- *   what a phone cannot spare, and the ribbons read as ambient colour whether or
- *   not they move.
+ * Behaviour contract:
+ * - Reduced motion → one static frame, then the loop never runs.
  * - The loop pauses while the tab is hidden.
- * - Follows `data-theme` live, so a theme toggle repaints without a remount.
- * - Purely decorative, so the canvas is hidden from assistive tech.
+ * - Re-initialises on a theme change (via the canvas `key`), which is also what
+ *   guarantees a fresh GL context rather than a second program on a stale one.
+ * - Degrades to the plain `--background` colour if WebGL is unavailable.
+ * - Purely decorative, so it is hidden from assistive tech.
  */
-export function GradientWave(props: IGradientWaveProps) {
-  /* ---------------------------------- Props --------------------------------- */
-  const { intensity = 1, speed = 1, className } = props;
-
-  /* ---------------------------------- Utils --------------------------------- */
+export function GradientWave({ className }: IGradientWaveProps) {
+  const { resolvedTheme } = useTheme();
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  /* --------------------------------- Effects -------------------------------- */
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    let raf = 0;
-    let running = false;
-    let start = 0;
-    let lastDraw = 0;
-    let w = 0;
-    let h = 0;
 
     const reduceMq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const coarseMq = window.matchMedia("(pointer: coarse)");
-    /** True when this instance should render a single frame and never loop. */
-    const isStatic = () => reduceMq.matches || coarseMq.matches;
 
-    /* Resolved once per theme change rather than per frame — building rgba()
-       strings on a hot canvas path is exactly the waste `DotMatrix` hoists. */
-    let fills: string[] = [];
+    let gradient: Gradient;
+    try {
+      gradient = new Gradient(canvas, PALETTES[resolvedTheme]);
+    } catch (error) {
+      // No WebGL, or a driver that refused the shader. The page keeps its
+      // --background colour and stays entirely usable.
+      console.error("GradientWave: falling back to a flat background.", error);
+      return;
+    }
 
-    const buildFills = () => {
-      const theme =
-        document.documentElement.dataset.theme === "light" ? "light" : "dark";
-      const { rgb, alphas } = PALETTES[theme];
-      fills = alphas.map(
-        (a) => `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${a * intensity})`,
-      );
-    };
+    const uniforms = gradient.mesh.material.uniforms;
+    uniforms.u_global.value.noiseFreq.value = NOISE_FREQUENCY;
+    uniforms.u_global.value.noiseSpeed.value = NOISE_SPEED;
+    Object.entries(DEFORM).forEach(([key, value]) => {
+      const uniform = uniforms.u_vertDeform.value[key];
+      if (uniform) uniform.value = value;
+    });
 
-    /** The ribbon's edge at `x`: two sines beating against each other, so the
-     *  sweep never repeats on an obvious period. */
-    const edge = (
-      x: number,
-      offset: number,
-      amp: number,
-      freq: number,
-      t: number,
-      phase: number,
-    ) => {
-      const nx = (x / w) * Math.PI * 2;
-      return (
-        h * offset +
-        Math.sin(nx * freq + t + phase) * h * amp +
-        Math.sin(nx * freq * 1.7 - t * 1.3 + phase) * h * amp * 0.4
-      );
-    };
-
-    const draw = (elapsed: number) => {
-      ctx.clearRect(0, 0, w, h);
-      if (!fills.length) return;
-
-      for (let i = 0; i < RIBBONS.length; i++) {
-        const { top, thickness, amp, freq, speed: rs, phase } = RIBBONS[i];
-        const t = elapsed * rs * speed * Math.PI * 2;
-
-        ctx.beginPath();
-        // Leading edge, left to right...
-        for (let x = 0; x <= w; x += STEP) {
-          const y = edge(x, top, amp, freq, t, phase);
-          if (x === 0) ctx.moveTo(x, y);
-          else ctx.lineTo(x, y);
-        }
-        // ...then the trailing edge back, right to left. The two run at
-        // slightly different phases so the ribbon's width breathes across the
-        // frame instead of tracing a constant-thickness stripe.
-        for (let x = w; x >= 0; x -= STEP) {
-          ctx.lineTo(
-            x,
-            edge(x, top + thickness, amp * 0.8, freq, t * 1.15, phase + 1.1),
-          );
-        }
-        ctx.closePath();
-        ctx.fillStyle = fills[i];
-        ctx.fill();
+    const sync = () => {
+      if (reduceMq.matches || document.hidden) {
+        gradient.stop();
+        if (reduceMq.matches) gradient.renderStaticFrame();
+      } else {
+        gradient.start();
       }
     };
+    sync();
 
-    const loop = (now: number) => {
-      if (!running) return;
-      if (!start) start = now;
-      if (now - lastDraw >= 1000 / MAX_FPS) {
-        lastDraw = now;
-        draw((now - start) / 1000);
-      }
-      raf = requestAnimationFrame(loop);
+    // Resizing is driven from here rather than from inside `Gradient`, so the
+    // listener actually gets removed — the original attached it in `init()`
+    // with no way to detach, leaking one per remount.
+    const onResize = () => {
+      gradient.resize();
+      if (!gradient.isPlaying) gradient.renderStaticFrame();
     };
-
-    const play = () => {
-      if (running || isStatic()) return;
-      running = true;
-      raf = requestAnimationFrame(loop);
-    };
-
-    const pause = () => {
-      running = false;
-      cancelAnimationFrame(raf);
-      start = 0;
-    };
-
-    const resize = () => {
-      const rect = canvas.getBoundingClientRect();
-      if (!rect.width || !rect.height) return;
-      w = Math.max(1, Math.floor(rect.width * RENDER_SCALE));
-      h = Math.max(1, Math.floor(rect.height * RENDER_SCALE));
-      canvas.width = w;
-      canvas.height = h;
-      // A static instance never reaches the loop, so repaint its frame here.
-      if (isStatic()) draw(SETTLED_TIME);
-    };
-
-    buildFills();
-    resize();
-    if (isStatic()) draw(SETTLED_TIME);
-    else play();
-
-    const ro = new ResizeObserver(resize);
-    ro.observe(canvas);
-
-    // No IntersectionObserver here, unlike the per-section canvases this
-    // replaced: the layer is fixed to the viewport, so it is always on screen
-    // and an observer would only ever report `isIntersecting`.
-    const onVisibility = () => {
-      if (document.hidden) pause();
-      else play();
-    };
-    document.addEventListener("visibilitychange", onVisibility);
-
-    const onMediaChange = () => {
-      pause();
-      if (isStatic()) draw(SETTLED_TIME);
-      else play();
-    };
-    reduceMq.addEventListener("change", onMediaChange);
-    coarseMq.addEventListener("change", onMediaChange);
-
-    // The theme toggle rewrites `data-theme` on <html> without remounting this
-    // subtree, so the palette has to be re-read from the DOM rather than from a
-    // prop. A static instance also needs its one frame redrawn.
-    const themeObserver = new MutationObserver(() => {
-      buildFills();
-      if (isStatic()) draw(SETTLED_TIME);
-    });
-    themeObserver.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["data-theme"],
-    });
+    window.addEventListener("resize", onResize);
+    document.addEventListener("visibilitychange", sync);
+    reduceMq.addEventListener("change", sync);
 
     return () => {
-      pause();
-      ro.disconnect();
-      themeObserver.disconnect();
-      document.removeEventListener("visibilitychange", onVisibility);
-      reduceMq.removeEventListener("change", onMediaChange);
-      coarseMq.removeEventListener("change", onMediaChange);
+      window.removeEventListener("resize", onResize);
+      document.removeEventListener("visibilitychange", sync);
+      reduceMq.removeEventListener("change", sync);
+      gradient.destroy();
     };
-  }, [intensity, speed]);
+  }, [resolvedTheme]);
 
-  /* -------------------------------- Render UI ------------------------------- */
   return (
     <div
       aria-hidden
       className={`pointer-events-none fixed inset-0 -z-10 overflow-hidden ${className ?? ""}`}
     >
-      {/* The blur is what turns the polygon edges into the reference's soft
-          ribbon boundaries. It stays modest — a heavy blur washes the ribbons
-          into one flat tint and loses the white space between them, which is
-          most of the effect. `scale-110` hides the transparent fringe a blur
-          pulls in from outside the element's edges. */}
+      {/* Keyed on the theme so React swaps in a fresh <canvas> when it changes.
+          Re-running `new Gradient()` on the SAME canvas would hand back the
+          same WebGL context and stack a second program onto it. */}
       <canvas
+        key={resolvedTheme}
         ref={canvasRef}
-        className="block h-full w-full scale-110 blur-[22px]"
+        className="block h-full w-full"
       />
     </div>
   );
