@@ -128,6 +128,33 @@
      --primary instead. */
   --btn-sheen: rgb(255 255 255 / 0.18);
   --btn-wipe: rgb(22 24 29 / 0.045);
+
+  /* ---- Editor windows (see the .editor-* classes further down) ---- */
+  /* Translucent rather than solid, and deliberately WITHOUT backdrop-filter:
+     the gradient-wave ribbons behind are already soft and low-frequency, so
+     letting them tint straight through reads the same as a frosted panel while
+     costing nothing. A real backdrop blur over a layer that repaints 24 times a
+     second would mean a second full-size blur pass every frame. */
+  --editor-bg: rgb(255 255 255 / 0.78);
+  --editor-chrome: rgb(255 255 255 / 0.5);
+  --editor-border: rgb(22 24 29 / 0.1);
+  --editor-rule: rgb(22 24 29 / 0.07);
+  --editor-gutter: #aab2c2;
+  --editor-label: #767f91;
+  /* Blue-tinted, so the window casts a shadow that belongs to the background it
+     is sitting on rather than a neutral grey one dropped on top of it. */
+  --editor-shadow:
+    0 24px 60px rgb(37 79 130 / 0.13), 0 2px 8px rgb(37 79 130 / 0.07);
+
+  /* Syntax. The dark-mode set (violet-400 / sky-300 / emerald-400) is tuned for
+     near-black and sits at 2–3:1 on a light panel; these are the same hues
+     pulled down to 5.5:1+ so the code is actually readable in light mode. */
+  --code-comment: #8a93a6;
+  --code-keyword: #7c3aed;
+  --code-ident: #0369a1;
+  --code-string: #047857;
+  --code-number: #b45309;
+  --code-punct: #4c5566;
 }
 
 /* ── Dark mode ─ neutral charcoal + periwinkle, ported from apsara-agentic ── */
@@ -176,6 +203,27 @@
      that sweeps across it must be dark. */
   --btn-sheen: rgb(10 10 10 / 0.14);
   --btn-wipe: rgb(255 255 255 / 0.07);
+
+  /* ---- Editor windows ---- */
+  /* Near-black with a few points of blue rather than the #000 these windows
+     used to be, so they sit with the dark-mode wave instead of punching a hole
+     through it. Kept opaque: the ribbons are dim enough here that letting them
+     through would only muddy the code. */
+  --editor-bg: #08090c;
+  --editor-chrome: rgb(255 255 255 / 0.03);
+  --editor-border: #22262e;
+  --editor-rule: rgb(255 255 255 / 0.07);
+  --editor-gutter: #3a4150;
+  --editor-label: #79839a;
+  --editor-shadow:
+    0 24px 60px rgb(0 0 0 / 0.5), 0 2px 8px rgb(0 0 0 / 0.35);
+
+  --code-comment: #6b7488;
+  --code-keyword: #a78bfa;
+  --code-ident: #7dd3fc;
+  --code-string: #34d399;
+  --code-number: #fcd34d;
+  --code-punct: #94a3b8;
 }
 
 @layer base {
@@ -433,6 +481,40 @@ html[lang="km"] {
     #a8a8a8
   );
 }
+
+/* ── Editor windows: the shared chrome for the two fake editors on the page —
+   the hero's `profile.ts` code block and the About panel's `bondeth.png`
+   portrait. Both used to hard-code #000 / #34322e / text-slate-400 and the
+   dark-mode syntax palette in BOTH themes, which is why they read as two black
+   rectangles punched through the light gradient-wave background.
+
+   They are now surfaces like any other: translucent white in light mode so the
+   ribbons tint through, near-black in dark mode, with a syntax palette that
+   swaps with the theme. Everything comes from the tokens above, so the two
+   windows can never drift apart again. ── */
+.editor-window {
+  background: var(--editor-bg);
+  border: 1px solid var(--editor-border);
+  box-shadow: var(--editor-shadow);
+}
+.editor-chrome {
+  background: var(--editor-chrome);
+  border-color: var(--editor-rule);
+}
+.editor-gutter {
+  color: var(--editor-gutter);
+  border-color: var(--editor-rule);
+}
+.editor-label {
+  color: var(--editor-label);
+}
+
+.tok-comment { color: var(--code-comment); }
+.tok-keyword { color: var(--code-keyword); }
+.tok-ident   { color: var(--code-ident); }
+.tok-string  { color: var(--code-string); }
+.tok-number  { color: var(--code-number); }
+.tok-punct   { color: var(--code-punct); }
 
 /* ── Film-grain noise: apply to an absolutely-positioned, pointer-events-none
    overlay div to give flat dark surfaces a subtle physical texture. ── */

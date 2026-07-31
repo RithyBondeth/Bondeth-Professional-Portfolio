@@ -73,26 +73,29 @@ function CodeBlock() {
     <div className="group relative w-full max-w-sm xl:max-w-md">
       {/* Ambient Glow Section — swells and brightens while hovered, so the
           window feels lit from behind rather than just tilting.
-          The tint comes from opacity, NOT a bg-primary/6 → /12 swap, and the
-          transition is scoped to opacity+scale: `transition-all` would also
-          animate background-color, which is derived from --primary and flips
-          on a theme switch — leaving this glow fading for 500ms after the
-          rest of the page had already snapped through the view transition. */}
-      <div className="absolute -inset-6 bg-primary rounded-2xl blur-3xl pointer-events-none opacity-[0.06] transition-[opacity,scale] duration-500 group-hover:opacity-[0.12] motion-safe:group-hover:scale-105" />
+          Tinted to the background's sky blue rather than --primary: primary is
+          near-black in light mode, which put a grey smudge behind a white panel
+          sitting on blue. The tint comes from opacity, NOT a /6 → /12 swap, and
+          the transition is scoped to opacity+scale — `transition-all` would
+          also animate background-color, leaving the glow fading for 500ms after
+          the rest of the page had snapped through a theme switch. */}
+      <div className="absolute -inset-6 bg-sky-400 rounded-2xl blur-3xl pointer-events-none opacity-[0.14] dark:opacity-[0.08] transition-[opacity,scale] duration-500 group-hover:opacity-[0.24] dark:group-hover:opacity-[0.16] motion-safe:group-hover:scale-105" />
 
       {/* 3D tilt shell — the same pointer-tracking lean + specular glare the
           About panel's editor uses, so both windows react identically.
           Desktop pointers only, disabled under reduced motion. */}
       <TiltCard maxTilt={6} hoverScale={1.015} className="relative rounded-md">
-        {/* Editor Window Section — stays dark in both themes, like a real editor */}
-        <div className="relative rounded-md border border-[#34322e] bg-black overflow-hidden shadow-2xl shadow-black/30 dark:shadow-black/60 transition-colors duration-500 group-hover:border-[#4a4740]">
+        {/* Editor Window Section — see `.editor-*` in globals.css. It follows
+            the theme now instead of staying black in both: a black rectangle
+            was the one thing on the page that ignored the light background. */}
+        <div className="editor-window relative rounded-md overflow-hidden transition-colors duration-500 group-hover:border-sky-400/40">
           {/* Window Chrome Section — the traffic lights pick up a soft bloom on
               hover, the one place colour is allowed in this monochrome theme. */}
-          <div className="flex items-center gap-1.5 px-4 py-3 border-b border-[#34322e]/60 bg-black/30">
+          <div className="editor-chrome flex items-center gap-1.5 px-4 py-3 border-b">
             <span className="w-3 h-3 rounded-full bg-red-500/80 transition-shadow duration-300 group-hover:shadow-[0_0_8px_rgb(239_68_68/0.7)]" />
             <span className="w-3 h-3 rounded-full bg-yellow-500/70 transition-shadow duration-300 group-hover:shadow-[0_0_8px_rgb(234_179_8/0.7)]" />
             <span className="w-3 h-3 rounded-full bg-green-500/70 transition-shadow duration-300 group-hover:shadow-[0_0_8px_rgb(34_197_94/0.7)]" />
-            <span className="ml-3 text-slate-500 text-[11px] font-code select-none transition-colors duration-300 group-hover:text-slate-300">
+            <span className="editor-label ml-3 text-[11px] font-code select-none transition-colors duration-300 group-hover:text-foreground">
               profile.ts
             </span>
           </div>
@@ -102,73 +105,73 @@ function CodeBlock() {
               needing a horizontal scroll, and the tighter leading keeps the
               whole window from dominating the stacked mobile hero. */}
           <div className="flex text-[10px] min-[360px]:text-[11px] sm:text-xs font-code leading-[1.75] sm:leading-6 overflow-x-auto">
-            {/* Line Numbers — brighten slightly so the gutter reads on hover */}
-            <div className="select-none text-right pr-3 pl-3 sm:pr-4 sm:pl-4 py-4 sm:py-5 text-[#34322e] border-r border-[#34322e]/40 shrink-0 transition-colors duration-500 group-hover:text-[#4a4740]">
+            {/* Line Numbers */}
+            <div className="editor-gutter select-none text-right pr-3 pl-3 sm:pr-4 sm:pl-4 py-4 sm:py-5 border-r shrink-0">
               {Array.from({ length: 18 }, (_, i) => (
                 <div key={i}>{i + 1}</div>
               ))}
             </div>
 
-            {/* Code Content — syntax colors match the site's canonical code
-                palette (see landing-about's tokenizer): violet-400 keywords,
-                sky-300 identifiers, emerald-400 strings, slate-500 comments. */}
-            <pre className="py-4 sm:py-5 pl-3 sm:pl-4 pr-2 min-[360px]:pr-4 sm:pr-6 text-slate-400">
-              <span className="text-slate-500">{"// Developer profile"}</span>
+            {/* Code Content — the `.tok-*` classes are the shared syntax
+                palette (globals.css), the same one landing-about's tokenizer
+                emits, and they swap with the theme. */}
+            <pre className="tok-punct py-4 sm:py-5 pl-3 sm:pl-4 pr-2 min-[360px]:pr-4 sm:pr-6">
+              <span className="tok-comment">{"// Developer profile"}</span>
               {"\n"}
-              <span className="text-violet-400">{"const"}</span>{" "}
-              <span className="text-sky-300">{"developer"}</span>
+              <span className="tok-keyword">{"const"}</span>{" "}
+              <span className="tok-ident">{"developer"}</span>
               {" = {\n"}
               {"  "}
-              <span className="text-sky-300">{"name"}</span>
+              <span className="tok-ident">{"name"}</span>
               {": "}
-              <span className="text-emerald-400">{'"Hem RithyBondeth"'}</span>
+              <span className="tok-string">{'"Hem RithyBondeth"'}</span>
               {",\n"}
               {"  "}
-              <span className="text-sky-300">{"role"}</span>
+              <span className="tok-ident">{"role"}</span>
               {": [\n"}
               {"    "}
-              <span className="text-emerald-400">{'"Full Stack Dev"'}</span>
+              <span className="tok-string">{'"Full Stack Dev"'}</span>
               {",\n"}
               {"    "}
-              <span className="text-emerald-400">{'"AI Engineer"'}</span>
+              <span className="tok-string">{'"AI Engineer"'}</span>
               {",\n"}
               {"  ],\n"}
               {"  "}
-              <span className="text-sky-300">{"location"}</span>
+              <span className="tok-ident">{"location"}</span>
               {": "}
-              <span className="text-emerald-400">
+              <span className="tok-string">
                 {'"Phnom Penh, Cambodia"'}
               </span>
               {",\n"}
               {"  "}
-              <span className="text-sky-300">{"stack"}</span>
+              <span className="tok-ident">{"stack"}</span>
               {": [\n"}
               {"    "}
-              <span className="text-emerald-400">{'"Next.js"'}</span>
+              <span className="tok-string">{'"Next.js"'}</span>
               {", "}
-              <span className="text-emerald-400">{'"Nuxt.js"'}</span>
+              <span className="tok-string">{'"Nuxt.js"'}</span>
               {",\n"}
               {"    "}
-              <span className="text-emerald-400">{'"FastAPI"'}</span>
+              <span className="tok-string">{'"FastAPI"'}</span>
               {", "}
-              <span className="text-emerald-400">{'"Nest.js"'}</span>
+              <span className="tok-string">{'"Nest.js"'}</span>
               {",\n"}
               {"    "}
-              <span className="text-emerald-400">{'"MongoDB"'}</span>
+              <span className="tok-string">{'"MongoDB"'}</span>
               {", "}
-              <span className="text-emerald-400">{'"Flutter"'}</span>
+              <span className="tok-string">{'"Flutter"'}</span>
               {",\n"}
               {"  ],\n"}
               {"  "}
-              <span className="text-sky-300">{"available"}</span>
+              <span className="tok-ident">{"available"}</span>
               {": "}
-              <span className="text-violet-400">{"true"}</span>
+              <span className="tok-keyword">{"true"}</span>
               {",\n"}
               {"} "}
-              <span className="text-violet-400">{"satisfies"}</span>{" "}
-              <span className="text-sky-300">{"Developer"}</span>
+              <span className="tok-keyword">{"satisfies"}</span>{" "}
+              <span className="tok-ident">{"Developer"}</span>
               {";\n\n"}
-              <span className="text-emerald-400 animate-[blink_1s_step-end_infinite]">
+              <span className="tok-string animate-[blink_1s_step-end_infinite]">
                 {"▊"}
               </span>
             </pre>
@@ -502,7 +505,7 @@ export default function LandingHero(props: { lang: TLocale }) {
           {/* Left: Text */}
           <div className="hero-exit-text text-center lg:text-left">
             <p className="hero-label text-primary font-mono text-xs mb-5 tracking-[0.25em] uppercase">
-              <span className="text-emerald-400">▸</span> whoami
+              <span className="tok-string">▸</span> whoami
             </p>
 
             {/* Name — split into masked chars at runtime; the gradient lives on
@@ -597,7 +600,7 @@ export default function LandingHero(props: { lang: TLocale }) {
                 <span className="text-primary">$</span>
                 <span
                   className={
-                    i === BOOT_LINES.length - 1 ? "text-emerald-400" : undefined
+                    i === BOOT_LINES.length - 1 ? "tok-string" : undefined
                   }
                 >
                   {line}

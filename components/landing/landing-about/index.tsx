@@ -146,18 +146,21 @@ function tokenize(line: string): IToken[] {
   const out: IToken[] = [];
   let m: RegExpExecArray | null;
   while ((m = re.exec(line))) {
+    // `.tok-*` are the shared, theme-aware syntax classes from globals.css —
+    // the literal Tailwind shades these used to emit were tuned for near-black
+    // and sat at 2–3:1 once the window turned into a light surface.
     if (m[1])
-      out.push({ text: m[1], cls: "text-slate-500" }); // comment
+      out.push({ text: m[1], cls: "tok-comment" });
     else if (m[2])
-      out.push({ text: m[2], cls: "text-emerald-400" }); // string
+      out.push({ text: m[2], cls: "tok-string" });
     else if (m[3])
-      out.push({ text: m[3], cls: "text-amber-300" }); // number
+      out.push({ text: m[3], cls: "tok-number" });
     else if (m[4])
       out.push({
         text: m[4],
-        cls: KEYWORDS.has(m[4]) ? "text-violet-400" : "text-sky-300",
+        cls: KEYWORDS.has(m[4]) ? "tok-keyword" : "tok-ident",
       });
-    else out.push({ text: m[0], cls: "text-slate-400" }); // whitespace / punctuation
+    else out.push({ text: m[0], cls: "tok-punct" }); // whitespace / punctuation
   }
   return out;
 }
@@ -226,7 +229,7 @@ function CodeColumn(props: {
         let budget = vis;
         return (
           <div key={i} className="flex gap-3">
-            <span className="w-4 shrink-0 text-right text-slate-600 tabular-nums">
+            <span className="editor-gutter w-4 shrink-0 text-right tabular-nums">
               {i + 1}
             </span>
             <code className="whitespace-pre">
@@ -270,16 +273,19 @@ function PortraitPanel(props: { alt: string }) {
       ref={ref}
       className="relative w-full max-w-sm mx-auto lg:max-w-none"
     >
-      {/* Ambient Glow */}
-      <div className="absolute -inset-6 bg-primary/6 rounded-2xl blur-3xl pointer-events-none" />
+      {/* Ambient Glow — sky blue rather than --primary, which is near-black in
+          light mode and put a grey smudge behind a white panel on a blue page. */}
+      <div className="absolute -inset-6 bg-sky-400/15 dark:bg-sky-400/8 rounded-2xl blur-3xl pointer-events-none" />
 
       {/* 3D tilt shell — relative + matching rounding so the glare sheen clips
           to the editor window's corners. Desktop-only, reduced-motion safe. */}
       <TiltCard maxTilt={5} hoverScale={1.01} className="relative rounded-md">
-        {/* Editor Window */}
-        <div className="relative rounded-md border border-[#34322e] bg-black overflow-hidden shadow-2xl shadow-black/30 dark:shadow-black/60">
+        {/* Editor Window — shared `.editor-*` chrome (globals.css), the same
+            surface the hero's profile.ts block uses, so the two windows stay in
+            step and both follow the theme instead of staying black in it. */}
+        <div className="editor-window relative rounded-md overflow-hidden">
           {/* Window Chrome */}
-          <div className="flex items-center gap-1.5 px-4 py-3 border-b border-[#34322e]/60 bg-black/30">
+          <div className="editor-chrome flex items-center gap-1.5 px-4 py-3 border-b">
             <span aria-hidden className="w-3 h-3 rounded-full bg-red-500/80" />
             <span
               aria-hidden
@@ -289,7 +295,7 @@ function PortraitPanel(props: { alt: string }) {
               aria-hidden
               className="w-3 h-3 rounded-full bg-green-500/70"
             />
-            <span className="ml-3 text-slate-500 text-[11px] font-code select-none">
+            <span className="editor-label ml-3 text-[11px] font-code select-none">
               bondeth.png
             </span>
           </div>
@@ -325,9 +331,9 @@ function PortraitPanel(props: { alt: string }) {
           </div>
 
           {/* Status Bar */}
-          <div className="flex items-center justify-between px-4 py-2.5 border-t border-[#34322e]/60 bg-black/30 text-[10px] font-code text-slate-400">
+          <div className="editor-chrome tok-punct flex items-center justify-between px-4 py-2.5 border-t text-[10px] font-code">
             <span>
-              <span className="text-emerald-400">▸</span> whoami
+              <span className="tok-string">▸</span> whoami
             </span>
             <span>Phnom Penh, KH</span>
           </div>
@@ -361,8 +367,8 @@ function StatCard(props: {
   return (
     <div className="card-interactive group rounded border border-border/60 bg-background p-5">
       <p className="text-[10px] font-mono text-muted-foreground mb-3 group-hover:text-primary dark:group-hover:text-primary/60 transition-colors">
-        <span className="text-violet-400">const</span>{" "}
-        <span className="text-sky-300">{varName}</span>
+        <span className="tok-keyword">const</span>{" "}
+        <span className="tok-ident">{varName}</span>
       </p>
       <div className="text-3xl font-bold text-primary mb-1 font-mono tabular-nums">
         {count}
