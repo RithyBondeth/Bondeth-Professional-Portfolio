@@ -28,8 +28,10 @@ import { getSiteConfig } from "@/utils/i18n/content";
  * The portrait is a transparent PNG (background already cut out), so we render a
  * full code editor BEHIND it — two "files" filling the panel left and right. The
  * person sits in front, hiding the code directly behind him while the snippets
- * stay visible around his silhouette. Editor colours are intentionally FIXED
- * (not theme tokens) so it reads as a deliberate dark-editor screenshot.
+ * stay visible around his silhouette. Editor colours come from the shared
+ * `.editor-*` / `.tok-*` tokens in globals.css and follow the theme; they used
+ * to be fixed dark literals, which left a black rectangle sitting on a light
+ * page once the gradient-wave background landed.
  */
 const LEFT_CODE = `const fs = require('fs');
 const path = require('path');
@@ -275,7 +277,7 @@ function PortraitPanel(props: { alt: string }) {
     >
       {/* Ambient Glow — sky blue rather than --primary, which is near-black in
           light mode and put a grey smudge behind a white panel on a blue page. */}
-      <div className="absolute -inset-6 bg-sky-400/15 dark:bg-sky-400/8 rounded-2xl blur-3xl pointer-events-none" />
+      <div className="absolute -inset-6 bg-primary/15 dark:bg-primary/10 rounded-2xl blur-3xl pointer-events-none" />
 
       {/* 3D tilt shell — relative + matching rounding so the glare sheen clips
           to the editor window's corners. Desktop-only, reduced-motion safe. */}

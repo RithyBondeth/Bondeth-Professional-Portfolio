@@ -82,7 +82,17 @@
   --card-foreground: #16181d;
   --popover: #ffffff;
   --popover-foreground: #16181d;
-  --primary: #16181d;
+  /* --primary is the ACCENT, not the ink. An audit of its ~176 `text-primary`
+     uses found them to be eyebrows, mono labels, chips and link-hover states —
+     never body copy or headings, which take --foreground. So it can carry the
+     brand colour without turning the page's type blue.
+
+     Deep blue rather than the near-black it was: on a sky-blue background a
+     black filled CTA is the heaviest thing on screen and reads as a leftover
+     from the monochrome design. #0b4a7a holds 5.5:1 as text over the darkest
+     wave colour, 9.2:1 over white, and 8.8:1 the other way for
+     --primary-foreground sitting on a filled button. */
+  --primary: #0b4a7a;
   --primary-foreground: #f8f9fb;
   --secondary: #eef0f5;
   --secondary-foreground: #16181d;
@@ -92,12 +102,19 @@
      #5f6470 this used to be scored only ~3.4:1 there — under AA. #4a4f5c holds
      ~5:1 over that worst case and ~7.9:1 over the plain background. */
   --muted-foreground: #4a4f5c;
-  --accent: #22252c;
+  --accent: #1268a8;
   --accent-foreground: #f8f9fb;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: #e4e7ee;
+  /* Darker and cooler than the #e4e7ee it was. Cards are white or
+     `bg-background/70`, so where the wave puts a BLUE band behind a card the
+     card's own fill already draws the edge — but where it puts a WHITE band
+     there, card and ground are nearly the same value and the border is the only
+     separator. At #e4e7ee that border scored 1.24:1 against white, so edges
+     visibly came and went as the wave drifted underneath. This holds ~2.75:1
+     against white at full strength and ~1.9:1 at the `/60` most cards use. */
+  --border: #9aa8bd;
   --input: #eceef4;
-  --ring: #16181d;
+  --ring: #0b4a7a;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -106,28 +123,33 @@
   --radius: 0.5rem;
   --sidebar: #ffffff;
   --sidebar-foreground: #16181d;
-  --sidebar-primary: #16181d;
+  --sidebar-primary: #0b4a7a;
   --sidebar-primary-foreground: #f8f9fb;
   --sidebar-accent: #eef0f5;
   --sidebar-accent-foreground: #16181d;
-  --sidebar-border: #e4e7ee;
-  --sidebar-ring: #16181d;
+  --sidebar-border: #9aa8bd;
+  --sidebar-ring: #0b4a7a;
 
   /* Card hover glow. Light mode lifts a card off the page with a soft *dark*
      shadow — the white glow used in dark mode is invisible on a near-white
      ground, which is why this is a token and not a literal in the utility
-     below. Softened alongside the ink: a 0.1 black shadow read as a hard drop
-     against the new lighter surfaces. */
-  --card-glow: 0 12px 40px rgb(22 24 29 / 0.08), 0 2px 8px rgb(22 24 29 / 0.05);
-  --card-glow-sm: 0 0 0 1px rgb(22 24 29 / 0.035);
-  --card-sheen: rgb(22 24 29 / 0.05);
+     below.
+
+     Tinted to the brand blue, NOT neutral. A neutral shadow over the blue
+     background reads as grey dirt under the card. This is the same tint the
+     editor windows use (--editor-shadow); the two disagreed for a while, so
+     hovering a card went grey while hovering a code window went blue. */
+  --card-glow:
+    0 12px 40px rgb(11 74 122 / 0.14), 0 2px 8px rgb(11 74 122 / 0.08);
+  --card-glow-sm: 0 0 0 1px rgb(11 74 122 / 0.05);
+  --card-sheen: rgb(11 74 122 / 0.07);
 
   /* Button sheen is the INVERSE of the card sheen: a filled primary button is
-     dark-on-light here, so its sheen has to be white to read at all. --btn-wipe
+     light-on-blue here, so its sheen has to be white to read at all. --btn-wipe
      tints outline buttons, which sit on the page background, so it follows
      --primary instead. */
-  --btn-sheen: rgb(255 255 255 / 0.18);
-  --btn-wipe: rgb(22 24 29 / 0.045);
+  --btn-sheen: rgb(255 255 255 / 0.2);
+  --btn-wipe: rgb(11 74 122 / 0.07);
 
   /* ---- Editor windows (see the .editor-* classes further down) ---- */
   /* Translucent rather than solid, and deliberately WITHOUT backdrop-filter:
@@ -144,7 +166,7 @@
   /* Blue-tinted, so the window casts a shadow that belongs to the background it
      is sitting on rather than a neutral grey one dropped on top of it. */
   --editor-shadow:
-    0 24px 60px rgb(37 79 130 / 0.13), 0 2px 8px rgb(37 79 130 / 0.07);
+    0 24px 60px rgb(11 74 122 / 0.14), 0 2px 8px rgb(11 74 122 / 0.08);
 
   /* Syntax. The dark-mode set (violet-400 / sky-300 / emerald-400) is tuned for
      near-black and sits at 2–3:1 on a light panel; these are the same hues
@@ -157,63 +179,71 @@
   --code-punct: #4c5566;
 }
 
-/* ── Dark mode ─ neutral charcoal + periwinkle, ported from apsara-agentic ── */
+/* ── Dark mode ── */
 [data-theme="dark"] {
-  /* Black & white theme — near-black ground, white text, white highlight.
+  /* The mirror of light mode: every neutral carries the same blue the
+     gradient-wave does, because a pure-grey card (#141414) on a navy ground
+     reads as dead grey exactly the way a pure-grey one did on sky blue.
      Skill logos and the profile.ts code block keep their own colours. */
-  --background: #0a0a0a;
+  --background: #0a0f18;
   --foreground: #fafafa;
-  --card: #141414;
+  --card: #0f1620;
   --card-foreground: #fafafa;
-  --popover: #141414;
+  --popover: #0f1620;
   --popover-foreground: #fafafa;
-  --primary: #fafafa;
-  --primary-foreground: #0a0a0a;
-  --secondary: #1c1c1c;
+  /* The accent, inverted — light sky against the navy, the way #0b4a7a is deep
+     blue against the pale. Holds ~7.6:1 as text over the brightest dark wave
+     colour, and ~13:1 the other way for text on a filled button. */
+  --primary: #7dd3fc;
+  --primary-foreground: #08121c;
+  --secondary: #141d28;
   --secondary-foreground: #fafafa;
-  --muted: #1c1c1c;
+  --muted: #141d28;
   --muted-foreground: #a1a1a1;
-  --accent: #e5e5e5;
-  --accent-foreground: #0a0a0a;
+  --accent: #a5e0fd;
+  --accent-foreground: #08121c;
   --destructive: oklch(0.704 0.191 22.216);
-  --border: #2a2a2a;
-  --input: #262626;
-  --ring: #fafafa;
+  --border: #2b3a4d;
+  --input: #16202c;
+  --ring: #7dd3fc;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --sidebar: #0a0a0a;
+  --sidebar: #0a0f18;
   --sidebar-foreground: #a1a1a1;
-  --sidebar-primary: #fafafa;
-  --sidebar-primary-foreground: #0a0a0a;
-  --sidebar-accent: #1c1c1c;
+  --sidebar-primary: #7dd3fc;
+  --sidebar-primary-foreground: #08121c;
+  --sidebar-accent: #141d28;
   --sidebar-accent-foreground: #fafafa;
-  --sidebar-border: #2a2a2a;
-  --sidebar-ring: #fafafa;
+  --sidebar-border: #2b3a4d;
+  --sidebar-ring: #7dd3fc;
 
-  /* Dark mode glows outward in white rather than casting a shadow — a dark
-     shadow is invisible against #0a0a0a. */
-  --card-glow: 0 12px 40px rgb(255 255 255 / 0.07), 0 0 14px rgb(255 255 255 / 0.04);
-  --card-glow-sm: 0 0 0 1px rgb(255 255 255 / 0.06);
-  --card-sheen: rgb(255 255 255 / 0.08);
+  /* Dark mode glows OUTWARD rather than casting a shadow — a dark shadow is
+     invisible against a near-black ground. Tinted to the same sky the accent
+     uses, so a hovered card looks lit by the background rather than by a
+     colourless lamp. */
+  --card-glow:
+    0 12px 40px rgb(125 211 252 / 0.1), 0 0 14px rgb(125 211 252 / 0.06);
+  --card-glow-sm: 0 0 0 1px rgb(125 211 252 / 0.08);
+  --card-sheen: rgb(125 211 252 / 0.1);
 
   /* Inverted again: dark mode's primary button is light-on-dark, so the sheen
      that sweeps across it must be dark. */
-  --btn-sheen: rgb(10 10 10 / 0.14);
-  --btn-wipe: rgb(255 255 255 / 0.07);
+  --btn-sheen: rgb(8 18 28 / 0.16);
+  --btn-wipe: rgb(125 211 252 / 0.1);
 
   /* ---- Editor windows ---- */
   /* Near-black with a few points of blue rather than the #000 these windows
      used to be, so they sit with the dark-mode wave instead of punching a hole
      through it. Kept opaque: the ribbons are dim enough here that letting them
      through would only muddy the code. */
-  --editor-bg: #08090c;
+  --editor-bg: #08111a;
   --editor-chrome: rgb(255 255 255 / 0.03);
-  --editor-border: #22262e;
+  --editor-border: #1e2b3a;
   --editor-rule: rgb(255 255 255 / 0.07);
-  --editor-gutter: #3a4150;
+  --editor-gutter: #3c4a5d;
   --editor-label: #79839a;
   --editor-shadow:
     0 24px 60px rgb(0 0 0 / 0.5), 0 2px 8px rgb(0 0 0 / 0.35);

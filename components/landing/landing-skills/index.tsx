@@ -82,22 +82,28 @@ export default function LandingSkills(props: { lang: TLocale }) {
               delay={i * 0.08}
             >
               <div className="relative">
-                {/* Left Fade + Category Label — the fade is sized to just
-                    clear the label. The desktop 208px would swallow 55% of a
-                    375px row, so phones get a narrower mask (and a tighter
-                    gutter) to keep the badges themselves readable. */}
-                <div className="absolute inset-y-0 left-0 w-28 sm:w-52 bg-linear-to-r from-background via-background/80 to-transparent z-10 pointer-events-none flex items-center pl-4 sm:pl-6">
+                {/* Category Label. It used to sit on a `from-background`
+                    gradient that doubled as the left fade — but the section is
+                    transparent now and the gradient-wave animates behind it, so
+                    painting --background over the row left an off-white wedge
+                    floating on the blue whenever the wave drifted underneath.
+                    The fade is a MASK on the track instead (below): it removes
+                    the badges rather than covering them, so it works over any
+                    background and costs no extra layer. */}
+                <div className="absolute inset-y-0 left-0 w-28 sm:w-52 z-10 pointer-events-none flex items-center pl-4 sm:pl-6">
                   <span className="text-[10px] font-mono text-muted-foreground dark:text-muted-foreground/60 uppercase tracking-[0.15em] sm:tracking-[0.2em] select-none">
                     {category}
                   </span>
                 </div>
-                {/* Right Fade */}
-                <div className="absolute inset-y-0 right-0 w-12 sm:w-24 bg-linear-to-l from-background to-transparent z-10 pointer-events-none" />
 
+                {/* The mask stops are the old fade widths: 7rem/13rem on the
+                    left to just clear the label, 3rem/6rem on the right. The
+                    desktop 13rem would swallow 55% of a 375px row, so phones
+                    get the narrower pair. */}
                 <MarqueeTrack
                   direction={direction}
                   duration={60}
-                  className="py-2"
+                  className="py-2 [mask-image:linear-gradient(to_right,transparent_0,black_7rem,black_calc(100%_-_3rem),transparent_100%)] sm:[mask-image:linear-gradient(to_right,transparent_0,black_13rem,black_calc(100%_-_6rem),transparent_100%)]"
                 >
                   {track.map((skill, j) => (
                     <SkillBadge

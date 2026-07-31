@@ -18,6 +18,7 @@ import {
   MailIcon,
 } from "@/components/utils/icons";
 import { Logo } from "@/components/utils/icons/logo";
+import { GradientFooter } from "@/components/ui/gradient-footer";
 import {
   localizeHref,
   getDictionary,
@@ -60,7 +61,10 @@ export default function Footer(props: { lang: TLocale }) {
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
-    <footer className="overflow-hidden border-t border-border/50">
+    <GradientFooter
+      gradientHeight="40vh"
+      className="overflow-hidden border-t border-border/50"
+    >
       {/* Giant outline marquee sign-off */}
       <div
         aria-hidden
@@ -256,6 +260,6 @@ export default function Footer(props: { lang: TLocale }) {
           </p>
         </div>
       </div>
-    </footer>
+    </GradientFooter>
   );
 }

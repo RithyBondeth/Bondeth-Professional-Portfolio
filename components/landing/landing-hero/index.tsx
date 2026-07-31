@@ -73,13 +73,14 @@ function CodeBlock() {
     <div className="group relative w-full max-w-sm xl:max-w-md">
       {/* Ambient Glow Section — swells and brightens while hovered, so the
           window feels lit from behind rather than just tilting.
-          Tinted to the background's sky blue rather than --primary: primary is
-          near-black in light mode, which put a grey smudge behind a white panel
-          sitting on blue. The tint comes from opacity, NOT a /6 → /12 swap, and
-          the transition is scoped to opacity+scale — `transition-all` would
-          also animate background-color, leaving the glow fading for 500ms after
-          the rest of the page had snapped through a theme switch. */}
-      <div className="absolute -inset-6 bg-sky-400 rounded-2xl blur-3xl pointer-events-none opacity-[0.14] dark:opacity-[0.08] transition-[opacity,scale] duration-500 group-hover:opacity-[0.24] dark:group-hover:opacity-[0.16] motion-safe:group-hover:scale-105" />
+          Uses --primary, which is now the brand blue in both themes — a glow
+          that belongs to the background rather than the grey smudge a neutral
+          --primary used to cast behind a white panel. The tint comes from
+          opacity, NOT a /6 → /12 swap, and the transition is scoped to
+          opacity+scale — `transition-all` would also animate background-color,
+          leaving the glow fading for 500ms after the rest of the page had
+          snapped through a theme switch. */}
+      <div className="absolute -inset-6 bg-primary rounded-2xl blur-3xl pointer-events-none opacity-[0.14] dark:opacity-[0.10] transition-[opacity,scale] duration-500 group-hover:opacity-[0.24] dark:group-hover:opacity-[0.16] motion-safe:group-hover:scale-105" />
 
       {/* 3D tilt shell — the same pointer-tracking lean + specular glare the
           About panel's editor uses, so both windows react identically.
@@ -88,7 +89,7 @@ function CodeBlock() {
         {/* Editor Window Section — see `.editor-*` in globals.css. It follows
             the theme now instead of staying black in both: a black rectangle
             was the one thing on the page that ignored the light background. */}
-        <div className="editor-window relative rounded-md overflow-hidden transition-colors duration-500 group-hover:border-sky-400/40">
+        <div className="editor-window relative rounded-md overflow-hidden transition-colors duration-500 group-hover:border-primary/40">
           {/* Window Chrome Section — the traffic lights pick up a soft bloom on
               hover, the one place colour is allowed in this monochrome theme. */}
           <div className="editor-chrome flex items-center gap-1.5 px-4 py-3 border-b">
