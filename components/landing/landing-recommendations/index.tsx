@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { SectionBackdrop } from "@/components/utils/animations/section-backdrop";
 import { ArrowRight, BadgeCheck, ShieldCheck } from "lucide-react";
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
 import { ScrambleText } from "@/components/utils/animations/scramble-text";
@@ -13,9 +12,7 @@ export default function LandingRecommendations(props: { lang: TLocale }) {
   const { recommendations } = getDictionary(lang);
 
   return (
-    <section id="recommendations" className="relative isolate overflow-hidden bg-card px-6 py-16 sm:py-20 lg:py-24">
-      <SectionBackdrop />
-
+    <section id="recommendations" className="relative isolate overflow-hidden px-6 py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-6xl">
         <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
           <div>

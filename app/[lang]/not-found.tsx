@@ -14,7 +14,7 @@ export const metadata: Metadata = {
  */
 export default function NotFound() {
   return (
-    <main id="main-content" tabIndex={-1} className="flex-1 bg-background flex flex-col items-center justify-center px-6 py-32 text-center font-sans">
+    <main id="main-content" tabIndex={-1} className="flex-1 flex flex-col items-center justify-center px-6 py-32 text-center font-sans">
       {/* Terminal prompt line — decrypts in on arrival */}
       <p className="text-primary font-mono text-xs tracking-[0.25em] uppercase mb-6">
         <ScrambleText text="$ cd ~/page → 404" duration={1.2} />

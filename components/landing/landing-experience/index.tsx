@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { SectionBackdrop } from "@/components/utils/animations/section-backdrop";
 import { organizations } from "@/utils/constants/portfolio.constant";
 import { IOrganization } from "@/utils/interfaces/portfolio";
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
@@ -21,9 +20,7 @@ export default function LandingExperience(props: { lang: TLocale }) {
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
-    <section id="experience" className="relative isolate py-16 sm:py-20 lg:py-24 px-6 bg-card">
-      <SectionBackdrop />
-
+    <section id="experience" className="relative isolate py-16 sm:py-20 lg:py-24 px-6">
       <div className="max-w-6xl mx-auto">
         {/* Heading Section */}
         <AnimateIn from="zoom-in">

@@ -9,7 +9,6 @@ import { SplitReveal } from "@/components/utils/animations/split-reveal";
 import { ScrambleText } from "@/components/utils/animations/scramble-text";
 import { TiltCard } from "@/components/utils/animations/tilt-card";
 import { Magnetic } from "@/components/utils/animations/magnetic";
-import { SectionBackdrop } from "@/components/utils/animations/section-backdrop";
 import {
   useAnimationFrameValue,
   useCountUp,
@@ -407,9 +406,7 @@ export default function LandingAbout(props: { lang: TLocale }) {
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
-    <section id="about" className="relative isolate py-16 sm:py-20 lg:py-24 px-6 bg-card">
-      <SectionBackdrop />
-
+    <section id="about" className="relative isolate py-16 sm:py-20 lg:py-24 px-6">
       <div className="max-w-6xl mx-auto">
         <AnimateIn from="zoom-in">
           <p className="text-primary font-mono text-xs tracking-[0.25em] uppercase mb-1">

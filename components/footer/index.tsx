@@ -60,7 +60,7 @@ export default function Footer(props: { lang: TLocale }) {
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
-    <footer className="overflow-hidden bg-background border-t border-border/50">
+    <footer className="overflow-hidden border-t border-border/50">
       {/* Giant outline marquee sign-off */}
       <div
         aria-hidden

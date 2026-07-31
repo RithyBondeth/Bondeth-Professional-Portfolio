@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { SectionBackdrop } from "@/components/utils/animations/section-backdrop";
 import { ArrowRight, Bot, Code2, PanelsTopLeft, Smartphone } from "lucide-react";
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
 import { ScrambleText } from "@/components/utils/animations/scramble-text";
@@ -14,9 +13,7 @@ export default function LandingServices(props: { lang: TLocale }) {
   const { services } = getDictionary(lang);
 
   return (
-    <section id="services" className="relative isolate overflow-hidden bg-card px-6 py-16 sm:py-20 lg:py-24">
-      <SectionBackdrop />
-
+    <section id="services" className="relative isolate overflow-hidden px-6 py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-6xl">
         <AnimateIn from="left">
           <p className="font-mono text-xs uppercase tracking-[0.25em] text-primary">

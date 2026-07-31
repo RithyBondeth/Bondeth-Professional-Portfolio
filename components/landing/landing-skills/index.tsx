@@ -1,5 +1,4 @@
 import { skillGroups } from "@/utils/constants/portfolio.constant";
-import { SectionBackdrop } from "@/components/utils/animations/section-backdrop";
 import {
   ISkill,
   type TSkillLevel,
@@ -30,10 +29,8 @@ export default function LandingSkills(props: { lang: TLocale }) {
   return (
     <section
       id="skills"
-      className="relative isolate py-16 sm:py-20 lg:py-24 bg-background overflow-hidden"
+      className="relative isolate py-16 sm:py-20 lg:py-24 overflow-hidden"
     >
-      <SectionBackdrop />
-
       {/* Heading Section */}
       <div className="max-w-6xl mx-auto px-6 mb-16">
         <AnimateIn from="zoom-in">

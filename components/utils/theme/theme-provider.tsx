@@ -31,7 +31,7 @@ let cached: Theme | null = null;
 /** The pre-hydration script in the root layout has already set `data-theme`, so
  *  the DOM is the source of truth; localStorage is only a fallback. */
 function read(): Theme {
-  if (typeof document === "undefined") return "dark";
+  if (typeof document === "undefined") return "light";
   const current = document.documentElement.dataset.theme;
   if (current === "light" || current === "dark") return current;
   try {
@@ -40,7 +40,7 @@ function read(): Theme {
   } catch {
     /* localStorage unavailable (private mode, blocked cookies) */
   }
-  return "dark";
+  return "light";
 }
 
 function subscribe(listener: () => void) {
@@ -61,9 +61,11 @@ function getSnapshot(): Theme {
   return cached;
 }
 
-/** The server always renders the dark-first default, so hydration matches. */
+/** The server always renders the light-first default, so hydration matches.
+ *  This MUST stay in lockstep with the fallback in the root layout's
+ *  pre-hydration script — they are the same decision, made twice. */
 function getServerSnapshot(): Theme {
-  return "dark";
+  return "light";
 }
 
 function setTheme(next: Theme) {
@@ -86,7 +88,7 @@ const useIsomorphicLayoutEffect =
 
 /* --------------------------------- Context --------------------------------- */
 const ThemeContext = createContext<ThemeContextValue>({
-  resolvedTheme: "dark",
+  resolvedTheme: "light",
   setTheme: () => {},
 });
 
@@ -100,7 +102,7 @@ export function useTheme() {
 
 /**
  * Class-based theme switching (toggles `dark` on <html>), persisted in
- * localStorage. The site is dark-first, so dark is the default theme.
+ * localStorage. The site is light-first, so light is the default theme.
  *
  * Unlike next-themes, this provider does NOT inject an inline `<script>` tag
  * into the component tree (React 19 / Next.js 16 forbids scripts inside
@@ -121,7 +123,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   //
   // Critically this writes `getSnapshot()` — the store — and NOT `resolvedTheme`.
   // On the hydration commit `resolvedTheme` is still the *server* snapshot
-  // ("dark"), so writing it would stomp the correct value the script just set,
+  // ("light"), so writing it would stomp the correct value the script just set,
   // and the store would then latch onto that wrong value. That was the bug: a
   // stored light theme came back dark, and a stored dark theme flashed light.
   useIsomorphicLayoutEffect(() => {

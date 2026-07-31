@@ -10,6 +10,7 @@ import Footer from "@/components/footer";
 import CommandPalette from "@/components/command-palette";
 import { ThemeProvider } from "@/components/utils/theme/theme-provider";
 import { SmoothScroll } from "@/components/utils/animations/smooth-scroll";
+import { GradientWave } from "@/components/utils/animations/gradient-wave";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
 import { locales, hasLocale, getDictionary } from "@/utils/i18n";
 import { getSiteConfig } from "@/utils/i18n/content";
@@ -138,10 +139,21 @@ export default async function RootLayout({
         <script
           async
           dangerouslySetInnerHTML={{
-            __html: `try{var t=localStorage.getItem('theme');t=t==='light'||t==='dark'?t:'dark';document.documentElement.dataset.theme=t;document.documentElement.style.colorScheme=t}catch(e){document.documentElement.dataset.theme='dark';document.documentElement.style.colorScheme='dark'}`,
+            __html: `try{var t=localStorage.getItem('theme');t=t==='light'||t==='dark'?t:'light';document.documentElement.dataset.theme=t;document.documentElement.style.colorScheme=t}catch(e){document.documentElement.dataset.theme='light';document.documentElement.style.colorScheme='light'}`,
           }}
         />
         <ThemeProvider>
+          {/* The site's ambient background, mounted ONCE and fixed to the
+              viewport. It sits here rather than inside each section on purpose:
+              a copy per section put a seam at every section boundary, where one
+              instance's ribbons ended and the next one's started over. Landing
+              sections carry no background of their own so this shows through.
+
+              It is a sibling of <SmoothScroll>, not a child — ScrollSmoother
+              puts a `transform` on #smooth-content, and a transformed ancestor
+              turns `fixed` into "fixed relative to that element", which would
+              make this scroll away with the page. */}
+          <GradientWave />
           <a
             href="#main-content"
             className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-100 focus:rounded focus:bg-primary focus:px-4 focus:py-2 focus:font-mono focus:text-sm focus:text-primary-foreground focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring"

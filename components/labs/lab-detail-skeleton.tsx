@@ -11,7 +11,7 @@ export function LabDetailSkeleton({ label }: { label: string }) {
     <main
       aria-busy="true"
       aria-label={label}
-      className="flex-1 bg-background px-6 pb-24 pt-32 font-sans"
+      className="flex-1 px-6 pb-24 pt-32 font-sans"
     >
       <div className="mx-auto max-w-6xl">
         {/* Back link */}

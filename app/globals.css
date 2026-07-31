@@ -67,27 +67,37 @@
      except code now reads as serif. The html[lang="km"] override below swaps in
      Kantumruy Pro for Khmer; neither remap touches --font-code. */
   --font-mono: var(--font-serif), ui-serif, Georgia, serif;
-  /* Black & white theme — a pure neutral grayscale ramp, no hue. In light mode
-     the "primary/accent" highlight is black; skill logos and the profile.ts
-     code block keep their own colours (set outside these tokens). */
-  --background: #fafafa;
-  --foreground: #0a0a0a;
+  /* Near-monochrome, but no longer *pure* grayscale: every neutral carries a
+     few points of blue so the ramp sits with the gradient-wave background
+     instead of next to it. Skill logos and the profile.ts code block keep their
+     own colours (set outside these tokens).
+
+     Ink is #16181d, not #0a0a0a. Pure black on near-white is ~20:1 — well past
+     what AAA asks for, and the excess is what makes long reading on this page
+     feel harsh. #16181d on #f8f9fb is ~16:1, still far above AAA (7:1) for
+     every size, and noticeably calmer. */
+  --background: #f8f9fb;
+  --foreground: #16181d;
   --card: #ffffff;
-  --card-foreground: #0a0a0a;
+  --card-foreground: #16181d;
   --popover: #ffffff;
-  --popover-foreground: #0a0a0a;
-  --primary: #0a0a0a;
-  --primary-foreground: #fafafa;
-  --secondary: #f0f0f0;
-  --secondary-foreground: #0a0a0a;
-  --muted: #f0f0f0;
-  --muted-foreground: #5c5c5c;
-  --accent: #171717;
-  --accent-foreground: #fafafa;
+  --popover-foreground: #16181d;
+  --primary: #16181d;
+  --primary-foreground: #f8f9fb;
+  --secondary: #eef0f5;
+  --secondary-foreground: #16181d;
+  --muted: #eef0f5;
+  /* Secondary copy now sits on the gradient-wave ribbons, not on bare paper.
+     Where two ribbons overlap the ground reaches ~#9ccef1, and the lighter
+     #5f6470 this used to be scored only ~3.4:1 there — under AA. #4a4f5c holds
+     ~5:1 over that worst case and ~7.9:1 over the plain background. */
+  --muted-foreground: #4a4f5c;
+  --accent: #22252c;
+  --accent-foreground: #f8f9fb;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: #e4e4e4;
-  --input: #ededed;
-  --ring: #0a0a0a;
+  --border: #e4e7ee;
+  --input: #eceef4;
+  --ring: #16181d;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -95,27 +105,29 @@
   --chart-5: oklch(0.269 0 0);
   --radius: 0.5rem;
   --sidebar: #ffffff;
-  --sidebar-foreground: #0a0a0a;
-  --sidebar-primary: #0a0a0a;
-  --sidebar-primary-foreground: #fafafa;
-  --sidebar-accent: #f0f0f0;
-  --sidebar-accent-foreground: #0a0a0a;
-  --sidebar-border: #e4e4e4;
-  --sidebar-ring: #0a0a0a;
+  --sidebar-foreground: #16181d;
+  --sidebar-primary: #16181d;
+  --sidebar-primary-foreground: #f8f9fb;
+  --sidebar-accent: #eef0f5;
+  --sidebar-accent-foreground: #16181d;
+  --sidebar-border: #e4e7ee;
+  --sidebar-ring: #16181d;
 
   /* Card hover glow. Light mode lifts a card off the page with a soft *dark*
-     shadow — the white glow used in dark mode is invisible on #fafafa, which
-     is why this is a token and not a literal in the utility below. */
-  --card-glow: 0 12px 40px rgb(10 10 10 / 0.1), 0 2px 8px rgb(10 10 10 / 0.06);
-  --card-glow-sm: 0 0 0 1px rgb(10 10 10 / 0.04);
-  --card-sheen: rgb(10 10 10 / 0.06);
+     shadow — the white glow used in dark mode is invisible on a near-white
+     ground, which is why this is a token and not a literal in the utility
+     below. Softened alongside the ink: a 0.1 black shadow read as a hard drop
+     against the new lighter surfaces. */
+  --card-glow: 0 12px 40px rgb(22 24 29 / 0.08), 0 2px 8px rgb(22 24 29 / 0.05);
+  --card-glow-sm: 0 0 0 1px rgb(22 24 29 / 0.035);
+  --card-sheen: rgb(22 24 29 / 0.05);
 
   /* Button sheen is the INVERSE of the card sheen: a filled primary button is
      dark-on-light here, so its sheen has to be white to read at all. --btn-wipe
      tints outline buttons, which sit on the page background, so it follows
      --primary instead. */
   --btn-sheen: rgb(255 255 255 / 0.18);
-  --btn-wipe: rgb(10 10 10 / 0.05);
+  --btn-wipe: rgb(22 24 29 / 0.045);
 }
 
 /* ── Dark mode ─ neutral charcoal + periwinkle, ported from apsara-agentic ── */
@@ -316,12 +328,6 @@ html[lang="km"] {
   content: none;
 }
 
-/* ── Hero scan line ── */
-@keyframes scan {
-  0%   { transform: translateY(-100%); }
-  100% { transform: translateY(100vh); }
-}
-
 /* ── Cursor blink (typewriter in Hero, RB logo) ── */
 @keyframes blink {
   0%, 100% { opacity: 1; }
@@ -408,10 +414,10 @@ html[lang="km"] {
 .hero-char {
   background-image: linear-gradient(
     125deg,
-    #0a0a0a,
-    #3f3f3f 38%,
-    #171717 70%,
-    #525252
+    #16181d,
+    #454a57 38%,
+    #22252c 70%,
+    #5a6070
   );
   -webkit-background-clip: text;
   background-clip: text;
@@ -435,41 +441,16 @@ html[lang="km"] {
   background-size: 180px 180px;
 }
 
-/* ── Aurora: slow drift for large blurred glow orbs (hero / section accents).
-   Pair with blur-3xl + low opacity; GPU-only transform so it stays cheap. ── */
-@keyframes aurora {
-  0%,
-  100% {
-    transform: translate3d(-6%, -4%, 0) scale(1);
-  }
-  50% {
-    transform: translate3d(6%, 5%, 0) scale(1.18);
-  }
-}
+/* ── Touch devices: the ambient background loops are frozen here too, but the
+   rule now lives in JS rather than CSS.
 
-/* ── Touch devices: freeze the ambient background loops ────────────────────
-   The claim above that aurora is "GPU-only, so it stays cheap" holds on
-   desktop but not on phones. `scale` on a `blur-3xl` layer is not a free
-   compositor transform — a 64px blur has to be re-rasterised at each new
-   scale, every frame, for a 384px orb. Paired with the `scan` sweep that
-   repaints a full-width strip on a loop, it keeps the raster thread busy
-   during scroll, which is exactly when a phone can least afford it.
-
-   Scoped to `pointer: coarse` rather than a width breakpoint: this is about
-   what the device's GPU can absorb, not how narrow the window is, so a small
-   desktop window keeps the full treatment. The orbs and the scan line stay
-   rendered — they read as ambient colour, and only their motion stops. ── */
-.hero-scanline {
-  animation: scan 8s linear infinite;
-  animation-delay: 1s;
-}
-
-@media (pointer: coarse) {
-  [class*="animate-[aurora"],
-  .hero-scanline {
-    animation: none;
-  }
-}
+   The old aurora orbs and scan-line sweep animated with CSS, so a
+   `@media (pointer: coarse)` block could switch them off. The gradient waves
+   that replaced them animate on a canvas, so the freeze has to happen where
+   the rAF loop is — see the `isStatic()` check in `gradient-wave.tsx`, which
+   gates on the same `(pointer: coarse)` query for the same reason: a blurred
+   full-bleed layer whose contents change every frame is re-rasterised every
+   frame, and that is exactly what a phone cannot spare during scroll. ── */
 
 /* ── Card hover: the single shared treatment for every interactive card ─────
    Every card surface used to hand-roll its own hover (lift distances of 1px /

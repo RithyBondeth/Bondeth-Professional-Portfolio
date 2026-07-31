@@ -6,7 +6,6 @@ import { Magnetic } from "@/components/utils/animations/magnetic";
 import { TiltCard } from "@/components/utils/animations/tilt-card";
 import { scrollToSection } from "@/components/utils/animations/smooth-scroll";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
-import { SectionBackdrop } from "@/components/utils/animations/section-backdrop";
 import { getDictionary, type TLocale } from "@/utils/i18n";
 import { getSiteConfig } from "@/utils/i18n/content";
 
@@ -187,7 +186,7 @@ const BOOT_KEY = "rb-boot-done";
 const BOOT_LINES = [
   "init portfolio --profile=bondeth",
   "load modules [gsap, next, tailwind]",
-  "render ui --theme=dark",
+  "mount background --gradient-wave",
   "ready ✓",
 ];
 
@@ -485,45 +484,14 @@ export default function LandingHero(props: { lang: TLocale }) {
   return (
     <section
       ref={containerRef}
-      className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground relative isolate overflow-hidden"
+      className="min-h-screen flex flex-col items-center justify-center text-foreground relative isolate overflow-hidden"
     >
-      {/* Section Backdrop — the same dot-matrix bloom every other section uses,
-          so the hero shares one consistent background treatment. */}
-      <SectionBackdrop />
-
-      {/* Centre Radial Glow Section */}
-      {/* Spaces inside a Tailwind arbitrary value break the class name, so the
-          colour uses the space-free `rgb(255_255_255/0.05)` form. */}
-      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_70%_60%_at_50%_50%,rgb(255_255_255/0.05),transparent)]" />
-
-      {/* Ambient Orbs Section — parallax depth via ScrollSmoother data-speed,
-          slow aurora drift on top of the pulse. */}
-      <div
-        data-speed="0.85"
-        className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/6 rounded-full blur-3xl pointer-events-none motion-safe:animate-[aurora_16s_ease-in-out_infinite]"
-      />
-      <div
-        data-speed="1.15"
-        className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-violet-500/6 rounded-full blur-3xl pointer-events-none motion-safe:animate-[aurora_20s_ease-in-out_infinite]"
-        style={{ animationDelay: "3s" }}
-      />
-
-      {/* Film grain — gives the flat navy a physical texture */}
-      <div className="absolute inset-0 pointer-events-none bg-noise opacity-[0.03] dark:opacity-[0.05]" />
-
-      {/* Scan Line Section — the sweep is a named class, not an inline
-          `animation`, so the touch-device freeze in globals.css can switch it
-          off without having to out-specify an inline style. */}
-      <div
-        className="hero-scanline absolute inset-x-0 h-px pointer-events-none"
-        style={{
-          background:
-            "linear-gradient(90deg, transparent, rgba(255, 255, 255,0.25), transparent)",
-        }}
-      />
-
-      {/* Vignette Section (dark mode only) */}
-      <div className="absolute inset-0 pointer-events-none hidden dark:block bg-[radial-gradient(ellipse_100%_100%_at_50%_50%,transparent_50%,rgba(7,9,14,0.7)_100%)]" />
+      {/* No background layers of its own. The gradient-wave ribbons are a
+          single fixed layer in the root layout and show through this section,
+          as they do through every other one — the hero used to own a copy, plus
+          aurora orbs, a scan-line sweep, a centre glow and a vignette, and that
+          stack both muddied the ribbons and was more than the compositor could
+          carry alongside them. */}
 
       {/* Main Content Section */}
       {/* `min-h-screen` is the floor, not the ceiling: once the code window
