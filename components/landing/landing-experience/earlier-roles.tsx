@@ -2,51 +2,34 @@
 
 import { useId, useState } from "react";
 import type { IExperience } from "@/utils/interfaces/portfolio";
+import { ExperienceRow } from "./experience-row";
 
 /**
- * Collapsible "earlier roles" panel.
+ * The tail of the experience index, collapsed behind a disclosure — the
+ * interactive equivalent of a printed CV's compressed appendix.
  *
- * A native `<details>` toggles instantly — the content pops in with no height
- * animation, which read as janky next to the rest of the section's motion. This
- * mirrors the navbar's mobile menu instead: a `grid-template-rows` collapse
- * (`0fr → 1fr`) over an `overflow-hidden` track, which the browser CAN animate
- * to intrinsic height (unlike `height: auto`), so the panel eases open and
- * shut. `inert` + `aria-hidden` keep the collapsed cards out of tab order and
- * the accessibility tree, the same contract the `<details>` gave for free.
- *
- * Reduced-motion users get an instant, un-animated toggle via
- * `motion-reduce:transition-none`.
+ * A native `<details>` toggles instantly. This mirrors the mobile menu
+ * instead: a `grid-template-rows` collapse (`0fr → 1fr`) over an
+ * `overflow-hidden` track, which the browser CAN animate to intrinsic height
+ * (unlike `height: auto`). `inert` + `aria-hidden` keep the collapsed entries
+ * out of tab order and the accessibility tree, the contract `<details>` gives
+ * for free. Reduced-motion users get an instant toggle.
  */
 export function EarlierRoles({
   experiences,
   label,
+  startIndex,
 }: {
   experiences: IExperience[];
   label: string;
+  /** Continues the numbering from the entries printed above. */
+  startIndex: number;
 }) {
   const [open, setOpen] = useState(false);
   const panelId = useId();
 
   return (
-    <div className="mt-8 sm:ml-10">
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        aria-expanded={open}
-        aria-controls={panelId}
-        className="group flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 rounded border border-border/60 bg-background px-4 font-mono text-xs text-muted-foreground transition-colors hover:border-primary/30 hover:text-primary"
-      >
-        <span>{label}</span>
-        <span
-          aria-hidden
-          className={`transition-transform duration-300 ease-out ${
-            open ? "rotate-180" : ""
-          }`}
-        >
-          ↓
-        </span>
-      </button>
-
+    <>
       <div
         id={panelId}
         inert={!open}
@@ -56,35 +39,35 @@ export function EarlierRoles({
         }`}
       >
         <div className="overflow-hidden">
-          <div className="mt-4 space-y-4">
-            {/* Earlier roles sit off the timeline rail, so these lift
-                vertically rather than sliding like the rail-anchored cards. */}
-            {experiences.map((exp) => (
-              <article
-                key={`${exp.role}-${exp.company}`}
-                className="card-interactive rounded border border-border/60 bg-background p-5"
-              >
-                <div className="flex flex-col justify-between gap-1 sm:flex-row">
-                  <div>
-                    <h3 className="text-sm font-semibold text-foreground">
-                      {exp.role}
-                    </h3>
-                    <p className="mt-0.5 font-mono text-xs text-primary">
-                      {exp.company}
-                    </p>
-                  </div>
-                  <span className="font-mono text-xs text-muted-foreground">
-                    {exp.period}
-                  </span>
-                </div>
-                <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-                  {exp.description}
-                </p>
-              </article>
-            ))}
-          </div>
+          {experiences.map((exp, i) => (
+            <ExperienceRow
+              key={`${exp.role}-${exp.company}`}
+              role={exp}
+              index={startIndex + i}
+            />
+          ))}
         </div>
       </div>
-    </div>
+
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        aria-controls={panelId}
+        className="btn-fx link-wipe mt-8 inline-flex items-center gap-3 text-sm text-muted-foreground hover:text-foreground"
+      >
+        {/* A plus that becomes a cross — the quietest possible open/close
+            affordance, and the only rotation left on the site. */}
+        <span
+          aria-hidden
+          className={`text-lg leading-none transition-transform duration-300 motion-reduce:transition-none ${
+            open ? "rotate-45" : ""
+          }`}
+        >
+          +
+        </span>
+        {label}
+      </button>
+    </>
   );
 }

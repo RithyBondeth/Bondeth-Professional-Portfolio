@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { gsap } from "@/components/utils/animations/gsap";
 import { scrollToSection } from "@/components/utils/animations/smooth-scroll";
 import {
   navLinks,
@@ -23,16 +22,32 @@ import {
   type TDictionary,
 } from "@/utils/i18n";
 
+/**
+ * The masthead bar.
+ *
+ * A floating panel inset from the top edge rather than a full-bleed bar welded
+ * to it: the page visibly runs underneath, which is what makes the layout read
+ * as a sheet of paper with a rail over it instead of a chrome-heavy app shell.
+ * Translucent paper plus a backdrop blur keeps the type behind it legible
+ * without a solid block.
+ *
+ * The active item is a filled block, not an underline. The old version glided
+ * a GSAP indicator between links, which meant the nav couldn't render its own
+ * active state until JS had measured the DOM — with a filled `bg-secondary`
+ * block it's plain CSS, correct on first paint, and survives resize for free.
+ *
+ * Also gone: the hide-on-scroll-down transform. The bar is short and quiet
+ * enough to simply stay put, and a bar that moves on its own is exactly the
+ * kind of unasked-for motion this redesign is removing.
+ */
+
 /* ---------------------------------- Utils ---------------------------------- */
 function navKeyFromHref(href: string): keyof TDictionary["nav"] {
-  return href
-    .replace("/#", "")
-    .replace("/", "") as keyof TDictionary["nav"];
+  return href.replace("/#", "").replace("/", "") as keyof TDictionary["nav"];
 }
 
 // Section ids grouped under the desktop "Explore" dropdown — used to decide
-// whether the trigger button (rather than one of the now-hidden links)
-// should pick up the active-link underline.
+// whether the trigger (rather than one of the now-hidden links) is active.
 const EXPLORE_IDS: string[] = exploreNavLinks.map(({ href }) =>
   navKeyFromHref(href),
 );
@@ -52,7 +67,7 @@ function SearchIcon({ className }: { className?: string }) {
       className={className}
       fill="none"
       stroke="currentColor"
-      strokeWidth={1.75}
+      strokeWidth={1.5}
       strokeLinecap="round"
       strokeLinejoin="round"
       viewBox="0 0 24 24"
@@ -69,7 +84,7 @@ function ChevronDownIcon({ className }: { className?: string }) {
       className={className}
       fill="none"
       stroke="currentColor"
-      strokeWidth={2}
+      strokeWidth={1.5}
       strokeLinecap="round"
       strokeLinejoin="round"
       viewBox="0 0 24 24"
@@ -77,6 +92,17 @@ function ChevronDownIcon({ className }: { className?: string }) {
       <path d="m6 9 6 6 6-6" />
     </svg>
   );
+}
+
+/* ------------------------------ Shared classes ------------------------------ */
+/** One nav item. Active is a filled block; inactive is muted type. */
+function itemClass(active: boolean) {
+  return [
+    "relative flex items-center whitespace-nowrap px-3 py-1.5 text-[0.8125rem] transition-colors duration-200",
+    active
+      ? "bg-secondary text-foreground"
+      : "text-muted-foreground hover:text-foreground",
+  ].join(" ");
 }
 
 /* -------------------------------- Components -------------------------------- */
@@ -103,11 +129,7 @@ function resolveLocaleTransition() {
   endLocaleTransition = null;
 }
 
-function LanguageSwitcher(props: { lang: TLocale }) {
-  /* ---------------------------------- Props --------------------------------- */
-  const { lang } = props;
-
-  /* ---------------------------------- Utils --------------------------------- */
+function LanguageSwitcher({ lang }: { lang: TLocale }) {
   const pathname = usePathname();
   const router = useRouter();
   const labels: Record<TLocale, string> = { en: "EN", km: "ខ្មែរ" };
@@ -119,9 +141,8 @@ function LanguageSwitcher(props: { lang: TLocale }) {
 
   /**
    * Changing locale swaps the `[lang]` route segment, which remounts the whole
-   * subtree — nav, footer and every entry animation rebuild at once, so the
-   * switch lands with a hard snap. A view transition cross-fades the old page
-   * into the new one instead.
+   * subtree, so the switch lands with a hard snap. A view transition
+   * cross-fades the old page into the new one instead.
    *
    * `router.push` resolves before the new page paints, so the transition is
    * held open by a promise that only settles once the pathname has changed.
@@ -130,10 +151,7 @@ function LanguageSwitcher(props: { lang: TLocale }) {
     resolveLocaleTransition();
   }, [pathname]);
 
-  function handleSwitch(
-    e: React.MouseEvent<HTMLAnchorElement>,
-    target: TLocale,
-  ) {
+  function handleSwitch(e: React.MouseEvent<HTMLAnchorElement>, target: TLocale) {
     persistLocaleCookie(target);
     if (target === lang) return;
 
@@ -163,22 +181,20 @@ function LanguageSwitcher(props: { lang: TLocale }) {
     });
   }
 
-  /* -------------------------------- Render UI ------------------------------- */
   return (
-    <div className="flex items-center gap-0.5 rounded border border-border/60 px-1 lg:py-0.5">
+    <div className="flex items-center">
       {locales.map((locale, i) => (
         <span key={locale} className="flex items-center">
           {i > 0 && (
-            <span className="text-muted-foreground dark:text-muted-foreground/30 text-[10px] mx-0.5">
-              |
-            </span>
+            <span aria-hidden className="mx-1 h-3 w-px bg-rule" />
           )}
           <Link
             href={switchedPath(locale)}
             onClick={(e) => handleSwitch(e, locale)}
-            className={`flex min-h-11 items-center rounded px-1.5 font-mono text-[11px] transition-colors lg:min-h-0 lg:py-0.5 ${
+            aria-current={lang === locale ? "true" : undefined}
+            className={`eyebrow flex min-h-11 items-center px-1 transition-colors lg:min-h-0 ${
               lang === locale
-                ? "text-primary"
+                ? "text-foreground"
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -190,36 +206,22 @@ function LanguageSwitcher(props: { lang: TLocale }) {
   );
 }
 
-export default function Navbar(props: { lang: TLocale }) {
-  /* ---------------------------------- Props --------------------------------- */
-  const { lang } = props;
+export default function Navbar({ lang }: { lang: TLocale }) {
   const dict = getDictionary(lang);
 
-  /* -------------------------------- All States ------------------------------- */
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [exploreOpen, setExploreOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
-  const [progress, setProgress] = useState(0);
 
-  /* ---------------------------------- Utils --------------------------------- */
   const pathname = usePathname();
-  const navRef = useRef<HTMLElement>(null);
-  const linksRef = useRef<HTMLUListElement>(null);
-  const indicatorRef = useRef<HTMLSpanElement>(null);
   const exploreRef = useRef<HTMLLIElement>(null);
-  const menuOpenRef = useRef(false);
-  const hiddenRef = useRef(false);
-  const lastYRef = useRef(0);
   const onHome = pathname === `/${lang}`;
   const isExploreActive = EXPLORE_IDS.includes(activeSection);
 
-  // In-page section links ("/#about" etc.) only need scrollToSection when
-  // we're already on the homepage — the smoother's scrollTo replaces the
-  // native hash jump, which lands in the wrong spot once ScrollSmoother is
-  // virtualizing scroll. From any other route, let <Link> do a normal
-  // client-side navigation to "/{lang}#id"; SmoothScroll picks up the hash
-  // once the homepage content mounts.
+  // In-page section links ("/#about") only need scrollToSection when we're
+  // already on the homepage. From any other route, let <Link> navigate to
+  // "/{lang}#id"; SmoothScroll lands on the hash once the content mounts.
   function handleNavClick(e: React.MouseEvent, href: string) {
     if (!href.startsWith("/#") || !onHome) return;
     e.preventDefault();
@@ -247,62 +249,19 @@ export default function Navbar(props: { lang: TLocale }) {
     };
   }, [exploreOpen]);
 
-  /* --------------------------------- Effects -------------------------------- */
-  useEffect(() => {
-    menuOpenRef.current = menuOpen;
-    // Opening the menu must always bring the bar back.
-    if (menuOpen && hiddenRef.current) {
-      hiddenRef.current = false;
-      gsap.to(navRef.current, { yPercent: 0, duration: 0.4, ease: "smooth" });
-    }
-  }, [menuOpen]);
-
+  // Which section is currently under the reader — drives the filled item.
   useEffect(() => {
     const sectionIds = navLinks
       .map(({ href }) => href)
       .filter((href) => href.startsWith("/#"))
       .map((href) => href.replace("/#", ""));
 
-    const reduceMq = window.matchMedia("(prefers-reduced-motion: reduce)");
-
     const onScroll = () => {
-      const y = window.scrollY;
-      setScrolled(y > 20);
-
-      const scrollHeight =
-        document.documentElement.scrollHeight - window.innerHeight;
-      setProgress(scrollHeight > 0 ? (y / scrollHeight) * 100 : 0);
-
-      // Hide the bar while scrolling down through the page, bring it back the
-      // moment the user scrolls up — classic focus-on-content pattern.
-      // Reduced motion keeps the bar permanently visible.
-      if (!reduceMq.matches) {
-        const goingDown = y > lastYRef.current + 6;
-        const goingUp = y < lastYRef.current - 6;
-        if (goingDown && y > 400 && !menuOpenRef.current && !hiddenRef.current) {
-          hiddenRef.current = true;
-          gsap.to(navRef.current, {
-            yPercent: -100,
-            duration: 0.45,
-            ease: "smooth",
-            overwrite: "auto",
-          });
-        } else if ((goingUp || y <= 400) && hiddenRef.current) {
-          hiddenRef.current = false;
-          gsap.to(navRef.current, {
-            yPercent: 0,
-            duration: 0.45,
-            ease: "smooth",
-            overwrite: "auto",
-          });
-        }
-      }
-      lastYRef.current = y;
+      setScrolled(window.scrollY > 16);
 
       const threshold = window.innerHeight * 0.35;
       let current = "";
 
-      // Check if we are on the blog page
       if (window.location.pathname.includes("/labs")) {
         current = "labs";
       } else if (window.location.pathname.includes("/blog")) {
@@ -322,47 +281,6 @@ export default function Navbar(props: { lang: TLocale }) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // One sliding underline glides between active links instead of each link
-  // painting its own — jumps instantly under reduced motion.
-  useEffect(() => {
-    const ul = linksRef.current;
-    const indicator = indicatorRef.current;
-    if (!ul || !indicator) return;
-
-    const place = (animate: boolean) => {
-      // Explore-grouped sections don't render their own top-level link — the
-      // underline should sit under the dropdown trigger instead.
-      const targetId = EXPLORE_IDS.includes(activeSection)
-        ? "explore-trigger"
-        : activeSection;
-      const active = ul.querySelector<HTMLElement>(
-        `[data-nav-id="${targetId}"]`,
-      );
-      if (!active) {
-        gsap.to(indicator, { opacity: 0, duration: 0.2 });
-        return;
-      }
-      const vars = {
-        x: active.offsetLeft + 10,
-        width: Math.max(0, active.offsetWidth - 20),
-        opacity: 1,
-      };
-      const reduce = window.matchMedia(
-        "(prefers-reduced-motion: reduce)",
-      ).matches;
-      if (animate && !reduce) {
-        gsap.to(indicator, { ...vars, duration: 0.45, ease: "smooth" });
-      } else {
-        gsap.set(indicator, vars);
-      }
-    };
-
-    place(true);
-    const onResize = () => place(false);
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, [activeSection]);
-
   useEffect(() => {
     if (!menuOpen) return;
     const onKey = (e: KeyboardEvent) => {
@@ -372,74 +290,55 @@ export default function Navbar(props: { lang: TLocale }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [menuOpen]);
 
-  /* -------------------------------- Render UI ------------------------------- */
   return (
-    <nav
-      ref={navRef}
-      // Colors/shadow only — GSAP owns the transform for hide/reveal, and a
-      // CSS `transition-all` would double-ease it.
-      className={`fixed top-0 left-0 right-0 z-50 transition-[background-color,border-color,box-shadow] duration-300 ${
-        scrolled || menuOpen
-          ? "bg-background/95 backdrop-blur-md border-b border-border shadow-xl shadow-black/10 dark:shadow-black/40"
-          : "bg-transparent"
-      }`}
-    >
-      {/* Scroll Progress Bar Section */}
+    <nav className="fixed inset-x-0 top-0 z-50 px-4 pt-4 sm:px-6 sm:pt-5">
       <div
-        className="absolute bottom-0 left-0 h-px bg-primary/70 transition-[width] duration-75 ease-out pointer-events-none"
-        style={{ width: `${progress}%` }}
-      />
-      <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-        {/* Brand Section */}
+        // At the very top the panel is invisible and the masthead reads as part
+        // of the page; once the reader moves, it separates from the content
+        // with paper, a hairline and a blur.
+        className={`mx-auto flex max-w-[76rem] items-center justify-between gap-4 px-4 transition-[background-color,border-color,box-shadow,backdrop-filter] duration-300 sm:px-5 ${
+          scrolled || menuOpen
+            ? "border border-rule bg-background/85 py-2.5 shadow-[0_1px_20px_-12px_rgb(0_0_0/0.35)] backdrop-blur-md"
+            : "border border-transparent py-3"
+        }`}
+      >
+        {/* ── Brand ─────────────────────────────────────────────────────── */}
         <Link
           href={`/${lang}`}
           aria-label={siteConfig.name}
-          className="flex items-center hover:opacity-80 transition-opacity"
+          className="btn-fx flex items-center transition-opacity hover:opacity-70"
         >
           <Logo className="text-base" />
           <span className="sr-only">{siteConfig.name}</span>
         </Link>
 
-        {/* Desktop Links Section */}
-        <ul ref={linksRef} className="relative hidden lg:flex items-center gap-0.5 xl:gap-1">
-          {/* Sliding active-link underline (decorative) */}
-          <span
-            ref={indicatorRef}
-            aria-hidden
-            className="pointer-events-none absolute bottom-0 left-0 h-px w-0 rounded-full bg-primary/70 opacity-0"
-          />
-          {/* Explore dropdown — groups the homepage's own scroll-sections
-              (About, Skills, Experience, Education, Services) so the bar
-              keeps real destinations front and center. */}
+        {/* ── Desktop links ─────────────────────────────────────────────── */}
+        <ul className="hidden items-center lg:flex">
+          {/* Explore groups the homepage's own scroll-sections so the bar keeps
+              real destinations front and centre. */}
           <li ref={exploreRef} className="relative">
             <button
               type="button"
-              data-nav-id="explore-trigger"
               onClick={() => setExploreOpen((o) => !o)}
               aria-haspopup="true"
               aria-expanded={exploreOpen}
-              className={`relative flex items-center gap-1 px-2.5 xl:px-3 py-1.5 text-xs font-mono tracking-wide whitespace-nowrap transition-colors duration-200 rounded ${
-                isExploreActive
-                  ? "text-primary"
-                  : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
-              }`}
+              className={`${itemClass(isExploreActive)} gap-1.5`}
             >
-              <span className="text-primary dark:text-primary/40 mr-1 text-[10px] hidden xl:inline">
-                01.
-              </span>
               {dict.nav.explore}
               <ChevronDownIcon
-                className={`w-3 h-3 transition-transform duration-200 ${exploreOpen ? "rotate-180" : ""}`}
+                className={`h-3 w-3 transition-transform duration-200 motion-reduce:transition-none ${
+                  exploreOpen ? "rotate-180" : ""
+                }`}
               />
             </button>
+
             <ul
-              className={`absolute left-0 top-full mt-2 min-w-40 flex-col gap-0.5 rounded border border-border bg-background/95 backdrop-blur-md p-1 shadow-xl shadow-black/10 dark:shadow-black/40 ${
+              className={`absolute left-0 top-full mt-2 min-w-44 flex-col border border-rule bg-background/95 p-1 shadow-[0_8px_30px_-16px_rgb(0_0_0/0.4)] backdrop-blur-md ${
                 exploreOpen ? "flex" : "hidden"
               }`}
             >
               {exploreNavLinks.map(({ href }) => {
                 const id = href.replace("/#", "");
-                const isActive = activeSection === id;
                 return (
                   <li key={href}>
                     <Link
@@ -448,11 +347,7 @@ export default function Navbar(props: { lang: TLocale }) {
                         handleNavClick(e, href);
                         setExploreOpen(false);
                       }}
-                      className={`block rounded px-3 py-1.5 text-xs font-mono tracking-wide whitespace-nowrap transition-colors ${
-                        isActive
-                          ? "text-primary bg-primary/5"
-                          : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
-                      }`}
+                      className={`block ${itemClass(activeSection === id)}`}
                     >
                       {dict.nav[navKeyFromHref(href)]}
                     </Link>
@@ -461,41 +356,33 @@ export default function Navbar(props: { lang: TLocale }) {
               })}
             </ul>
           </li>
-          {topNavLinks.map(({ href }, i) => {
+
+          {topNavLinks.map(({ href }) => {
             const id = href.replace("/#", "").replace("/", "");
-            const isActive = activeSection === id;
             return (
               <li key={href}>
                 <Link
                   href={localizeHref(href, lang)}
-                  data-nav-id={id}
                   onClick={(e) => handleNavClick(e, href)}
-                  className={`relative px-2.5 xl:px-3 py-1.5 text-xs font-mono tracking-wide whitespace-nowrap transition-colors duration-200 rounded ${
-                    isActive
-                      ? "text-primary"
-                      : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
-                  }`}
+                  className={itemClass(activeSection === id)}
                 >
-                  <span className="text-primary dark:text-primary/40 mr-1 text-[10px] hidden xl:inline">
-                    0{i + 2}.
-                  </span>
                   {dict.nav[navKeyFromHref(href)]}
                 </Link>
               </li>
             );
           })}
-          <li aria-hidden className="mx-2 h-4 w-px bg-border" />
+
+          {/* ── Tools, parked at the right end ──────────────────────────── */}
+          <li aria-hidden className="mx-3 h-4 w-px bg-rule" />
           <li>
             <button
               type="button"
               onClick={openCommandPalette}
               aria-label={dict.commandPalette.open}
-              className="btn-fx btn-fx-outline flex items-center gap-2 pl-2.5 pr-2 py-1.5 text-xs font-mono text-muted-foreground border border-border/60 rounded hover:text-foreground"
+              className="btn-fx flex items-center gap-2 px-2 py-1.5 text-muted-foreground transition-colors hover:text-foreground"
             >
-              <SearchIcon data-btn-glyph className="w-3.5 h-3.5" />
-              <kbd className="text-[10px] text-muted-foreground dark:text-muted-foreground/70">
-                ⌘K
-              </kbd>
+              <SearchIcon data-btn-glyph className="h-4 w-4" />
+              <kbd className="eyebrow">⌘K</kbd>
             </button>
           </li>
           <li>
@@ -503,55 +390,55 @@ export default function Navbar(props: { lang: TLocale }) {
               href={siteConfig.resume}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-3 py-1.5 text-xs font-mono tracking-wide whitespace-nowrap text-primary border border-primary/30 rounded hover:bg-primary/5 transition-all"
+              className="btn-fx link-wipe ml-1 px-2 py-1.5 text-[0.8125rem] text-foreground"
             >
               {dict.nav.resume}
             </a>
           </li>
-          <li className="ml-2">
+          <li className="ml-3">
             <LanguageSwitcher lang={lang} />
           </li>
-          <li className="ml-1">
+          <li className="ml-2">
             <ThemeToggle label={dict.nav.toggleTheme} />
           </li>
         </ul>
 
-        {/* Mobile Right Section */}
+        {/* ── Mobile controls ───────────────────────────────────────────── */}
         <div className="flex items-center gap-1 lg:hidden">
           <button
             type="button"
             onClick={openCommandPalette}
             aria-label={dict.commandPalette.open}
-            className="btn-fx btn-fx-icon flex size-11 items-center justify-center rounded border border-border/60 text-muted-foreground hover:border-primary/40 hover:text-primary"
+            className="btn-fx btn-fx-icon flex size-11 items-center justify-center text-muted-foreground hover:text-foreground"
           >
-            <SearchIcon data-btn-glyph className="w-3.5 h-3.5" />
+            <SearchIcon data-btn-glyph className="h-4 w-4" />
           </button>
           <LanguageSwitcher lang={lang} />
           <ThemeToggle label={dict.nav.toggleTheme} />
           <button
-            className="btn-fx btn-fx-icon flex size-11 items-center justify-center rounded text-muted-foreground hover:bg-foreground/5 hover:text-foreground"
+            className="btn-fx btn-fx-icon flex size-11 items-center justify-center text-muted-foreground hover:text-foreground"
             onClick={() => setMenuOpen((o) => !o)}
             aria-label={dict.nav.toggleMenu}
             aria-expanded={menuOpen}
           >
             {menuOpen ? (
-              <CloseIcon data-btn-glyph className="w-5 h-5" />
+              <CloseIcon data-btn-glyph className="h-5 w-5" />
             ) : (
-              <MenuIcon data-btn-glyph className="w-5 h-5" />
+              <MenuIcon data-btn-glyph className="h-5 w-5" />
             )}
           </button>
         </div>
       </div>
 
-      {/* Mobile Menu Section */}
+      {/* ── Mobile menu ─────────────────────────────────────────────────── */}
       <div
         inert={!menuOpen}
-        className={`lg:hidden grid transition-[grid-template-rows,opacity] duration-300 ease-out ${
+        className={`mx-auto grid max-w-[76rem] transition-[grid-template-rows,opacity] duration-300 ease-out motion-reduce:transition-none lg:hidden ${
           menuOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
         }`}
       >
         <div className="overflow-hidden">
-          <ul className="flex flex-col gap-1 border-t border-border px-6 py-4">
+          <ul className="border-x border-b border-rule bg-background/95 px-4 py-2 backdrop-blur-md">
             {navLinks.map(({ href }, i) => {
               const id = href.replace("/#", "").replace("/", "");
               const isActive = activeSection === id;
@@ -563,29 +450,30 @@ export default function Navbar(props: { lang: TLocale }) {
                       handleNavClick(e, href);
                       setMenuOpen(false);
                     }}
-                    className={`flex min-h-11 items-center gap-2 rounded border-l px-3 text-xs font-mono transition-all ${
-                      isActive
-                        ? "text-primary bg-primary/5 border-primary"
-                        : "text-muted-foreground border-transparent hover:text-foreground hover:border-border"
+                    className={`flex min-h-12 items-center gap-4 border-b border-rule text-sm transition-colors ${
+                      isActive ? "text-foreground" : "text-muted-foreground"
                     }`}
                   >
-                    <span className="text-primary dark:text-primary/40 text-[10px]">
-                      0{i + 1}.
+                    <span className="eyebrow numeral">
+                      {String(i + 1).padStart(2, "0")}
                     </span>
                     {dict.nav[navKeyFromHref(href)]}
                   </Link>
                 </li>
               );
             })}
-            <li className="mt-2 pt-3 border-t border-border/50">
+            <li>
               <a
                 href={siteConfig.resume}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setMenuOpen(false)}
-                className="flex min-h-11 items-center justify-center gap-2 rounded border border-primary/20 bg-primary/5 px-3 text-xs font-mono text-primary transition-colors hover:bg-primary/10"
+                className="flex min-h-12 items-center text-sm text-foreground"
               >
                 {dict.nav.resumeMobile}
+                <span aria-hidden className="ml-2">
+                  ↗
+                </span>
               </a>
             </li>
           </ul>

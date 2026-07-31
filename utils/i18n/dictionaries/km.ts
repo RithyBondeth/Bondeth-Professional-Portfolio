@@ -1,6 +1,17 @@
 import type { TDictionary } from "..";
 
 export const km: TDictionary = {
+  sections: {
+    about: "អំពីខ្ញុំ",
+    now: "បច្ចុប្បន្ន",
+    skills: "ជំនាញ",
+    experience: "បទពិសោធន៍",
+    education: "ការសិក្សា",
+    services: "សេវាកម្ម",
+    projects: "ស្នាដៃជ្រើសរើស",
+    references: "អ្នកធានា",
+    contact: "ទំនាក់ទំនង",
+  },
   nav: {
     explore: "រុករក",
     about: "អំពីខ្ញុំ",
@@ -17,6 +28,7 @@ export const km: TDictionary = {
     toggleMenu: "បើក/បិទម៉ឺនុយ",
     toggleTheme: "ប្តូរផ្ទៃពណ៌",
     skipToContent: "រំលងទៅមាតិកា",
+    backToHome: "ទំព័រដើម",
   },
   hero: {
     titles: [
@@ -24,10 +36,18 @@ export const km: TDictionary = {
       "វិស្វករ AI",
       "អ្នកអភិវឌ្ឍន៍កម្មវិធីទូរស័ព្ទ",
     ],
-    viewWork: "./មើលស្នាដៃ",
-    downloadCv: "./ទាញយក-CV",
-    getInTouch: "./ទាក់ទងខ្ញុំ",
+    viewWork: "ស្នាដៃជ្រើសរើស",
+    downloadCv: "ប្រវត្តិរូប",
+    getInTouch: "ទាក់ទងខ្ញុំ",
     scroll: "រំកិលចុះ",
+    colophon: {
+      practice: "វិជ្ជាជីវៈ",
+      practiceValue: "វិស្វកម្មសូហ្វវែរ និង AI អនុវត្តន៍",
+      based: "ទីតាំង",
+      basedValue: "រាជធានីភ្នំពេញ ព្រះរាជាណាចក្រកម្ពុជា · UTC+7",
+      status: "ស្ថានភាព",
+      statusValue: "បើកទទួលគម្រោងជ្រើសរើស",
+    },
   },
   about: {
     heading: "ចូលចិត្តបង្កើតអ្វីៗដែលមានតម្លៃ។",
@@ -67,10 +87,6 @@ export const km: TDictionary = {
           "រាជធានីភ្នំពេញ ប្រទេសកម្ពុជា — ធ្វើការក្នុងតំបន់ពេលវេលា UTC+7 ជាមួយក្រុមក្នុងស្រុក និងពីចម្ងាយ។",
       },
     ],
-    globe: {
-      pinLabel: "ភ្នំពេញ កម្ពុជា",
-      photoCaption: "ភ្នំពេញ",
-    },
   },
   skills: {
     heading: "បច្ចេកវិទ្យាដែលខ្ញុំប្រើប្រាស់",

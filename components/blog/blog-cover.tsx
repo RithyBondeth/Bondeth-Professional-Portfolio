@@ -17,25 +17,22 @@ function hashSlug(slug: string): number {
 type TCoverPost = Pick<IPost, "title" | "slug" | "tags" | "cover" | "coverAlt">;
 
 /**
- * Cover plate for a post card.
+ * Cover plate for a post.
  *
- * When a post ships no `cover` image we generate one. This plate is treated as
- * an *object* — like a book cover — so it stays dark in both themes rather than
- * inverting, exactly like the hero's `profile.ts` editor window. That gives the
- * blog a row of rich, consistent plates instead of the washed-out dots-on-white
- * a theme-aware version produced in light mode.
+ * When a post ships no `cover` image we set one instead of faking a
+ * photograph: the lead topic in display type over the paper stock, with a
+ * giant tinted monogram behind it for depth and a hairline frame. It is the
+ * same two-colour system as the rest of the site, so a column of plates reads
+ * as a set of title pages rather than a row of stock imagery.
  *
- * The composition is a single confident wordmark (the post's lead topic) lit
- * from a per-post angle, with a giant faint serif monogram behind it for depth
- * and a grain layer for tactility. Type is sized in container-query units, so
- * the one component reads correctly at every scale it's used — the ~280px
- * related-post card, the ~440px list card, and the ~768px detail cover.
+ * The previous version was a near-black slab with a neon glow, a noise layer
+ * and a `~/blog` terminal prompt — an object deliberately held outside the
+ * theme. On paper stock it read as a hole punched in the page.
  *
- * Earlier passes failed two different ways: the very first plate ruled the one
- * surface on an otherwise dot-stippled site in a foreign line *grid*; the pass
- * after it over-corrected into something flat and quiet. This one keeps a real
- * focal point (the wordmark), one depth layer (the monogram), and atmosphere
- * (gradient + directional glow + grain) — and nothing else.
+ * Type is sized in container-query units so one component works at every scale
+ * it's used: the ~80px related-post thumbnail, the ~128px list row, and the
+ * full-width detail cover. The per-post seed only shifts the monogram, which
+ * keeps a column of plates from tiling.
  */
 export function BlogCover({
   post,
@@ -61,7 +58,7 @@ export function BlogCover({
     <div
       {...rest}
       className={cn(
-        "relative overflow-hidden rounded-lg border border-border",
+        "relative overflow-hidden border border-rule bg-secondary",
         className,
       )}
     >
@@ -76,56 +73,34 @@ export function BlogCover({
           className="object-cover"
         />
       ) : (
-        <div className="absolute inset-0 overflow-hidden bg-[#07090e] [container-type:size]">
-          {/* Base — a faintly blue-lifted top fading to near-black, so the
-              plate has vertical depth before anything sits on it. */}
-          <div
-            aria-hidden
-            className="absolute inset-0"
-            style={{
-              background:
-                "linear-gradient(158deg, #121622 0%, #0a0d14 52%, #05070b 100%)",
-            }}
-          />
-          {/* Directional glow — the per-post light source. */}
-          <div
-            aria-hidden
-            className="absolute inset-0"
-            style={{
-              background: `radial-gradient(58% 65% at ${glowX}% ${glowY}%, rgb(255 255 255 / 0.12), transparent 68%)`,
-            }}
-          />
-          {/* Giant monogram — the depth layer. Serif, so it plays against the
-              monospace wordmark; sized off the plate height and bled off the
-              right edge so it reads as texture, not a letter to be read. */}
+        <div className="absolute inset-0 overflow-hidden bg-secondary [container-type:size]">
+          {/* Depth layer: an oversized monogram in the display face, bled off
+              the right edge so it reads as texture rather than a letter. The
+              per-post offset stops a column of plates from tiling. */}
           <span
             aria-hidden
-            className="pointer-events-none absolute -right-[6%] top-1/2 -translate-y-1/2 select-none font-sans font-bold leading-none text-white/[0.05]"
-            style={{ fontSize: "clamp(7rem, 74cqh, 26rem)" }}
+            className="pointer-events-none absolute select-none leading-none text-foreground/[0.07]"
+            style={{
+              fontFamily: "var(--font-display), ui-serif, Georgia, serif",
+              fontSize: "clamp(5rem, 90cqh, 26rem)",
+              right: `${-8 + (glowX % 10)}%`,
+              top: `${38 + (glowY % 16)}%`,
+              transform: "translateY(-50%)",
+            }}
           >
             {monogram}
           </span>
-          {/* Grain — pulls the flat gradient toward a physical, printed feel. */}
-          <div
-            aria-hidden
-            className="absolute inset-0 bg-noise opacity-[0.07] mix-blend-screen"
-          />
-          {/* Hairline top edge catching the light. */}
-          <div
-            aria-hidden
-            className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent"
-          />
 
-          {/* Foreground */}
-          <div className="relative flex h-full flex-col justify-between p-5 sm:p-6">
-            <span className="font-code text-[11px] uppercase tracking-[0.3em] text-white/40">
-              ~/blog
-            </span>
+          {/* Foreground: the topic, set as a title. `clamp` keeps it legible in
+              the 80px thumbnail without overwhelming the full-width cover. */}
+          <div className="relative flex h-full flex-col justify-end p-[6cqw]">
             <p
-              className="font-code font-bold uppercase leading-[0.9] tracking-tight text-white/90"
-              style={{ fontSize: "clamp(1.6rem, 15cqw, 4rem)" }}
+              className="leading-[0.95] text-foreground"
+              style={{
+                fontFamily: "var(--font-display), ui-serif, Georgia, serif",
+                fontSize: "clamp(0.8rem, 13cqw, 3.5rem)",
+              }}
             >
-              <span className="mr-[0.15em] text-white/30">#</span>
               {topic}
             </p>
           </div>

@@ -1,4 +1,18 @@
 export const en = {
+  /* Running heads. Short enough to sit in the narrow label column beside each
+     section's headline, and deliberately not the same words as `nav` — a
+     printed running head is terser than a navigation label. */
+  sections: {
+    about: "About",
+    now: "Now",
+    skills: "Skills",
+    experience: "Experience",
+    education: "Education",
+    services: "Services",
+    projects: "Selected work",
+    references: "References",
+    contact: "Contact",
+  },
   nav: {
     explore: "Explore",
     about: "About",
@@ -15,13 +29,24 @@ export const en = {
     toggleMenu: "Toggle menu",
     toggleTheme: "Switch theme",
     skipToContent: "Skip to content",
+    /* Breadcrumb wording for the back link at the top of every inner page. */
+    backToHome: "Home",
   },
   hero: {
     titles: ["Full Stack Developer", "AI Engineer", "Mobile App Developer"],
-    viewWork: "./view-work",
-    downloadCv: "./download-cv",
-    getInTouch: "./get-in-touch",
-    scroll: "scroll",
+    viewWork: "Selected work",
+    downloadCv: "Résumé",
+    getInTouch: "Get in touch",
+    scroll: "Scroll",
+    /* Masthead colophon — the label/value pairs printed under the name. */
+    colophon: {
+      practice: "Practice",
+      practiceValue: "Software engineering & applied AI",
+      based: "Based in",
+      basedValue: "Phnom Penh, Cambodia · UTC+7",
+      status: "Status",
+      statusValue: "Open to selected projects",
+    },
   },
   about: {
     heading: "Passionate about building things that matter.",
@@ -61,10 +86,6 @@ export const en = {
           "Phnom Penh, Cambodia — working in the UTC+7 time zone with local and remote teams.",
       },
     ],
-    globe: {
-      pinLabel: "Phnom Penh, Cambodia",
-      photoCaption: "Bondeth👨🏼‍💻",
-    },
   },
   skills: {
     heading: "Technologies I work with",

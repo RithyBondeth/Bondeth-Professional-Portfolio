@@ -1,132 +1,136 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ExternalLinkIcon } from "@/components/utils/icons";
-import { TiltCard } from "@/components/utils/animations/tilt-card";
 import type { IProject } from "@/utils/interfaces/portfolio";
 import type { TDictionary, TLocale } from "@/utils/i18n";
 
-export function ProjectCard(props: {
+/**
+ * One project in the archive index.
+ *
+ * Kept as `ProjectCard` because that name is used across the app, but it is a
+ * row now, not a card: no tilt shell, no glare sheen, no traffic-light window
+ * mock standing in for a missing screenshot. A project without a screenshot
+ * simply doesn't print one — an invented browser chrome is a picture of
+ * nothing.
+ *
+ * Confidential projects have no detail route, so the row is inert type rather
+ * than a link that goes nowhere. That's also why this can't just be `IndexRow`
+ * — a third of these items aren't navigable at all.
+ */
+export function ProjectCard({
+  project,
+  dict,
+  lang,
+}: {
   project: IProject;
   dict: TDictionary;
   lang: TLocale;
 }) {
-  const { project, dict, lang } = props;
+  const isConfidential = project.visibility === "confidential";
+  const description = isConfidential
+    ? dict.projects.confidentialCard
+    : project.description;
+
+  const thumbnail = (
+    <div className="relative flex aspect-[4/3] w-24 shrink-0 items-center justify-center overflow-hidden border border-rule bg-secondary sm:w-32">
+      {project.image && !isConfidential ? (
+        <Image
+          src={project.image}
+          alt=""
+          fill
+          sizes="128px"
+          className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04] motion-reduce:transform-none"
+        />
+      ) : (
+        <span aria-hidden className="display-sm text-muted-foreground">
+          {project.title.charAt(0)}
+        </span>
+      )}
+    </div>
+  );
+
+  const body = (
+    <div className="min-w-0 flex-1">
+      <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+        <p className="eyebrow">{project.category}</p>
+        {project.visibility !== "public" && (
+          <p className="eyebrow text-marker">
+            {project.visibility === "limited"
+              ? dict.projects.limitedProject
+              : dict.projects.confidentialProject}
+          </p>
+        )}
+      </div>
+
+      <h3
+        className={`mt-2 text-lg leading-snug sm:text-xl ${
+          isConfidential
+            ? "text-foreground"
+            : "text-foreground transition-colors group-hover:text-marker"
+        }`}
+      >
+        {project.title}
+      </h3>
+
+      <p className="measure mt-2 text-sm leading-relaxed text-muted-foreground">
+        {description}
+      </p>
+
+      {project.tags.length > 0 && (
+        <p className="eyebrow mt-3">{project.tags.slice(0, 5).join(" · ")}</p>
+      )}
+
+      {/* The live link is its own control so it doesn't nest inside the row
+          link — one anchor cannot legally contain another. */}
+      {project.live && !isConfidential && (
+        <a
+          href={project.live}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn-fx link-wipe relative z-10 mt-4 inline-block text-sm"
+          aria-label={`${dict.projects.demo}: ${project.title}`}
+        >
+          {dict.projects.demo}
+          <span aria-hidden className="ml-2">
+            ↗
+          </span>
+        </a>
+      )}
+    </div>
+  );
+
+  const rowClass =
+    "group flex items-start gap-5 border-b border-rule py-6 sm:gap-7 sm:py-7";
+
+  if (isConfidential) {
+    return (
+      <article className={rowClass}>
+        {thumbnail}
+        {body}
+      </article>
+    );
+  }
 
   return (
-    /* 3D tilt + glare shell — desktop pointers only, static elsewhere. */
-    <TiltCard maxTilt={6} className="relative h-full rounded">
-      {/* TiltCard owns the 3D lean, so this card opts out of the shared lift
-          (the two transforms would fight) and keeps only the border warm-up,
-          glow, and sheen. */}
-      <article className="card-interactive group flex h-full flex-col overflow-hidden rounded border border-border/60 bg-card [--card-lift:0px]">
-        <div className="relative h-44 overflow-hidden">
-          {project.image && project.visibility !== "confidential" ? (
-            <Image
-              src={project.image}
-              alt={`${project.title} preview`}
-              fill
-              data-card-media
-              className="object-cover"
-            />
-          ) : (
-            <div
-              className={`absolute inset-0 bg-linear-to-br ${project.gradient}`}
-            >
-              <div className="absolute inset-x-0 top-0 flex h-7 items-center gap-1.5 bg-background/70 px-3 backdrop-blur-sm">
-                <span className="h-2 w-2 rounded-full bg-red-500/70" />
-                <span className="h-2 w-2 rounded-full bg-yellow-500/70" />
-                <span className="h-2 w-2 rounded-full bg-green-500/70" />
-                <div className="ml-2 h-3 max-w-35 flex-1 rounded-sm bg-border/60" />
-              </div>
-              <div className="absolute inset-0 top-7 flex flex-col gap-2 p-4">
-                <div className="h-2.5 w-3/4 rounded bg-foreground/10" />
-                <div className="h-2.5 w-1/2 rounded bg-foreground/10" />
-                <div className="mt-2 h-14 rounded border border-foreground/10 bg-foreground/5" />
-              </div>
-            </div>
-          )}
+    <article className={`${rowClass} relative`}>
+      {thumbnail}
+      {body}
 
-          {project.live && project.visibility !== "confidential" && (
-            <div className="absolute right-3 top-3 flex items-center gap-1 rounded border border-emerald-500/25 bg-background/80 px-2 py-1 backdrop-blur-sm">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-              <span className="font-mono text-[9px] text-emerald-400">
-                live
-              </span>
-            </div>
-          )}
-        </div>
+      <span
+        aria-hidden
+        className="hidden shrink-0 self-center text-lg text-muted-foreground transition-transform duration-300 ease-out group-hover:translate-x-1.5 group-hover:text-foreground motion-reduce:transform-none sm:block"
+      >
+        →
+      </span>
 
-        <div className="flex flex-1 flex-col gap-3 p-5">
-          <div className="flex items-start gap-2">
-            <span
-              aria-hidden
-              className="mt-0.5 font-mono text-[10px] text-muted-foreground"
-            >
-              ▸
-            </span>
-            <h3 className="font-mono text-sm font-semibold leading-snug text-foreground">
-              {project.title}
-            </h3>
-            {project.visibility !== "public" && (
-              <span className="ml-auto rounded border border-amber-500/20 bg-amber-500/5 px-1.5 py-0.5 text-left font-mono text-[9px] text-amber-500">
-                {project.visibility === "limited"
-                  ? dict.projects.limitedProject
-                  : dict.projects.confidentialProject}
-              </span>
-            )}
-          </div>
-
-          <p className="flex-1 text-xs leading-relaxed text-muted-foreground">
-            {project.visibility === "confidential"
-              ? dict.projects.confidentialCard
-              : project.description}
-          </p>
-
-          <div className="flex flex-wrap gap-1">
-            {project.tags.slice(0, 5).map((tag) => (
-              <span
-                key={tag}
-                className="rounded border border-border/60 bg-muted/40 px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-
-          <div className="flex items-center gap-2 border-t border-border/40 pt-3">
-            {project.visibility !== "confidential" && (
-              <Link
-                href={`/${lang}/projects/${project.slug}`}
-                aria-label={`${dict.projects.viewDetails}: ${project.title}`}
-                className="inline-flex min-h-11 items-center gap-1.5 rounded border border-border/50 bg-muted/40 px-3 font-mono text-xs text-muted-foreground transition-colors hover:border-primary/30 hover:text-primary"
-              >
-                {dict.projects.viewDetails}
-                <span aria-hidden>→</span>
-              </Link>
-            )}
-
-            {project.live && project.visibility !== "confidential" ? (
-              <a
-                href={project.live}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-fx btn-fx-primary ml-auto flex size-11 items-center justify-center rounded bg-primary text-primary-foreground"
-                aria-label={`${dict.projects.demo}: ${project.title}`}
-              >
-                <ExternalLinkIcon className="h-3.5 w-3.5" />
-              </a>
-            ) : project.visibility === "confidential" ? (
-              <span className="ml-auto font-mono text-[10px] text-amber-500">
-                {dict.projects.confidentialProject}
-              </span>
-            ) : (
-              <span className="ml-auto font-mono text-[10px] text-muted-foreground">
-                {dict.projects.noDemo}
-              </span>
-            )}
-          </div>
-        </div>
-      </article>
-    </TiltCard>
+      {/* A stretched link: the whole row is the target and there is one tab
+          stop, while the "live demo" anchor above still sits on top of it. */}
+      <Link
+        href={`/${lang}/projects/${project.slug}`}
+        aria-label={`${dict.projects.viewDetails}: ${project.title}`}
+        className="absolute inset-0 outline-none focus-visible:bg-secondary/60"
+      >
+        <span className="sr-only">{dict.projects.viewDetails}</span>
+      </Link>
+    </article>
   );
 }

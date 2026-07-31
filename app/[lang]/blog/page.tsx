@@ -4,8 +4,8 @@ import {
   getAllPosts,
   getAllTags,
 } from "@/utils/functions/blog";
-import { AnimateIn } from "@/components/utils/animations/animate-in";
-import { ScrambleText } from "@/components/utils/animations/scramble-text";
+import { Container } from "@/components/ui/section";
+import { PageHeader, PageMain } from "@/components/ui/page-header";
 import { BlogExplorer } from "@/components/blog/blog-explorer";
 import { hasLocale, getDictionary } from "@/utils/i18n";
 
@@ -49,56 +49,39 @@ export default async function BlogPage({ params }: IBlogPageProps) {
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
-    <main id="main-content" tabIndex={-1} className="flex-1 pt-32 pb-24 px-6 bg-background font-sans">
-      <div className="max-w-4xl mx-auto">
-        {/* Heading Section */}
-        <AnimateIn>
-          <p className="text-primary font-mono text-xs tracking-[0.25em] uppercase mb-1">
-            <ScrambleText text="$ ls content/blog" />
-          </p>
-        </AnimateIn>
-
-        <AnimateIn delay={0.05}>
-          <h1 className="text-4xl sm:text-5xl font-bold text-foreground mt-3 mb-4">
-            {dict.blog.heading}
-          </h1>
-        </AnimateIn>
-
-        <AnimateIn delay={0.1}>
-          <p className="text-muted-foreground text-sm max-w-2xl mb-4 leading-relaxed">
-            {dict.blog.blurb}
-          </p>
-        </AnimateIn>
-
-        {/* RSS Link Section */}
-        <AnimateIn delay={0.12}>
+    <PageMain lang={lang}>
+      <PageHeader
+        label={dict.nav.blog}
+        title={dict.blog.heading}
+        lead={dict.blog.blurb}
+        backHref={`/${lang}`}
+        backLabel={dict.nav.backToHome}
+      >
+        <p className="mt-6">
           <a
             href="/feed.xml"
-            className="inline-flex items-center gap-2 text-xs font-mono text-muted-foreground hover:text-primary transition-colors mb-12"
+            className="btn-fx link-wipe text-sm text-muted-foreground hover:text-foreground"
           >
-            <span className="text-primary">⚡</span> {dict.blog.subscribeRss}
+            {dict.blog.subscribeRss}
           </a>
-        </AnimateIn>
+        </p>
+      </PageHeader>
 
-        {/* Search + Tags + Post List Section */}
+      <Container>
         {listPosts.length > 0 ? (
-          <AnimateIn delay={0.15}>
-            <BlogExplorer
-              posts={listPosts}
-              categories={categories}
-              tags={tags}
-              lang={lang}
-              labels={dict.blog}
-            />
-          </AnimateIn>
+          <BlogExplorer
+            posts={listPosts}
+            categories={categories}
+            tags={tags}
+            lang={lang}
+            labels={dict.blog}
+          />
         ) : (
-          <div className="py-20 text-center border border-dashed border-border rounded">
-            <p className="text-muted-foreground font-mono text-sm">
-              {dict.blog.empty}
-            </p>
-          </div>
+          <p className="py-20 text-center text-muted-foreground">
+            {dict.blog.empty}
+          </p>
         )}
-      </div>
-    </main>
+      </Container>
+    </PageMain>
   );
 }

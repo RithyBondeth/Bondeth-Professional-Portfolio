@@ -1,13 +1,20 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getAllTags } from "@/utils/functions/blog";
-import { AnimateIn } from "@/components/utils/animations/animate-in";
+import { Container } from "@/components/ui/section";
+import { PageHeader, PageMain } from "@/components/ui/page-header";
+import { Reveal } from "@/components/utils/animations/reveal";
 import { hasLocale, getDictionary } from "@/utils/i18n";
 
 interface ITagsPageProps {
   params: Promise<{ lang: string }>;
 }
 
+/**
+ * The tag index — a printed subject index: one tag per line, its post count
+ * set right, divided by hairlines. The old wrap of coloured pills gave every
+ * tag equal visual weight and no sense of which ones actually have depth.
+ */
 export default async function TagsPage({ params }: ITagsPageProps) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
@@ -16,54 +23,40 @@ export default async function TagsPage({ params }: ITagsPageProps) {
   const tags = await getAllTags(lang);
 
   return (
-    <main id="main-content" tabIndex={-1} className="flex-1 pt-32 pb-24 px-6 bg-background font-sans">
-      <div className="max-w-4xl mx-auto">
-        <AnimateIn>
-          <Link
-            href={`/${lang}/blog`}
-            className="text-primary font-mono text-xs hover:underline mb-1 inline-block uppercase tracking-[0.25em]"
-          >
-            ← {dict.blog.backToAll}
-          </Link>
-        </AnimateIn>
+    <PageMain lang={lang}>
+      <PageHeader
+        label={dict.nav.blog}
+        title={dict.blog.allTagsHeading}
+        lead={dict.blog.allTagsBlurb}
+        backHref={`/${lang}/blog`}
+        backLabel={dict.blog.backToAll}
+      />
 
-        <AnimateIn delay={0.05}>
-          <h1 className="text-4xl sm:text-5xl font-bold text-foreground mt-3 mb-4">
-            {dict.blog.allTagsHeading}
-          </h1>
-        </AnimateIn>
-
-        <AnimateIn delay={0.1}>
-          <p className="text-muted-foreground text-sm max-w-2xl mb-12 leading-relaxed">
-            {dict.blog.allTagsBlurb}
+      <Container>
+        {tags.length > 0 ? (
+          <ul className="border-t border-rule">
+            {tags.map((t, i) => (
+              <li key={t.slug}>
+                <Reveal delay={Math.min(i, 8) * 40}>
+                  <Link
+                    href={`/${lang}/blog/tags/${t.slug}`}
+                    className="group flex items-baseline justify-between gap-8 border-b border-rule py-4 outline-none focus-visible:bg-secondary"
+                  >
+                    <span className="text-lg text-foreground transition-colors group-hover:text-marker">
+                      {t.tag}
+                    </span>
+                    <span className="eyebrow numeral">{t.count}</span>
+                  </Link>
+                </Reveal>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="py-20 text-center text-muted-foreground">
+            {dict.blog.empty}
           </p>
-        </AnimateIn>
-
-        <AnimateIn delay={0.15}>
-          {tags.length > 0 ? (
-            <div className="flex flex-wrap gap-3">
-              {tags.map((t) => (
-                <Link
-                  key={t.slug}
-                  href={`/${lang}/blog/tags/${t.slug}`}
-                  className="rounded border border-primary/10 bg-primary/5 px-4 py-2 font-mono text-sm text-primary dark:text-primary/70 hover:border-primary/40 hover:bg-primary/10 transition-colors"
-                >
-                  #{t.tag}
-                  <span className="ml-2 text-muted-foreground dark:text-muted-foreground/60">
-                    {t.count}
-                  </span>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <div className="py-20 text-center border border-dashed border-border rounded">
-              <p className="text-muted-foreground font-mono text-sm">
-                {dict.blog.empty}
-              </p>
-            </div>
-          )}
-        </AnimateIn>
-      </div>
-    </main>
+        )}
+      </Container>
+    </PageMain>
   );
 }

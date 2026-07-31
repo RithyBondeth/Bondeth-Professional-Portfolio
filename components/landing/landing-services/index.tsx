@@ -1,101 +1,56 @@
 import Link from "next/link";
-import { SectionBackdrop } from "@/components/utils/animations/section-backdrop";
-import { ArrowRight, Bot, Code2, PanelsTopLeft, Smartphone } from "lucide-react";
-import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
-import { ScrambleText } from "@/components/utils/animations/scramble-text";
-import { SplitReveal } from "@/components/utils/animations/split-reveal";
-import { Magnetic } from "@/components/utils/animations/magnetic";
+import { Section, SectionHeader } from "@/components/ui/section";
+import { Reveal } from "@/components/utils/animations/reveal";
 import { getDictionary, type TLocale } from "@/utils/i18n";
 
-const SERVICE_ICONS = [PanelsTopLeft, Smartphone, Bot, Code2];
-
-export default function LandingServices(props: { lang: TLocale }) {
-  const { lang } = props;
-  const { services } = getDictionary(lang);
+/**
+ * Services.
+ *
+ * Numbered entries in the same label/value row as the rest of the page. The
+ * four lucide glyphs that used to head each card are gone: a browser frame, a
+ * phone and a robot are decorative stand-ins for words that are already right
+ * there, and they were the only iconography left in the body of the site.
+ */
+export default function LandingServices({ lang }: { lang: TLocale }) {
+  const { services, sections } = getDictionary(lang);
 
   return (
-    <section id="services" className="relative isolate overflow-hidden bg-card px-6 py-16 sm:py-20 lg:py-24">
-      <SectionBackdrop />
+    <Section id="services">
+      <SectionHeader
+        numeral="06"
+        label={sections.services}
+        title={services.heading}
+        lead={services.blurb}
+        action={
+          <Link
+            href="#contact"
+            className="btn-fx link-wipe text-sm text-muted-foreground hover:text-foreground"
+          >
+            {services.discussProject}
+            <span aria-hidden className="ml-2">
+              →
+            </span>
+          </Link>
+        }
+      />
 
-      <div className="mx-auto max-w-6xl">
-        <AnimateIn from="left">
-          <p className="font-mono text-xs uppercase tracking-[0.25em] text-primary">
-            <ScrambleText text="// services" />
-          </p>
-        </AnimateIn>
-
-        <div className="mt-3 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
-          <div>
-            <SplitReveal
-              as="h2"
-              type="lines"
-              className="text-3xl font-bold text-foreground sm:text-4xl lg:text-5xl"
-            >
-              {services.heading}
-            </SplitReveal>
-            <AnimateIn from="up" distance={24} delay={0.1}>
-              <p className="mt-4 max-w-2xl text-sm leading-7 text-muted-foreground">
-                {services.blurb}
+      <div className="mt-16 border-t border-rule">
+        {services.items.map((item, i) => (
+          <Reveal key={item.title} delay={i * 70}>
+            <div className="grid gap-x-10 gap-y-3 border-b border-rule py-8 lg:grid-cols-12">
+              <p className="eyebrow numeral lg:col-span-3 lg:pt-2">
+                {String(i + 1).padStart(2, "0")}
               </p>
-            </AnimateIn>
-          </div>
-
-          <AnimateIn from="right" distance={30} delay={0.08}>
-            <Magnetic strength={0.3} className="inline-block">
-              <Link
-                href={`/${lang}/#contact`}
-                className="inline-flex min-h-11 shrink-0 items-center gap-2 btn-fx btn-fx-primary rounded bg-primary px-4 font-mono text-xs font-medium text-primary-foreground"
-              >
-                {services.discussProject}
-                <ArrowRight aria-hidden data-btn-arrow className="size-3.5" />
-              </Link>
-            </Magnetic>
-          </AnimateIn>
-        </div>
-
-        <StaggerIn
-          className="mt-12 grid gap-4 sm:grid-cols-2"
-          from="zoom-in"
-          stagger={0.1}
-          staggerFrom="center"
-        >
-          {services.items.map((service, index) => {
-            const Icon = SERVICE_ICONS[index] ?? Code2;
-
-            return (
-              <article
-                key={service.title}
-                className="card-interactive group rounded-lg border border-border/60 bg-background/70 p-5 sm:p-6"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <span
-                    data-card-icon
-                    className="flex size-10 items-center justify-center rounded border border-primary/20 bg-primary/5 text-primary"
-                  >
-                    <Icon aria-hidden className="size-5" />
-                  </span>
-                  <span className="font-mono text-[10px] text-muted-foreground transition-colors duration-300 group-hover:text-primary">
-                    0{index + 1}
-                  </span>
-                </div>
-                <h3 className="mt-5 text-lg font-semibold text-foreground">
-                  {service.title}
-                </h3>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  {service.body}
+              <div className="lg:col-span-9">
+                <h3 className="display-sm">{item.title}</h3>
+                <p className="measure mt-3 leading-relaxed text-muted-foreground">
+                  {item.body}
                 </p>
-                <Link
-                  href={`/${lang}/#contact`}
-                  className="mt-5 inline-flex min-h-11 items-center gap-2 font-mono text-xs text-primary hover:underline hover:underline-offset-4"
-                >
-                  {services.discussSolution}
-                  <ArrowRight aria-hidden data-card-arrow className="size-3.5" />
-                </Link>
-              </article>
-            );
-          })}
-        </StaggerIn>
+              </div>
+            </div>
+          </Reveal>
+        ))}
       </div>
-    </section>
+    </Section>
   );
 }

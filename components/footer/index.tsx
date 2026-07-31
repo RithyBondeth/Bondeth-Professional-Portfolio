@@ -6,18 +6,9 @@ import {
   siteConfig,
   primaryNavLinks,
 } from "@/utils/constants/portfolio.constant";
-import { StaggerIn } from "@/components/utils/animations/animate-in";
-import { Magnetic } from "@/components/utils/animations/magnetic";
-import { MarqueeTrack } from "@/components/utils/animations/marquee-track";
+import { Container } from "@/components/ui/section";
+import { Reveal } from "@/components/utils/animations/reveal";
 import { scrollToSection } from "@/components/utils/animations/smooth-scroll";
-import {
-  GitHubIcon,
-  LinkedInIcon,
-  FacebookIcon,
-  InstagramIcon,
-  MailIcon,
-} from "@/components/utils/icons";
-import { Logo } from "@/components/utils/icons/logo";
 import {
   localizeHref,
   getDictionary,
@@ -26,24 +17,39 @@ import {
 } from "@/utils/i18n";
 import { getSiteConfig } from "@/utils/i18n/content";
 
-/* ---------------------------------- Utils ---------------------------------- */
+/**
+ * The colophon.
+ *
+ * A book's last page: the name set large one final time, then three columns of
+ * plain listed links, then the imprint line. The scrolling outline-stroke
+ * marquee that used to sit on top is gone — a 7xl word sliding sideways
+ * forever is the single most attention-grabbing thing you can put at the
+ * bottom of a page, which is exactly backwards.
+ *
+ * External links are printed as their bare host + path rather than as
+ * platform names. It's a printed convention, and it tells the reader where
+ * they're actually going.
+ */
+
 function navKeyFromHref(href: string): keyof TDictionary["nav"] {
   return href.replace("/#", "").replace("/", "") as keyof TDictionary["nav"];
 }
 
-export default function Footer(props: { lang: TLocale }) {
-  /* ---------------------------------- Props --------------------------------- */
-  const { lang } = props;
+/** Strips the scheme and any trailing slash so a URL reads as a printed address. */
+function displayUrl(url: string) {
+  return url.replace(/^https?:\/\//, "").replace(/\/$/, "");
+}
+
+export default function Footer({ lang }: { lang: TLocale }) {
   const dict = getDictionary(lang);
   const localized = getSiteConfig(lang);
 
-  /* ---------------------------------- Utils --------------------------------- */
   const pathname = usePathname();
   const onHome = pathname === `/${lang}`;
   const year = new Date().getFullYear();
 
-  // See components/navbar/index.tsx for why in-page section links need to
-  // go through scrollToSection instead of a plain hash href.
+  // See components/navbar/index.tsx for why in-page section links go through
+  // scrollToSection instead of a plain hash href.
   function handleNavClick(e: React.MouseEvent, href: string) {
     if (!href.startsWith("/#") || !onHome) return;
     e.preventDefault();
@@ -51,211 +57,101 @@ export default function Footer(props: { lang: TLocale }) {
     history.replaceState(null, "", `/${lang}${href.slice(1)}`);
   }
 
-  /* ---------------------------------- Utils --------------------------------- */
-  // Big outline-text sign-off — decorative, duplicated for the -50% marquee
-  // loop.  The name is always Latin so it keeps `font-code`; the title may be
-  // Khmer so it switches to the Khmer font when the locale demands it.
-  const signOffName = `${siteConfig.name} — `;
-  const signOffTitle = `${localized.title} — `;
+  const elsewhere = [
+    { href: siteConfig.github, label: displayUrl(siteConfig.github) },
+    { href: siteConfig.linkedin, label: displayUrl(siteConfig.linkedin) },
+    { href: siteConfig.facebook, label: displayUrl(siteConfig.facebook) },
+    { href: siteConfig.instagram, label: displayUrl(siteConfig.instagram) },
+  ];
 
-  /* -------------------------------- Render UI ------------------------------- */
   return (
-    <footer className="overflow-hidden bg-background border-t border-border/50">
-      {/* Giant outline marquee sign-off */}
-      <div
-        aria-hidden
-        className="group border-b border-border/40 py-6 select-none"
-      >
-        <MarqueeTrack direction="rtl" duration={40}>
-          {[0, 1].map((copy) => (
-            <span
-              key={copy}
-              className="shrink-0 whitespace-nowrap pr-8 text-6xl font-black uppercase tracking-tight text-transparent [-webkit-text-stroke:1px_var(--border)] transition-[-webkit-text-stroke-color] duration-500 group-hover:[-webkit-text-stroke-color:color-mix(in_oklab,var(--primary)_55%,transparent)] sm:text-7xl"
-            >
-              <span className="font-code">{signOffName.toUpperCase()}</span>
-              <span className="font-(family-name:--font-khmer)">
-                {signOffTitle}
+    <footer className="border-t border-rule">
+      <Container>
+        {/* ── Sign-off ──────────────────────────────────────────────────── */}
+        <Reveal>
+          <div className="border-b border-rule py-14 sm:py-20">
+            <p className="display-lg leading-[0.9]">
+              {siteConfig.fullName.split(" ")[0]}{" "}
+              <span className="display-em">
+                {siteConfig.fullName.split(" ").slice(1).join(" ")}
               </span>
-            </span>
-          ))}
-        </MarqueeTrack>
-      </div>
-
-      {/* Main Content Section */}
-      <StaggerIn
-        from="up"
-        distance={24}
-        stagger={0.1}
-        className="max-w-6xl mx-auto px-6 py-12 grid grid-cols-1 sm:grid-cols-3 gap-10"
-      >
-        {/* Brand Section */}
-        <div className="sm:col-span-1 flex flex-col gap-3">
-          <div className="flex items-center">
-            <Logo className="text-base" />
-            <span className="sr-only">{siteConfig.name}</span>
+            </p>
+            <p className="eyebrow mt-6">
+              {localized.title} — {dict.footer.basedIn}
+            </p>
           </div>
-          <p className="text-muted-foreground text-xs leading-relaxed max-w-xs">
-            {localized.title} {dict.footer.basedIn}
-          </p>
-          {/* Social Icons Section */}
-          <div className="flex items-center gap-2 mt-1">
-            <Magnetic strength={0.45} className="inline-block">
-              <a
-                href={siteConfig.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="GitHub"
-                className="btn-fx btn-fx-icon w-8 h-8 flex items-center justify-center rounded border border-border/60 text-muted-foreground hover:text-primary hover:border-primary/40"
-              >
-                <GitHubIcon data-btn-glyph className="w-3.5 h-3.5" />
-              </a>
-            </Magnetic>
-            <Magnetic strength={0.45} className="inline-block">
-              <a
-                href={siteConfig.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="LinkedIn"
-                className="btn-fx btn-fx-icon w-8 h-8 flex items-center justify-center rounded border border-border/60 text-muted-foreground hover:text-primary hover:border-primary/40"
-              >
-                <LinkedInIcon data-btn-glyph className="w-3.5 h-3.5" />
-              </a>
-            </Magnetic>
-            <Magnetic strength={0.45} className="inline-block">
-              <a
-                href={siteConfig.facebook}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Facebook"
-                className="btn-fx btn-fx-icon w-8 h-8 flex items-center justify-center rounded border border-border/60 text-muted-foreground hover:text-primary hover:border-primary/40"
-              >
-                <FacebookIcon data-btn-glyph className="w-3.5 h-3.5" />
-              </a>
-            </Magnetic>
-            <Magnetic strength={0.45} className="inline-block">
-              <a
-                href={siteConfig.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Instagram"
-                className="btn-fx btn-fx-icon w-8 h-8 flex items-center justify-center rounded border border-border/60 text-muted-foreground hover:text-primary hover:border-primary/40"
-              >
-                <InstagramIcon data-btn-glyph className="w-3.5 h-3.5" />
-              </a>
-            </Magnetic>
-            <Magnetic strength={0.45} className="inline-block">
-              <a
-                href={`mailto:${siteConfig.email}`}
-                aria-label="Email"
-                className="btn-fx btn-fx-icon w-8 h-8 flex items-center justify-center rounded border border-border/60 text-muted-foreground hover:text-primary hover:border-primary/40"
-              >
-                <MailIcon data-btn-glyph className="w-3.5 h-3.5" />
-              </a>
-            </Magnetic>
-          </div>
-        </div>
+        </Reveal>
 
-        {/* Quick Nav Section */}
-        <div className="flex flex-col gap-3">
-          <p className="text-muted-foreground dark:text-muted-foreground/60 text-[10px] font-mono uppercase tracking-[0.2em]">
-            {dict.footer.navigation}
-          </p>
-          <ul className="flex flex-col gap-2">
-            {primaryNavLinks.map(({ href }, i) => (
-              <li key={href}>
-                <Link
-                  href={localizeHref(href, lang)}
-                  onClick={(e) => handleNavClick(e, href)}
-                  className="text-muted-foreground hover:text-primary text-xs font-mono transition-colors flex items-center gap-1.5"
+        {/* ── Columns ───────────────────────────────────────────────────── */}
+        <div className="grid gap-x-10 gap-y-10 py-12 sm:grid-cols-3">
+          <Reveal>
+            <p className="eyebrow">{dict.footer.navigation}</p>
+            <ul className="mt-5 space-y-2.5">
+              {primaryNavLinks.map(({ href }) => (
+                <li key={href}>
+                  <Link
+                    href={localizeHref(href, lang)}
+                    onClick={(e) => handleNavClick(e, href)}
+                    className="btn-fx link-wipe text-sm text-muted-foreground hover:text-foreground"
+                  >
+                    {dict.nav[navKeyFromHref(href)]}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+
+          <Reveal delay={70}>
+            <p className="eyebrow">{dict.footer.contact}</p>
+            <ul className="mt-5 space-y-2.5">
+              <li>
+                <a
+                  href={`mailto:${siteConfig.email}`}
+                  className="btn-fx link-wipe text-sm break-all text-muted-foreground hover:text-foreground"
                 >
-                  <span className="text-primary dark:text-primary/30 text-[9px]">
-                    0{i + 1}.
-                  </span>
-                  {dict.nav[navKeyFromHref(href)]}
-                </Link>
+                  {siteConfig.email}
+                </a>
               </li>
-            ))}
-          </ul>
+              <li>
+                <a
+                  href={siteConfig.resume}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-fx link-wipe text-sm text-muted-foreground hover:text-foreground"
+                >
+                  {dict.nav.resume} ↗
+                </a>
+              </li>
+            </ul>
+          </Reveal>
+
+          <Reveal delay={140}>
+            <p className="eyebrow">Elsewhere</p>
+            <ul className="mt-5 space-y-2.5">
+              {elsewhere.map(({ href, label }) => (
+                <li key={href}>
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-fx link-wipe text-sm break-all text-muted-foreground hover:text-foreground"
+                  >
+                    {label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </Reveal>
         </div>
 
-        {/* Contact Section */}
-        <div className="flex flex-col gap-3">
-          <p className="text-muted-foreground dark:text-muted-foreground/60 text-[10px] font-mono uppercase tracking-[0.2em]">
-            {dict.footer.contact}
+        {/* ── Imprint ───────────────────────────────────────────────────── */}
+        <div className="flex flex-col gap-2 border-t border-rule py-6 sm:flex-row sm:items-center sm:justify-between">
+          <p className="eyebrow">
+            © {year} {siteConfig.fullName}. {dict.footer.rights}
           </p>
-          <ul className="flex flex-col gap-2">
-            <li>
-              <a
-                href={`mailto:${siteConfig.email}`}
-                className="text-muted-foreground hover:text-primary text-xs font-mono transition-colors break-all"
-              >
-                {siteConfig.email}
-              </a>
-            </li>
-            <li>
-              <a
-                href={siteConfig.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary text-xs font-mono transition-colors"
-              >
-                github.com/Rithybondeth
-              </a>
-            </li>
-            <li>
-              <a
-                href={siteConfig.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary text-xs font-mono transition-colors"
-              >
-                linkedin.com/in/rithybondeth
-              </a>
-            </li>
-            <li>
-              <a
-                href={siteConfig.facebook}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary text-xs font-mono transition-colors"
-              >
-                facebook.com/rithybondeth
-              </a>
-            </li>
-            <li>
-              <a
-                href={siteConfig.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary text-xs font-mono transition-colors"
-              >
-                instagram.com/rithybondeth
-              </a>
-            </li>
-          </ul>
+          <p className="eyebrow">Next.js · Tailwind CSS · v0.2.0</p>
         </div>
-      </StaggerIn>
-
-      {/* Bottom Bar Section */}
-      <div className="border-t border-border/40 px-6 py-4">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p className="text-muted-foreground dark:text-muted-foreground/50 text-[10px] font-mono">
-            <span className="text-muted-foreground dark:text-muted-foreground/30">
-              {"/* "}
-            </span>
-            © {year} {siteConfig.name}. {dict.footer.rights}
-            <span className="text-muted-foreground dark:text-muted-foreground/30">
-              {" */"}
-            </span>
-          </p>
-          <p className="text-muted-foreground dark:text-muted-foreground/50 text-[10px] font-mono">
-            Built with Next.js &amp; Tailwind CSS
-            <span className="text-primary dark:text-primary/40 ml-2">
-              v1.0.0
-            </span>
-          </p>
-        </div>
-      </div>
+      </Container>
     </footer>
   );
 }

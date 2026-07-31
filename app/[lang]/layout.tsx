@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono, Kantumruy_Pro, Noto_Serif } from "next/font/google";
+import {
+  Instrument_Serif,
+  JetBrains_Mono,
+  Kantumruy_Pro,
+  Newsreader,
+} from "next/font/google";
 import { notFound } from "next/navigation";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -20,9 +25,22 @@ const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains",
 });
 
-const notoSerif = Noto_Serif({
+/* Display face — headlines only. Instrument Serif ships a single weight by
+   design; the italic is the emphasis, never a heavier cut. */
+const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
-  variable: "--font-serif",
+  weight: "400",
+  style: ["normal", "italic"],
+  variable: "--font-display",
+});
+
+/* Text face — body copy, labels, navigation. Newsreader is a variable serif
+   drawn for screen reading at small sizes, which is what the whole UI is now
+   set in. */
+const newsreader = Newsreader({
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+  variable: "--font-text",
 });
 
 const kantumruyPro = Kantumruy_Pro({
@@ -119,8 +137,8 @@ export default async function RootLayout({
       className={cn(
         "h-full",
         "antialiased",
-        notoSerif.variable,
-        "font-mono",
+        instrumentSerif.variable,
+        newsreader.variable,
         jetbrainsMono.variable,
         kantumruyPro.variable,
       )}
@@ -138,7 +156,12 @@ export default async function RootLayout({
         <script
           async
           dangerouslySetInnerHTML={{
-            __html: `try{var t=localStorage.getItem('theme');t=t==='light'||t==='dark'?t:'dark';document.documentElement.dataset.theme=t;document.documentElement.style.colorScheme=t}catch(e){document.documentElement.dataset.theme='dark';document.documentElement.style.colorScheme='dark'}`,
+            /* Also marks the document as script-capable. Entrance reveals
+               start hidden and are un-hidden by an IntersectionObserver, so
+               without this flag a reader with JS disabled (or a script that
+               failed to load) would get a completely blank page — the CSS
+               scopes the hidden state to `.js`, so no JS means no hiding. */
+            __html: `document.documentElement.classList.add('js');try{var t=localStorage.getItem('theme');t=t==='light'||t==='dark'?t:'dark';document.documentElement.dataset.theme=t;document.documentElement.style.colorScheme=t}catch(e){document.documentElement.dataset.theme='dark';document.documentElement.style.colorScheme='dark'}`,
           }}
         />
         <ThemeProvider>

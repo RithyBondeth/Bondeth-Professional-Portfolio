@@ -1,157 +1,76 @@
 import Image from "next/image";
-import { SectionBackdrop } from "@/components/utils/animations/section-backdrop";
+import { Section, SectionHeader } from "@/components/ui/section";
+import { Reveal } from "@/components/utils/animations/reveal";
 import { organizations } from "@/utils/constants/portfolio.constant";
-import { IOrganization } from "@/utils/interfaces/portfolio";
-import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
-import { EarlierRoles } from "@/components/landing/landing-experience/earlier-roles";
-import { MarqueeTrack } from "@/components/utils/animations/marquee-track";
-import { ScrambleText } from "@/components/utils/animations/scramble-text";
-import { SplitReveal } from "@/components/utils/animations/split-reveal";
-import { DrawLine } from "@/components/utils/animations/draw-line";
+import { EarlierRoles } from "./earlier-roles";
+import { ExperienceRow } from "./experience-row";
 import { getDictionary, type TLocale } from "@/utils/i18n";
 import { getExperiences } from "@/utils/i18n/content";
 
-export default function LandingExperience(props: { lang: TLocale }) {
-  /* ---------------------------------- Props --------------------------------- */
-  const { lang } = props;
+/**
+ * Experience.
+ *
+ * An index of roles, most recent first. The three most recent are printed in
+ * full; the rest sit behind a disclosure.
+ *
+ * The organization logos are no longer a scrolling marquee — they are a
+ * static row, desaturated to a single ink weight so seven different brand
+ * palettes don't shatter the page's two colours. `grayscale` plus a reduced
+ * opacity does that in both themes; the dark theme additionally inverts, since
+ * these are dark-on-transparent marks.
+ */
+export default function LandingExperience({ lang }: { lang: TLocale }) {
   const dict = getDictionary(lang);
   const experiences = getExperiences(lang);
-  const recentExperiences = experiences.slice(0, 3);
-  const earlierExperiences = experiences.slice(3);
+  const recent = experiences.slice(0, 3);
+  const earlier = experiences.slice(3);
 
-  /* -------------------------------- Render UI ------------------------------- */
   return (
-    <section id="experience" className="relative isolate py-16 sm:py-20 lg:py-24 px-6 bg-card">
-      <SectionBackdrop />
+    <Section id="experience">
+      <SectionHeader
+        numeral="04"
+        label={dict.sections.experience}
+        title={dict.experience.heading}
+      />
 
-      <div className="max-w-6xl mx-auto">
-        {/* Heading Section */}
-        <AnimateIn from="zoom-in">
-          <p className="text-primary font-mono text-xs tracking-[0.25em] uppercase mb-1">
-            <ScrambleText text="// experience.json" />
-          </p>
-        </AnimateIn>
+      <div className="mt-16 border-t border-rule">
+        {recent.map((exp, i) => (
+          <ExperienceRow
+            key={`${exp.role}-${exp.company}`}
+            role={exp}
+            index={i}
+            delay={i * 70}
+          />
+        ))}
 
-        <SplitReveal
-          as="h2"
-          type="lines"
-          className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mt-3 mb-12"
-        >
-          {dict.experience.heading}
-        </SplitReveal>
+        {earlier.length > 0 && (
+          <EarlierRoles
+            experiences={earlier}
+            label={dict.experience.earlierRoles}
+            startIndex={recent.length}
+          />
+        )}
+      </div>
 
-        {/* Timeline Section */}
-        <div className="relative">
-          {/* Vertical Timeline Line — a faint base rail plus a primary line
-              that draws itself downward as the reader travels the timeline */}
-          <div className="absolute left-0 top-0 bottom-0 w-px ml-[7px] hidden sm:block">
-            <div className="absolute inset-0 bg-border" />
-            <DrawLine className="absolute inset-0 bg-primary/60" />
-          </div>
-
-          <StaggerIn
-            className="space-y-8"
-            from="left"
-            distance={60}
-            blur={4}
-            stagger={0.12}
-          >
-            {recentExperiences.map((exp, i) => (
-              <div key={i} className="sm:pl-10 relative">
-                {/* Timeline Dot */}
-                <div className="hidden sm:flex absolute left-0 top-2 w-3.5 h-3.5 rounded-full bg-primary/20 border border-primary/60 items-center justify-center">
-                  <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                </div>
-
-                {/* Anchored to the timeline rail, so it slides sideways rather
-                    than lifting — a vertical lift would drift off its node. */}
-                <div className="card-interactive card-interactive-inline bg-background rounded border border-border/60 p-5">
-                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 mb-3">
-                    <div>
-                      <h3 className="text-foreground font-semibold text-base">
-                        {exp.role}
-                      </h3>
-                      <p className="text-primary text-xs font-mono mt-0.5">
-                        {exp.company}
-                      </p>
-                    </div>
-                    <span className="text-muted-foreground text-xs font-mono shrink-0 mt-0.5">
-                      {exp.period}
-                    </span>
-                  </div>
-                  <p className="text-muted-foreground text-xs leading-relaxed mb-4">
-                    {exp.description}
-                  </p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {exp.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="px-2 py-0.5 bg-primary/8 text-primary text-[10px] rounded border border-primary/15 font-mono"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
+      {/* ── Organizations ─────────────────────────────────────────────── */}
+      <Reveal delay={120}>
+        <div className="mt-20 border-t border-rule pt-8">
+          <p className="eyebrow">{dict.experience.organizations}</p>
+          <ul className="mt-8 grid grid-cols-2 items-center gap-x-10 gap-y-8 sm:grid-cols-4 lg:grid-cols-7">
+            {organizations.map((org) => (
+              <li key={org.name} className="flex items-center">
+                <Image
+                  src={org.logo}
+                  alt={org.name}
+                  width={120}
+                  height={44}
+                  className="h-8 w-auto max-w-full object-contain opacity-55 grayscale transition-opacity duration-300 hover:opacity-90 dark:invert"
+                />
+              </li>
             ))}
-          </StaggerIn>
-
-          {earlierExperiences.length > 0 && (
-            <AnimateIn from="up" delay={0.1}>
-              <EarlierRoles
-                experiences={earlierExperiences}
-                label={dict.experience.earlierRoles}
-              />
-            </AnimateIn>
-          )}
+          </ul>
         </div>
-      </div>
-
-      {/* Organization Logo Marquee Section */}
-      <AnimateIn from="zoom-out" delay={0.1}>
-        <div className="mt-16 pt-12 border-t border-border/40">
-          <p className="text-center text-[10px] font-mono text-muted-foreground dark:text-muted-foreground/60 uppercase tracking-[0.2em] mb-8">
-            {dict.experience.organizations}
-          </p>
-
-          <div className="relative overflow-hidden">
-            <div className="absolute inset-y-0 left-0 w-24 bg-linear-to-r from-card to-transparent z-10 pointer-events-none" />
-            <div className="absolute inset-y-0 right-0 w-24 bg-linear-to-l from-card to-transparent z-10 pointer-events-none" />
-
-            <MarqueeTrack direction="rtl" duration={40}>
-              {Array.from({ length: 10 }, (_, copy) =>
-                organizations.map((org) => (
-                  <OrgBadge key={`${copy}-${org.name}`} org={org} />
-                )),
-              )}
-            </MarqueeTrack>
-          </div>
-        </div>
-      </AnimateIn>
-    </section>
-  );
-}
-
-/* --------------------------------- Utilities -------------------------------- */
-function OrgBadge(props: { org: IOrganization }) {
-  /* ---------------------------------- Props --------------------------------- */
-  const { org } = props;
-
-  /* -------------------------------- Render UI ------------------------------- */
-  return (
-    <div className="relative flex items-center justify-center px-8 py-5 bg-background/60 border border-border/40 hover:border-primary/20 hover:bg-background/80 transition-all duration-300 shrink-0 select-none group">
-      <div className="relative w-20 h-20">
-        <Image
-          src={org.logo}
-          alt={org.name}
-          fill
-          className="object-contain transition-opacity duration-300 group-hover:opacity-20"
-        />
-      </div>
-      <span className="absolute inset-0 flex items-center justify-center text-xs font-mono font-medium text-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-300 px-3 text-center leading-snug">
-        {org.name}
-      </span>
-    </div>
+      </Reveal>
+    </Section>
   );
 }

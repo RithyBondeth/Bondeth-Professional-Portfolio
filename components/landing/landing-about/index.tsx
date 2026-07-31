@@ -1,20 +1,7 @@
-"use client";
-
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
+import { Section, SectionHeader } from "@/components/ui/section";
+import { Reveal } from "@/components/utils/animations/reveal";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
-import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
-import { Parallax } from "@/components/utils/animations/parallax";
-import { SplitReveal } from "@/components/utils/animations/split-reveal";
-import { ScrambleText } from "@/components/utils/animations/scramble-text";
-import { TiltCard } from "@/components/utils/animations/tilt-card";
-import { Magnetic } from "@/components/utils/animations/magnetic";
-import { SectionBackdrop } from "@/components/utils/animations/section-backdrop";
-import {
-  useAnimationFrameValue,
-  useCountUp,
-  useReducedMotion,
-} from "@/components/utils/animations/use-motion";
 import {
   GitHubIcon,
   LinkedInIcon,
@@ -24,514 +11,129 @@ import {
 import { getDictionary, type TLocale } from "@/utils/i18n";
 import { getSiteConfig } from "@/utils/i18n/content";
 
-/* --------------------------------- Portrait -------------------------------- */
 /**
- * The portrait is a transparent PNG (background already cut out), so we render a
- * full code editor BEHIND it — two "files" filling the panel left and right. The
- * person sits in front, hiding the code directly behind him while the snippets
- * stay visible around his silhouette. Editor colours are intentionally FIXED
- * (not theme tokens) so it reads as a deliberate dark-editor screenshot.
+ * About.
+ *
+ * The portrait is now simply a photograph: a hairline frame, a caption
+ * underneath, and nothing else. The typed code editor it used to sit inside
+ * was the single most "developer-portfolio" element on the site.
+ *
+ * The bio runs as a lead paragraph followed by the remaining paragraphs in
+ * text size, and the four figures are printed as a rule-separated strip —
+ * the way a magazine prints statistics, rather than four hovering cards.
  */
-const LEFT_CODE = `const fs = require('fs');
-const path = require('path');
-const readline = require('readline');
 
-function log(msg) {
-  const time = new Date().toISOString();
-  console.log(\`[\${time}] \${msg}\`);
-}
-
-function loadConfig(filePath) {
-  try {
-    const data = fs.readFileSync(filePath, 'utf8');
-    return JSON.parse(data);
-  } catch (err) {
-    log('Failed to load config: ' + err.message);
-    return {};
-  }
-}
-
-function start() {
-  log('Application started');
-  const config = loadConfig(path.join(__dirname));
-  log('Config loaded: ' + JSON.stringify(config));
-}
-
-start();
-
-// Watch for changes
-fs.watch('.', (eventType, filename) => {
-  if (filename) {
-    log(\`File changed: \${filename}\`);
-  }
-});`;
-
-const RIGHT_CODE = `class UserService {
-  constructor(db) {
-    this.db = db;
-  }
-
-  async getUser(id) {
-    const res = await this.db.query(
-      'SELECT * FROM users WHERE id = $1',
-      [id]
-    );
-    return res.rows[0];
-  }
-}
-
-module.exports = UserService;
-
-app.get('/api/user/:id', async (req, res) => {
-  try {
-    const user = await userService.getUser(req.params.id);
-    if (!user) return res.status(404).json({ error: 'Not found' });
-    res.json(user);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Developer Dashboard</title>
-  </head>
-  <body>
-    <div class="container">
-      <h1>Welcome, Developer</h1>
-    </div>
-  </body>
-</html>`;
-
-const KEYWORDS = new Set([
-  "import",
-  "from",
-  "export",
-  "default",
-  "const",
-  "let",
-  "var",
-  "function",
-  "return",
-  "async",
-  "await",
-  "if",
-  "else",
-  "for",
-  "while",
-  "break",
-  "new",
-  "class",
-  "constructor",
-  "throw",
-  "true",
-  "false",
-  "null",
-  "this",
-  "require",
-  "try",
-  "catch",
-]);
-
-interface IToken {
-  text: string;
-  cls: string;
-}
-
-// Lightweight tokeniser — good enough for a decorative code backdrop.
-function tokenize(line: string): IToken[] {
-  const re =
-    /(\/\/.*$)|('[^']*'|"[^"]*"|`[^`]*`)|\b(\d+)\b|([A-Za-z_$][\w$]*)|(\s+)|([^\s\w])/g;
-  const out: IToken[] = [];
-  let m: RegExpExecArray | null;
-  while ((m = re.exec(line))) {
-    if (m[1])
-      out.push({ text: m[1], cls: "text-slate-500" }); // comment
-    else if (m[2])
-      out.push({ text: m[2], cls: "text-emerald-400" }); // string
-    else if (m[3])
-      out.push({ text: m[3], cls: "text-amber-300" }); // number
-    else if (m[4])
-      out.push({
-        text: m[4],
-        cls: KEYWORDS.has(m[4]) ? "text-violet-400" : "text-sky-300",
-      });
-    else out.push({ text: m[0], cls: "text-slate-400" }); // whitespace / punctuation
-  }
-  return out;
-}
-
-// Reveal `total` characters over time, as if the code is being typed. Honors
-// prefers-reduced-motion (shows everything at once) and resets when inactive so
-// the animation replays each time the panel re-enters view.
-function useTypewriter(total: number, cps: number, active: boolean, delay = 0) {
-  const frame = useCallback(
-    (elapsedMs: number) => {
-      const elapsed = elapsedMs / 1000 - delay;
-      const value = elapsed <= 0 ? 0 : Math.min(Math.floor(elapsed * cps), total);
-      return { value, done: value >= total };
-    },
-    [total, cps, delay],
-  );
-
-  const reduce = useReducedMotion();
-  const typed = useAnimationFrameValue(active && !reduce, frame);
-
-  // Reduced motion: no typing pass, the code is simply there.
-  if (reduce) return active ? total : 0;
-  return typed;
-}
-
-function CodeColumn(props: {
-  code: string;
-  className: string;
-  active: boolean;
-  cps?: number;
-  delay?: number;
-}) {
-  const { code, className, active, cps = 55, delay = 0 } = props;
-
-  // Pre-tokenise each line and record its character offset in the full source
-  // so we can map the running "typed" count onto a prefix of the code.
-  const lines = useMemo(() => {
-    const out: { tokens: IToken[]; len: number; offset: number }[] = [];
-    let offset = 0;
-    for (const raw of code.split("\n")) {
-      out.push({ tokens: tokenize(raw), len: raw.length, offset });
-      offset += raw.length + 1; // + newline
-    }
-    return out;
-  }, [code]);
-
-  const total = code.length;
-  const typed = useTypewriter(total, cps, active, delay);
-  const done = typed >= total;
-
-  return (
-    <pre
-      aria-hidden
-      className={`absolute overflow-hidden font-code text-[10px] sm:text-[11px] leading-[1.55] select-none pointer-events-none ${className}`}
-    >
-      {lines.map((line, i) => {
-        const avail = typed - line.offset;
-        // Line not reached yet — skip so the block grows as it types.
-        if (!done && avail <= 0) return null;
-
-        const vis = done ? line.len : Math.min(avail, line.len);
-        const caretHere = done
-          ? i === lines.length - 1
-          : avail > 0 && avail <= line.len;
-
-        let budget = vis;
-        return (
-          <div key={i} className="flex gap-3">
-            <span className="w-4 shrink-0 text-right text-slate-600 tabular-nums">
-              {i + 1}
-            </span>
-            <code className="whitespace-pre">
-              {line.tokens.map((tok, j) => {
-                if (budget <= 0) return null;
-                const text = tok.text.slice(0, budget);
-                budget -= text.length;
-                return (
-                  <span key={j} className={tok.cls}>
-                    {text}
-                  </span>
-                );
-              })}
-              {caretHere && (
-                <span className="type-caret ml-px inline-block h-[1.05em] w-[0.5em] translate-y-[0.15em] bg-primary/80" />
-              )}
-            </code>
-          </div>
-        );
-      })}
-    </pre>
-  );
-}
-
-function PortraitPanel(props: { alt: string }) {
-  // Kick off (and replay) the typing animation whenever the panel is on screen.
-  const ref = useRef<HTMLElement>(null);
-  const [active, setActive] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(([e]) => setActive(e.isIntersecting), {
-      threshold: 0.2,
-    });
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
-
-  return (
-    <figure
-      ref={ref}
-      className="relative w-full max-w-sm mx-auto lg:max-w-none"
-    >
-      {/* Ambient Glow */}
-      <div className="absolute -inset-6 bg-primary/6 rounded-2xl blur-3xl pointer-events-none" />
-
-      {/* 3D tilt shell — relative + matching rounding so the glare sheen clips
-          to the editor window's corners. Desktop-only, reduced-motion safe. */}
-      <TiltCard maxTilt={5} hoverScale={1.01} className="relative rounded-md">
-        {/* Editor Window */}
-        <div className="relative rounded-md border border-[#34322e] bg-black overflow-hidden shadow-2xl shadow-black/30 dark:shadow-black/60">
-          {/* Window Chrome */}
-          <div className="flex items-center gap-1.5 px-4 py-3 border-b border-[#34322e]/60 bg-black/30">
-            <span aria-hidden className="w-3 h-3 rounded-full bg-red-500/80" />
-            <span
-              aria-hidden
-              className="w-3 h-3 rounded-full bg-yellow-500/70"
-            />
-            <span
-              aria-hidden
-              className="w-3 h-3 rounded-full bg-green-500/70"
-            />
-            <span className="ml-3 text-slate-500 text-[11px] font-code select-none">
-              bondeth.png
-            </span>
-          </div>
-
-          {/* Code editor behind + person in front. The person is a transparent
-              cut-out, so the code shows around him and is hidden behind him. */}
-          <div className="relative">
-            <CodeColumn
-              code={LEFT_CODE}
-              className="top-4 bottom-4 left-4 w-[47%]"
-              active={active}
-              cps={58}
-            />
-            <CodeColumn
-              code={RIGHT_CODE}
-              className="top-4 bottom-4 right-4 w-[47%]"
-              active={active}
-              cps={52}
-              delay={0.4}
-            />
-
-            {/* Person — a little padding so he doesn't touch the edges */}
-            <div className="relative mx-auto w-[86%] pt-6">
-              <Image
-                src="/bondeth.webp"
-                alt={props.alt}
-                width={819}
-                height={1157}
-                sizes="(min-width: 1024px) 340px, (min-width: 768px) 40vw, 86vw"
-                className="w-full h-auto block select-none"
-              />
-            </div>
-          </div>
-
-          {/* Status Bar */}
-          <div className="flex items-center justify-between px-4 py-2.5 border-t border-[#34322e]/60 bg-black/30 text-[10px] font-code text-slate-400">
-            <span>
-              <span className="text-emerald-400">▸</span> whoami
-            </span>
-            <span>Phnom Penh, KH</span>
-          </div>
-        </div>
-      </TiltCard>
-
-      {/* Caption */}
-      <figcaption className="mt-3 text-[11px] font-mono text-muted-foreground text-center lg:text-left">
-        {"// full-stack + AI engineer"}
-      </figcaption>
-    </figure>
-  );
-}
-
-/* --------------------------------- Utilities -------------------------------- */
-function StatCard(props: {
-  label: string;
-  value: string;
-  varName: string;
-  started: boolean;
-}) {
-  /* ---------------------------------- Props --------------------------------- */
-  const { label, value, varName, started } = props;
-
-  /* ---------------------------------- Utils --------------------------------- */
-  const numeric = parseInt(value);
-  const suffix = value.replace(/\d+/, "");
-  const count = useCountUp(numeric, 1400, started);
-
-  /* -------------------------------- Render UI ------------------------------- */
-  return (
-    <div className="card-interactive group rounded border border-border/60 bg-background p-5">
-      <p className="text-[10px] font-mono text-muted-foreground mb-3 group-hover:text-primary dark:group-hover:text-primary/60 transition-colors">
-        <span className="text-violet-400">const</span>{" "}
-        <span className="text-sky-300">{varName}</span>
-      </p>
-      <div className="text-3xl font-bold text-primary mb-1 font-mono tabular-nums">
-        {count}
-        {suffix}
-      </div>
-      <div className="text-xs text-muted-foreground">{label}</div>
-    </div>
-  );
-}
-
-const stats = [
-  { key: "yearsExp", value: "3+", varName: "yearsExp" },
-  { key: "projects", value: "20+", varName: "projects" },
-  { key: "techStack", value: "20+", varName: "techStack" },
-  { key: "clients", value: "15+", varName: "clients" },
+const figures = [
+  { key: "yearsExp", value: "3+" },
+  { key: "projects", value: "20+" },
+  { key: "techStack", value: "20+" },
+  { key: "clients", value: "15+" },
 ] as const;
 
-export default function LandingAbout(props: { lang: TLocale }) {
-  /* ---------------------------------- Props --------------------------------- */
-  const { lang } = props;
+export default function LandingAbout({ lang }: { lang: TLocale }) {
   const dict = getDictionary(lang);
   const localized = getSiteConfig(lang);
+  const [lead, ...rest] = localized.bio;
 
-  /* -------------------------------- All States ------------------------------- */
-  const [started, setStarted] = useState(false);
-  const statsRef = useRef<HTMLDivElement>(null);
+  const socials = [
+    { href: siteConfig.github, label: "GitHub", Icon: GitHubIcon },
+    { href: siteConfig.linkedin, label: "LinkedIn", Icon: LinkedInIcon },
+    { href: siteConfig.facebook, label: "Facebook", Icon: FacebookIcon },
+    { href: siteConfig.instagram, label: "Instagram", Icon: InstagramIcon },
+  ];
 
-  /* --------------------------------- Effects -------------------------------- */
-  useEffect(() => {
-    // Watch the stats strip itself (not the whole section) so the numbers only
-    // start counting once they're actually on screen — otherwise they'd finish
-    // while still far below the fold. Toggling `started` replays the count each
-    // time the strip re-enters view.
-    const obs = new IntersectionObserver(
-      ([e]) => setStarted(e.isIntersecting),
-      { threshold: 0.35 },
-    );
-    if (statsRef.current) obs.observe(statsRef.current);
-    return () => obs.disconnect();
-  }, []);
-
-  /* -------------------------------- Render UI ------------------------------- */
   return (
-    <section id="about" className="relative isolate py-16 sm:py-20 lg:py-24 px-6 bg-card">
-      <SectionBackdrop />
+    <Section id="about">
+      <SectionHeader
+        numeral="01"
+        label={dict.nav.about}
+        title={dict.about.heading}
+      />
 
-      <div className="max-w-6xl mx-auto">
-        <AnimateIn from="zoom-in">
-          <p className="text-primary font-mono text-xs tracking-[0.25em] uppercase mb-1">
-            <ScrambleText text="// about.tsx" />
-          </p>
-        </AnimateIn>
-
-        {/* Portrait + Bio Row */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center mt-10">
-          {/* Portrait Section — leads on mobile as a human hook */}
-          <AnimateIn
-            from="left"
-            distance={70}
-            blur={6}
-            delay={0.15}
-            className="lg:col-span-5"
-          >
-            <Parallax speed={60}>
-              <PortraitPanel alt={dict.about.portraitAlt} />
-            </Parallax>
-          </AnimateIn>
-
-          {/* Bio Section */}
-          <div className="lg:col-span-7">
-            {/* Masked line-by-line reveal — lines only: heading copy is
-                localized and Khmer must never be split mid-cluster. */}
-            <SplitReveal
-              as="h2"
-              type="lines"
-              className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-6 leading-snug"
-            >
-              {dict.about.heading}
-            </SplitReveal>
-
-            <StaggerIn
-              from="right"
-              distance={40}
-              stagger={0.18}
-              blur={4}
-              delay={0.1}
-            >
-              {localized.bio.map((paragraph, i) => (
-                <p
-                  key={i}
-                  className="text-muted-foreground leading-relaxed text-sm"
-                >
-                  {paragraph}
-                </p>
-              ))}
-            </StaggerIn>
-
-            <AnimateIn delay={0.3}>
-              <div className="mt-8 flex gap-4">
-                <Magnetic strength={0.4} className="inline-block">
-                  <a
-                    href={siteConfig.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block p-1 text-muted-foreground hover:text-primary transition-colors"
-                    aria-label="GitHub"
-                  >
-                    <GitHubIcon className="w-5 h-5" />
-                  </a>
-                </Magnetic>
-                <Magnetic strength={0.4} className="inline-block">
-                  <a
-                    href={siteConfig.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block p-1 text-muted-foreground hover:text-primary transition-colors"
-                    aria-label="LinkedIn"
-                  >
-                    <LinkedInIcon className="w-5 h-5" />
-                  </a>
-                </Magnetic>
-                <Magnetic strength={0.4} className="inline-block">
-                  <a
-                    href={siteConfig.facebook}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block p-1 text-muted-foreground hover:text-primary transition-colors"
-                    aria-label="Facebook"
-                  >
-                    <FacebookIcon className="w-5 h-5" />
-                  </a>
-                </Magnetic>
-                <Magnetic strength={0.4} className="inline-block">
-                  <a
-                    href={siteConfig.instagram}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block p-1 text-muted-foreground hover:text-primary transition-colors"
-                    aria-label="Instagram"
-                  >
-                    <InstagramIcon className="w-5 h-5" />
-                  </a>
-                </Magnetic>
-              </div>
-            </AnimateIn>
-          </div>
-        </div>
-
-        {/* Stats Section — full-width strip; counts up when the strip enters view */}
-        <div ref={statsRef}>
-          <StaggerIn
-            from="zoom-in"
-            className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-12"
-            stagger={0.1}
-            staggerFrom="center"
-          >
-            {stats.map((stat) => (
-              <StatCard
-                key={stat.key}
-                label={dict.about.stats[stat.key]}
-                value={stat.value}
-                varName={stat.varName}
-                started={started}
+      <div className="mt-16 grid gap-x-10 gap-y-12 lg:grid-cols-12">
+        {/* ── Portrait ────────────────────────────────────────────────────
+            Held to a portrait aspect and cropped rather than letterboxed, so
+            it reads as a plate on the page. */}
+        <Reveal className="lg:col-span-4">
+          <figure>
+            <div className="relative aspect-[4/5] w-full overflow-hidden border border-rule bg-secondary">
+              <Image
+                src="/bondeth.webp"
+                alt={dict.about.portraitAlt}
+                fill
+                sizes="(min-width: 1024px) 320px, (min-width: 640px) 50vw, 100vw"
+                className="object-cover object-top"
               />
+            </div>
+            <figcaption className="eyebrow mt-4">
+              {siteConfig.fullName} — {localized.title}
+            </figcaption>
+          </figure>
+        </Reveal>
+
+        {/* ── Bio ─────────────────────────────────────────────────────────
+            The lead is set a size up and in the ink colour; the rest drops to
+            the muted tone. That difference alone establishes the hierarchy —
+            no rules or boxes needed. */}
+        <div className="lg:col-span-7 lg:col-start-6">
+          <Reveal delay={80}>
+            <p className="measure text-xl leading-relaxed text-foreground sm:text-2xl">
+              {lead}
+            </p>
+          </Reveal>
+
+          <div className="measure mt-8 space-y-5">
+            {rest.map((paragraph, i) => (
+              <Reveal key={i} delay={140 + i * 70}>
+                <p className="leading-relaxed text-muted-foreground">{paragraph}</p>
+              </Reveal>
             ))}
-          </StaggerIn>
+          </div>
+
+          <Reveal delay={320}>
+            <ul className="mt-10 flex flex-wrap items-center gap-x-7 gap-y-3">
+              {socials.map(({ href, label, Icon }) => (
+                <li key={label}>
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-fx link-wipe inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+                  >
+                    <Icon className="h-4 w-4" aria-hidden />
+                    {label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </Reveal>
         </div>
       </div>
-    </section>
+
+      {/* ── Figures ───────────────────────────────────────────────────────
+          Four columns divided by hairlines. The numbers are set in the display
+          face, large, with lining figures so they align on the baseline. */}
+      <div className="mt-20 grid grid-cols-2 border-t border-rule sm:grid-cols-4">
+        {figures.map(({ key, value }, i) => (
+          <Reveal
+            key={key}
+            delay={i * 70}
+            className={
+              // Hairlines between columns only — the wrapping second row on
+              // phones gets its own top rule instead.
+              "border-rule px-1 pt-6 pb-2 sm:px-0 " +
+              (i % 2 === 1 ? "border-l pl-5 sm:border-l sm:pl-6 " : "") +
+              (i >= 2 ? "border-t sm:border-t-0 " : "") +
+              (i === 2 ? "sm:border-l sm:pl-6 " : "")
+            }
+          >
+            <p className="display-sm font-normal tabular-nums [font-variant-numeric:lining-nums_tabular-nums]">
+              {value}
+            </p>
+            <p className="eyebrow mt-3">{dict.about.stats[key]}</p>
+          </Reveal>
+        ))}
+      </div>
+    </Section>
   );
 }

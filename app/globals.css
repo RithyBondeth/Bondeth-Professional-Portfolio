@@ -3,6 +3,26 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   v0.2.0 — Editorial.
+
+   The design is a printed page, not an interface: a warm paper ground, ink
+   type, hairline rules, and a lot of margin. There are no cards floating on
+   shadows, no gradients, no glows, no gradients-on-text, no terminal motifs.
+   Depth comes from type scale and white space; emphasis comes from rules and
+   position. Motion is a single soft fade — nothing slides, tilts, or scrambles.
+
+   Rules of the system:
+     · Corners are square. `--radius` is 0; only photographic media gets a
+       hairline frame, never a rounded one.
+     · There is exactly one accent colour (`--marker`), a deep ink blue, and it
+       is allowed on section numerals, the active nav mark, and link underlines.
+       Nothing else.
+     · Every horizontal rule is `--rule`, 1px, full-bleed inside its column.
+     · Small labels are letterspaced caps in the text serif — the print
+       equivalent of a caption, not a UI chip.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 /* The theme lives in `data-theme` on <html>, not a class: the root layout
    renders `className` on <html>, so a theme *class* set by the pre-hydration
    script gets wiped when React reconciles that className during hydration —
@@ -13,14 +33,22 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-serif);
-  --font-mono: var(--font-mono);
-  --font-heading: var(--font-serif);
-  /* Always true monospace, never remapped by locale — for code, the RB mark,
-     and terminal-style covers, which are Latin and must look identical in
-     every language. This is the ONLY family that stays monospace now that the
-     rest of the English UI has moved to Noto Serif. */
-  --font-code: var(--font-jetbrains), "JetBrains Mono", ui-monospace, monospace;
+
+  /* Two families carry the whole site.
+       --font-display  Instrument Serif — headlines only, always large.
+       --font-text     Newsreader — body copy, labels, navigation, everything.
+     `--font-sans` / `--font-mono` are aliased onto the text serif so that the
+     Tailwind `font-sans` / `font-mono` utilities still resolve to the house
+     face wherever older markup calls for them. Code is the sole exception. */
+  --font-sans: var(--font-text);
+  --font-mono: var(--font-text);
+  --font-serif: var(--font-text);
+  --font-heading: var(--font-display);
+  --font-code: var(--font-jetbrains), ui-monospace, monospace;
+
+  --color-rule: var(--rule);
+  --color-marker: var(--marker);
+
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -50,764 +78,651 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Square by decree. The radius utilities stay defined so shadcn primitives
+     keep compiling, but they all resolve to 0. */
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-3xl: 0px;
+  --radius-4xl: 0px;
 }
 
-/* ── Light mode (the default; overridden by [data-theme="dark"] below) ── */
+/* ── Light: warm paper ─────────────────────────────────────────────────── */
 :root {
-  /* Noto Serif (--font-serif) is the English text font. --font-mono drives
-     every terminal-style accent (nav, buttons, chips, eyebrows) as well as the
-     page's base text, so it's remapped to Noto Serif here too — everything
-     except code now reads as serif. The html[lang="km"] override below swaps in
-     Kantumruy Pro for Khmer; neither remap touches --font-code. */
-  --font-mono: var(--font-serif), ui-serif, Georgia, serif;
-  /* Black & white theme — a pure neutral grayscale ramp, no hue. In light mode
-     the "primary/accent" highlight is black; skill logos and the profile.ts
-     code block keep their own colours (set outside these tokens). */
-  --background: #fafafa;
-  --foreground: #0a0a0a;
-  --card: #ffffff;
-  --card-foreground: #0a0a0a;
-  --popover: #ffffff;
-  --popover-foreground: #0a0a0a;
-  --primary: #0a0a0a;
-  --primary-foreground: #fafafa;
-  --secondary: #f0f0f0;
-  --secondary-foreground: #0a0a0a;
-  --muted: #f0f0f0;
-  --muted-foreground: #5c5c5c;
-  --accent: #171717;
-  --accent-foreground: #fafafa;
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: #e4e4e4;
-  --input: #ededed;
-  --ring: #0a0a0a;
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.5rem;
-  --sidebar: #ffffff;
-  --sidebar-foreground: #0a0a0a;
-  --sidebar-primary: #0a0a0a;
-  --sidebar-primary-foreground: #fafafa;
-  --sidebar-accent: #f0f0f0;
-  --sidebar-accent-foreground: #0a0a0a;
-  --sidebar-border: #e4e4e4;
-  --sidebar-ring: #0a0a0a;
+  --background: #f6f3ec;
+  --foreground: #1b1915;
+  --card: #fbf9f4;
+  --card-foreground: #1b1915;
+  --popover: #fbf9f4;
+  --popover-foreground: #1b1915;
+  --primary: #1b1915;
+  --primary-foreground: #f6f3ec;
+  --secondary: #eeeae0;
+  --secondary-foreground: #1b1915;
+  --muted: #eeeae0;
+  --muted-foreground: #6f6a5f;
+  --accent: #eeeae0;
+  --accent-foreground: #1b1915;
+  --destructive: #9a3b26;
+  --border: #ddd7c9;
+  --input: #ddd7c9;
+  --ring: #1b1915;
 
-  /* Card hover glow. Light mode lifts a card off the page with a soft *dark*
-     shadow — the white glow used in dark mode is invisible on #fafafa, which
-     is why this is a token and not a literal in the utility below. */
-  --card-glow: 0 12px 40px rgb(10 10 10 / 0.1), 0 2px 8px rgb(10 10 10 / 0.06);
-  --card-glow-sm: 0 0 0 1px rgb(10 10 10 / 0.04);
-  --card-sheen: rgb(10 10 10 / 0.06);
+  /* Editorial additions */
+  --rule: #ddd7c9;
+  --rule-strong: #1b1915;
+  /* The single accent. A deep blue-black ink rather than a hot colour: on the
+     warm paper it reads almost as a second black, so it marks a link or an
+     active state without ever competing with the type. */
+  --marker: #1f3552;
 
-  /* Button sheen is the INVERSE of the card sheen: a filled primary button is
-     dark-on-light here, so its sheen has to be white to read at all. --btn-wipe
-     tints outline buttons, which sit on the page background, so it follows
-     --primary instead. */
-  --btn-sheen: rgb(255 255 255 / 0.18);
-  --btn-wipe: rgb(10 10 10 / 0.05);
+  --chart-1: #1b1915;
+  --chart-2: #6f6a5f;
+  --chart-3: #9c968a;
+  --chart-4: #c4bdad;
+  --chart-5: #ddd7c9;
+  --radius: 0rem;
+  --sidebar: #fbf9f4;
+  --sidebar-foreground: #1b1915;
+  --sidebar-primary: #1b1915;
+  --sidebar-primary-foreground: #f6f3ec;
+  --sidebar-accent: #eeeae0;
+  --sidebar-accent-foreground: #1b1915;
+  --sidebar-border: #ddd7c9;
+  --sidebar-ring: #1b1915;
 }
 
-/* ── Dark mode ─ neutral charcoal + periwinkle, ported from apsara-agentic ── */
+/* ── Dark: ink on warm black ───────────────────────────────────────────── */
 [data-theme="dark"] {
-  /* Black & white theme — near-black ground, white text, white highlight.
-     Skill logos and the profile.ts code block keep their own colours. */
-  --background: #0a0a0a;
-  --foreground: #fafafa;
-  --card: #141414;
-  --card-foreground: #fafafa;
-  --popover: #141414;
-  --popover-foreground: #fafafa;
-  --primary: #fafafa;
-  --primary-foreground: #0a0a0a;
-  --secondary: #1c1c1c;
-  --secondary-foreground: #fafafa;
-  --muted: #1c1c1c;
-  --muted-foreground: #a1a1a1;
-  --accent: #e5e5e5;
-  --accent-foreground: #0a0a0a;
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: #2a2a2a;
-  --input: #262626;
-  --ring: #fafafa;
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: #0a0a0a;
-  --sidebar-foreground: #a1a1a1;
-  --sidebar-primary: #fafafa;
-  --sidebar-primary-foreground: #0a0a0a;
-  --sidebar-accent: #1c1c1c;
-  --sidebar-accent-foreground: #fafafa;
-  --sidebar-border: #2a2a2a;
-  --sidebar-ring: #fafafa;
+  --background: #131210;
+  --foreground: #ece7dc;
+  --card: #1a1815;
+  --card-foreground: #ece7dc;
+  --popover: #1a1815;
+  --popover-foreground: #ece7dc;
+  --primary: #ece7dc;
+  --primary-foreground: #131210;
+  --secondary: #201e1a;
+  --secondary-foreground: #ece7dc;
+  --muted: #201e1a;
+  --muted-foreground: #948d80;
+  --accent: #201e1a;
+  --accent-foreground: #ece7dc;
+  --destructive: #c96a4d;
+  --border: #2c2925;
+  --input: #2c2925;
+  --ring: #ece7dc;
 
-  /* Dark mode glows outward in white rather than casting a shadow — a dark
-     shadow is invisible against #0a0a0a. */
-  --card-glow: 0 12px 40px rgb(255 255 255 / 0.07), 0 0 14px rgb(255 255 255 / 0.04);
-  --card-glow-sm: 0 0 0 1px rgb(255 255 255 / 0.06);
-  --card-sheen: rgb(255 255 255 / 0.08);
+  --rule: #2c2925;
+  --rule-strong: #ece7dc;
+  /* Lifted well above the dark-theme background — the same ink at its light
+     value would disappear entirely against #131210. */
+  --marker: #8fb0d8;
 
-  /* Inverted again: dark mode's primary button is light-on-dark, so the sheen
-     that sweeps across it must be dark. */
-  --btn-sheen: rgb(10 10 10 / 0.14);
-  --btn-wipe: rgb(255 255 255 / 0.07);
+  --chart-1: #ece7dc;
+  --chart-2: #948d80;
+  --chart-3: #6b655b;
+  --chart-4: #45403a;
+  --chart-5: #2c2925;
+  --sidebar: #1a1815;
+  --sidebar-foreground: #948d80;
+  --sidebar-primary: #ece7dc;
+  --sidebar-primary-foreground: #131210;
+  --sidebar-accent: #201e1a;
+  --sidebar-accent-foreground: #ece7dc;
+  --sidebar-border: #2c2925;
+  --sidebar-ring: #ece7dc;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground;
-    overflow-x: clip;
-  }
   html {
-    @apply font-mono;
+    font-family: var(--font-text), ui-serif, Georgia, serif;
     scroll-behavior: smooth;
     overflow-x: clip;
   }
-  /* Editorial type pairing: Noto Serif for headings and prose, true monospace
-     (--font-code) reserved for code and the RB mark. The terminal accents
-     (eyebrows, nav, chips) use the `font-mono` utility, which now also resolves
-     to Noto Serif; only --font-code stays monospace. The Khmer locale flows
-     through the same --font-serif remap. */
+  body {
+    @apply bg-background text-foreground;
+    overflow-x: clip;
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    /* Old-style figures in body copy; lining figures are reserved for the
+       tabular numerals in the section numerals and date columns. */
+    font-variant-numeric: oldstyle-nums;
+    text-rendering: optimizeLegibility;
+  }
+  /* Instrument Serif is a display face: it is set tight, large, and never
+     bolded — the family ships a single weight and faux-bold would ruin it. */
   h1,
   h2,
-  h3,
-  h4 {
-    font-family: var(--font-serif), ui-serif, Georgia, serif;
-    letter-spacing: -0.025em;
+  h3 {
+    font-family: var(--font-display), ui-serif, Georgia, serif;
+    font-weight: 400;
+    letter-spacing: -0.015em;
+    line-height: 1.05;
+  }
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-text), ui-serif, Georgia, serif;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    line-height: 1.3;
   }
   p,
   li,
   blockquote,
   figcaption {
-    font-family: var(--font-serif), ui-serif, Georgia, serif;
+    font-family: var(--font-text), ui-serif, Georgia, serif;
   }
-  /* Code always renders in JetBrains Mono, in every locale. Tailwind's
-     Preflight resets these tags to `--font-mono`, which is remapped to
-     Kantumruy Pro under html[lang="km"]; `--font-code` is never remapped,
-     so overriding here keeps code Latin/monospace everywhere. */
+  /* Code always renders in JetBrains Mono, in every locale — Tailwind's
+     Preflight resets these tags to `--font-mono`, which is remapped per
+     locale below; `--font-code` never is. */
   pre,
   code,
   kbd,
   samp {
     font-family: var(--font-code);
+    font-variant-numeric: normal;
+  }
+  ::selection {
+    background: var(--foreground);
+    color: var(--background);
   }
 }
 
-/* ── Khmer locale: JetBrains Mono / Noto Serif have no Khmer glyphs, so put
-   Kantumruy Pro first in every stack when the page language is Khmer.
-   Kept OUTSIDE @layer so it can override next/font's unlayered variables. ── */
+/* ── Khmer locale: Instrument Serif / Newsreader / JetBrains Mono have no
+   Khmer glyphs, so Kantumruy Pro goes first in every stack when the page
+   language is Khmer. Kept OUTSIDE @layer so it overrides next/font's
+   unlayered variables. Khmer has no small-caps or old-style figures and its
+   clusters must never be letterspaced, so `.eyebrow` relaxes below. ── */
 html[lang="km"] {
-  --font-mono: var(--font-khmer), "JetBrains Mono", ui-monospace, monospace;
-  --font-serif: var(--font-khmer), ui-serif, serif;
+  --font-text: var(--font-khmer), ui-serif, serif;
+  --font-display: var(--font-khmer), ui-serif, serif;
+}
+html[lang="km"] body {
+  font-variant-numeric: normal;
+  line-height: 1.85;
+}
+html[lang="km"] h1,
+html[lang="km"] h2,
+html[lang="km"] h3 {
+  line-height: 1.45;
+  letter-spacing: normal;
+}
+html[lang="km"] .eyebrow {
+  letter-spacing: normal;
+  text-transform: none;
 }
 
-/* ── Code: JetBrains Mono on a true-black background, in every locale.
-   `--font-code` is intentionally never remapped for Khmer, so code stays
-   Latin/monospace. Overriding the Tailwind Typography background variables
-   keeps both light and dark prose consistent. ── */
-.prose {
-  --tw-prose-pre-bg: #000000;
-  --tw-prose-invert-pre-bg: #000000;
+/* ═════════════════════════ Editorial primitives ═════════════════════════ */
+
+/* The measure: body copy never runs wider than a comfortable line. */
+.measure {
+  max-width: 62ch;
 }
-.prose figure[data-rehype-pretty-code-figure] {
-  margin-block: 2rem;
+.measure-tight {
+  max-width: 46ch;
 }
-.prose figure[data-rehype-pretty-code-figure] pre {
+/* For an article head, where the standfirst and cover want a little more room
+   than running text but must still stop short of the full page width. */
+.measure-wide {
+  max-width: 76ch;
+}
+
+/* Caption-style label. Letterspaced caps in the text serif — this replaces
+   every "terminal chip" and monospace eyebrow from 0.1.x. */
+.eyebrow {
+  font-family: var(--font-text), ui-serif, Georgia, serif;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-variant-numeric: lining-nums tabular-nums;
+  line-height: 1.4;
+  color: var(--muted-foreground);
+}
+
+/* Section numeral — "01", set in the marker colour beside the eyebrow. */
+.numeral {
+  font-variant-numeric: lining-nums tabular-nums;
+  letter-spacing: 0.08em;
+  color: var(--marker);
+}
+
+/* Display sizes. Fluid, and deliberately large: on an editorial page the
+   headline is the loudest thing by an order of magnitude, so nothing else
+   has to shout. */
+/* The family is set here too, not only on h1–h3: figures, pull quotes and
+   oversized numerals are display type without being headings. */
+.display-xl,
+.display-lg,
+.display-md,
+.display-sm {
+  font-family: var(--font-display), ui-serif, Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 1.05;
+}
+
+.display-xl {
+  font-size: clamp(3rem, 11vw, 8.5rem);
+}
+.display-lg {
+  font-size: clamp(2.5rem, 6.5vw, 5rem);
+}
+.display-md {
+  font-size: clamp(2rem, 4.2vw, 3.25rem);
+}
+.display-sm {
+  font-size: clamp(1.5rem, 2.6vw, 2.125rem);
+}
+
+/* Italic is the display face's emphasis — never bold. */
+.display-em {
+  font-style: italic;
+}
+
+/* Hairlines. `.rule` is the standard divider; `.rule-strong` is the ink-weight
+   line that opens a major section. */
+.rule {
+  border: 0;
+  border-top: 1px solid var(--rule);
+}
+.rule-strong {
+  border: 0;
+  border-top: 1px solid var(--rule-strong);
+}
+
+/* ── Form fields ────────────────────────────────────────────────────────────
+   A field is a rule you write on, not a box. Only the bottom border exists;
+   it goes to ink weight on focus, which is a stronger and quieter signal than
+   a ring. `appearance: none` is needed on the <select> so it drops its native
+   chrome and sits on the same line as the inputs. */
+.field {
+  display: block;
+  width: 100%;
+  padding: 0.6rem 0 0.55rem;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  border-radius: 0;
+  color: var(--foreground);
+  font-size: 1rem;
+  line-height: 1.5;
+  appearance: none;
+  transition:
+    border-color 220ms var(--ease-out),
+    background-color 220ms var(--ease-out);
+}
+
+.field::placeholder {
+  color: var(--muted-foreground);
+  opacity: 0.7;
+}
+
+.field:focus {
+  outline: none;
+  border-bottom-color: var(--rule-strong);
+}
+
+/* Invalid only once the field has been touched and left — validating while
+   someone is still typing their email is just nagging. */
+.field:user-invalid {
+  border-bottom-color: var(--destructive);
+}
+
+/* ── Links: the underline is the whole interaction. It sits away from the
+   baseline, thickens on hover, and wipes in from the left on nav items. ── */
+.link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  text-decoration-color: color-mix(in oklab, var(--foreground) 30%, transparent);
+  transition:
+    text-decoration-color 200ms ease,
+    color 200ms ease;
+}
+.link:hover,
+.link:focus-visible {
+  text-decoration-color: var(--marker);
+  color: var(--foreground);
+}
+
+/* A link whose underline grows from the left rather than simply darkening.
+   Used for navigation and index rows where many sit close together. */
+.link-wipe {
   position: relative;
-  overflow-x: auto;
-  border-radius: 0.75rem;
-  border: 1px solid color-mix(in oklab, var(--border) 72%, transparent);
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in oklab, var(--primary) 10%, transparent),
-      transparent 4.25rem
-    ),
-    #07090e;
-  box-shadow:
-    0 24px 60px rgb(0 0 0 / 0.28),
-    inset 0 1px 0 rgb(255 255 255 / 0.06);
-  color: #dcdfe8;
-  line-height: 1.75;
-  padding: 3.25rem 1.25rem 1.25rem;
+  color: inherit;
+  text-decoration: none;
 }
-.prose figure[data-rehype-pretty-code-figure] pre::before {
+.link-wipe::after {
   content: "";
   position: absolute;
-  left: 1.25rem;
-  top: 1.15rem;
-  width: 0.7rem;
-  height: 0.7rem;
-  border-radius: 999px;
-  background: #fb7185;
-  box-shadow:
-    1.05rem 0 #facc15,
-    2.1rem 0 #34d399;
+  left: 0;
+  right: 0;
+  bottom: -0.18em;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
 }
-.prose figure[data-rehype-pretty-code-figure] pre::after {
-  content: attr(data-language);
-  position: absolute;
-  right: 1.25rem;
-  top: 0.95rem;
-  border-radius: 999px;
-  border: 1px solid rgb(255 255 255 / 0.1);
-  background: rgb(255 255 255 / 0.06);
-  padding: 0.2rem 0.55rem;
-  color: #979ba9;
-  font-family: var(--font-code);
-  font-size: 0.65rem;
-  font-weight: 600;
-  line-height: 1;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+.link-wipe:hover::after,
+.link-wipe:focus-visible::after,
+.link-wipe[data-active="true"]::after {
+  transform: scaleX(1);
 }
-.prose figure[data-rehype-pretty-code-figure] code {
-  counter-reset: line;
-  font-family: var(--font-code);
-  font-size: 0.875rem;
-}
-.prose figure[data-rehype-pretty-code-figure] [data-line] {
-  border-left: 2px solid transparent;
-  padding-inline: 0.25rem 1rem;
-}
-.prose figure[data-rehype-pretty-code-figure] [data-highlighted-line] {
-  border-left-color: var(--primary);
-  background: color-mix(in oklab, var(--primary) 16%, transparent);
-}
-.prose figure[data-rehype-pretty-code-figure] mark[data-highlighted-chars] {
-  border-radius: 0.25rem;
-  background: color-mix(in oklab, var(--primary) 22%, transparent);
-  color: inherit;
-  padding: 0.1rem 0.15rem;
-}
-.prose pre {
-  font-family: var(--font-code);
-  border: 1px solid var(--border);
-}
-.prose :not(pre) > code {
-  font-family: var(--font-code);
-  background-color: #000000;
-  color: var(--primary);
-  font-weight: 500;
-  padding: 0.15em 0.4em;
-  border-radius: 0.25rem;
-  border: 1px solid var(--border);
-}
-/* Tailwind Typography wraps inline code in backtick pseudo-content; drop it
-   now that the chip styling makes the code stand out on its own. */
-.prose :not(pre) > code::before,
-.prose :not(pre) > code::after {
-  content: none;
+.link-wipe[data-active="true"]::after {
+  background: var(--marker);
 }
 
-/* ── Hero scan line ── */
-@keyframes scan {
-  0%   { transform: translateY(-100%); }
-  100% { transform: translateY(100vh); }
-}
+/* ═════════════════════════ Index rows and panels ═════════════════════════
 
-/* ── Cursor blink (typewriter in Hero, RB logo) ── */
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0; }
-}
-
-/* ── Marquee keyframes (referenced by inline styles in MarqueeTrack) ── */
-@keyframes marquee-rtl {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
-}
-
-@keyframes marquee-ltr {
-  from { transform: translateX(-50%); }
-  to   { transform: translateX(0); }
-}
-
-/* ── Glitch: RGB-split drop-shadow bursts on the hero name ── */
-@keyframes glitch {
-  0%, 74%, 80%, 100% {
-    filter: none;
-    transform: none;
-  }
-  75% {
-    filter: drop-shadow(-3px 0 #06d8f4) drop-shadow(3px 0 #b295ff);
-    transform: translateX(-2px);
-  }
-  76% {
-    filter: drop-shadow(3px 0 #06d8f4) drop-shadow(-3px 0 #b295ff);
-    transform: translateX(2px) skewX(-1deg);
-  }
-  77% {
-    filter: drop-shadow(-1px 0 #06d8f4);
-    transform: translateX(-1px);
-  }
-  78% {
-    filter: none;
-    transform: skewX(0.5deg);
-  }
-  79% {
-    filter: none;
-    transform: none;
-  }
-  90%, 93%, 100% {
-    filter: none;
-    transform: none;
-  }
-  91% {
-    filter: drop-shadow(-2px 0 rgba(6,216,244,0.8)) drop-shadow(2px 0 rgba(178,149,255,0.6));
-    transform: translateX(-1px) skewX(-0.5deg);
-  }
-  92% {
-    filter: drop-shadow(1px 0 rgba(178,149,255,0.8));
-    transform: translateX(1px);
-  }
-}
-
-/* Typewriter caret for the About panel's animated code backdrop. */
-@keyframes type-caret {
-  0%, 45% {
-    opacity: 1;
-  }
-  50%, 95% {
-    opacity: 0;
-  }
-}
-.type-caret {
-  animation: type-caret 1s steps(1) infinite;
-}
-
-/* ── Hero name gradient — lives on the whole h1 (no-JS / reduced-motion
-   fallback) AND on every SplitText char (.hero-char), because background-clip
-   can't reach across the per-char transform layers once the name is split.
-
-   This is apsara-agentic's `.landing-gradient-text` treatment: the four-stop
-   spectrum raked across 125deg. Background-size stays `auto`, so — exactly as
-   on apsara — every character paints the FULL spectrum inside its own box
-   rather than showing one slice of a gradient spanning the whole word.
-
-   Light mode uses apsara's darkened variant of the same four hues (L≈42–52
-   instead of 68–83); the bright stops sit around 1.5:1 on a near-white ground
-   and would be unreadable. ── */
-.hero-name,
-.hero-char {
-  background-image: linear-gradient(
-    125deg,
-    #0a0a0a,
-    #3f3f3f 38%,
-    #171717 70%,
-    #525252
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-[data-theme="dark"] .hero-name,
-[data-theme="dark"] .hero-char {
-  background-image: linear-gradient(
-    125deg,
-    #ffffff,
-    #c8c8c8 38%,
-    #f0f0f0 70%,
-    #a8a8a8
-  );
-}
-
-/* ── Film-grain noise: apply to an absolutely-positioned, pointer-events-none
-   overlay div to give flat dark surfaces a subtle physical texture. ── */
-.bg-noise {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
-  background-size: 180px 180px;
-}
-
-/* ── Aurora: slow drift for large blurred glow orbs (hero / section accents).
-   Pair with blur-3xl + low opacity; GPU-only transform so it stays cheap. ── */
-@keyframes aurora {
-  0%,
-  100% {
-    transform: translate3d(-6%, -4%, 0) scale(1);
-  }
-  50% {
-    transform: translate3d(6%, 5%, 0) scale(1.18);
-  }
-}
-
-/* ── Touch devices: freeze the ambient background loops ────────────────────
-   The claim above that aurora is "GPU-only, so it stays cheap" holds on
-   desktop but not on phones. `scale` on a `blur-3xl` layer is not a free
-   compositor transform — a 64px blur has to be re-rasterised at each new
-   scale, every frame, for a 384px orb. Paired with the `scan` sweep that
-   repaints a full-width strip on a loop, it keeps the raster thread busy
-   during scroll, which is exactly when a phone can least afford it.
-
-   Scoped to `pointer: coarse` rather than a width breakpoint: this is about
-   what the device's GPU can absorb, not how narrow the window is, so a small
-   desktop window keeps the full treatment. The orbs and the scan line stay
-   rendered — they read as ambient colour, and only their motion stops. ── */
-.hero-scanline {
-  animation: scan 8s linear infinite;
-  animation-delay: 1s;
-}
-
-@media (pointer: coarse) {
-  [class*="animate-[aurora"],
-  .hero-scanline {
-    animation: none;
-  }
-}
-
-/* ── Card hover: the single shared treatment for every interactive card ─────
-   Every card surface used to hand-roll its own hover (lift distances of 1px /
-   0.5px / a sideways 1px, three different durations, and glow shadows written
-   as `shadow-[0_12px_40px_rgba(255, 255, 255,0.06)]` — arbitrary values with
-   spaces in them, which Tailwind cannot parse, so those glows never compiled).
-   This class is the one place that behaviour is defined.
-
-   Composition: a 4px lift, the border warming toward --primary, a theme-aware
-   glow, and a sheen that wipes across the card once on enter. Children opted in
-   with `data-card-arrow` / `data-card-media` shift in sympathy.
-
-   `--card-lift` lets a card override the distance without forking the rest. ── */
+   0.1.x used floating cards with a lift, a glow and a sheen wipe. The
+   editorial equivalent of a card is a *row in an index*: a hairline above it,
+   and on hover the paper warms and the whole row nudges a few pixels toward
+   the reader's eye. `.card-interactive` keeps its old name so every existing
+   call site inherits the new, quieter behaviour. */
 .card-interactive {
-  --card-lift: -4px;
   position: relative;
   transition:
-    translate 320ms cubic-bezier(0.5, 0.05, 0.2, 1),
-    border-color 320ms cubic-bezier(0.5, 0.05, 0.2, 1),
-    box-shadow 320ms cubic-bezier(0.5, 0.05, 0.2, 1),
-    background-color 320ms cubic-bezier(0.5, 0.05, 0.2, 1);
-}
-
-/* The sheen lives on a pseudo-element so it never disturbs card layout or
-   intercepts pointer events. `inherit` keeps it flush inside rounded corners. */
-.card-interactive::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  opacity: 0;
-  background: linear-gradient(
-    105deg,
-    transparent 35%,
-    var(--card-sheen) 50%,
-    transparent 65%
-  );
-  background-size: 250% 100%;
-  background-position: 100% 0;
-  transition: opacity 220ms ease-out;
+    background-color 260ms ease,
+    border-color 260ms ease,
+    color 260ms ease;
 }
 
 .card-interactive [data-card-arrow],
 .card-interactive [data-card-media],
 .card-interactive [data-card-icon] {
   transition:
-    transform 320ms cubic-bezier(0.5, 0.05, 0.2, 1),
-    color 320ms cubic-bezier(0.5, 0.05, 0.2, 1),
-    border-color 320ms cubic-bezier(0.5, 0.05, 0.2, 1);
+    transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 320ms ease,
+    color 260ms ease;
 }
 
-/* The lift uses the `translate` longhand, never `transform`, and is !important.
-   Most of these cards are entrance-animated by AnimateIn / StaggerIn, and GSAP
-   writes its resting state as INLINE `transform: translate(0,0); translate: none`
-   (there is no clearProps — the reveals reverse on scroll-up and need to keep
-   their values). An inline declaration beats any stylesheet rule on specificity
-   alone, so a `transform:` hover here would silently never fire, and a plain
-   `translate:` would lose to the inline `none`. Using a longhand GSAP only
-   neutralises, plus !important to outrank the inline value, keeps the two
-   systems composable: GSAP owns `transform`, hover owns `translate`. */
 @media (hover: hover) and (pointer: fine) {
   .card-interactive:hover {
-    translate: 0 var(--card-lift) !important;
-    border-color: color-mix(in oklab, var(--primary) 35%, transparent);
-    box-shadow: var(--card-glow);
-  }
-  .card-interactive:hover::after {
-    opacity: 1;
-    background-position: 0 0;
-    transition:
-      opacity 220ms ease-out,
-      background-position 700ms cubic-bezier(0.625, 0.05, 0, 1);
+    background-color: color-mix(in oklab, var(--foreground) 3.5%, transparent);
+    border-color: color-mix(in oklab, var(--foreground) 26%, transparent);
   }
   .card-interactive:hover [data-card-arrow] {
-    transform: translateX(4px);
+    transform: translateX(6px);
   }
+  /* Photographs breathe rather than zoom — 1.02, over a third of a second. */
   .card-interactive:hover [data-card-media] {
-    transform: scale(1.04);
-  }
-  .card-interactive:hover [data-card-icon] {
-    transform: scale(1.08) rotate(-5deg);
-    border-color: color-mix(in oklab, var(--primary) 50%, transparent);
+    transform: scale(1.02);
   }
 }
 
-/* Keyboard parity: the card is often wrapped in (or is) a link, so mirror the
-   hover state when focus lands inside it. */
 .card-interactive:focus-visible,
 .card-interactive:has(:focus-visible) {
-  translate: 0 var(--card-lift) !important;
-  border-color: color-mix(in oklab, var(--primary) 35%, transparent);
-  box-shadow: var(--card-glow);
+  background-color: color-mix(in oklab, var(--foreground) 3.5%, transparent);
+  border-color: color-mix(in oklab, var(--foreground) 26%, transparent);
 }
 
-/* Sideways variant for cards anchored to a timeline rail, where a vertical
-   lift would break the alignment with the rail's node. */
-.card-interactive-inline:hover,
-.card-interactive-inline:has(:focus-visible) {
-  translate: 4px 0 !important;
-}
+/* ═══════════════════════════════ Controls ═══════════════════════════════
 
-@media (prefers-reduced-motion: reduce) {
-  .card-interactive,
-  .card-interactive::after,
-  .card-interactive [data-card-arrow],
-  .card-interactive [data-card-media],
-  .card-interactive [data-card-icon] {
-    transition: none;
-  }
-  /* Colour and glow still communicate the hover; only movement is dropped. */
-  .card-interactive:hover,
-  .card-interactive-inline:hover,
-  .card-interactive:focus-visible,
-  .card-interactive:has(:focus-visible),
-  .card-interactive-inline:has(:focus-visible) {
-    translate: none !important;
-  }
-  .card-interactive:hover::after {
-    opacity: 0;
-  }
-  .card-interactive:hover [data-card-arrow],
-  .card-interactive:hover [data-card-media],
-  .card-interactive:hover [data-card-icon] {
-    transform: none;
-  }
-}
-
-/* ── Buttons: the shared treatment for every clickable control ──────────────
-   Same story as the cards — the primary CTA class string was duplicated
-   near-verbatim in seven places, each doing nothing but `transition-colors
-   hover:bg-primary/90`. This is the one place button motion is defined.
-
-   `.btn-fx` is the base every control gets (press on :active, focus parity,
-   icon shift). Layer exactly one flavour class on top:
-     .btn-fx-primary  filled CTA  — specular sheen sweeps across the fill
-     .btn-fx-outline  bordered    — tinted fill wipes in from the left
-     .btn-fx-chip     filter chip — subtle scale, no fill (they carry state
-                                    via aria-pressed and must stay readable)
-     .btn-fx-icon     icon button — the glyph scales and tilts, not the box
-
-   Motion is gated on a real pointer: on touch, `:hover` sticks after a tap.
-   Keyboard users get the same affordance through :focus-visible. ── */
+   Buttons are set type with a rule under or around them. No fills that
+   animate, no sheen, no lift. `.btn-fx*` keep their names for the same
+   inheritance reason as `.card-interactive`. */
 .btn-fx {
   position: relative;
-  isolation: isolate;
+  font-family: var(--font-text), ui-serif, Georgia, serif;
+  letter-spacing: 0.04em;
   transition:
-    translate 200ms cubic-bezier(0.5, 0.05, 0.2, 1),
-    scale 200ms cubic-bezier(0.5, 0.05, 0.2, 1),
-    background-color 200ms cubic-bezier(0.5, 0.05, 0.2, 1),
-    border-color 200ms cubic-bezier(0.5, 0.05, 0.2, 1),
-    color 200ms cubic-bezier(0.5, 0.05, 0.2, 1),
-    box-shadow 200ms cubic-bezier(0.5, 0.05, 0.2, 1);
+    background-color 220ms ease,
+    border-color 220ms ease,
+    color 220ms ease,
+    opacity 220ms ease;
 }
 
-/* Icons inside any button drift with the label. Opt in per icon so decorative
-   glyphs (spinners, status dots) are not dragged along. */
 .btn-fx [data-btn-arrow],
 .btn-fx [data-btn-glyph] {
-  transition: transform 200ms cubic-bezier(0.5, 0.05, 0.2, 1);
-}
-
-/* The press. Deliberately not gated on pointer:fine — a touch tap should feel
-   like it depressed too, and :active does not stick the way :hover does. */
-.btn-fx:active:not(:disabled) {
-  translate: 0 1px;
-}
-
-/* ---- Primary: specular sheen sweeps across the fill ---- */
-.btn-fx-primary::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: inherit;
-  pointer-events: none;
-  opacity: 0;
-  background-image: linear-gradient(
-    105deg,
-    transparent 35%,
-    var(--btn-sheen) 50%,
-    transparent 65%
-  );
-  background-size: 250% 100%;
-  background-position: 100% 0;
-  transition: opacity 200ms ease-out;
-}
-
-/* ---- Outline: tinted fill wipes in from the left ---- */
-.btn-fx-outline::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: inherit;
-  pointer-events: none;
-  background-color: var(--btn-wipe);
-  transform: scaleX(0);
-  transform-origin: left center;
-  transition: transform 260ms cubic-bezier(0.625, 0.05, 0, 1);
+  transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .btn-fx-primary:hover::after,
-  .btn-fx-primary:focus-visible::after {
-    opacity: 1;
-    background-position: 0 0;
-    transition:
-      opacity 200ms ease-out,
-      background-position 620ms cubic-bezier(0.625, 0.05, 0, 1);
+  /* Filled: the ink lightens a touch rather than being swept by a highlight. */
+  .btn-fx-primary:hover,
+  .btn-fx-primary:focus-visible {
+    background-color: color-mix(in oklab, var(--primary) 88%, var(--background));
   }
-
+  /* Outline: the rule goes to full ink and the paper warms behind it. */
   .btn-fx-outline:hover,
   .btn-fx-outline:focus-visible {
-    border-color: color-mix(in oklab, var(--primary) 40%, transparent);
+    border-color: var(--foreground);
+    background-color: color-mix(in oklab, var(--foreground) 4%, transparent);
   }
-  .btn-fx-outline:hover::before,
-  .btn-fx-outline:focus-visible::before {
-    transform: scaleX(1);
-  }
-
   .btn-fx-chip:hover {
-    scale: 1.03;
-    border-color: color-mix(in oklab, var(--primary) 40%, transparent);
+    border-color: var(--foreground);
+    color: var(--foreground);
   }
-
   .btn-fx-icon:hover [data-btn-glyph],
   .btn-fx-icon:focus-visible [data-btn-glyph] {
-    transform: scale(1.12) rotate(-6deg);
+    opacity: 1;
   }
-
   .btn-fx:hover [data-btn-arrow],
   .btn-fx:focus-visible [data-btn-arrow] {
-    transform: translateX(3px);
+    transform: translateX(4px);
   }
 }
 
-/* Keyboard parity for the transforms the hover block gates behind a pointer. */
 .btn-fx-chip:focus-visible {
-  scale: 1.03;
-  border-color: color-mix(in oklab, var(--primary) 40%, transparent);
+  border-color: var(--foreground);
+  color: var(--foreground);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .btn-fx,
-  .btn-fx::before,
-  .btn-fx::after,
-  .btn-fx [data-btn-arrow],
-  .btn-fx [data-btn-glyph] {
-    transition: none;
-  }
-  /* Colour still communicates the state; only movement is dropped. */
-  .btn-fx:active:not(:disabled),
-  .btn-fx-chip:hover,
-  .btn-fx-chip:focus-visible {
-    translate: none;
-    scale: none;
-  }
-  .btn-fx-primary:hover::after,
-  .btn-fx-primary:focus-visible::after {
-    opacity: 0;
-  }
-  .btn-fx-outline:hover::before,
-  .btn-fx-outline:focus-visible::before {
-    transform: scaleX(1);
-  }
-  .btn-fx:hover [data-btn-arrow],
-  .btn-fx:focus-visible [data-btn-arrow],
-  .btn-fx-icon:hover [data-btn-glyph],
-  .btn-fx-icon:focus-visible [data-btn-glyph] {
-    transform: none;
-  }
+/* ═══════════════════════════════ Motion ═══════════════════════════════
+
+   One effect, used everywhere: content fades up 12px as it enters. It is
+   driven by a `data-reveal` attribute that the Reveal component flips, so
+   there is no JS animation library in the render path.
+
+   The hidden state is scoped to `.js` (set by the inline script in the root
+   layout) so the server-rendered HTML is fully visible on its own. Nothing
+   here is allowed to be the reason a reader sees a blank page. */
+.js [data-reveal] {
+  opacity: 0;
+  transform: translate3d(0, 12px, 0);
+  transition:
+    opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+.js [data-reveal="in"] {
+  opacity: 1;
+  transform: none;
 }
 
-/* ── Animated conic border: a cyan/violet light beam orbiting a card's edge.
-   Use on cards that deserve a "live" premium frame. ── */
-@property --border-angle {
-  syntax: "<angle>";
-  inherits: false;
-  initial-value: 0deg;
+/* A rule that draws itself in from the left as its section arrives. */
+.js [data-reveal-rule] {
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
 }
-@keyframes border-spin {
-  to {
-    --border-angle: 360deg;
-  }
-}
-.animated-border {
-  border: 1px solid transparent;
-  background:
-    linear-gradient(var(--card), var(--card)) padding-box,
-    conic-gradient(
-        from var(--border-angle),
-        color-mix(in oklab, var(--border) 80%, transparent) 0%,
-        var(--primary) 12%,
-        color-mix(in oklab, var(--border) 80%, transparent) 28%,
-        color-mix(in oklab, var(--border) 80%, transparent) 55%,
-        var(--accent) 70%,
-        color-mix(in oklab, var(--border) 80%, transparent) 86%
-      )
-      border-box;
-  animation: border-spin 7s linear infinite;
-}
-
-/* ── Theme switch: the circular wipe is driven from JS via the View
-   Transitions API; disable the default cross-fade so the clip-path reveal
-   is the only animation. Scoped to the theme switch so that other view
-   transitions — notably the language switch — keep their cross-fade. ── */
-html.theme-switching::view-transition-old(root),
-html.theme-switching::view-transition-new(root) {
-  animation: none;
-  mix-blend-mode: normal;
-}
-
-/* ── Language switch: the whole [lang] subtree remounts, so cross-fade the
-   old and new page instead of letting it snap. ── */
-html.locale-switching::view-transition-old(root),
-html.locale-switching::view-transition-new(root) {
-  animation-duration: 260ms;
-  animation-timing-function: cubic-bezier(0.625, 0.05, 0, 1);
+.js [data-reveal-rule="in"] {
+  transform: scaleX(1);
 }
 
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
-  .marquee-track {
-    animation: none !important;
-    transform: none !important;
+  /* Must carry the `.js` prefix too, or it loses the specificity contest
+     against the rules above and reduced motion silently does nothing. */
+  .js [data-reveal],
+  .js [data-reveal-rule] {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
-  .type-caret {
-    animation: none;
-    opacity: 0;
+  .card-interactive,
+  .btn-fx,
+  .link,
+  .link-wipe::after,
+  .card-interactive [data-card-arrow],
+  .card-interactive [data-card-media],
+  .btn-fx [data-btn-arrow] {
+    transition: none;
   }
-  .animated-border {
-    animation: none;
+  .card-interactive:hover [data-card-arrow],
+  .card-interactive:hover [data-card-media],
+  .btn-fx:hover [data-btn-arrow] {
+    transform: none;
   }
   [class*="animate-"] {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
   }
+}
+
+/* ═════════════════════════════ Long-form prose ═════════════════════════════
+
+   Blog articles are the one place with real running text, so they get the
+   full print treatment: a drop-cap-adjacent lead, generous leading, hanging
+   quotation marks, and code that is a plain inset block — the fake macOS
+   window chrome from 0.1.x is gone. */
+.prose {
+  --tw-prose-body: var(--foreground);
+  --tw-prose-headings: var(--foreground);
+  --tw-prose-links: var(--foreground);
+  --tw-prose-bold: var(--foreground);
+  --tw-prose-quotes: var(--foreground);
+  --tw-prose-quote-borders: var(--marker);
+  --tw-prose-captions: var(--muted-foreground);
+  --tw-prose-code: var(--foreground);
+  --tw-prose-hr: var(--rule);
+  --tw-prose-th-borders: var(--rule);
+  --tw-prose-td-borders: var(--rule);
+  --tw-prose-pre-bg: var(--secondary);
+  --tw-prose-pre-code: var(--foreground);
+  font-size: 1.125rem;
+  line-height: 1.8;
+}
+
+.prose h2,
+.prose h3 {
+  font-family: var(--font-display), ui-serif, Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+}
+.prose h2 {
+  font-size: 2rem;
+  margin-top: 3rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--rule);
+}
+.prose h3 {
+  font-size: 1.5rem;
+}
+.prose a {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  text-decoration-color: color-mix(in oklab, var(--foreground) 30%, transparent);
+}
+.prose a:hover {
+  text-decoration-color: var(--marker);
+}
+.prose blockquote {
+  font-style: italic;
+  font-weight: 400;
+  border-left-width: 1px;
+  padding-left: 1.5rem;
+}
+.prose blockquote p::before,
+.prose blockquote p::after {
+  content: none;
+}
+.prose img {
+  border: 1px solid var(--rule);
+}
+
+/* Code blocks: an inset panel on the page's own paper, framed with the same
+   hairline as everything else. Shiki still colours the tokens, but the frame
+   no longer pretends to be an editor window. */
+.prose figure[data-rehype-pretty-code-figure] {
+  margin-block: 2.25rem;
+}
+.prose figure[data-rehype-pretty-code-figure] pre {
+  position: relative;
+  overflow-x: auto;
+  border-radius: 0;
+  border: 1px solid var(--rule);
+  background: var(--secondary);
+  color: var(--foreground);
+  line-height: 1.75;
+  padding: 2.5rem 1.25rem 1.25rem;
+  box-shadow: none;
+}
+/* The language, set as a caption in the top-left — replaces the traffic
+   lights and the pill on the right. */
+.prose figure[data-rehype-pretty-code-figure] pre::before {
+  content: attr(data-language);
+  position: absolute;
+  left: 1.25rem;
+  top: 0.9rem;
+  font-family: var(--font-text), ui-serif, Georgia, serif;
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.prose figure[data-rehype-pretty-code-figure] code {
+  counter-reset: line;
+  font-family: var(--font-code);
+  font-size: 0.8125rem;
+}
+.prose figure[data-rehype-pretty-code-figure] [data-line] {
+  border-left: 2px solid transparent;
+  padding-inline: 0.25rem 1rem;
+}
+.prose figure[data-rehype-pretty-code-figure] [data-highlighted-line] {
+  border-left-color: var(--marker);
+  background: color-mix(in oklab, var(--marker) 9%, transparent);
+}
+.prose figure[data-rehype-pretty-code-figure] mark[data-highlighted-chars] {
+  border-radius: 0;
+  background: color-mix(in oklab, var(--marker) 16%, transparent);
+  color: inherit;
+  padding: 0.1rem 0.15rem;
+}
+.prose pre {
+  font-family: var(--font-code);
+  border: 1px solid var(--rule);
+  border-radius: 0;
+}
+.prose :not(pre) > code {
+  font-family: var(--font-code);
+  background-color: color-mix(in oklab, var(--foreground) 6%, transparent);
+  color: inherit;
+  font-weight: 400;
+  font-size: 0.875em;
+  padding: 0.12em 0.35em;
+  border-radius: 0;
+}
+.prose :not(pre) > code::before,
+.prose :not(pre) > code::after {
+  content: none;
+}
+
+/* ── View transitions ── */
+html.theme-switching::view-transition-old(root),
+html.theme-switching::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+html.locale-switching::view-transition-old(root),
+html.locale-switching::view-transition-new(root) {
+  animation-duration: 260ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }

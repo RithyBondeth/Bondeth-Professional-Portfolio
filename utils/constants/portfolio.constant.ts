@@ -12,6 +12,7 @@ import {
 /* -------------------------------- Site Config ------------------------------- */
 export const siteConfig: ISiteConfig = {
   name: "Bondeth",
+  fullName: "Rithy Bondeth",
   // Canonical origin for metadata, OG images, sitemap and RSS. The env var lets
   // preview deployments describe themselves accurately.
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://bondeth.dev",

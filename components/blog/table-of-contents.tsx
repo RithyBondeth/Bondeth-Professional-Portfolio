@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { gsap } from "@/components/utils/animations/gsap";
+import { useEffect, useState } from "react";
 import type { ITableOfContentsItem } from "@/utils/functions/blog";
 
 interface ITableOfContentsProps {
@@ -9,6 +8,15 @@ interface ITableOfContentsProps {
   label: string;
   mobile?: boolean;
 }
+
+/**
+ * The article's contents rail.
+ *
+ * The active heading used to be marked by a 2px bar that GSAP glided down the
+ * rail. It is now the active link's own left border going to the marker
+ * colour — same information, no animation library, and correct on first paint
+ * rather than after a measure pass.
+ */
 
 /**
  * Tracks which heading currently sits in the reading band (upper-middle of
@@ -62,12 +70,12 @@ function ContentsLinks(
             href={`#${item.id}`}
             data-toc-id={item.id}
             aria-current={activeId === item.id ? "true" : undefined}
-            className={`block rounded py-1.5 text-sm leading-snug transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 ${
-              item.level === 3 ? "pl-4" : ""
+            className={`-ml-5 block border-l py-1.5 pl-5 text-sm leading-snug transition-colors hover:text-foreground focus-visible:outline-none ${
+              item.level === 3 ? "pl-9" : ""
             } ${
               activeId === item.id
-                ? "text-primary"
-                : "text-muted-foreground"
+                ? "border-marker text-foreground"
+                : "border-transparent text-muted-foreground"
             }`}
           >
             {item.title}
@@ -83,46 +91,16 @@ export function TableOfContents({
   label,
   mobile = false,
 }: ITableOfContentsProps) {
-  /* ---------------------------------- Utils --------------------------------- */
   // Scrollspy only drives the desktop rail — the mobile <details> stays plain.
   const activeId = useActiveHeading(items, !mobile);
-  const navRef = useRef<HTMLElement>(null);
-  const markerRef = useRef<HTMLSpanElement>(null);
-
-  /* --------------------------------- Effects -------------------------------- */
-  // A 2px primary bar glides along the left border to the active link.
-  useEffect(() => {
-    if (mobile) return;
-    const nav = navRef.current;
-    const marker = markerRef.current;
-    if (!nav || !marker) return;
-
-    const active = nav.querySelector<HTMLAnchorElement>(
-      `a[data-toc-id="${activeId}"]`,
-    );
-    if (!active) {
-      gsap.to(marker, { opacity: 0, duration: 0.2 });
-      return;
-    }
-    const vars = {
-      y: active.offsetTop,
-      height: active.offsetHeight,
-      opacity: 1,
-    };
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      gsap.set(marker, vars);
-    } else {
-      gsap.to(marker, { ...vars, duration: 0.4, ease: "smooth" });
-    }
-  }, [activeId, mobile]);
 
   if (items.length === 0) return null;
 
   /* -------------------------------- Render UI ------------------------------- */
   if (mobile) {
     return (
-      <details className="mb-10 rounded-lg border border-border/60 bg-card/40 px-4 py-3 lg:hidden">
-        <summary className="cursor-pointer select-none font-mono text-xs font-medium uppercase tracking-[0.16em] text-foreground">
+      <details className="mb-12 border-y border-rule py-4 lg:hidden">
+        <summary className="eyebrow cursor-pointer select-none">
           {label}
         </summary>
         <nav aria-label={label}>
@@ -135,19 +113,10 @@ export function TableOfContents({
   return (
     <aside className="hidden lg:block">
       <nav
-        ref={navRef}
         aria-label={label}
-        className="sticky top-28 max-h-[calc(100vh-8rem)] overflow-y-auto border-l border-border/60 pl-5"
+        className="sticky top-28 max-h-[calc(100vh-8rem)] overflow-y-auto border-l border-rule pl-5"
       >
-        {/* Sliding active-heading marker on the rail */}
-        <span
-          ref={markerRef}
-          aria-hidden
-          className="pointer-events-none absolute left-[-1px] top-0 w-0.5 rounded-full bg-primary opacity-0"
-        />
-        <p className="font-mono text-xs font-medium uppercase tracking-[0.16em] text-foreground">
-          {label}
-        </p>
+        <p className="eyebrow">{label}</p>
         <ContentsLinks items={items} activeId={activeId} />
       </nav>
     </aside>

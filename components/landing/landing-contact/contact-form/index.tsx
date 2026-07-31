@@ -1,113 +1,53 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { track } from "@vercel/analytics";
-import { gsap } from "@/components/utils/animations/gsap";
 import { getDictionary, type TLocale } from "@/utils/i18n";
+
+/**
+ * Contact form.
+ *
+ * Fields are underlines, not boxes — a rule you write on, which is how a
+ * printed reply card works and which keeps the section as flat as every other
+ * one. The `.field` class in `globals.css` owns that treatment so the input,
+ * select and textarea all sit on the same baseline grid.
+ *
+ * The old GSAP entrance on the success card (scale snap + emerald glow pulse)
+ * and the ticking "Sending..." ellipsis are gone: both were animation for its
+ * own sake, and the ellipsis in particular fought with screen readers, which
+ * re-announced the label on every tick.
+ */
 
 type TFormStatus = "idle" | "loading" | "success" | "error";
 
-export default function ContactForm(props: { lang: TLocale }) {
-  /* ---------------------------------- Props --------------------------------- */
-  const { lang } = props;
+export default function ContactForm({ lang }: { lang: TLocale }) {
   const dict = getDictionary(lang);
   const t = dict.contact.form;
 
-  /* -------------------------------- All States ------------------------------- */
   const [status, setStatus] = useState<TFormStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [message, setMessage] = useState("");
 
-  /* ---------------------------------- Utils --------------------------------- */
-  const successCardRef = useRef<HTMLDivElement>(null);
-  const loadingDotsRef = useRef<HTMLSpanElement>(null);
-  // The localized label already ends in "..." — the animated span owns the
-  // dots while loading, so trim them off the static text.
-  const sendingLabel = t.sending.replace(/[.…]+$/, "");
-
-  /* --------------------------------- Effects -------------------------------- */
-  // Success card entrance: "snap" scale/fade plus a subtle emerald glow pulse.
-  useEffect(() => {
-    if (status !== "success") return;
-    const card = successCardRef.current;
-    if (!card) return;
-
-    const mm = gsap.matchMedia();
-    mm.add("(prefers-reduced-motion: no-preference)", () => {
-      const tl = gsap.timeline();
-      tl.fromTo(
-        card,
-        { opacity: 0, scale: 0.94 },
-        { opacity: 1, scale: 1, duration: 0.5, ease: "snap" },
-      )
-        .fromTo(
-          card,
-          { boxShadow: "0 0 0 0 rgba(52, 211, 153, 0)" },
-          {
-            boxShadow: "0 0 32px 0 rgba(52, 211, 153, 0.25)",
-            duration: 0.45,
-            ease: "snap",
-          },
-          "-=0.2",
-        )
-        .to(card, {
-          boxShadow: "0 0 0 0 rgba(52, 211, 153, 0)",
-          duration: 0.9,
-          ease: "power2.out",
-          clearProps: "boxShadow",
-        });
-      return () => tl.kill();
-    });
-
-    return () => mm.revert();
-  }, [status]);
-
-  // Terminal-style ellipsis while sending: the dots tick ". .. ..." in place.
-  useEffect(() => {
-    if (status !== "loading") return;
-    const dots = loadingDotsRef.current;
-    if (!dots) return;
-
-    const mm = gsap.matchMedia();
-    mm.add("(prefers-reduced-motion: no-preference)", () => {
-      const frames = [".", "..", "..."];
-      const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.3 });
-      frames.forEach((frame, index) => {
-        tl.set(dots, { textContent: frame }, index * 0.3);
-      });
-      return () => {
-        tl.kill();
-        // Rest on the full ellipsis, matching the static label.
-        dots.textContent = "...";
-      };
-    });
-
-    return () => mm.revert();
-  }, [status]);
-
-  /* --------------------------------- Methods -------------------------------- */
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setStatus("loading");
     setErrorMessage(null);
 
-    const formData = new FormData(e.currentTarget);
-    const data = Object.fromEntries(formData.entries());
+    const form = e.currentTarget;
+    const data = Object.fromEntries(new FormData(form).entries());
 
     try {
       const response = await fetch("/api/contact", {
         method: "POST",
         body: JSON.stringify(data),
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
       });
 
       if (response.ok) {
         track("contact_form_submitted");
         setStatus("success");
         setMessage("");
-        (e.target as HTMLFormElement).reset();
+        form.reset();
       } else {
         const body = await response.json().catch(() => null);
         setErrorMessage(body?.error ?? null);
@@ -119,19 +59,15 @@ export default function ContactForm(props: { lang: TLocale }) {
     }
   }
 
-  /* -------------------------------- Render UI ------------------------------- */
   if (status === "success") {
     return (
-      <div
-        ref={successCardRef}
-        className="rounded border border-emerald-500/20 bg-emerald-500/5 p-8 text-center"
-      >
-        <h3 className="text-emerald-400 font-bold mb-2">{t.successTitle}</h3>
-        <p className="text-muted-foreground text-sm">{t.successBody}</p>
+      <div className="border-t-2 border-marker pt-6">
+        <p className="eyebrow">{t.successTitle}</p>
+        <p className="display-sm mt-4 text-balance">{t.successBody}</p>
         <button
           type="button"
           onClick={() => setStatus("idle")}
-          className="mt-6 min-h-11 px-3 text-xs font-mono text-emerald-400/80 hover:text-emerald-400 underline underline-offset-4"
+          className="btn-fx link-wipe mt-6 text-sm text-muted-foreground hover:text-foreground"
         >
           {t.sendAnother}
         </button>
@@ -140,8 +76,8 @@ export default function ContactForm(props: { lang: TLocale }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-left">
-      {/* Honeypot Section (hidden from real users, catches bots) */}
+    <form onSubmit={handleSubmit} className="text-left">
+      {/* Honeypot — hidden from real users, catches bots. */}
       <input
         type="text"
         name="company"
@@ -151,13 +87,9 @@ export default function ContactForm(props: { lang: TLocale }) {
         className="hidden"
       />
 
-      {/* Name + Email Section */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="flex flex-col gap-1.5">
-          <label
-            htmlFor="name"
-            className="text-[10px] font-mono uppercase text-muted-foreground ml-1"
-          >
+      <div className="grid gap-x-8 gap-y-7 sm:grid-cols-2">
+        <div>
+          <label htmlFor="name" className="eyebrow">
             {t.name}
           </label>
           <input
@@ -168,14 +100,12 @@ export default function ContactForm(props: { lang: TLocale }) {
             maxLength={100}
             autoComplete="name"
             placeholder={t.namePlaceholder}
-            className="bg-background border border-border/60 rounded px-4 py-2.5 text-sm focus:outline-hidden focus:border-primary/50 transition-colors"
+            className="field"
           />
         </div>
-        <div className="flex flex-col gap-1.5">
-          <label
-            htmlFor="email"
-            className="text-[10px] font-mono uppercase text-muted-foreground ml-1"
-          >
+
+        <div>
+          <label htmlFor="email" className="eyebrow">
             {t.email}
           </label>
           <input
@@ -186,24 +116,16 @@ export default function ContactForm(props: { lang: TLocale }) {
             maxLength={254}
             autoComplete="email"
             placeholder={t.emailPlaceholder}
-            className="bg-background border border-border/60 rounded px-4 py-2.5 text-sm focus:outline-hidden focus:border-primary/50 transition-colors"
+            className="field"
           />
         </div>
       </div>
 
-      <div className="flex flex-col gap-1.5">
-        <label
-          htmlFor="projectType"
-          className="ml-1 font-mono text-[10px] uppercase text-muted-foreground"
-        >
+      <div className="mt-7">
+        <label htmlFor="projectType" className="eyebrow">
           {t.projectType}
         </label>
-        <select
-          id="projectType"
-          name="projectType"
-          defaultValue=""
-          className="rounded border border-border/60 bg-background px-4 py-2.5 text-sm text-foreground transition-colors focus:border-primary/50 focus:outline-hidden"
-        >
+        <select id="projectType" name="projectType" defaultValue="" className="field">
           <option value="" disabled>
             {t.projectTypePlaceholder}
           </option>
@@ -215,12 +137,8 @@ export default function ContactForm(props: { lang: TLocale }) {
         </select>
       </div>
 
-      {/* Message Section */}
-      <div className="flex flex-col gap-1.5">
-        <label
-          htmlFor="message"
-          className="text-[10px] font-mono uppercase text-muted-foreground ml-1"
-        >
+      <div className="mt-7">
+        <label htmlFor="message" className="eyebrow">
           {t.message}
         </label>
         <textarea
@@ -232,45 +150,25 @@ export default function ContactForm(props: { lang: TLocale }) {
           value={message}
           onChange={(event) => setMessage(event.currentTarget.value)}
           placeholder={t.messagePlaceholder}
-          className="bg-background border border-border/60 rounded px-4 py-2.5 text-sm focus:outline-hidden focus:border-primary/50 transition-colors resize-none"
+          className="field resize-none"
         />
-        <p className="text-right font-mono text-[10px] text-muted-foreground">
+        <p className="eyebrow mt-2 text-right">
           {message.length.toLocaleString()}/5,000 {t.characterCount}
         </p>
       </div>
 
-      {/* Error Message Section */}
       {status === "error" && (
-        <p
-          role="alert"
-          aria-live="polite"
-          className="text-red-400 text-xs font-mono"
-        >
+        <p role="alert" aria-live="polite" className="mt-6 text-sm text-destructive">
           {errorMessage ?? t.errorFallback}
         </p>
       )}
 
-      {/* Submit Button Section */}
       <button
         disabled={status === "loading"}
         type="submit"
-        className="btn-fx btn-fx-primary mt-2 flex items-center justify-center gap-2 w-full px-6 py-3 bg-primary text-primary-foreground rounded font-mono text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+        className="btn-fx btn-fx-primary mt-9 w-full bg-primary px-6 py-4 text-sm text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:px-12"
       >
-        <span className="text-primary-foreground/60">▸</span>
-        {status === "loading" ? (
-          <span>
-            {sendingLabel}
-            <span
-              ref={loadingDotsRef}
-              aria-hidden
-              className="inline-block w-[3ch] text-left"
-            >
-              ...
-            </span>
-          </span>
-        ) : (
-          t.send
-        )}
+        {status === "loading" ? t.sending : t.send}
       </button>
     </form>
   );

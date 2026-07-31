@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AnimateIn } from "@/components/utils/animations/animate-in";
+import { Container } from "@/components/ui/section";
+import { PageMain } from "@/components/ui/page-header";
+import { Reveal } from "@/components/utils/animations/reveal";
 import { ExternalLinkIcon } from "@/components/utils/icons";
 import { projects, siteConfig } from "@/utils/constants/portfolio.constant";
 import { getProjects } from "@/utils/i18n/content";
@@ -78,11 +80,7 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
   };
 
   return (
-    <main
-      id="main-content"
-      tabIndex={-1}
-      className="flex-1 bg-background px-6 pb-24 pt-32 font-sans"
-    >
+    <PageMain lang={lang}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -90,157 +88,148 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
         }}
       />
 
-      <div className="mx-auto max-w-5xl">
-        <AnimateIn>
-          <Link
-            href={`/${lang}/#projects`}
-            className="mb-8 inline-flex items-center gap-2 font-mono text-xs text-muted-foreground transition-colors hover:text-primary"
-          >
-            <span aria-hidden>←</span>
-            {dict.projects.backToProjects}
-          </Link>
-        </AnimateIn>
+      <Container>
+        {/* ── Head ──────────────────────────────────────────────────────── */}
+        <header className="pt-32 pb-12 sm:pt-40">
+          <Reveal>
+            <Link
+              href={`/${lang}/#projects`}
+              className="btn-fx link-wipe mb-10 inline-block text-sm text-muted-foreground hover:text-foreground"
+            >
+              <span aria-hidden className="mr-2">
+                ←
+              </span>
+              {dict.projects.backToProjects}
+            </Link>
+          </Reveal>
 
-        <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
-          <div>
-            <AnimateIn from="left" distance={40}>
-              <div className="mb-5 flex flex-wrap items-center gap-3">
-                <span className="rounded border border-primary/20 bg-primary/5 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-primary">
-                  {visibilityLabel}
-                </span>
-                <span className="font-mono text-xs text-muted-foreground">
-                  {project.category}
-                </span>
-              </div>
-              <h1 className="text-4xl font-bold leading-tight text-foreground sm:text-5xl lg:text-6xl">
-                {project.title}
-              </h1>
-              <p className="mt-6 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
-                {project.description}
-              </p>
-            </AnimateIn>
-          </div>
+          <Reveal delay={40}>
+            <p className="eyebrow">
+              {project.category}
+              {" · "}
+              <span className="text-marker">{visibilityLabel}</span>
+            </p>
+          </Reveal>
 
-          <AnimateIn from="right" distance={40} delay={0.08}>
-            <ProjectPreview
-              title={project.title}
-              image={project.image}
-              gradient={project.gradient}
-            />
-          </AnimateIn>
-        </div>
+          <Reveal delay={80}>
+            <h1 className="display-lg mt-4 text-balance">{project.title}</h1>
+          </Reveal>
 
+          <Reveal delay={140}>
+            <p className="measure mt-6 text-lg leading-relaxed text-muted-foreground">
+              {project.description}
+            </p>
+          </Reveal>
+        </header>
+
+        {/* ── Plate ─────────────────────────────────────────────────────── */}
+        <Reveal delay={180}>
+          <ProjectPreview
+            title={project.title}
+            image={project.image}
+            gradient={project.gradient}
+          />
+        </Reveal>
+
+        {/* ── Confidentiality notice ────────────────────────────────────── */}
         {project.visibility === "limited" && (
-          <AnimateIn from="up" delay={0.1}>
-            <aside className="mt-12 rounded border border-amber-500/25 bg-amber-500/5 p-5">
-              <p className="font-mono text-xs font-semibold uppercase tracking-wider text-amber-500">
-                {dict.projects.limitedNoticeTitle}
-              </p>
-              <p className="mt-3 text-xs leading-relaxed text-muted-foreground sm:text-sm">
+          <Reveal delay={80}>
+            <aside className="mt-14 border-l-2 border-marker pl-6">
+              <p className="eyebrow">{dict.projects.limitedNoticeTitle}</p>
+              <p className="measure mt-3 leading-relaxed text-muted-foreground">
                 {dict.projects.limitedNotice}
               </p>
             </aside>
-          </AnimateIn>
+          </Reveal>
         )}
 
-        <div className="mt-16 grid gap-6 md:grid-cols-2">
-          <AnimateIn from="up">
-            <section className="h-full rounded border border-border/60 bg-card p-6">
-              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
-                01 / {dict.projects.overview}
-              </p>
-              <h2 className="mt-4 text-xl font-semibold text-foreground">
+        {/* ── Fact rows ─────────────────────────────────────────────────── */}
+        <dl className="mt-16 border-t border-rule">
+          <Reveal>
+            <div className="grid gap-x-10 gap-y-3 border-b border-rule py-8 lg:grid-cols-12">
+              <dt className="eyebrow lg:col-span-3 lg:pt-1">
+                <span className="numeral mr-3">01</span>
                 {dict.projects.overview}
-              </h2>
-              <p className="mt-4 text-sm leading-7 text-muted-foreground">
+              </dt>
+              <dd className="measure leading-relaxed text-foreground lg:col-span-9">
                 {project.description}
-              </p>
-            </section>
-          </AnimateIn>
+              </dd>
+            </div>
+          </Reveal>
 
-          <AnimateIn from="up" delay={0.08}>
-            <section className="h-full rounded border border-border/60 bg-card p-6">
-              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
-                02 / {dict.projects.technologies}
-              </p>
-              <h2 className="mt-4 text-xl font-semibold text-foreground">
+          <Reveal delay={70}>
+            <div className="grid gap-x-10 gap-y-3 border-b border-rule py-8 lg:grid-cols-12">
+              <dt className="eyebrow lg:col-span-3 lg:pt-1">
+                <span className="numeral mr-3">02</span>
                 {dict.projects.technologies}
-              </h2>
-              <div className="mt-5 flex flex-wrap gap-2">
-                {project.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="rounded border border-border/60 bg-background px-2.5 py-1.5 font-mono text-xs text-muted-foreground"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </section>
-          </AnimateIn>
-        </div>
+              </dt>
+              <dd className="lg:col-span-9">
+                <p className="text-lg leading-relaxed text-foreground">
+                  {project.tags.join(" · ")}
+                </p>
+              </dd>
+            </div>
+          </Reveal>
 
-        {project.live && (
-          <AnimateIn from="up" delay={0.12}>
-            <section className="mt-6 rounded border border-border/60 bg-card p-6">
-              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
-                03 / {dict.projects.publicResources}
-              </p>
-              <h2 className="mt-4 text-xl font-semibold text-foreground">
-                {dict.projects.publicResources}
-              </h2>
-              <div className="mt-5 flex flex-wrap gap-3">
-                {project.live && (
+          {project.live && (
+            <Reveal delay={140}>
+              <div className="grid gap-x-10 gap-y-3 border-b border-rule py-8 lg:grid-cols-12">
+                <dt className="eyebrow lg:col-span-3 lg:pt-1">
+                  <span className="numeral mr-3">03</span>
+                  {dict.projects.publicResources}
+                </dt>
+                <dd className="lg:col-span-9">
                   <a
                     href={project.live}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="btn-fx btn-fx-primary inline-flex items-center gap-2 rounded bg-primary px-4 py-2.5 font-mono text-xs text-primary-foreground"
+                    className="btn-fx link-wipe inline-flex items-center gap-2 text-lg"
                   >
                     {dict.projects.liveProduct}
-                    <ExternalLinkIcon className="h-3.5 w-3.5" />
+                    <ExternalLinkIcon className="h-4 w-4" />
                   </a>
-                )}
+                </dd>
               </div>
-            </section>
-          </AnimateIn>
-        )}
-      </div>
-    </main>
+            </Reveal>
+          )}
+        </dl>
+      </Container>
+    </PageMain>
   );
 }
 
-function ProjectPreview(props: {
+/**
+ * The project plate.
+ *
+ * When there is no screenshot it prints the title on plain stock instead of
+ * the old fake browser window — inventing chrome around a project that has no
+ * picture claims more than the page can back up.
+ */
+function ProjectPreview({
+  title,
+  image,
+}: {
   title: string;
   image: string | null;
-  gradient: string;
+  /** Retained for call-site compatibility; the gradient plate was removed. */
+  gradient?: string;
 }) {
-  const { title, image, gradient } = props;
-
   return (
-    <div className="relative aspect-16/10 overflow-hidden rounded border border-border/60 bg-card shadow-2xl shadow-black/10">
+    <figure className="relative aspect-16/10 overflow-hidden border border-rule bg-secondary">
       {image ? (
         <Image
           src={image}
           alt={`${title} preview`}
           fill
           priority
+          sizes="(min-width: 1200px) 76rem, 100vw"
           className="object-cover"
         />
       ) : (
-        <div className={`absolute inset-0 bg-linear-to-br ${gradient}`}>
-          <div className="absolute inset-x-0 top-0 flex h-8 items-center gap-1.5 bg-background/70 px-3 backdrop-blur-sm">
-            <span className="h-2 w-2 rounded-full bg-red-500/70" />
-            <span className="h-2 w-2 rounded-full bg-yellow-500/70" />
-            <span className="h-2 w-2 rounded-full bg-green-500/70" />
-          </div>
-          <div className="absolute inset-0 top-8 flex items-center justify-center">
-            <span className="font-mono text-sm text-foreground/70">
-              {title}
-            </span>
-          </div>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="display-md text-muted-foreground">{title}</span>
         </div>
       )}
-    </div>
+    </figure>
   );
 }

@@ -1,142 +1,85 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
-import { gsap, Flip } from "@/components/utils/animations/gsap";
+import { useState } from "react";
 import { ProjectCard } from "@/components/projects/project-card";
+import { Reveal } from "@/components/utils/animations/reveal";
 import type { IProject } from "@/utils/interfaces/portfolio";
 import type { TProjectCategory } from "@/utils/types/portfolio";
 import type { TDictionary, TLocale } from "@/utils/i18n";
 
+/**
+ * The project archive with its category filter.
+ *
+ * The filter is a row of words divided by hairlines — a printed index's
+ * "sections" line — with the active one in full ink. It replaces the pill bar
+ * with a GSAP thumb sliding under it.
+ *
+ * Filtering no longer FLIPs the layout either. In a list, a filter changes the
+ * *contents* of one column; there is no meaningful spatial journey for a row
+ * to take from its old slot to its new one, so the FLIP was 60 lines of
+ * animation to communicate nothing. The list simply becomes the new list.
+ */
+
 const CATEGORIES = ["All", "Web", "AI", "Mobile"] as const;
 type TFilter = "All" | TProjectCategory;
 
-export function ProjectExplorer(props: {
+export function ProjectExplorer({
+  projects,
+  dict,
+  lang,
+}: {
   projects: IProject[];
   dict: TDictionary;
   lang: TLocale;
 }) {
-  const { projects, dict, lang } = props;
-
-  /* -------------------------------- All States ------------------------------- */
   const [filter, setFilter] = useState<TFilter>("All");
   const filtered = projects.filter(
     (project) => filter === "All" || project.category === filter,
   );
 
-  /* ---------------------------------- Utils --------------------------------- */
-  const gridRef = useRef<HTMLDivElement>(null);
-  const barRef = useRef<HTMLDivElement>(null);
-  const thumbRef = useRef<HTMLSpanElement>(null);
-  // Layout snapshot taken synchronously in the click handler, consumed by the
-  // layout effect after React re-renders the filtered grid.
-  const flipState = useRef<ReturnType<typeof Flip.getState> | null>(null);
-
-  const motionOK = () =>
-    typeof window !== "undefined" &&
-    window.matchMedia("(prefers-reduced-motion: no-preference)").matches;
-
-  const applyFilter = (category: TFilter) => {
-    if (category === filter) return;
-    if (gridRef.current && motionOK()) {
-      flipState.current = Flip.getState(gridRef.current.children);
-    }
-    setFilter(category);
-  };
-
-  /* --------------------------------- Effects -------------------------------- */
-  // FLIP the grid: surviving cards glide to their new slots, newcomers fade in.
-  // (Cards removed by the filter unmount instantly — React has already dropped
-  // their DOM, so they simply aren't part of the animation.)
-  useLayoutEffect(() => {
-    const state = flipState.current;
-    flipState.current = null;
-    if (!state || !gridRef.current) return;
-    Flip.from(state, {
-      targets: gridRef.current.children,
-      duration: 0.6,
-      ease: "smooth",
-      stagger: 0.02,
-      absolute: true,
-      onEnter: (els) =>
-        gsap.fromTo(
-          els,
-          { opacity: 0, scale: 0.94 },
-          { opacity: 1, scale: 1, duration: 0.45, ease: "smooth" },
-        ),
-    });
-  }, [filter]);
-
-  // Sliding thumb under the active filter — jumps instantly under reduced
-  // motion, glides otherwise. Re-measured on resize.
-  useLayoutEffect(() => {
-    const bar = barRef.current;
-    const thumb = thumbRef.current;
-    if (!bar || !thumb) return;
-
-    const place = (animate: boolean) => {
-      const active = bar.querySelector<HTMLButtonElement>(
-        'button[aria-pressed="true"]',
-      );
-      if (!active) return;
-      const vars = { x: active.offsetLeft, width: active.offsetWidth };
-      if (animate && motionOK()) {
-        gsap.to(thumb, { ...vars, duration: 0.45, ease: "smooth" });
-      } else {
-        gsap.set(thumb, vars);
-      }
-    };
-
-    place(true);
-    const onResize = () => place(false);
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, [filter]);
-
-  /* -------------------------------- Render UI ------------------------------- */
   return (
     <div>
       <div
-        ref={barRef}
-        className="relative mb-10 flex w-fit max-w-full gap-1 overflow-x-auto rounded border border-border/40 bg-card/50 p-1"
+        className="flex flex-wrap items-center gap-x-5 gap-y-2"
         aria-label={dict.projects.filterLabel}
       >
-        {/* Sliding active-state thumb (decorative — state lives on the buttons) */}
-        <span
-          ref={thumbRef}
-          aria-hidden
-          className="absolute left-0 top-1 bottom-1 w-0 rounded bg-primary"
-        />
-        {CATEGORIES.map((category) => (
-          <button
-            key={category}
-            type="button"
-            onClick={() => applyFilter(category)}
-            aria-pressed={filter === category}
-            className={`btn-fx relative z-10 min-h-11 shrink-0 rounded px-4 font-mono text-xs ${
-              filter === category
-                ? "text-primary-foreground"
-                : "text-muted-foreground hover:bg-foreground/5 hover:text-foreground"
-            }`}
-          >
-            {category === "All" ? dict.projects.filterAll : category}
-          </button>
+        {CATEGORIES.map((category, i) => (
+          <span key={category} className="flex items-center gap-5">
+            {i > 0 && <span aria-hidden className="h-3 w-px bg-rule" />}
+            <button
+              type="button"
+              onClick={() => setFilter(category)}
+              aria-pressed={filter === category}
+              className={`btn-fx eyebrow py-1 transition-colors ${
+                filter === category
+                  ? "text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {category === "All" ? dict.projects.filterAll : category}
+            </button>
+          </span>
         ))}
+
+        <span className="eyebrow ml-auto">
+          {filtered.length}/{projects.length}
+        </span>
       </div>
 
       {filtered.length > 0 ? (
-        <div ref={gridRef} className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((project) => (
-            <div key={project.slug} data-flip-id={project.slug}>
+        <div className="mt-8 border-t border-rule">
+          {filtered.map((project, i) => (
+            // Keyed by filter so a changed list re-runs its entrance rather
+            // than inheriting the previous list's already-revealed state.
+            <Reveal key={`${filter}-${project.slug}`} delay={Math.min(i, 6) * 50}>
               <ProjectCard project={project} dict={dict} lang={lang} />
-            </div>
+            </Reveal>
           ))}
         </div>
       ) : (
-        <div className="rounded border border-dashed border-border py-20 text-center">
-          <p className="font-mono text-sm text-muted-foreground">
-            {dict.projects.empty}
-          </p>
-        </div>
+        <p className="mt-8 border-t border-rule py-20 text-center text-muted-foreground">
+          {dict.projects.empty}
+        </p>
       )}
     </div>
   );

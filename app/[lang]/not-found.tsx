@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { ScrambleText } from "@/components/utils/animations/scramble-text";
+import { Container } from "@/components/ui/section";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
 
 export const metadata: Metadata = {
@@ -11,53 +11,45 @@ export const metadata: Metadata = {
 /**
  * not-found boundaries receive no route params, so this page is bilingual and
  * links back to the locale root (the proxy resolves "/" to the right locale).
+ *
+ * The glitching, glowing, RGB-split "404" is gone — an error page is the one
+ * place a reader is already unsettled, and animating the number at them is
+ * decoration where they wanted an exit. The number is now just set large, in
+ * the display face, like a chapter that isn't there.
  */
 export default function NotFound() {
   return (
-    <main id="main-content" tabIndex={-1} className="flex-1 bg-background flex flex-col items-center justify-center px-6 py-32 text-center font-sans">
-      {/* Terminal prompt line — decrypts in on arrival */}
-      <p className="text-primary font-mono text-xs tracking-[0.25em] uppercase mb-6">
-        <ScrambleText text="$ cd ~/page → 404" duration={1.2} />
-      </p>
+    <main id="main-content" tabIndex={-1} className="flex flex-1 items-center">
+      <Container>
+        <div className="grid gap-x-10 gap-y-8 py-32 lg:grid-cols-12">
+          <p className="display-xl leading-none text-muted-foreground lg:col-span-4">
+            404
+          </p>
 
-      {/* Glowing number — with the hero's RGB-split glitch bursts */}
-      <div className="relative select-none mb-8 motion-safe:animate-[glitch_5s_linear_infinite]">
-        <span className="text-[8rem] sm:text-[12rem] font-black text-foreground/10 leading-none">
-          404
-        </span>
-        <span className="absolute inset-0 flex items-center justify-center text-[8rem] sm:text-[12rem] font-black leading-none text-primary opacity-20 blur-sm">
-          404
-        </span>
-      </div>
+          <div className="lg:col-span-7 lg:col-start-6">
+            <h1 className="display-md text-balance">
+              Looks like you&apos;re lost
+            </h1>
 
-      {/* Message */}
-      <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">
-        Looks like you&apos;re lost
-      </h1>
-      <p className="text-muted-foreground text-sm sm:text-base max-w-sm leading-relaxed mb-3">
-        The page you&apos;re looking for doesn&apos;t exist or has been moved.
-        Let&apos;s get you back on track.
-      </p>
-      <p className="text-muted-foreground dark:text-muted-foreground/70 text-sm sm:text-base max-w-sm leading-relaxed mb-10">
-        ទំព័រដែលអ្នកកំពុងស្វែងរកមិនមានទេ ឬត្រូវបានផ្លាស់ទី។
-        តោះនាំអ្នកត្រឡប់ទៅផ្លូវដើមវិញ។
-      </p>
+            <p className="measure mt-6 leading-relaxed text-muted-foreground">
+              The page you&apos;re looking for doesn&apos;t exist or has been
+              moved.
+            </p>
+            <p className="measure mt-3 leading-relaxed text-muted-foreground">
+              ទំព័រដែលអ្នកកំពុងស្វែងរកមិនមានទេ ឬត្រូវបានផ្លាស់ទី។
+            </p>
 
-      {/* CTA */}
-      <Link
-        href="/"
-        className="btn-fx btn-fx-primary group inline-flex items-center gap-2 px-6 py-3 rounded bg-primary text-primary-foreground font-mono text-sm tracking-wide"
-      >
-        <span aria-hidden className="transition-transform group-hover:-translate-x-1">
-          ←
-        </span>
-        Back to home · ត្រឡប់ទៅទំព័រដើម
-      </Link>
+            <Link href="/" className="btn-fx link-wipe mt-10 inline-block">
+              <span aria-hidden className="mr-2">
+                ←
+              </span>
+              Back to home · ត្រឡប់ទៅទំព័រដើម
+            </Link>
 
-      {/* Signature */}
-      <p className="mt-12 text-[10px] font-mono text-muted-foreground/60 tracking-widest uppercase">
-        {siteConfig.name}
-      </p>
+            <p className="eyebrow mt-16">{siteConfig.fullName}</p>
+          </div>
+        </div>
+      </Container>
     </main>
   );
 }

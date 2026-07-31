@@ -1,224 +1,87 @@
-import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
-import { SectionBackdrop } from "@/components/utils/animations/section-backdrop";
-import { ScrambleText } from "@/components/utils/animations/scramble-text";
-import { SplitReveal } from "@/components/utils/animations/split-reveal";
+import { Section, SectionHeader } from "@/components/ui/section";
+import { Reveal } from "@/components/utils/animations/reveal";
 import { getDictionary, type TLocale } from "@/utils/i18n";
 import { getEducations, getTrainingCourses } from "@/utils/i18n/content";
 
-export default function LandingEducation(props: { lang: TLocale }) {
-  /* ---------------------------------- Props --------------------------------- */
-  const { lang } = props;
+/**
+ * Education.
+ *
+ * Same index row as experience — dated sidenote, entry, notes — so the two
+ * sections read as consecutive pages of one document. Training courses follow
+ * as a plain two-column list, since each is a single line and giving them
+ * cards would overstate them.
+ */
+export default function LandingEducation({ lang }: { lang: TLocale }) {
   const dict = getDictionary(lang);
   const educations = getEducations(lang);
   const trainingCourses = getTrainingCourses(lang);
 
-  /* -------------------------------- Render UI ------------------------------- */
   return (
-    <section id="education" className="relative isolate py-16 sm:py-20 lg:py-24 px-6 bg-background">
-      <SectionBackdrop />
+    <Section id="education">
+      <SectionHeader
+        numeral="05"
+        label={dict.sections.education}
+        title={dict.education.heading}
+      />
 
-      <div className="max-w-6xl mx-auto">
-        {/* Heading Section */}
-        <AnimateIn from="zoom-in">
-          <p className="text-primary font-mono text-xs tracking-[0.25em] uppercase mb-1">
-            <ScrambleText text="// education.md" />
-          </p>
-        </AnimateIn>
-
-        <SplitReveal
-          as="h2"
-          type="lines"
-          className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mt-3 mb-12"
-        >
-          {dict.education.heading}
-        </SplitReveal>
-
-        {/* Degree Cards Section */}
-        <StaggerIn
-          className="space-y-5"
-          from="right"
-          distance={60}
-          blur={4}
-          stagger={0.12}
-        >
-          {educations.map((edu) => (
-            <div
-              key={edu.degree}
-              className="card-interactive group rounded border border-border/60 bg-card overflow-hidden"
-            >
-              {/* Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-6 py-5 border-b border-border/50">
-                <div className="flex items-start gap-4">
-                  <div
-                    data-card-icon
-                    className="mt-0.5 shrink-0 w-9 h-9 rounded border border-primary/20 bg-primary/8 flex items-center justify-center"
-                  >
-                    <GraduationCapIcon className="w-4 h-4 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="text-foreground font-semibold text-base leading-snug">
-                      {edu.degree}
-                    </h3>
-                    <p className="text-primary text-xs font-mono mt-0.5">
-                      {edu.institution}
-                    </p>
-                  </div>
-                </div>
-                <div className="sm:text-right shrink-0 pl-13 sm:pl-0">
-                  <span className="inline-block text-muted-foreground text-xs font-mono bg-muted/50 border border-border/50 px-3 py-1 rounded">
-                    {edu.period}
-                  </span>
-                  <p className="text-muted-foreground text-[11px] mt-1.5 flex items-center gap-1 sm:justify-end">
-                    <LocationPinIcon className="w-3 h-3" />
-                    {edu.location}
-                  </p>
-                </div>
+      <div className="mt-16 border-t border-rule">
+        {educations.map((edu, i) => (
+          <Reveal key={edu.degree} delay={i * 70}>
+            <article className="grid gap-x-10 gap-y-3 border-b border-rule py-8 lg:grid-cols-12">
+              <div className="lg:col-span-3">
+                <p className="eyebrow">{edu.period}</p>
+                <p className="eyebrow mt-2">{edu.location}</p>
               </div>
 
-              {/* Body */}
-              <div className="px-6 py-5 space-y-4">
-                <p className="text-muted-foreground text-sm leading-relaxed">
+              <div className="lg:col-span-9">
+                <h3 className="display-sm">{edu.degree}</h3>
+                <p className="mt-1 text-base text-muted-foreground">
+                  {edu.institution}
+                </p>
+                <p className="measure mt-4 leading-relaxed text-muted-foreground">
                   {edu.description}
                 </p>
+
                 {edu.achievements.length > 0 && (
-                  <div className="space-y-2">
+                  <ul className="mt-5 space-y-2">
                     {edu.achievements.map((achievement) => (
-                      <div key={achievement} className="flex items-start gap-2.5">
-                        <TrophyIcon className="w-3.5 h-3.5 text-amber-400 mt-0.5 shrink-0" />
-                        <span className="text-secondary-foreground text-xs">
-                          {achievement}
+                      <li
+                        key={achievement}
+                        className="measure flex gap-3 text-sm leading-relaxed text-foreground"
+                      >
+                        <span aria-hidden className="text-marker">
+                          —
                         </span>
-                      </div>
+                        {achievement}
+                      </li>
                     ))}
-                  </div>
+                  </ul>
                 )}
               </div>
-            </div>
-          ))}
-        </StaggerIn>
-
-        {/* Training Courses Section */}
-        <AnimateIn from="zoom-in" delay={0.1}>
-          <div className="mt-12">
-            <h3 className="text-foreground font-semibold text-sm mb-5 flex items-center gap-2 font-mono">
-              <BookOpenIcon className="w-4 h-4 text-primary" />
-              <span className="text-muted-foreground">{"//"}</span>{" "}
-              {dict.education.trainingCourses}
-            </h3>
-            <StaggerIn
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5"
-              from="zoom-in"
-              stagger={0.05}
-              staggerFrom="random"
-            >
-              {trainingCourses.map((course) => (
-                <div
-                  key={course.title}
-                  className="card-interactive flex flex-col gap-1 px-4 py-3 rounded border border-border/50 bg-card [--card-lift:-2px]"
-                >
-                  <span className="text-foreground text-xs font-medium">
-                    {course.title}
-                  </span>
-                  <span className="text-muted-foreground text-[11px] font-mono">
-                    {course.institution}
-                  </span>
-                </div>
-              ))}
-            </StaggerIn>
-          </div>
-        </AnimateIn>
+            </article>
+          </Reveal>
+        ))}
       </div>
-    </section>
-  );
-}
 
-/* --------------------------------- Utilities -------------------------------- */
-function GraduationCapIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={1.75}
-        d="M12 14l9-5-9-5-9 5 9 5z"
-      />
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={1.75}
-        d="M12 14l6.16-3.422A12.083 12.083 0 0120 17.75V17a2 2 0 00-2-2H6a2 2 0 00-2 2v.75a12.083 12.083 0 011.84-7.172L12 14z"
-      />
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={1.75}
-        d="M12 14v7M5 9.5V17"
-      />
-    </svg>
-  );
-}
-
-function TrophyIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={1.75}
-        d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
-      />
-    </svg>
-  );
-}
-
-function LocationPinIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-      />
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-      />
-    </svg>
-  );
-}
-
-function BookOpenIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={1.75}
-        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-      />
-    </svg>
+      {/* ── Training ──────────────────────────────────────────────────── */}
+      <Reveal delay={120}>
+        <div className="mt-16 grid gap-x-10 gap-y-6 lg:grid-cols-12">
+          <p className="eyebrow lg:col-span-3">
+            {dict.education.trainingCourses}
+          </p>
+          <ul className="lg:col-span-9">
+            {trainingCourses.map((course) => (
+              <li
+                key={course.title}
+                className="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-1 border-b border-rule py-3.5 first:border-t"
+              >
+                <span className="text-base text-foreground">{course.title}</span>
+                <span className="eyebrow">{course.institution}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </Reveal>
+    </Section>
   );
 }

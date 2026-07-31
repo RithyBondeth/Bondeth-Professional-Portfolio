@@ -10,7 +10,9 @@ import { siteConfig } from "@/utils/constants/portfolio.constant";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import Link from "next/link";
-import { AnimateIn } from "@/components/utils/animations/animate-in";
+import { Container } from "@/components/ui/section";
+import { PageMain } from "@/components/ui/page-header";
+import { Reveal, RevealRule } from "@/components/utils/animations/reveal";
 import { BlogCover } from "@/components/blog/blog-cover";
 import { mdxComponents } from "@/components/blog/mdx-components";
 import { TableOfContents } from "@/components/blog/table-of-contents";
@@ -133,9 +135,10 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
-    <main id="main-content" tabIndex={-1} className="flex-1 pt-32 pb-24 px-6 bg-background font-sans">
+    <PageMain lang={lang}>
       <ReadingProgress backToTopLabel={dict.blog.backToTop} />
-      <div className="mx-auto max-w-6xl">
+
+      <Container>
         {/* Structured Data (JSON-LD) */}
         <script
           type="application/ld+json"
@@ -144,62 +147,57 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
           }}
         />
 
-        {/* Back Link Section */}
-        <AnimateIn className="max-w-3xl">
-          <Link
-            href={`/${lang}/blog`}
-            className="text-xs font-mono text-muted-foreground hover:text-primary transition-colors flex items-center gap-2 mb-8 group"
-          >
-            <span className="group-hover:-translate-x-1 transition-transform">
-              ←
-            </span>
-            {dict.blog.backToAll}
-          </Link>
-        </AnimateIn>
+        {/* ── Article head ──────────────────────────────────────────────
+            Kicker, then the title as the page's one display element, then
+            the byline as a single quiet line between two rules. The measure
+            is deliberately narrower than the page: this is running text, and
+            it should never be wider than it is comfortable to read. */}
+        <header className="measure-wide pt-32 pb-10 sm:pt-40">
+          <Reveal>
+            <Link
+              href={`/${lang}/blog`}
+              className="btn-fx link-wipe mb-10 inline-block text-sm text-muted-foreground hover:text-foreground"
+            >
+              <span aria-hidden className="mr-2">
+                ←
+              </span>
+              {dict.blog.backToAll}
+            </Link>
+          </Reveal>
 
-        {/* Post Header Section — editorial order: kicker → title → byline →
-            cover. The category leads as a plain uppercase kicker (the pill it
-            used to sit in fought the title for weight), the title is the hero,
-            and the meta reads as one quiet byline row underneath. */}
-        <AnimateIn delay={0.05} className="max-w-3xl">
-          <p className="mb-4 font-mono text-xs uppercase tracking-[0.25em] text-primary dark:text-primary/70">
-            {post.category}
-          </p>
-          <h1 className="mb-5 text-3xl font-bold leading-tight text-foreground sm:text-4xl lg:text-5xl">
-            {post.title}
-          </h1>
-          <p className="text-base leading-relaxed text-muted-foreground">
-            {post.excerpt}
-          </p>
+          <Reveal delay={40}>
+            <p className="eyebrow">{post.category}</p>
+          </Reveal>
 
-          <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 border-y border-border/40 py-4 font-mono text-xs text-muted-foreground dark:text-muted-foreground/70">
-            <span className="text-foreground">
-              {dict.blog.writtenBy}{" "}
-              <span className="font-semibold">{siteConfig.name}</span>
-            </span>
-            <span aria-hidden className="text-muted-foreground/40">
-              ·
-            </span>
-            <time>
-              {new Date(post.date).toLocaleDateString(
-                lang === "km" ? "km-KH" : "en-US",
-                { month: "long", day: "numeric", year: "numeric" },
-              )}
-            </time>
-            <span aria-hidden className="text-muted-foreground/40">
-              ·
-            </span>
-            <span>
+          <Reveal delay={80}>
+            <h1 className="display-lg mt-4 text-balance">{post.title}</h1>
+          </Reveal>
+
+          <Reveal delay={140}>
+            <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
+              {post.excerpt}
+            </p>
+          </Reveal>
+
+          <Reveal delay={200}>
+            <p className="eyebrow mt-8 border-y border-rule py-4">
+              {dict.blog.writtenBy} {siteConfig.fullName}
+              {" · "}
+              <time dateTime={post.date}>
+                {new Date(post.date).toLocaleDateString(
+                  lang === "km" ? "km-KH" : "en-US",
+                  { month: "long", day: "numeric", year: "numeric" },
+                )}
+              </time>
+              {" · "}
               {post.readingTime} {dict.blog.minRead}
-            </span>
-          </div>
-        </AnimateIn>
+            </p>
+          </Reveal>
 
-        {/* Cover Section — sits under the byline, framing the article rather
-            than shouting above the title. */}
-        <AnimateIn delay={0.1} className="mt-8 mb-10 max-w-3xl">
-          <BlogCover post={post} priority className="aspect-2/1" />
-        </AnimateIn>
+          <Reveal delay={240}>
+            <BlogCover post={post} priority className="mt-10 aspect-2/1 rounded-none border border-rule" />
+          </Reveal>
+        </header>
 
         <TableOfContents
           items={tableOfContents}
@@ -207,13 +205,9 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
           mobile
         />
 
-        <div className="grid gap-12 lg:grid-cols-[minmax(0,768px)_minmax(0,1fr)]">
+        <div className="grid gap-12 lg:grid-cols-[minmax(0,44rem)_minmax(0,1fr)]">
           <div className="min-w-0">
-            {/* Post Content Section */}
-            <AnimateIn
-              delay={0.1}
-              className="prose prose-slate dark:prose-invert max-w-none prose-pre:font-code prose-code:font-code"
-            >
+            <article className="prose max-w-none">
               <MDXRemote
                 source={post.content}
                 components={mdxComponents}
@@ -224,60 +218,63 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
                   },
                 }}
               />
-            </AnimateIn>
+            </article>
 
-            {/* Post Footer Section */}
-            <footer className="mt-16 border-t border-border/40 pt-8">
-              <div className="mb-10 flex flex-wrap items-center gap-2">
+            {/* ── Article foot ────────────────────────────────────────── */}
+            <footer className="mt-20">
+              <RevealRule strong />
+
+              <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2">
                 {post.tags.map((tag) => (
                   <Link
                     key={tag}
                     href={`/${lang}/blog/tags/${slugifyTag(tag)}`}
-                    className="inline-flex min-h-9 items-center rounded border border-border/50 bg-muted/30 px-3 py-1 font-mono text-[11px] text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
+                    className="btn-fx link-wipe text-sm text-muted-foreground hover:text-foreground"
                   >
-                    #{tag}
+                    {tag}
                   </Link>
                 ))}
               </div>
 
-              <BlogShare
-                title={post.title}
-                excerpt={post.excerpt}
-                url={articleUrl}
-                labels={dict.blog.share}
-              />
+              <div className="mt-10">
+                <BlogShare
+                  title={post.title}
+                  excerpt={post.excerpt}
+                  url={articleUrl}
+                  labels={dict.blog.share}
+                />
+              </div>
 
+              {/* Previous / next, set as a running foot rather than two cards. */}
               {(olderPost || newerPost) && (
                 <nav
                   aria-label={`${dict.blog.previousPost} / ${dict.blog.nextPost}`}
-                  className="mb-12 grid gap-3 sm:grid-cols-2"
+                  className="mt-14 grid gap-8 border-t border-rule pt-8 sm:grid-cols-2"
                 >
                   {olderPost ? (
-                    <Link
-                      href={`/${lang}/blog/${olderPost.slug}`}
-                      className="group rounded-lg border border-border/60 bg-card/40 p-4 transition-colors hover:border-primary/40"
-                    >
-                      <span className="mb-2 flex items-center gap-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                        <ArrowLeft aria-hidden className="size-3.5" />
+                    <Link href={`/${lang}/blog/${olderPost.slug}`} className="group">
+                      <span className="eyebrow flex items-center gap-2">
+                        <ArrowLeft aria-hidden className="size-3" />
                         {dict.blog.previousPost}
                       </span>
-                      <span className="line-clamp-2 text-sm font-semibold leading-snug text-foreground group-hover:text-primary">
+                      <span className="mt-2 block text-base leading-snug text-foreground transition-colors group-hover:text-marker">
                         {olderPost.title}
                       </span>
                     </Link>
                   ) : (
                     <span />
                   )}
+
                   {newerPost && (
                     <Link
                       href={`/${lang}/blog/${newerPost.slug}`}
-                      className="group rounded-lg border border-border/60 bg-card/40 p-4 text-right transition-colors hover:border-primary/40"
+                      className="group sm:text-right"
                     >
-                      <span className="mb-2 flex items-center justify-end gap-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                      <span className="eyebrow flex items-center gap-2 sm:justify-end">
                         {dict.blog.nextPost}
-                        <ArrowRight aria-hidden className="size-3.5" />
+                        <ArrowRight aria-hidden className="size-3" />
                       </span>
-                      <span className="line-clamp-2 text-sm font-semibold leading-snug text-foreground group-hover:text-primary">
+                      <span className="mt-2 block text-base leading-snug text-foreground transition-colors group-hover:text-marker">
                         {newerPost.title}
                       </span>
                     </Link>
@@ -285,70 +282,63 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
                 </nav>
               )}
 
-              {/* Related Posts Section */}
               {relatedPosts.length > 0 && (
-                <AnimateIn className="mb-10">
-                  <p className="text-primary font-mono text-xs tracking-[0.25em] uppercase mb-6">
-                    <span className="text-muted-foreground">{"//"}</span>{" "}
-                    {dict.blog.relatedPosts}
-                  </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                    {relatedPosts.map((related) => (
-                      <article key={related.slug} className="group">
-                        <Link
-                          href={`/${lang}/blog/${related.slug}`}
-                          className="block"
-                        >
-                          <BlogCover
-                            post={related}
-                            className="aspect-2/1 mb-3 transition-colors group-hover:border-primary/40"
-                          />
-                          <div className="flex items-center gap-2 text-[10px] font-mono text-muted-foreground dark:text-muted-foreground/60 mb-1.5">
-                            <time>
-                              {new Date(related.date).toLocaleDateString(
-                                lang === "km" ? "km-KH" : "en-US",
-                                {
-                                  month: "short",
-                                  day: "numeric",
-                                  year: "numeric",
-                                },
-                              )}
-                            </time>
-                            <span
-                              aria-hidden
-                              className="text-muted-foreground/40"
-                            >
-                              ·
-                            </span>
-                            <span>
-                              {related.readingTime} {dict.blog.minRead}
-                            </span>
-                          </div>
-                          <h3 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors leading-snug line-clamp-2">
-                            {related.title}
-                          </h3>
-                        </Link>
-                      </article>
+                <section className="mt-16 border-t border-rule pt-8">
+                  <p className="eyebrow">{dict.blog.relatedPosts}</p>
+                  <ul className="mt-4">
+                    {relatedPosts.map((related, i) => (
+                      <li key={related.slug}>
+                        <Reveal delay={i * 60}>
+                          <Link
+                            href={`/${lang}/blog/${related.slug}`}
+                            className="group flex items-start gap-5 border-b border-rule py-5"
+                          >
+                            <BlogCover
+                              post={related}
+                              className="aspect-[4/3] w-20 shrink-0 rounded-none border border-rule"
+                            />
+                            <div className="min-w-0">
+                              <p className="eyebrow">
+                                <time dateTime={related.date}>
+                                  {new Date(related.date).toLocaleDateString(
+                                    lang === "km" ? "km-KH" : "en-US",
+                                    {
+                                      month: "short",
+                                      day: "numeric",
+                                      year: "numeric",
+                                    },
+                                  )}
+                                </time>
+                                {" · "}
+                                {related.readingTime} {dict.blog.minRead}
+                              </p>
+                              <h3 className="mt-1.5 text-base leading-snug text-foreground transition-colors group-hover:text-marker">
+                                {related.title}
+                              </h3>
+                            </div>
+                          </Link>
+                        </Reveal>
+                      </li>
                     ))}
-                  </div>
-                </AnimateIn>
+                  </ul>
+                </section>
               )}
 
               <Link
                 href={`/${lang}/blog`}
-                className="inline-flex items-center gap-2 px-6 py-2.5 bg-card border border-border hover:border-primary/40 rounded text-sm font-mono text-muted-foreground hover:text-foreground transition-all"
+                className="btn-fx link-wipe mt-12 inline-block"
               >
-                ← {dict.blog.viewMore}
+                <span aria-hidden className="mr-2">
+                  ←
+                </span>
+                {dict.blog.viewMore}
               </Link>
             </footer>
           </div>
 
-          <TableOfContents
-            items={tableOfContents}
-            label={dict.blog.onThisPage}
-          />
+          <TableOfContents items={tableOfContents} label={dict.blog.onThisPage} />
         </div>
-      </div>
-    </main>
+      </Container>
+    </PageMain>
   );
 }
