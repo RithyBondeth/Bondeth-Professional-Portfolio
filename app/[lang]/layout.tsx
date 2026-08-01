@@ -10,7 +10,7 @@ import Footer from "@/components/footer";
 import CommandPalette from "@/components/command-palette";
 import { ThemeProvider, ThemeScript } from "@/components/utils/theme/theme-provider";
 import { SmoothScroll } from "@/components/utils/animations/smooth-scroll";
-import { RibbonField } from "@/components/utils/animations/ribbon-field";
+import { GrainField } from "@/components/utils/animations/grain-field";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
 import { locales, hasLocale, getDictionary } from "@/utils/i18n";
 import { getSiteConfig } from "@/utils/i18n/content";
@@ -143,7 +143,7 @@ export default async function RootLayout({
               puts a `transform` on #smooth-content, and a transformed ancestor
               turns `fixed` into "fixed relative to that element", which would
               make this scroll away with the page. */}
-          <RibbonField />
+          <GrainField />
           <a
             href="#main-content"
             className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-100 focus:rounded focus:bg-primary-fill focus:px-4 focus:py-2 focus:font-mono focus:text-sm focus:text-primary-foreground focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring"
