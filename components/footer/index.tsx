@@ -8,7 +8,6 @@ import {
 } from "@/utils/constants/portfolio.constant";
 import { StaggerIn } from "@/components/utils/animations/animate-in";
 import { Magnetic } from "@/components/utils/animations/magnetic";
-import { MarqueeTrack } from "@/components/utils/animations/marquee-track";
 import { scrollToSection } from "@/components/utils/animations/smooth-scroll";
 import {
   GitHubIcon,
@@ -51,36 +50,9 @@ export default function Footer(props: { lang: TLocale }) {
     history.replaceState(null, "", `/${lang}${href.slice(1)}`);
   }
 
-  /* ---------------------------------- Utils --------------------------------- */
-  // Big outline-text sign-off — decorative, duplicated for the -50% marquee
-  // loop.  The name is always Latin so it keeps `font-code`; the title may be
-  // Khmer so it switches to the Khmer font when the locale demands it.
-  const signOffName = `${siteConfig.name} — `;
-  const signOffTitle = `${localized.title} — `;
-
   /* -------------------------------- Render UI ------------------------------- */
   return (
     <footer className="overflow-hidden border-t border-border/50 [--muted-foreground:var(--field-muted-foreground)]">
-      {/* Giant outline marquee sign-off */}
-      <div
-        aria-hidden
-        className="group border-b border-border/40 py-6 select-none"
-      >
-        <MarqueeTrack direction="rtl" duration={40}>
-          {[0, 1].map((copy) => (
-            <span
-              key={copy}
-              className="shrink-0 whitespace-nowrap pr-8 text-6xl font-black uppercase tracking-tight text-transparent [-webkit-text-stroke:1px_var(--border)] transition-[-webkit-text-stroke-color] duration-500 group-hover:[-webkit-text-stroke-color:color-mix(in_oklab,var(--primary)_55%,transparent)] sm:text-7xl"
-            >
-              <span className="font-code">{signOffName.toUpperCase()}</span>
-              <span className="font-(family-name:--font-khmer)">
-                {signOffTitle}
-              </span>
-            </span>
-          ))}
-        </MarqueeTrack>
-      </div>
-
       {/* Main Content Section */}
       <StaggerIn
         from="up"
