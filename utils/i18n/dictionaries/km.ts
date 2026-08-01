@@ -71,6 +71,9 @@ export const km: TDictionary = {
     globe: {
       pinLabel: "ភ្នំពេញ កម្ពុជា",
       photoCaption: "ភ្នំពេញ",
+      // Announced by the globe canvas, which is focusable and rotatable.
+      a11yLabel:
+        "ផែនដីដែលបានសម្គាល់ទីតាំងភ្នំពេញ ប្រទេសកម្ពុជា។ ប្រើគ្រាប់ចុចព្រួញដើម្បីបង្វិល។",
     },
   },
   skills: {

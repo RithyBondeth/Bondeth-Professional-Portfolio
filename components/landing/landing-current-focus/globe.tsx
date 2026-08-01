@@ -36,13 +36,80 @@ const VIEW_LAT_MAX = 70;
 /** Ceiling on flung velocity (deg/s), so a fast flick can't blur the globe. */
 const MAX_FLING = 720;
 
+/** Degrees turned per arrow-key press. Large enough that a few presses get
+    somewhere, small enough to aim with. */
+const KEY_STEP = 12;
+
 /** Photo cards ease in instead of replacing the fallback label in one frame. */
 const PHOTO_REVEAL_RATE = 7;
 
 /** Front-hemisphere dots are bucketed into this many alpha levels for batching. */
 const ALPHA_STEPS = 6;
 
+/** Daylight bands (night / twilight / day) each front dot is sorted into. The
+    terminator therefore costs three fillStyle changes per depth band instead of
+    one per dot — the same batching argument as {@link ALPHA_STEPS}. */
+const DAY_LEVELS = 3;
+/** |cos(sun angle)| under this reads as twilight: a soft ±7° band either side
+    of the day/night line, so the terminator is a gradient and not a cut. */
+const TWILIGHT = 0.12;
+/** Dot brightness multipliers for night / twilight / day.
+    The night floor is deliberately high. A physically honest terminator drops
+    the dark side to roughly a third, which looks superb over the Atlantic and
+    is a real problem here: the globe always settles on Phnom Penh, and Phnom
+    Penh is in darkness for half of every day, so the DEFAULT view would be the
+    illegible one for half the site's visitors. The terminator is worth having
+    as a lighting cue, not as a legibility cliff. */
+const DAY_DIM = [0.7, 0.85, 1] as const;
+
+/** Graticule: degrees between meridians/parallels, and the sampling step along
+    each line. 4° stays smooth at the sizes this actually renders at. */
+const GRAT_SPACING = 30;
+const GRAT_SAMPLE = 4;
+/** Parallels stop here, so the lines don't bunch into a knot at the poles. */
+const GRAT_LAT_LIMIT = 60;
+/** Meridians run past the last parallel but still stop short of the pole. */
+const MERIDIAN_LAT_LIMIT = 80;
+
 const DEG = Math.PI / 180;
+
+/**
+ * The sub-solar point — the spot the sun is directly overhead — at a moment.
+ *
+ * Declination is the standard cosine approximation, and the hour angle assumes
+ * the sun is over Greenwich at 12:00 UTC. Both ignore the equation of time,
+ * which is worth up to ~4° of longitude; at this globe's scale that is a
+ * fraction of one dot, and nobody is navigating by it.
+ */
+function subsolarPoint(at: Date) {
+  const year = at.getUTCFullYear();
+  const dayOfYear =
+    (Date.UTC(year, at.getUTCMonth(), at.getUTCDate()) - Date.UTC(year, 0, 0)) /
+    86400000;
+  const decl =
+    -23.44 * DEG * Math.cos(((2 * Math.PI) / 365.25) * (dayOfYear + 10));
+  const utcHours =
+    at.getUTCHours() + at.getUTCMinutes() / 60 + at.getUTCSeconds() / 3600;
+  // The sun tracks west at 15°/h from 0° at noon UTC.
+  const lon = (12 - utcHours) * 15 * DEG;
+  return {
+    sinDecl: Math.sin(decl),
+    cosDecl: Math.cos(decl),
+    sinLon: Math.sin(lon),
+    cosLon: Math.cos(lon),
+  };
+}
+
+/** Sin/cos tables for a degree sweep — graticule trig, hoisted out of the frame. */
+function trigTable(fromDeg: number, toDeg: number, stepDeg: number) {
+  const sin: number[] = [];
+  const cos: number[] = [];
+  for (let d = fromDeg; d <= toDeg; d += stepDeg) {
+    sin.push(Math.sin(d * DEG));
+    cos.push(Math.cos(d * DEG));
+  }
+  return { sin: Float32Array.from(sin), cos: Float32Array.from(cos) };
+}
 
 /** Pin colour — emerald, echoing the section's live-status ping. */
 const PIN_RGB = "16, 185, 129";
@@ -66,6 +133,13 @@ const ROCK_DEG = 1.6;
  * the globe spins in from the Atlantic, settles over Cambodia, then sways
  * gently so the pin never leaves view.
  *
+ * Three things sell the sphere. A graticule of meridians and parallels sits
+ * under the land, its pen lifting behind the limb. Land dots are shaded by a
+ * real day/night terminator — the sub-solar point is computed from the actual
+ * UTC clock ({@link subsolarPoint}), so the lit half genuinely tracks the sun
+ * and the ambient highlight sits where the sun is. And the disc darkens toward
+ * its edge, so the flat lattice reads as curved.
+ *
  * The pin carries a surveyor-style callout: a leader line from Phnom Penh up
  * into the blank Pacific to the globe's upper right (a land-dot globe leaves
  * oceans empty, so the callout needs no backdrop). When a {@link photo} is
@@ -77,7 +151,8 @@ const ROCK_DEG = 1.6;
  * latitude, a flick throws it with inertia, and after {@link RETURN_DELAY}
  * seconds of stillness it drifts back to the pin. Vertical page scrolling is
  * left alone on touch (`touch-action: pan-y`), so only horizontal drags are
- * captured there.
+ * captured there. Arrow keys turn it by {@link KEY_STEP} and Home returns it to
+ * the pin, so the rotation is not a pointer-only affordance.
  *
  * Behaviour contract (mirrors DotMatrix):
  * - Reduced motion → one settled frame is drawn, then the loop never runs.
@@ -86,17 +161,25 @@ const ROCK_DEG = 1.6;
  * - The loop pauses while offscreen or the tab is hidden.
  * - Rendering is capped at 2× devicePixelRatio.
  * - Colours resolve from the theme tokens and re-resolve when the theme flips.
- * - Purely decorative (the "Based in" card carries the text), so hidden
- *   from AT.
+ * - Given a {@link description} the canvas is announced as a labelled image and
+ *   takes one tab stop; without one the whole thing is hidden from AT as pure
+ *   decoration. It is never both interactive and unreachable.
  */
 export function Globe(props: {
   label?: string;
+  /**
+   * Accessible name for the canvas. Supplying it opts the globe INTO the
+   * accessibility tree and the tab order — pass a localized string, since it is
+   * announced verbatim and also has to carry the arrow-key hint. Omit it and
+   * the globe stays `aria-hidden` decoration.
+   */
+  description?: string;
   /** Optional polaroid pinned to the location. Decorative — the "Based in"
       card carries the same information as text. */
   photo?: { src: string; caption?: string };
   className?: string;
 }) {
-  const { label, photo, className } = props;
+  const { label, description, photo, className } = props;
   const photoSrc = photo?.src;
   const photoCaption = photo?.caption;
 
@@ -159,9 +242,35 @@ export function Globe(props: {
     const sinPinLat = Math.sin(PIN_LAT * DEG);
     const cosPinLat = Math.cos(PIN_LAT * DEG);
 
-    /* One reusable scratch list per alpha bucket, so a draw sets fillStyle
-       once per level instead of once per dot (same trick as DotMatrix). */
-    const buckets: number[][] = Array.from({ length: ALPHA_STEPS }, () => []);
+    /* Graticule sample tables. The grid never moves relative to the globe, so
+       every sine here is computed once and the per-frame cost is arithmetic. */
+    const alongMeridian = trigTable(
+      -MERIDIAN_LAT_LIMIT,
+      MERIDIAN_LAT_LIMIT,
+      GRAT_SAMPLE,
+    );
+    const alongParallel = trigTable(-180, 180, GRAT_SAMPLE);
+    // -180 to 150: the meridian at +180 is the same line as the one at -180.
+    const meridians = trigTable(-180, 180 - GRAT_SPACING, GRAT_SPACING);
+    const parallels = trigTable(
+      -GRAT_LAT_LIMIT,
+      GRAT_LAT_LIMIT,
+      GRAT_SPACING,
+    );
+
+    /* The terminator needs refreshing on the order of minutes — the sun moves
+       15° an hour — so it is cached rather than recomputed every frame. */
+    const SUN_TTL_MS = 30000;
+    let sun = subsolarPoint(new Date());
+    let sunAt = Date.now();
+
+    /* One reusable scratch list per (depth × daylight) bucket, so a draw sets
+       fillStyle once per band instead of once per dot (same trick as
+       DotMatrix). */
+    const buckets: number[][] = Array.from(
+      { length: ALPHA_STEPS * DAY_LEVELS },
+      () => [],
+    );
     const backDots: number[] = [];
 
     /* ------------------------------- Colours ------------------------------ */
@@ -236,17 +345,36 @@ export function Globe(props: {
       const sinView = Math.sin(viewLat);
       const cosView = Math.cos(viewLat);
 
-      // A quiet ocean tint and offset highlight make the dot lattice feel like
-      // a sphere without competing with the land or the pinned location.
+      // Refresh the sub-solar point on a slow cadence, not per frame.
+      if (Date.now() - sunAt > SUN_TTL_MS) {
+        sun = subsolarPoint(new Date());
+        sunAt = Date.now();
+      }
+      const { sinDecl, cosDecl, sinLon: sinSub, cosLon: cosSub } = sun;
+
+      // Project the sub-solar point through the same transform as the dots, so
+      // the ambient highlight sits where the sun actually is rather than at a
+      // fixed cosmetic offset. `lit` falls to 0 as the sun rounds the limb.
+      const sunSinD = sinSub * cosV - cosSub * sinV;
+      const sunCosD = cosSub * cosV + sinSub * sinV;
+      const sunX = cosDecl * sunSinD;
+      const sunY = cosView * sinDecl - sinView * cosDecl * sunCosD;
+      const sunZ = sinView * sinDecl + cosView * cosDecl * sunCosD;
+      const lit = Math.max(0, sunZ);
+
+      // A quiet ocean tint and a sun-placed highlight make the dot lattice feel
+      // like a sphere without competing with the land or the pinned location.
+      // The highlight is pulled to 55% of the radius so the gradient stays on
+      // the disc when the sun is near the limb.
       const sphere = ctx.createRadialGradient(
-        cx - R * 0.28,
-        cy - R * 0.34,
+        cx + R * sunX * 0.55,
+        cy - R * sunY * 0.55,
         R * 0.04,
         cx,
         cy,
         R,
       );
-      sphere.addColorStop(0, `rgba(${primary}, 0.13)`);
+      sphere.addColorStop(0, `rgba(${primary}, ${(0.06 + 0.1 * lit).toFixed(3)})`);
       sphere.addColorStop(0.58, `rgba(${primary}, 0.045)`);
       sphere.addColorStop(1, `rgba(${primary}, 0.015)`);
       ctx.fillStyle = sphere;
@@ -270,6 +398,82 @@ export function Globe(props: {
       ctx.arc(cx, cy, R, 0, 2 * Math.PI);
       ctx.stroke();
 
+      /* ------------------------------ Graticule ----------------------------- */
+      /* Meridians and parallels, drawn UNDER the land so the continents stay
+         the subject. Each line is walked as a polyline and the pen lifts
+         wherever the samples pass behind the limb, which is what keeps the far
+         half of each circle from being drawn straight across the disc. */
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      for (let m = 0; m < meridians.sin.length; m++) {
+        // Longitude is fixed along a meridian, so its rotation solves once.
+        const sinD = meridians.sin[m] * cosV - meridians.cos[m] * sinV;
+        const cosD = meridians.cos[m] * cosV + meridians.sin[m] * sinV;
+        let pen = false;
+        for (let i = 0; i < alongMeridian.sin.length; i++) {
+          const sa = alongMeridian.sin[i];
+          const ca = alongMeridian.cos[i];
+          if (sinView * sa + cosView * ca * cosD <= 0.03) {
+            pen = false;
+            continue;
+          }
+          const sx = cx + R * (ca * sinD);
+          const sy = cy - R * (cosView * sa - sinView * ca * cosD);
+          if (pen) ctx.lineTo(sx, sy);
+          else {
+            ctx.moveTo(sx, sy);
+            pen = true;
+          }
+        }
+      }
+      for (let p = 0; p < parallels.sin.length; p++) {
+        const sa = parallels.sin[p];
+        const ca = parallels.cos[p];
+        let pen = false;
+        for (let i = 0; i < alongParallel.sin.length; i++) {
+          const sinD = alongParallel.sin[i] * cosV - alongParallel.cos[i] * sinV;
+          const cosD = alongParallel.cos[i] * cosV + alongParallel.sin[i] * sinV;
+          if (sinView * sa + cosView * ca * cosD <= 0.03) {
+            pen = false;
+            continue;
+          }
+          const sx = cx + R * (ca * sinD);
+          const sy = cy - R * (cosView * sa - sinView * ca * cosD);
+          if (pen) ctx.lineTo(sx, sy);
+          else {
+            ctx.moveTo(sx, sy);
+            pen = true;
+          }
+        }
+      }
+      ctx.strokeStyle = `rgba(${primary}, 0.075)`;
+      ctx.stroke();
+
+      // The equator again, over the top of its faint pass — the one line worth
+      // reading as a reference rather than as texture.
+      ctx.beginPath();
+      {
+        let pen = false;
+        for (let i = 0; i < alongParallel.sin.length; i++) {
+          const sinD = alongParallel.sin[i] * cosV - alongParallel.cos[i] * sinV;
+          const cosD = alongParallel.cos[i] * cosV + alongParallel.sin[i] * sinV;
+          // lat 0 ⇒ sin = 0, cos = 1, so the projection collapses to this.
+          if (cosView * cosD <= 0.03) {
+            pen = false;
+            continue;
+          }
+          const sx = cx + R * sinD;
+          const sy = cy + R * (sinView * cosD);
+          if (pen) ctx.lineTo(sx, sy);
+          else {
+            ctx.moveTo(sx, sy);
+            pen = true;
+          }
+        }
+      }
+      ctx.strokeStyle = `rgba(${primary}, 0.13)`;
+      ctx.stroke();
+
       // Project every land dot and batch both hemispheres. Filling one path per
       // depth band is substantially cheaper than thousands of fillRect calls,
       // especially on high-DPI phones.
@@ -285,7 +489,13 @@ export function Globe(props: {
         const sy = cy - R * y;
         if (z > 0) {
           const level = Math.min(ALPHA_STEPS - 1, Math.floor(z * ALPHA_STEPS));
-          buckets[level].push(sx, sy);
+          // Cosine of the sun's angle at this dot: > 0 lit, < 0 in shadow.
+          // Expanded from cos(lon − subLon) so it reuses the hoisted tables.
+          const cosSun =
+            sinLat[i] * sinDecl +
+            cosLat[i] * cosDecl * (cosLon[i] * cosSub + sinLon[i] * sinSub);
+          const band = cosSun < -TWILIGHT ? 0 : cosSun < TWILIGHT ? 1 : 2;
+          buckets[level * DAY_LEVELS + band].push(sx, sy);
         } else {
           backDots.push(sx, sy);
         }
@@ -303,10 +513,23 @@ export function Globe(props: {
 
       fillDotBatch(backDots, 0.055);
       for (let level = 0; level < ALPHA_STEPS; level++) {
-        const list = buckets[level];
         const alpha = 0.16 + 0.6 * ((level + 0.5) / ALPHA_STEPS) ** 1.4;
-        fillDotBatch(list, alpha);
+        for (let band = 0; band < DAY_LEVELS; band++) {
+          fillDotBatch(buckets[level * DAY_LEVELS + band], alpha * DAY_DIM[band]);
+        }
       }
+
+      // Limb shading. The disc darkens toward its edge, which is what makes a
+      // flat lattice of dots read as a curved surface rather than a sticker.
+      // Drawn over the land so it shades the dots too, but under the pin so the
+      // pinned location stays at full strength.
+      const limb = ctx.createRadialGradient(cx, cy, R * 0.55, cx, cy, R);
+      limb.addColorStop(0, "rgba(0, 0, 0, 0)");
+      limb.addColorStop(1, "rgba(0, 0, 0, 0.2)");
+      ctx.fillStyle = limb;
+      ctx.beginPath();
+      ctx.arc(cx, cy, R, 0, 2 * Math.PI);
+      ctx.fill();
 
       /* --------------------------- Phnom Penh pin --------------------------- */
       const sinD =
@@ -395,17 +618,13 @@ export function Globe(props: {
         ctx.scale(cardScale, cardScale);
 
         // Paper. Kept light in both themes — a polaroid reads as a physical
-        // object, not a surface that follows the theme.
-        ctx.shadowColor = "rgba(0, 0, 0, 0.35)";
-        ctx.shadowBlur = R * 0.09;
-        ctx.shadowOffsetY = R * 0.02;
+        // object, not a surface that follows the theme. No drop shadow: over a
+        // dark globe it read as a grey rectangle floating behind the card
+        // rather than as depth.
         ctx.fillStyle = "#fafaf9";
         ctx.beginPath();
         ctx.rect(0, -cardH, cardW, cardH);
         ctx.fill();
-        ctx.shadowColor = "transparent";
-        ctx.shadowBlur = 0;
-        ctx.shadowOffsetY = 0;
 
         // Photo window, centre-cropped to a square so any source ratio fills it.
         const side = Math.min(photoImg.width, photoImg.height);
@@ -578,6 +797,15 @@ export function Globe(props: {
     let lastY = 0;
     let lastMove = 0;
 
+    /* Fold whatever is left of the intro spin into the offset, so taking hold
+       mid-intro neither jumps nor keeps spinning underneath the user. Shared by
+       the pointer and keyboard paths — either one counts as taking hold. */
+    const foldIntro = () => {
+      if (interacted) return;
+      lonOffset += INTRO_DEG * Math.exp(-elapsedNow * INTRO_RATE);
+      interacted = true;
+    };
+
     const onPointerDown = (e: PointerEvent) => {
       if (pointerId !== null || !e.isPrimary) return;
       pointerId = e.pointerId;
@@ -592,12 +820,7 @@ export function Globe(props: {
       lastMove = e.timeStamp;
       vLon = 0;
       vLat = 0;
-      // Fold whatever is left of the intro spin into the offset, so taking
-      // hold mid-intro neither jumps nor keeps spinning underneath the drag.
-      if (!interacted) {
-        lonOffset += INTRO_DEG * Math.exp(-elapsedNow * INTRO_RATE);
-        interacted = true;
-      }
+      foldIntro();
     };
 
     const onPointerMove = (e: PointerEvent) => {
@@ -644,10 +867,62 @@ export function Globe(props: {
       }
     };
 
+    /* -------------------------- Keyboard handlers -------------------------- */
+    /* Keyboard parity with the drag. The signs match `onPointerMove` so a key
+       press reads as a nudge in that direction — ArrowRight pushes the surface
+       right, exactly as dragging right does. Home returns to the pin.
+       Registered unconditionally: the canvas is only reachable by keyboard when
+       `description` put it in the tab order, so this is inert otherwise. */
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.altKey || e.ctrlKey || e.metaKey) return;
+
+      let dLon = 0;
+      let dLat = 0;
+      switch (e.key) {
+        case "ArrowLeft":
+          dLon = KEY_STEP;
+          break;
+        case "ArrowRight":
+          dLon = -KEY_STEP;
+          break;
+        case "ArrowUp":
+          dLat = -KEY_STEP;
+          break;
+        case "ArrowDown":
+          dLat = KEY_STEP;
+          break;
+        case "Home":
+          break;
+        default:
+          return;
+      }
+
+      // Arrows and Home scroll the page by default; while this canvas holds
+      // focus it owns them.
+      e.preventDefault();
+      foldIntro();
+
+      if (e.key === "Home") {
+        lonOffset = 0;
+        latOffset = 0;
+      } else {
+        lonOffset += dLon;
+        latOffset = clampLat(latOffset + dLat);
+      }
+
+      // A key press is a discrete nudge, never a fling.
+      vLon = 0;
+      vLat = 0;
+      idleSince = elapsedNow;
+      // Reduced motion has no loop to pick this up, so repaint by hand.
+      if (reduceMq.matches) drawSettled();
+    };
+
     canvas.addEventListener("pointerdown", onPointerDown);
     canvas.addEventListener("pointermove", onPointerMove);
     canvas.addEventListener("pointerup", endDrag);
     canvas.addEventListener("pointercancel", endDrag);
+    canvas.addEventListener("keydown", onKeyDown);
 
     const onMotionChange = () => {
       pause();
@@ -680,12 +955,17 @@ export function Globe(props: {
       canvas.removeEventListener("pointermove", onPointerMove);
       canvas.removeEventListener("pointerup", endDrag);
       canvas.removeEventListener("pointercancel", endDrag);
+      canvas.removeEventListener("keydown", onKeyDown);
     };
   }, [label, photoSrc, photoCaption]);
 
   return (
+    // Without a `description` the whole thing is decoration and stays out of the
+    // accessibility tree. With one, only the ornamental layers are hidden and
+    // the canvas below carries the name — an element that answers the pointer
+    // should not be unreachable by keyboard.
     <div
-      aria-hidden
+      aria-hidden={description ? undefined : true}
       className={`relative isolate aspect-square w-full select-none overflow-hidden ${className ?? ""}`}
     >
       <div className="pointer-events-none absolute inset-[8%] rounded-full bg-primary/10 blur-3xl" />
@@ -695,29 +975,13 @@ export function Globe(props: {
       <div className="pointer-events-none absolute left-[26%] top-[13%] size-1 rounded-full bg-foreground/20" />
       <div className="pointer-events-none absolute bottom-[16%] right-[24%] size-1 rounded-full bg-foreground/15" />
 
-      <div className="pointer-events-none absolute left-4 top-4 z-20 flex items-center gap-2 font-mono text-[9px] tracking-[0.16em] text-muted-foreground sm:left-5 sm:top-5 sm:text-[10px]">
-        <span className="relative flex size-1.5">
-          <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-50 motion-reduce:animate-none" />
-          <span className="relative inline-flex size-1.5 rounded-full bg-emerald-500" />
-        </span>
-        11.56°N
-      </div>
-      <span className="pointer-events-none absolute right-4 top-4 z-20 font-mono text-[9px] tracking-[0.16em] text-muted-foreground sm:right-5 sm:top-5 sm:text-[10px]">
-        104.93°E
-      </span>
-
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 z-10 block size-full touch-pan-y cursor-grab font-mono active:cursor-grabbing"
+        role={description ? "img" : undefined}
+        aria-label={description}
+        tabIndex={description ? 0 : undefined}
+        className="absolute inset-0 z-10 block size-full touch-pan-y cursor-grab font-mono active:cursor-grabbing focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
       />
-
-      <span className="pointer-events-none absolute bottom-4 left-4 z-20 font-mono text-[9px] tracking-[0.16em] text-muted-foreground sm:bottom-5 sm:left-5 sm:text-[10px]">
-        UTC+07:00
-      </span>
-      <span className="pointer-events-none absolute bottom-4 right-4 z-20 flex items-center gap-2 font-mono text-[9px] tracking-[0.16em] text-primary sm:bottom-5 sm:right-5 sm:text-[10px]">
-        <span className="h-px w-5 bg-primary/45" />
-        ↔ 360°
-      </span>
     </div>
   );
 }

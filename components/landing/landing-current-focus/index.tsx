@@ -53,6 +53,7 @@ export default function LandingCurrentFocus(props: { lang: TLocale }) {
           <AnimateIn from="right" delay={0.15} distance={40}>
             <Globe
               label={currentFocus.globe.pinLabel}
+              description={currentFocus.globe.a11yLabel}
               photo={{
                 src: "/bondeth-profile.webp",
                 caption: currentFocus.globe.photoCaption,

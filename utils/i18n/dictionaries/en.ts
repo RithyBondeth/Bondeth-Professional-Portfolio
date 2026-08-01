@@ -65,6 +65,9 @@ export const en = {
     globe: {
       pinLabel: "Phnom Penh, Cambodia",
       photoCaption: "Phnom Penh",
+      // Announced by the globe canvas, which is focusable and rotatable.
+      a11yLabel:
+        "Globe pinned on Phnom Penh, Cambodia. Use the arrow keys to rotate it.",
     },
   },
   skills: {
