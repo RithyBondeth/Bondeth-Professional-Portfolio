@@ -392,6 +392,32 @@ html[lang="km"] {
   --font-serif: var(--font-khmer), ui-serif, serif;
 }
 
+/* ── Khmer headings need a floor on line-height, or the glyphs get sliced.
+   Khmer stacks subscript consonants (coeng) below the baseline and diacritics
+   above it, and Kantumruy Pro draws those OUTSIDE its own declared metrics:
+   measured over the 167 Khmer strings on the landing page, ink runs to 0.930em
+   above the baseline against a declared 0.92em ascent, and to 0.468em below
+   against a declared 0.26em descent — a 0.208em overhang the line box knows
+   nothing about.
+
+   A line box of `line-height: L` centres the 1.18em content area, leaving
+   (L - 1.18)/2 of half-leading each side, so clearing the worst descender needs
+   (L - 1.18)/2 >= 0.208 — i.e. L >= 1.596. Anything tighter is fine until
+   something clips, and `SplitReveal` does exactly that: `mask: "lines"` wraps
+   every line in an overflow-hidden box that hugs the line box. Every masked
+   heading on the site is text-3xl/4xl/5xl, whose Tailwind line-heights are
+   1.2 / 1.11 / 1.0 — so the reveal mask cut the tops and tails off every
+   Khmer headline.
+
+   1.65 is the 1.596 floor plus margin for strings not currently on the page
+   (blog headings, future copy). Latin-only headings in this locale just read a
+   little looser, which is the correct trade — Khmer is the reason this locale
+   exists. Unlayered so it beats Tailwind's `leading-*` utilities, which sit in
+   @layer utilities. ── */
+html[lang="km"] :is(h1, h2, h3, h4, h5, h6) {
+  line-height: 1.65;
+}
+
 /* ── Code: JetBrains Mono on a true-black background, in every locale.
    `--font-code` is intentionally never remapped for Khmer, so code stays
    Latin/monospace. Overriding the Tailwind Typography background variables
