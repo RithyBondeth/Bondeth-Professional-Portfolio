@@ -24,7 +24,6 @@ import {
   SiGraphql,
   SiFastapi,
   SiRabbitmq,
-  SiOpenai,
   SiAnthropic,
   SiGooglegemini,
   SiLangchain,
@@ -48,6 +47,7 @@ import {
 } from "react-icons/si";
 import { FaAws } from "react-icons/fa";
 import type { IconType } from "react-icons";
+import { SiOpenai } from "./skill-icon-openai";
 
 const ICON_MAP: Record<string, IconType> = {
   SiTypescript,

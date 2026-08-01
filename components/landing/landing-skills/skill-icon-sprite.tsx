@@ -14,7 +14,6 @@ import {
   SiGraphql,
   SiFastapi,
   SiRabbitmq,
-  SiOpenai,
   SiAnthropic,
   SiGooglegemini,
   SiLangchain,
@@ -39,6 +38,7 @@ import {
 import { FaAws } from "react-icons/fa";
 import type { IconType } from "react-icons";
 import { skillIconId } from "./skill-icon-id";
+import { SiOpenai } from "./skill-icon-openai";
 
 /**
  * The icon components stay on the server. A marquee row repeats each badge

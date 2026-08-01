@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono, Kantumruy_Pro, Noto_Serif } from "next/font/google";
 import { notFound } from "next/navigation";
-import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "../globals.css";
@@ -9,7 +8,7 @@ import { cn } from "@/lib/utils";
 import Nav from "@/components/navbar";
 import Footer from "@/components/footer";
 import CommandPalette from "@/components/command-palette";
-import { ThemeProvider } from "@/components/utils/theme/theme-provider";
+import { ThemeProvider, ThemeScript } from "@/components/utils/theme/theme-provider";
 import { SmoothScroll } from "@/components/utils/animations/smooth-scroll";
 import { RibbonField } from "@/components/utils/animations/ribbon-field";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
@@ -128,16 +127,11 @@ export default async function RootLayout({
       )}
     >
       <body className="isolate min-h-full flex flex-col">
-        {/* Prevent theme flash: Next injects this into <head> before hydration
-            and tracks it across client navigations, so React never encounters a
-            raw script while rebuilding the locale layout. */}
-        <Script
-          id="theme-initializer"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `try{var t=localStorage.getItem('theme');t=t==='light'||t==='dark'?t:'light';document.documentElement.dataset.theme=t;document.documentElement.style.colorScheme=t}catch(e){document.documentElement.dataset.theme='light';document.documentElement.style.colorScheme='light'}`,
-          }}
-        />
+        {/* Prevent theme flash: ThemeScript uses useServerInsertedHTML, so Next
+            flushes this into <head> during SSR only. It is never part of the
+            client-side React tree, so React never encounters a raw <script>
+            while rebuilding the locale layout on a language switch. */}
+        <ThemeScript />
         <ThemeProvider>
           {/* The site's ambient background, mounted ONCE and fixed to the
               viewport. It sits here rather than inside each section on purpose:

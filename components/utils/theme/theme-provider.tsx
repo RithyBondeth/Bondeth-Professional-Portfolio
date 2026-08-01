@@ -8,6 +8,7 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from "react";
+import { useServerInsertedHTML } from "next/navigation";
 
 type Theme = "light" | "dark";
 
@@ -139,4 +140,30 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       {children}
     </ThemeContext.Provider>
   );
+}
+
+/* ----------------------------- Pre-hydration script ----------------------------- */
+const FOUC_SCRIPT = `try{var t=localStorage.getItem('theme');t=t==='light'||t==='dark'?t:'light';document.documentElement.dataset.theme=t;document.documentElement.style.colorScheme=t}catch(e){document.documentElement.dataset.theme='light';document.documentElement.style.colorScheme='light'}`;
+
+/**
+ * Sets `data-theme` on <html> before first paint to prevent a theme flash.
+ *
+ * Injected via `useServerInsertedHTML` instead of `<Script strategy="beforeInteractive">`:
+ * React 19 / Next.js 16 errors when a `<script>` element is created during a
+ * client render, which happens whenever the `[lang]` layout remounts on a
+ * locale navigation. This hook only registers server-side markup — Next.js
+ * flushes it into <head> via `createHeadInsertionTransformStream`, so the
+ * browser executes it during parse but React never renders it on the client.
+ * Across SPA navigations the theme survives on <html> and is re-asserted by
+ * the layout effect in <ThemeProvider>, so this only needs to run per
+ * document load.
+ */
+export function ThemeScript() {
+  useServerInsertedHTML(() => (
+    <script
+      id="theme-initializer"
+      dangerouslySetInnerHTML={{ __html: FOUC_SCRIPT }}
+    />
+  ));
+  return null;
 }
