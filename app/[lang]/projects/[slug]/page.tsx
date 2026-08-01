@@ -132,8 +132,8 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
 
         {project.visibility === "limited" && (
           <AnimateIn from="up" delay={0.1}>
-            <aside className="mt-12 rounded border border-amber-500/25 bg-amber-500/5 p-5">
-              <p className="font-mono text-xs font-semibold uppercase tracking-wider text-amber-500">
+            <aside className="mt-12 rounded border border-status-warning/25 bg-status-warning/5 p-5">
+              <p className="font-mono text-xs font-semibold uppercase tracking-wider text-status-warning">
                 {dict.projects.limitedNoticeTitle}
               </p>
               <p className="mt-3 text-xs leading-relaxed text-muted-foreground sm:text-sm">
@@ -195,7 +195,7 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
                     href={project.live}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="btn-fx btn-fx-primary inline-flex items-center gap-2 rounded bg-primary px-4 py-2.5 font-mono text-xs text-primary-foreground"
+                    className="btn-fx btn-fx-primary inline-flex items-center gap-2 rounded bg-primary-fill px-4 py-2.5 font-mono text-xs text-primary-foreground"
                   >
                     {dict.projects.liveProduct}
                     <ExternalLinkIcon className="h-3.5 w-3.5" />

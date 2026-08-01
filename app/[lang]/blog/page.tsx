@@ -65,7 +65,7 @@ export default async function BlogPage({ params }: IBlogPageProps) {
         </AnimateIn>
 
         <AnimateIn delay={0.1}>
-          <p className="text-muted-foreground text-sm max-w-2xl mb-4 leading-relaxed">
+          <p className="text-field-muted-foreground text-sm max-w-2xl mb-4 leading-relaxed">
             {dict.blog.blurb}
           </p>
         </AnimateIn>
@@ -74,7 +74,7 @@ export default async function BlogPage({ params }: IBlogPageProps) {
         <AnimateIn delay={0.12}>
           <a
             href="/feed.xml"
-            className="inline-flex items-center gap-2 text-xs font-mono text-muted-foreground hover:text-primary transition-colors mb-12"
+            className="inline-flex items-center gap-2 text-xs font-mono text-field-muted-foreground hover:text-primary transition-colors mb-12"
           >
             <span className="text-primary">⚡</span> {dict.blog.subscribeRss}
           </a>

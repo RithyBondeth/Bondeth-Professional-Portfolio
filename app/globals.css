@@ -41,11 +41,19 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
+  --color-field-muted-foreground: var(--field-muted-foreground);
   --color-muted: var(--muted);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-secondary: var(--secondary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-fill: var(--primary-fill);
   --color-primary: var(--primary);
+  --color-status-success: var(--status-success);
+  --color-status-success-surface: var(--status-success-surface);
+  --color-status-warning: var(--status-warning);
+  --color-status-danger: var(--status-danger);
+  --color-technical-surface: var(--technical-surface);
+  --color-technical-surface-elevated: var(--technical-surface-elevated);
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
@@ -68,9 +76,17 @@
      Kantumruy Pro for Khmer; neither remap touches --font-code. */
   --font-mono: var(--font-serif), ui-serif, Georgia, serif;
   /* Near-monochrome, but no longer *pure* grayscale: every neutral carries a
-     few points of blue so the ramp sits with the gradient-wave background
+     few points of blue so the ramp sits with the ribbon-field background
      instead of next to it. Skill logos and the profile.ts code block keep their
      own colours (set outside these tokens).
+
+     THE CONSTRAINT THESE ARE SOLVED AGAINST: the background is no longer a pale
+     sky ramp, it is white → sky blue → ultramarine → iris. Veiled 50% toward
+     white (see VEIL in ribbon-field.tsx) its four bands land at luminance
+     1.000 / 0.689 / 0.481 / 0.373, so the WORST ground any bare text meets is
+     L 0.373 and the best is plain white. Every foreground token below is
+     checked against BOTH ends — against the veiled iris for legibility, and
+     against white so nothing turns into a pale smear on the light bands.
 
      Ink is #16181d, not #0a0a0a. Pure black on near-white is ~20:1 — well past
      what AAA asks for, and the excess is what makes long reading on this page
@@ -87,34 +103,75 @@
      never body copy or headings, which take --foreground. So it can carry the
      brand colour without turning the page's type blue.
 
-     Deep blue rather than the near-black it was: on a sky-blue background a
-     black filled CTA is the heaviest thing on screen and reads as a leftover
-     from the monochrome design. #0b4a7a holds 5.5:1 as text over the darkest
-     wave colour, 9.2:1 over white, and 8.8:1 the other way for
-     --primary-foreground sitting on a filled button. */
-  --primary: #0b4a7a;
+     Chromatic rather than the near-black it was: on a saturated field a black
+     filled CTA is the heaviest thing on screen and reads as a leftover from the
+     monochrome design.
+
+     SKY BLUE, not the ultramarine it briefly was. It picks up the field's
+     second band (#78B8F9) rather than its third and fourth, so the accent reads
+     as the same blue the page opens on instead of competing with the violet
+     end.
+
+     Deep sky, though — and that is forced, not a preference. --primary IS small
+     text (mono eyebrows, nav markers, the resume chip) sitting bare on the
+     field, so it owes 4.5:1, not 3:1. Against the field's true worst ground
+     (L 0.355, box-averaged over 12 frames so the grain counts as texture rather
+     than as a one-pixel floor) that caps it at L 0.040 — anything as bright as
+     the band it is named after would land near 1.2:1 and vanish. #08375d sits
+     at L 0.0357 and holds 4.7:1 there, 12.0:1 over white, and 11.4:1 the other
+     way for --primary-foreground on a filled button. */
+  --primary: #08375d;
   --primary-foreground: #f8f9fb;
+  /* The FILLED-surface half of the accent, split out from --primary.
+
+     --primary is capped at L 0.040 because it has to survive as bare 11px text
+     on the ribbon field, and at that lightness a filled CTA reads as near-black
+     navy rather than as the sky blue it is. A filled button does not inherit
+     that constraint: it paints its own surface, so the only ratio it owes is to
+     its own label. That frees it to be the vivid sky the accent is named after.
+
+     #0d6cb0 holds 5.3:1 for --primary-foreground sitting on it. Use it ONLY
+     where there is a fill under `text-primary-foreground` — the `btn-fx-primary`
+     set. Hairlines, carets, timeline dots and progress bars stay on --primary,
+     because those sit directly on the field and #0d6cb0 scores 2.0:1 there. */
+  --primary-fill: #0d6cb0;
   --secondary: #eef0f5;
   --secondary-foreground: #16181d;
   --muted: #eef0f5;
-  /* Secondary copy now sits on the gradient-wave ribbons, not on bare paper.
-     Where two ribbons overlap the ground reaches ~#9ccef1, and the lighter
-     #5f6470 this used to be scored only ~3.4:1 there — under AA. #4a4f5c holds
-     ~5:1 over that worst case and ~7.9:1 over the plain background. */
-  --muted-foreground: #4a4f5c;
-  --accent: #1268a8;
+  /* Surface-secondary copy gets a genuine hierarchy step from body ink while
+     retaining 5.7:1 against the page neutral. Text that sits directly on the
+     saturated ribbon field uses --field-muted-foreground instead; one token
+     cannot be both quiet on white and AA-safe on the darkest ribbon. */
+  --muted-foreground: #5b6475;
+  --field-muted-foreground: #303546;
+  /* The hover/active partner of --primary, and in the same sky family — the
+     two reading as different families was the old bug, not the ratio. One step
+     lighter (L 0.089 vs 0.036) so the hover move is visible without leaving the
+     hue. */
+  --accent: #0f5590;
   --accent-foreground: #f8f9fb;
   --destructive: oklch(0.577 0.245 27.325);
+  /* Semantic state text. These are deliberately darker than the decorative
+     Tailwind 400/500 shades because they are used for 9–12px labels on light
+     surfaces. Technical panels override them with light-on-dark partners. */
+  --status-success: #047857;
+  --status-success-surface: #ecfdf5;
+  --status-warning: #92400e;
+  --status-danger: #b91c1c;
   /* Darker and cooler than the #e4e7ee it was. Cards are white or
      `bg-background/70`, so where the wave puts a BLUE band behind a card the
      card's own fill already draws the edge — but where it puts a WHITE band
      there, card and ground are nearly the same value and the border is the only
      separator. At #e4e7ee that border scored 1.24:1 against white, so edges
      visibly came and went as the wave drifted underneath. This holds ~2.75:1
-     against white at full strength and ~1.9:1 at the `/60` most cards use. */
-  --border: #9aa8bd;
+     against white at full strength and ~1.9:1 at the `/60` most cards use.
+
+     Shifted a few points violet (#9aa8bd → #9aa4c0) to sit with the ultramarine
+     and iris bands the field now puts behind these cards; the old value read
+     faintly green against them. Still ~2.5:1 on a white card. */
+  --border: #9aa4c0;
   --input: #eceef4;
-  --ring: #0b4a7a;
+  --ring: #08375d;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -123,12 +180,12 @@
   --radius: 0.5rem;
   --sidebar: #ffffff;
   --sidebar-foreground: #16181d;
-  --sidebar-primary: #0b4a7a;
+  --sidebar-primary: #08375d;
   --sidebar-primary-foreground: #f8f9fb;
   --sidebar-accent: #eef0f5;
   --sidebar-accent-foreground: #16181d;
-  --sidebar-border: #9aa8bd;
-  --sidebar-ring: #0b4a7a;
+  --sidebar-border: #9aa4c0;
+  --sidebar-ring: #08375d;
 
   /* Card hover glow. Light mode lifts a card off the page with a soft *dark*
      shadow — the white glow used in dark mode is invisible on a near-white
@@ -140,16 +197,16 @@
      editor windows use (--editor-shadow); the two disagreed for a while, so
      hovering a card went grey while hovering a code window went blue. */
   --card-glow:
-    0 12px 40px rgb(11 74 122 / 0.14), 0 2px 8px rgb(11 74 122 / 0.08);
-  --card-glow-sm: 0 0 0 1px rgb(11 74 122 / 0.05);
-  --card-sheen: rgb(11 74 122 / 0.07);
+    0 12px 40px rgb(8 55 93 / 0.14), 0 2px 8px rgb(8 55 93 / 0.08);
+  --card-glow-sm: 0 0 0 1px rgb(8 55 93 / 0.05);
+  --card-sheen: rgb(8 55 93 / 0.07);
 
   /* Button sheen is the INVERSE of the card sheen: a filled primary button is
      light-on-blue here, so its sheen has to be white to read at all. --btn-wipe
      tints outline buttons, which sit on the page background, so it follows
      --primary instead. */
   --btn-sheen: rgb(255 255 255 / 0.2);
-  --btn-wipe: rgb(11 74 122 / 0.07);
+  --btn-wipe: rgb(8 55 93 / 0.07);
 
   /* ---- Editor windows (see the .editor-* classes further down) ---- */
   /* Translucent rather than solid, and deliberately WITHOUT backdrop-filter:
@@ -166,7 +223,7 @@
   /* Blue-tinted, so the window casts a shadow that belongs to the background it
      is sitting on rather than a neutral grey one dropped on top of it. */
   --editor-shadow:
-    0 24px 60px rgb(11 74 122 / 0.14), 0 2px 8px rgb(11 74 122 / 0.08);
+    0 24px 60px rgb(8 55 93 / 0.14), 0 2px 8px rgb(8 55 93 / 0.08);
 
   /* Syntax. The dark-mode set (violet-400 / sky-300 / emerald-400) is tuned for
      near-black and sits at 2–3:1 on a light panel; these are the same hues
@@ -177,6 +234,21 @@
   --code-string: #047857;
   --code-number: #b45309;
   --code-punct: #4c5566;
+
+  /* Theme-independent media surfaces. Their foreground palette is applied by
+     .technical-palette below so near-black Labs and blog covers never inherit
+     light-theme ink. */
+  --technical-surface: #05060a;
+  --technical-surface-elevated: #07090e;
+  --technical-foreground: #f8f9fb;
+  --technical-muted-foreground: #94a3b8;
+  --technical-primary: #7dd3fc;
+  --technical-border: #2b3a4d;
+  --technical-success: #34d399;
+  --technical-warning: #fcd34d;
+  --technical-danger: #f87171;
+  --inline-code-bg: #e8edf4;
+  --inline-code-foreground: #08375d;
 }
 
 /* ── Dark mode ── */
@@ -187,22 +259,33 @@
      Skill logos and the profile.ts code block keep their own colours. */
   --background: #0a0f18;
   --foreground: #fafafa;
-  --card: #0f1620;
+  /* A visible surface step from #0a0f18 without turning cards into grey slabs. */
+  --card: #142131;
   --card-foreground: #fafafa;
-  --popover: #0f1620;
+  --popover: #142131;
   --popover-foreground: #fafafa;
-  /* The accent, inverted — light sky against the navy, the way #0b4a7a is deep
-     blue against the pale. Holds ~7.6:1 as text over the brightest dark wave
-     colour, and ~13:1 the other way for text on a filled button. */
+  /* The accent, inverted — light indigo against the navy, the way #2e2a75 is
+     deep sky against the pale — the light-theme accent inverted, same hue both
+     themes. Holds 7.6:1 as text over the brightest dark band (#241A5E) and
+     ~13:1 the other way for text on a filled button. */
   --primary: #7dd3fc;
   --primary-foreground: #08121c;
+  /* Dark mode needs no split: a filled button here is already light-on-dark, so
+     --primary is the fill and it is a bright sky. Kept as its own token anyway
+     so the call sites can say `bg-primary-fill` in both themes. */
+  --primary-fill: #7dd3fc;
   --secondary: #141d28;
   --secondary-foreground: #fafafa;
   --muted: #141d28;
-  --muted-foreground: #a1a1a1;
+  --muted-foreground: #9aa4b4;
+  --field-muted-foreground: #a1a1a1;
   --accent: #a5e0fd;
   --accent-foreground: #08121c;
   --destructive: oklch(0.704 0.191 22.216);
+  --status-success: #34d399;
+  --status-success-surface: #052e16;
+  --status-warning: #fcd34d;
+  --status-danger: #f87171;
   --border: #2b3a4d;
   --input: #16202c;
   --ring: #7dd3fc;
@@ -254,6 +337,8 @@
   --code-string: #34d399;
   --code-number: #fcd34d;
   --code-punct: #94a3b8;
+  --inline-code-bg: #07090e;
+  --inline-code-foreground: #7dd3fc;
 }
 
 @layer base {
@@ -329,7 +414,7 @@ html[lang="km"] {
       color-mix(in oklab, var(--primary) 10%, transparent),
       transparent 4.25rem
     ),
-    #07090e;
+    var(--technical-surface-elevated);
   box-shadow:
     0 24px 60px rgb(0 0 0 / 0.28),
     inset 0 1px 0 rgb(255 255 255 / 0.06);
@@ -392,8 +477,8 @@ html[lang="km"] {
 }
 .prose :not(pre) > code {
   font-family: var(--font-code);
-  background-color: #000000;
-  color: var(--primary);
+  background-color: var(--inline-code-bg);
+  color: var(--inline-code-foreground);
   font-weight: 500;
   padding: 0.15em 0.4em;
   border-radius: 0.25rem;
@@ -545,6 +630,25 @@ html[lang="km"] {
 .tok-string  { color: var(--code-string); }
 .tok-number  { color: var(--code-number); }
 .tok-punct   { color: var(--code-punct); }
+
+/* Dark technical media is theme-independent. Rebind the semantic palette at
+   the panel boundary so ordinary utilities such as text-foreground,
+   text-muted-foreground, text-primary, and the status colors remain correct
+   without every descendant needing a dark-only class. */
+.technical-palette {
+  --background: var(--technical-surface-elevated);
+  --foreground: var(--technical-foreground);
+  --card: var(--technical-surface-elevated);
+  --card-foreground: var(--technical-foreground);
+  --muted-foreground: var(--technical-muted-foreground);
+  --primary: var(--technical-primary);
+  --border: var(--technical-border);
+  --input: var(--technical-border);
+  --status-success: var(--technical-success);
+  --status-warning: var(--technical-warning);
+  --status-danger: var(--technical-danger);
+  color: var(--technical-foreground);
+}
 
 /* ── Film-grain noise: apply to an absolutely-positioned, pointer-events-none
    overlay div to give flat dark surfaces a subtle physical texture. ── */
@@ -868,20 +972,12 @@ html[lang="km"] {
 
 /* ── Theme switch: the circular wipe is driven from JS via the View
    Transitions API; disable the default cross-fade so the clip-path reveal
-   is the only animation. Scoped to the theme switch so that other view
-   transitions — notably the language switch — keep their cross-fade. ── */
+   is the only animation. Keep this scoped to the theme switch so ordinary
+   route navigation is unaffected. ── */
 html.theme-switching::view-transition-old(root),
 html.theme-switching::view-transition-new(root) {
   animation: none;
   mix-blend-mode: normal;
-}
-
-/* ── Language switch: the whole [lang] subtree remounts, so cross-fade the
-   old and new page instead of letting it snap. ── */
-html.locale-switching::view-transition-old(root),
-html.locale-switching::view-transition-new(root) {
-  animation-duration: 260ms;
-  animation-timing-function: cubic-bezier(0.625, 0.05, 0, 1);
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -85,7 +85,7 @@ export function LlmEvalLab(props: {
               {labels.suiteHeading}
             </h2>
           </div>
-          <span className="rounded-full border border-emerald-500/20 bg-emerald-500/5 px-3 py-1 font-mono text-[10px] text-emerald-500">
+          <span className="rounded-full border border-status-success/25 bg-status-success/5 px-3 py-1 font-mono text-[10px] text-status-success">
             {labels.localMode}
           </span>
         </div>
@@ -99,7 +99,7 @@ export function LlmEvalLab(props: {
               onClick={() => selectSuite(index)}
               className={`btn-fx btn-fx-chip min-h-11 rounded border px-3 font-mono text-xs ${
                 selectedIndex === index
-                  ? "border-primary bg-primary text-primary-foreground"
+                  ? "border-primary-fill bg-primary-fill text-primary-foreground"
                   : "border-border/60 bg-background text-muted-foreground hover:border-primary/30 hover:text-primary"
               }`}
             >
@@ -140,7 +140,7 @@ export function LlmEvalLab(props: {
           <p
             role="alert"
             aria-live="polite"
-            className="mt-4 font-mono text-xs text-red-400"
+            className="mt-4 font-mono text-xs text-status-danger"
           >
             {error}
           </p>
@@ -152,7 +152,7 @@ export function LlmEvalLab(props: {
             !candidateA.trim() || !candidateB.trim() || status === "loading"
           }
           onClick={runEvaluation}
-          className="mt-6 flex min-h-12 w-full items-center justify-center gap-2 btn-fx btn-fx-primary rounded bg-primary px-5 font-mono text-sm font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-6 flex min-h-12 w-full items-center justify-center gap-2 btn-fx btn-fx-primary rounded bg-primary-fill px-5 font-mono text-sm font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50"
         >
           <span aria-hidden>✓</span>
           {status === "loading" ? labels.running : labels.run}
@@ -161,7 +161,7 @@ export function LlmEvalLab(props: {
 
       <section
         aria-live="polite"
-        className="mt-6 rounded border border-border/60 bg-[#05060a] p-5 sm:p-6"
+        className="technical-palette mt-6 rounded border border-border/60 bg-technical-surface p-5 sm:p-6"
       >
         <p className="font-code text-[10px] uppercase tracking-[0.2em] text-primary">
           02 / evaluation-report
@@ -336,14 +336,14 @@ function ScoreCard(props: {
     <div
       className={`rounded border p-5 ${
         winner
-          ? "border-emerald-500/30 bg-emerald-500/5"
+          ? "border-status-success/30 bg-status-success/5"
           : "border-border/50 bg-black/30"
       }`}
     >
       <div className="flex items-center justify-between gap-3">
         <p className="font-mono text-xs text-muted-foreground">{label}</p>
         {winner && (
-          <span className="rounded bg-emerald-500/10 px-2 py-1 font-mono text-[10px] text-emerald-400">
+          <span className="rounded bg-status-success/10 px-2 py-1 font-mono text-[10px] text-status-success">
             {winnerLabel}
           </span>
         )}
@@ -353,10 +353,10 @@ function ScoreCard(props: {
         <div
           className={`h-full rounded-full ${
             score >= 80
-              ? "bg-emerald-400"
+              ? "bg-status-success"
               : score >= 50
-                ? "bg-amber-400"
-                : "bg-red-400"
+                ? "bg-status-warning"
+                : "bg-status-danger"
           }`}
           style={{ width: `${score}%` }}
         />
@@ -376,8 +376,8 @@ function TestStatus(props: {
       <span
         className={
           passed
-            ? "font-mono text-emerald-400"
-            : "font-mono text-red-400"
+            ? "font-mono text-status-success"
+            : "font-mono text-status-danger"
         }
       >
         {passed ? `✓ ${labels.pass}` : `✕ ${labels.fail}`}

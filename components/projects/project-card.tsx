@@ -68,7 +68,7 @@ export function ProjectCard(props: {
               {project.title}
             </h3>
             {project.visibility !== "public" && (
-              <span className="ml-auto rounded border border-amber-500/20 bg-amber-500/5 px-1.5 py-0.5 text-left font-mono text-[9px] text-amber-500">
+              <span className="ml-auto rounded border border-status-warning/25 bg-status-warning/5 px-1.5 py-0.5 text-left font-mono text-[9px] text-status-warning">
                 {project.visibility === "limited"
                   ? dict.projects.limitedProject
                   : dict.projects.confidentialProject}
@@ -110,13 +110,13 @@ export function ProjectCard(props: {
                 href={project.live}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-fx btn-fx-primary ml-auto flex size-11 items-center justify-center rounded bg-primary text-primary-foreground"
+                className="btn-fx btn-fx-primary ml-auto flex size-11 items-center justify-center rounded bg-primary-fill text-primary-foreground"
                 aria-label={`${dict.projects.demo}: ${project.title}`}
               >
                 <ExternalLinkIcon className="h-3.5 w-3.5" />
               </a>
             ) : project.visibility === "confidential" ? (
-              <span className="ml-auto font-mono text-[10px] text-amber-500">
+              <span className="ml-auto font-mono text-[10px] text-status-warning">
                 {dict.projects.confidentialProject}
               </span>
             ) : (

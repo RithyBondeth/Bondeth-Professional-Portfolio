@@ -343,7 +343,7 @@ function PortraitPanel(props: { alt: string }) {
       </TiltCard>
 
       {/* Caption */}
-      <figcaption className="mt-3 text-[11px] font-mono text-muted-foreground text-center lg:text-left">
+      <figcaption className="mt-3 text-[11px] font-mono text-field-muted-foreground text-center lg:text-left">
         {"// full-stack + AI engineer"}
       </figcaption>
     </figure>
@@ -368,7 +368,7 @@ function StatCard(props: {
   /* -------------------------------- Render UI ------------------------------- */
   return (
     <div className="card-interactive group rounded border border-border/60 bg-background p-5">
-      <p className="text-[10px] font-mono text-muted-foreground mb-3 group-hover:text-primary dark:group-hover:text-primary/60 transition-colors">
+      <p className="text-[10px] font-mono text-field-muted-foreground mb-3 group-hover:text-primary dark:group-hover:text-primary/60 transition-colors">
         <span className="tok-keyword">const</span>{" "}
         <span className="tok-ident">{varName}</span>
       </p>
@@ -376,7 +376,7 @@ function StatCard(props: {
         {count}
         {suffix}
       </div>
-      <div className="text-xs text-muted-foreground">{label}</div>
+      <div className="text-xs text-field-muted-foreground">{label}</div>
     </div>
   );
 }
@@ -459,7 +459,7 @@ export default function LandingAbout(props: { lang: TLocale }) {
               {localized.bio.map((paragraph, i) => (
                 <p
                   key={i}
-                  className="text-muted-foreground leading-relaxed text-sm"
+                  className="text-field-muted-foreground leading-relaxed text-sm"
                 >
                   {paragraph}
                 </p>
@@ -473,7 +473,7 @@ export default function LandingAbout(props: { lang: TLocale }) {
                     href={siteConfig.github}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-block p-1 text-muted-foreground hover:text-primary transition-colors"
+                    className="inline-block p-1 text-field-muted-foreground hover:text-primary transition-colors"
                     aria-label="GitHub"
                   >
                     <GitHubIcon className="w-5 h-5" />
@@ -484,7 +484,7 @@ export default function LandingAbout(props: { lang: TLocale }) {
                     href={siteConfig.linkedin}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-block p-1 text-muted-foreground hover:text-primary transition-colors"
+                    className="inline-block p-1 text-field-muted-foreground hover:text-primary transition-colors"
                     aria-label="LinkedIn"
                   >
                     <LinkedInIcon className="w-5 h-5" />
@@ -495,7 +495,7 @@ export default function LandingAbout(props: { lang: TLocale }) {
                     href={siteConfig.facebook}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-block p-1 text-muted-foreground hover:text-primary transition-colors"
+                    className="inline-block p-1 text-field-muted-foreground hover:text-primary transition-colors"
                     aria-label="Facebook"
                   >
                     <FacebookIcon className="w-5 h-5" />
@@ -506,7 +506,7 @@ export default function LandingAbout(props: { lang: TLocale }) {
                     href={siteConfig.instagram}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-block p-1 text-muted-foreground hover:text-primary transition-colors"
+                    className="inline-block p-1 text-field-muted-foreground hover:text-primary transition-colors"
                     aria-label="Instagram"
                   >
                     <InstagramIcon className="w-5 h-5" />

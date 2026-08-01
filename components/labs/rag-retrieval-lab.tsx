@@ -68,7 +68,7 @@ export function RagRetrievalLab(props: {
               {labels.queryHeading}
             </h2>
           </div>
-          <span className="rounded-full border border-emerald-500/20 bg-emerald-500/5 px-3 py-1 font-mono text-[10px] text-emerald-500">
+          <span className="rounded-full border border-status-success/25 bg-status-success/5 px-3 py-1 font-mono text-[10px] text-status-success">
             {labels.localMode}
           </span>
         </div>
@@ -113,7 +113,7 @@ export function RagRetrievalLab(props: {
           <p
             role="alert"
             aria-live="polite"
-            className="mt-4 font-mono text-xs text-red-400"
+            className="mt-4 font-mono text-xs text-status-danger"
           >
             {error}
           </p>
@@ -123,7 +123,7 @@ export function RagRetrievalLab(props: {
           type="button"
           disabled={!query.trim() || status === "loading"}
           onClick={runRetrieval}
-          className="mt-6 flex min-h-12 w-full items-center justify-center gap-2 btn-fx btn-fx-primary rounded bg-primary px-5 font-mono text-sm font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-6 flex min-h-12 w-full items-center justify-center gap-2 btn-fx btn-fx-primary rounded bg-primary-fill px-5 font-mono text-sm font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50"
         >
           <span aria-hidden>⌕</span>
           {status === "loading" ? labels.searching : labels.search}
@@ -150,7 +150,7 @@ export function RagRetrievalLab(props: {
 
       <section
         aria-live="polite"
-        className="rounded border border-border/60 bg-[#05060a] p-5 sm:p-6"
+        className="technical-palette rounded border border-border/60 bg-technical-surface p-5 sm:p-6"
       >
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
@@ -199,8 +199,8 @@ export function RagRetrievalLab(props: {
             </p>
           </div>
         ) : result.chunks.length === 0 ? (
-          <div className="mt-5 rounded border border-amber-500/20 bg-amber-500/5 p-6 text-center">
-            <p className="text-sm text-amber-400">{labels.noMatches}</p>
+          <div className="mt-5 rounded border border-status-warning/20 bg-status-warning/5 p-6 text-center">
+            <p className="text-sm text-status-warning">{labels.noMatches}</p>
           </div>
         ) : (
           <div className="mt-5 space-y-3">
@@ -219,12 +219,12 @@ export function RagRetrievalLab(props: {
                     </h3>
                   </div>
                   <div className="shrink-0 text-right">
-                    <span className="font-mono text-xs text-emerald-400">
+                    <span className="font-mono text-xs text-status-success">
                       {Math.round(chunk.score * 100)}%
                     </span>
                     <div className="mt-1 h-1.5 w-16 overflow-hidden rounded-full bg-border">
                       <div
-                        className="h-full rounded-full bg-emerald-400"
+                        className="h-full rounded-full bg-status-success"
                         style={{ width: `${chunk.score * 100}%` }}
                       />
                     </div>

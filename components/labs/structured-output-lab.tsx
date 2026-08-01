@@ -78,7 +78,7 @@ export function StructuredOutputLab(props: {
               {labels.inputHeading}
             </h2>
           </div>
-          <span className="rounded-full border border-emerald-500/20 bg-emerald-500/5 px-3 py-1 font-mono text-[10px] text-emerald-500">
+          <span className="rounded-full border border-status-success/25 bg-status-success/5 px-3 py-1 font-mono text-[10px] text-status-success">
             {labels.localMode}
           </span>
         </div>
@@ -123,7 +123,7 @@ export function StructuredOutputLab(props: {
           <p
             role="alert"
             aria-live="polite"
-            className="mt-4 font-mono text-xs text-red-400"
+            className="mt-4 font-mono text-xs text-status-danger"
           >
             {error}
           </p>
@@ -133,7 +133,7 @@ export function StructuredOutputLab(props: {
           type="button"
           disabled={!input.trim() || status === "loading"}
           onClick={runExtraction}
-          className="mt-6 flex min-h-12 w-full items-center justify-center gap-2 btn-fx btn-fx-primary rounded bg-primary px-5 font-mono text-sm font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-6 flex min-h-12 w-full items-center justify-center gap-2 btn-fx btn-fx-primary rounded bg-primary-fill px-5 font-mono text-sm font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50"
         >
           <span aria-hidden>▸</span>
           {status === "loading" ? labels.running : labels.run}
@@ -142,7 +142,7 @@ export function StructuredOutputLab(props: {
 
       <section
         aria-live="polite"
-        className="rounded border border-border/60 bg-[#05060a] p-5 sm:p-6"
+        className="technical-palette rounded border border-border/60 bg-technical-surface p-5 sm:p-6"
       >
         <p className="font-code text-[10px] uppercase tracking-[0.2em] text-primary">
           02 / output.json
@@ -173,8 +173,8 @@ export function StructuredOutputLab(props: {
               <span
                 className={`rounded border px-2.5 py-1 font-mono text-[10px] ${
                   result.validation.valid
-                    ? "border-emerald-500/25 bg-emerald-500/5 text-emerald-400"
-                    : "border-amber-500/25 bg-amber-500/5 text-amber-400"
+                    ? "border-status-success/25 bg-status-success/5 text-status-success"
+                    : "border-status-warning/25 bg-status-warning/5 text-status-warning"
                 }`}
               >
                 {result.validation.valid
@@ -191,7 +191,7 @@ export function StructuredOutputLab(props: {
                 className="ml-auto inline-flex items-center gap-1.5 rounded border border-border/60 bg-background px-2.5 py-1 font-mono text-[10px] text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
               >
                 {copied ? (
-                  <Check className="size-3 text-emerald-400" aria-hidden />
+                  <Check className="size-3 text-status-success" aria-hidden />
                 ) : (
                   <Copy className="size-3" aria-hidden />
                 )}
@@ -204,8 +204,8 @@ export function StructuredOutputLab(props: {
             </pre>
 
             {!result.validation.valid && (
-              <div className="mt-4 rounded border border-amber-500/20 bg-amber-500/5 p-4">
-                <p className="font-mono text-[10px] uppercase tracking-wider text-amber-400">
+              <div className="mt-4 rounded border border-status-warning/20 bg-status-warning/5 p-4">
+                <p className="font-mono text-[10px] uppercase tracking-wider text-status-warning">
                   {labels.missingFields}
                 </p>
                 <p className="mt-2 text-xs text-muted-foreground">

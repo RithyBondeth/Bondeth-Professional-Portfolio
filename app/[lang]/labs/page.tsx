@@ -46,7 +46,7 @@ export default async function LabsPage({ params }: ILabsPageProps) {
           <h1 className="mt-3 text-4xl font-bold text-foreground sm:text-5xl">
             {labs.heading}
           </h1>
-          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-field-muted-foreground">
             {labs.blurb}
           </p>
         </AnimateIn>
@@ -54,21 +54,21 @@ export default async function LabsPage({ params }: ILabsPageProps) {
         <AnimateIn from="up" delay={0.08}>
           <article className="card-interactive group mt-12 overflow-hidden rounded border border-border/60 bg-card">
             <div className="grid md:grid-cols-[0.8fr_1.2fr]">
-              <div className="relative min-h-56 overflow-hidden bg-[radial-gradient(circle_at_30%_30%,rgba(148,162,255,0.18),transparent_45%),radial-gradient(circle_at_70%_70%,rgba(178,149,255,0.16),transparent_45%),#05060a] p-6">
+              <div className="technical-palette relative min-h-56 overflow-hidden [background:radial-gradient(circle_at_30%_30%,rgba(148,162,255,0.18),transparent_45%),radial-gradient(circle_at_70%_70%,rgba(178,149,255,0.16),transparent_45%),var(--technical-surface)] p-6">
                 <div className="absolute inset-x-6 top-6 rounded border border-border/40 bg-black/50 p-4 font-code text-[11px] leading-6">
                   <p className="text-muted-foreground">{"{"}</p>
-                  <p className="pl-4 text-emerald-300">
+                  <p className="pl-4 text-status-success">
                     &quot;name&quot;: &quot;Sokha&quot;,
                   </p>
-                  <p className="pl-4 text-emerald-300">
+                  <p className="pl-4 text-status-success">
                     &quot;service&quot;: &quot;AI assistant&quot;,
                   </p>
-                  <p className="pl-4 text-emerald-300">
+                  <p className="pl-4 text-status-success">
                     &quot;urgency&quot;: &quot;high&quot;
                   </p>
                   <p className="text-muted-foreground">
                     {"}"}
-                    <span className="type-caret ml-1 inline-block h-[1.05em] w-[0.5em] translate-y-[0.15em] bg-emerald-300/80" />
+                    <span className="type-caret ml-1 inline-block h-[1.05em] w-[0.5em] translate-y-[0.15em] bg-status-success/80" />
                   </p>
                 </div>
               </div>
@@ -78,7 +78,7 @@ export default async function LabsPage({ params }: ILabsPageProps) {
                   <span className="rounded border border-primary/20 bg-primary/5 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-primary">
                     {labs.experimental}
                   </span>
-                  <span className="rounded border border-emerald-500/20 bg-emerald-500/5 px-2 py-1 font-mono text-[10px] text-emerald-500">
+                  <span className="rounded border border-status-success/25 bg-status-success/5 px-2 py-1 font-mono text-[10px] text-status-success">
                     {labs.costFree}
                   </span>
                 </div>
@@ -90,7 +90,7 @@ export default async function LabsPage({ params }: ILabsPageProps) {
                 </p>
                 <Link
                   href={`/${lang}/labs/structured-output`}
-                  className="btn-fx btn-fx-primary mt-7 inline-flex min-h-11 w-fit items-center gap-2 rounded bg-primary px-4 font-mono text-xs font-medium text-primary-foreground"
+                  className="btn-fx btn-fx-primary mt-7 inline-flex min-h-11 w-fit items-center gap-2 rounded bg-primary-fill px-4 font-mono text-xs font-medium text-primary-foreground"
                 >
                   {labs.openLab}
                   <span aria-hidden data-card-arrow>
@@ -105,7 +105,7 @@ export default async function LabsPage({ params }: ILabsPageProps) {
         <AnimateIn from="up" delay={0.12}>
           <article className="card-interactive group mt-6 overflow-hidden rounded border border-border/60 bg-card">
             <div className="grid md:grid-cols-[0.8fr_1.2fr]">
-              <div className="relative min-h-56 overflow-hidden bg-[radial-gradient(circle_at_70%_25%,rgba(178,149,255,0.2),transparent_40%),radial-gradient(circle_at_25%_75%,rgba(148,162,255,0.16),transparent_42%),#05060a] p-6">
+              <div className="technical-palette relative min-h-56 overflow-hidden [background:radial-gradient(circle_at_70%_25%,rgba(178,149,255,0.2),transparent_40%),radial-gradient(circle_at_25%_75%,rgba(148,162,255,0.16),transparent_42%),var(--technical-surface)] p-6">
                 <LabVignetteFx className="absolute inset-x-6 top-6 space-y-2 font-code text-[10px]">
                   {[92, 76, 48].map((score, index) => (
                     <div
@@ -116,12 +116,12 @@ export default async function LabsPage({ params }: ILabsPageProps) {
                         <span className="text-muted-foreground">
                           chunk_0{index + 1}
                         </span>
-                        <span className="text-emerald-400">{score}%</span>
+                        <span className="text-status-success">{score}%</span>
                       </div>
                       <div className="mt-2 h-1 overflow-hidden rounded bg-border">
                         <div
                           data-lab-bar
-                          className="h-full rounded bg-emerald-400"
+                          className="h-full rounded bg-status-success"
                           style={{ width: `${score}%` }}
                         />
                       </div>
@@ -135,7 +135,7 @@ export default async function LabsPage({ params }: ILabsPageProps) {
                   <span className="rounded border border-primary/20 bg-primary/5 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-primary">
                     {labs.experimental}
                   </span>
-                  <span className="rounded border border-emerald-500/20 bg-emerald-500/5 px-2 py-1 font-mono text-[10px] text-emerald-500">
+                  <span className="rounded border border-status-success/25 bg-status-success/5 px-2 py-1 font-mono text-[10px] text-status-success">
                     {labs.costFree}
                   </span>
                 </div>
@@ -147,7 +147,7 @@ export default async function LabsPage({ params }: ILabsPageProps) {
                 </p>
                 <Link
                   href={`/${lang}/labs/rag-retrieval`}
-                  className="btn-fx btn-fx-primary mt-7 inline-flex min-h-11 w-fit items-center gap-2 rounded bg-primary px-4 font-mono text-xs font-medium text-primary-foreground"
+                  className="btn-fx btn-fx-primary mt-7 inline-flex min-h-11 w-fit items-center gap-2 rounded bg-primary-fill px-4 font-mono text-xs font-medium text-primary-foreground"
                 >
                   {labs.openLab}
                   <span aria-hidden data-card-arrow>
@@ -162,31 +162,31 @@ export default async function LabsPage({ params }: ILabsPageProps) {
         <AnimateIn from="up" delay={0.16}>
           <article className="card-interactive group mt-6 overflow-hidden rounded border border-border/60 bg-card">
             <div className="grid md:grid-cols-[0.8fr_1.2fr]">
-              <div className="relative min-h-56 overflow-hidden bg-[radial-gradient(circle_at_30%_20%,rgba(148,162,255,0.16),transparent_40%),radial-gradient(circle_at_75%_75%,rgba(178,149,255,0.22),transparent_45%),#05060a] p-6">
+              <div className="technical-palette relative min-h-56 overflow-hidden [background:radial-gradient(circle_at_30%_20%,rgba(148,162,255,0.16),transparent_40%),radial-gradient(circle_at_75%_75%,rgba(178,149,255,0.22),transparent_45%),var(--technical-surface)] p-6">
                 <LabVignetteFx className="absolute inset-x-6 top-8 grid grid-cols-2 gap-3 font-code">
                   <div
                     data-lab-tile
-                    className="rounded border border-emerald-500/30 bg-emerald-500/5 p-4 text-center"
+                    className="rounded border border-status-success/30 bg-status-success/5 p-4 text-center"
                   >
                     <p className="text-[10px] text-muted-foreground">
                       candidate_A
                     </p>
-                    <p className="mt-3 text-3xl font-bold text-emerald-400">
+                    <p className="mt-3 text-3xl font-bold text-status-success">
                       100%
                     </p>
-                    <p className="mt-2 text-[10px] text-emerald-400">
+                    <p className="mt-2 text-[10px] text-status-success">
                       4/4 passed
                     </p>
                   </div>
                   <div
                     data-lab-tile
-                    className="rounded border border-red-500/25 bg-red-500/5 p-4 text-center"
+                    className="rounded border border-status-danger/25 bg-status-danger/5 p-4 text-center"
                   >
                     <p className="text-[10px] text-muted-foreground">
                       candidate_B
                     </p>
-                    <p className="mt-3 text-3xl font-bold text-red-400">20%</p>
-                    <p className="mt-2 text-[10px] text-red-400">1/4 passed</p>
+                    <p className="mt-3 text-3xl font-bold text-status-danger">20%</p>
+                    <p className="mt-2 text-[10px] text-status-danger">1/4 passed</p>
                   </div>
                 </LabVignetteFx>
               </div>
@@ -196,7 +196,7 @@ export default async function LabsPage({ params }: ILabsPageProps) {
                   <span className="rounded border border-primary/20 bg-primary/5 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-primary">
                     {labs.experimental}
                   </span>
-                  <span className="rounded border border-emerald-500/20 bg-emerald-500/5 px-2 py-1 font-mono text-[10px] text-emerald-500">
+                  <span className="rounded border border-status-success/25 bg-status-success/5 px-2 py-1 font-mono text-[10px] text-status-success">
                     {labs.costFree}
                   </span>
                 </div>
@@ -208,7 +208,7 @@ export default async function LabsPage({ params }: ILabsPageProps) {
                 </p>
                 <Link
                   href={`/${lang}/labs/llm-evals`}
-                  className="btn-fx btn-fx-primary mt-7 inline-flex min-h-11 w-fit items-center gap-2 rounded bg-primary px-4 font-mono text-xs font-medium text-primary-foreground"
+                  className="btn-fx btn-fx-primary mt-7 inline-flex min-h-11 w-fit items-center gap-2 rounded bg-primary-fill px-4 font-mono text-xs font-medium text-primary-foreground"
                 >
                   {labs.openLab}
                   <span aria-hidden data-card-arrow>

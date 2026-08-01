@@ -36,6 +36,9 @@ const VIEW_LAT_MAX = 70;
 /** Ceiling on flung velocity (deg/s), so a fast flick can't blur the globe. */
 const MAX_FLING = 720;
 
+/** Photo cards ease in instead of replacing the fallback label in one frame. */
+const PHOTO_REVEAL_RATE = 7;
+
 /** Front-hemisphere dots are bucketed into this many alpha levels for batching. */
 const ALPHA_STEPS = 6;
 
@@ -108,7 +111,7 @@ export function Globe(props: {
     let raf = 0;
     let running = false;
     let visible = true;
-    let start = 0;
+    let lastTick = 0;
     let w = 0;
     let h = 0;
 
@@ -129,7 +132,6 @@ export function Globe(props: {
        their own) and by the inertia/return integrator. */
     let elapsedNow = 0;
     let idleSince = 0;
-    let lastFrame = 0;
     /* Globe radius from the last draw — drag distance is measured in radii so
        the same gesture turns the globe equally at any size. */
     let lastR = 1;
@@ -160,6 +162,7 @@ export function Globe(props: {
     /* One reusable scratch list per alpha bucket, so a draw sets fillStyle
        once per level instead of once per dot (same trick as DotMatrix). */
     const buckets: number[][] = Array.from({ length: ALPHA_STEPS }, () => []);
+    const backDots: number[] = [];
 
     /* ------------------------------- Colours ------------------------------ */
     /* Theme tokens resolve through the canvas's computed style, so any format
@@ -192,6 +195,7 @@ export function Globe(props: {
     /* Decoded off the main thread; the callout renders as text until it lands,
        so a slow image never blocks or pops the globe. */
     let photoImg: HTMLImageElement | null = null;
+    let photoReadyAt: number | null = null;
     if (photoSrc) {
       const img = new window.Image();
       img.decoding = "async";
@@ -200,6 +204,7 @@ export function Globe(props: {
         .decode()
         .then(() => {
           photoImg = img;
+          photoReadyAt = elapsedNow;
           // The animated path picks it up on the next frame; the static one
           // has to be told to repaint.
           if (reduceMq.matches) drawSettled();
@@ -231,6 +236,24 @@ export function Globe(props: {
       const sinView = Math.sin(viewLat);
       const cosView = Math.cos(viewLat);
 
+      // A quiet ocean tint and offset highlight make the dot lattice feel like
+      // a sphere without competing with the land or the pinned location.
+      const sphere = ctx.createRadialGradient(
+        cx - R * 0.28,
+        cy - R * 0.34,
+        R * 0.04,
+        cx,
+        cy,
+        R,
+      );
+      sphere.addColorStop(0, `rgba(${primary}, 0.13)`);
+      sphere.addColorStop(0.58, `rgba(${primary}, 0.045)`);
+      sphere.addColorStop(1, `rgba(${primary}, 0.015)`);
+      ctx.fillStyle = sphere;
+      ctx.beginPath();
+      ctx.arc(cx, cy, R, 0, 2 * Math.PI);
+      ctx.fill();
+
       // Atmosphere halo + limb shading give the flat dots a sense of volume.
       const halo = ctx.createRadialGradient(cx, cy, R * 0.55, cx, cy, R * 1.16);
       halo.addColorStop(0, `rgba(${primary}, 0.05)`);
@@ -247,10 +270,11 @@ export function Globe(props: {
       ctx.arc(cx, cy, R, 0, 2 * Math.PI);
       ctx.stroke();
 
-      // Project every land dot; bucket the front hemisphere by depth-alpha and
-      // draw the back hemisphere immediately as one faint pass.
+      // Project every land dot and batch both hemispheres. Filling one path per
+      // depth band is substantially cheaper than thousands of fillRect calls,
+      // especially on high-DPI phones.
       for (const b of buckets) b.length = 0;
-      ctx.fillStyle = `rgba(${primary}, 0.07)`;
+      backDots.length = 0;
       for (let i = 0; i < n; i++) {
         const sinD = sinLon[i] * cosV - cosLon[i] * sinV;
         const cosD = cosLon[i] * cosV + sinLon[i] * sinV;
@@ -263,17 +287,25 @@ export function Globe(props: {
           const level = Math.min(ALPHA_STEPS - 1, Math.floor(z * ALPHA_STEPS));
           buckets[level].push(sx, sy);
         } else {
-          ctx.fillRect(sx - dot / 2, sy - dot / 2, dot, dot);
+          backDots.push(sx, sy);
         }
       }
+
+      const fillDotBatch = (list: number[], alpha: number) => {
+        if (!list.length) return;
+        ctx.fillStyle = `rgba(${primary}, ${alpha})`;
+        ctx.beginPath();
+        for (let k = 0; k < list.length; k += 2) {
+          ctx.rect(list[k] - dot / 2, list[k + 1] - dot / 2, dot, dot);
+        }
+        ctx.fill();
+      };
+
+      fillDotBatch(backDots, 0.055);
       for (let level = 0; level < ALPHA_STEPS; level++) {
         const list = buckets[level];
-        if (!list.length) continue;
         const alpha = 0.16 + 0.6 * ((level + 0.5) / ALPHA_STEPS) ** 1.4;
-        ctx.fillStyle = `rgba(${primary}, ${alpha.toFixed(3)})`;
-        for (let k = 0; k < list.length; k += 2) {
-          ctx.fillRect(list[k] - dot / 2, list[k + 1] - dot / 2, dot, dot);
-        }
+        fillDotBatch(list, alpha);
       }
 
       /* --------------------------- Phnom Penh pin --------------------------- */
@@ -328,6 +360,13 @@ export function Globe(props: {
          sway. It rotates about the tethered corner, so the leader line always
          meets the card exactly whatever the tilt. */
       if (photoImg) {
+        const photoReveal = reduceMq.matches
+          ? 1
+          : 1 -
+            Math.exp(
+              -PHOTO_REVEAL_RATE *
+                Math.max(0, elapsed - (photoReadyAt ?? elapsed)),
+            );
         const cardW = R * CARD_W;
         const pad = cardW * CARD_PAD;
         const inner = cardW - pad * 2;
@@ -339,7 +378,7 @@ export function Globe(props: {
         const ax = Math.min(Math.max(px + R * 0.16, 4), w - cardW - 6);
         const ay = Math.min(Math.max(py - R * 0.06, cardH + 8), h - 4);
 
-        ctx.strokeStyle = `rgba(${PIN_RGB}, ${0.5 * reveal})`;
+        ctx.strokeStyle = `rgba(${PIN_RGB}, ${0.5 * reveal * photoReveal})`;
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(px + 3, py - 3);
@@ -347,9 +386,13 @@ export function Globe(props: {
         ctx.stroke();
 
         ctx.save();
-        ctx.globalAlpha = reveal;
+        ctx.globalAlpha = reveal * photoReveal;
         ctx.translate(ax, ay);
-        ctx.rotate((CARD_TILT + ROCK_DEG * (sway / SWAY_DEG)) * DEG);
+        ctx.rotate(
+          (CARD_TILT + ROCK_DEG * (sway / SWAY_DEG)) * DEG * photoReveal,
+        );
+        const cardScale = 0.94 + photoReveal * 0.06;
+        ctx.scale(cardScale, cardScale);
 
         // Paper. Kept light in both themes — a polaroid reads as a physical
         // object, not a surface that follows the theme.
@@ -440,10 +483,7 @@ export function Globe(props: {
     /* Runs once per frame between draws: coasts the flung velocity down, then
        (once the user has been still a beat) eases the offsets back to the pin.
        Both use exponential decay, matching the intro spin's feel. */
-    const advance = (elapsed: number) => {
-      const dt = Math.min(0.05, elapsed - lastFrame);
-      lastFrame = elapsed;
-      elapsedNow = elapsed;
+    const advance = (elapsed: number, dt: number) => {
       if (dragging || dt <= 0) return;
 
       if (vLon || vLat) {
@@ -473,24 +513,25 @@ export function Globe(props: {
     /* ------------------------------ Lifecycle ------------------------------ */
     const loop = (now: number) => {
       if (!running) return;
-      if (!start) start = now;
-      const elapsed = (now - start) / 1000;
-      advance(elapsed);
-      draw(elapsed);
+      const dt = lastTick ? Math.min(0.05, (now - lastTick) / 1000) : 0;
+      lastTick = now;
+      elapsedNow += dt;
+      advance(elapsedNow, dt);
+      draw(elapsedNow);
       raf = requestAnimationFrame(loop);
     };
 
     const play = () => {
       if (running || reduceMq.matches || !visible) return;
       running = true;
+      lastTick = 0;
       raf = requestAnimationFrame(loop);
     };
 
     const pause = () => {
       running = false;
       cancelAnimationFrame(raf);
-      // Drop the origin so the intro spin replays from scratch on resume.
-      start = 0;
+      lastTick = 0;
     };
 
     const drawSettled = () => draw(SETTLED_TIME);
@@ -643,10 +684,40 @@ export function Globe(props: {
   }, [label, photoSrc, photoCaption]);
 
   return (
-    <canvas
-      ref={canvasRef}
+    <div
       aria-hidden
-      className={`block aspect-square w-full touch-pan-y cursor-grab font-mono active:cursor-grabbing ${className ?? ""}`}
-    />
+      className={`relative isolate aspect-square w-full select-none overflow-hidden ${className ?? ""}`}
+    >
+      <div className="pointer-events-none absolute inset-[8%] rounded-full bg-primary/10 blur-3xl" />
+      <div className="pointer-events-none absolute left-[18%] top-[18%] h-[46%] w-[60%] rotate-12 rounded-full bg-[radial-gradient(ellipse_at_center,color-mix(in_oklab,var(--primary)_14%,transparent),transparent_68%)] blur-2xl" />
+      <div className="pointer-events-none absolute right-[12%] top-[23%] size-1 rounded-full bg-primary/45 shadow-[0_0_12px_var(--primary)]" />
+      <div className="pointer-events-none absolute bottom-[27%] left-[10%] size-1.5 rounded-full bg-primary/25 blur-[0.5px]" />
+      <div className="pointer-events-none absolute left-[26%] top-[13%] size-1 rounded-full bg-foreground/20" />
+      <div className="pointer-events-none absolute bottom-[16%] right-[24%] size-1 rounded-full bg-foreground/15" />
+
+      <div className="pointer-events-none absolute left-4 top-4 z-20 flex items-center gap-2 font-mono text-[9px] tracking-[0.16em] text-muted-foreground sm:left-5 sm:top-5 sm:text-[10px]">
+        <span className="relative flex size-1.5">
+          <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-50 motion-reduce:animate-none" />
+          <span className="relative inline-flex size-1.5 rounded-full bg-emerald-500" />
+        </span>
+        11.56°N
+      </div>
+      <span className="pointer-events-none absolute right-4 top-4 z-20 font-mono text-[9px] tracking-[0.16em] text-muted-foreground sm:right-5 sm:top-5 sm:text-[10px]">
+        104.93°E
+      </span>
+
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 z-10 block size-full touch-pan-y cursor-grab font-mono active:cursor-grabbing"
+      />
+
+      <span className="pointer-events-none absolute bottom-4 left-4 z-20 font-mono text-[9px] tracking-[0.16em] text-muted-foreground sm:bottom-5 sm:left-5 sm:text-[10px]">
+        UTC+07:00
+      </span>
+      <span className="pointer-events-none absolute bottom-4 right-4 z-20 flex items-center gap-2 font-mono text-[9px] tracking-[0.16em] text-primary sm:bottom-5 sm:right-5 sm:text-[10px]">
+        <span className="h-px w-5 bg-primary/45" />
+        ↔ 360°
+      </span>
+    </div>
   );
 }

@@ -43,7 +43,7 @@ export default async function RagRetrievalPage({
         <AnimateIn>
           <Link
             href={`/${lang}/labs`}
-            className="inline-flex min-h-11 items-center gap-2 font-mono text-xs text-muted-foreground transition-colors hover:text-primary"
+            className="inline-flex min-h-11 items-center gap-2 font-mono text-xs text-field-muted-foreground transition-colors hover:text-primary"
           >
             <span aria-hidden>←</span>
             {labs.backToLabs}
@@ -53,7 +53,7 @@ export default async function RagRetrievalPage({
             <span className="rounded border border-primary/20 bg-primary/5 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-primary">
               {labs.experimental}
             </span>
-            <span className="rounded border border-emerald-500/20 bg-emerald-500/5 px-2 py-1 font-mono text-[10px] text-emerald-500">
+            <span className="rounded border border-status-success/25 bg-status-success/5 px-2 py-1 font-mono text-[10px] text-status-success">
               {labs.rag.localMode}
             </span>
           </div>
@@ -61,7 +61,7 @@ export default async function RagRetrievalPage({
           <h1 className="mt-5 text-4xl font-bold text-foreground sm:text-5xl">
             {labs.ragTitle}
           </h1>
-          <p className="mt-4 max-w-3xl text-sm leading-relaxed text-muted-foreground">
+          <p className="mt-4 max-w-3xl text-sm leading-relaxed text-field-muted-foreground">
             {labs.rag.intro}
           </p>
         </AnimateIn>

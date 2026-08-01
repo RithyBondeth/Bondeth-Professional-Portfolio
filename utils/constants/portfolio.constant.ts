@@ -5,7 +5,6 @@ import {
   IProject,
   ISiteConfig,
   IEducation,
-  ITrainingCourse,
   IOrganization,
 } from "@/utils/interfaces/portfolio";
 
@@ -260,15 +259,6 @@ export const educations: IEducation[] = [
       "Techo Scholar — merit-based scholarship for outstanding students",
     ],
   },
-];
-
-/* ----------------------------- Training Courses ----------------------------- */
-export const trainingCourses: ITrainingCourse[] = [
-  { title: "Frontend Web Development", institution: "Instinct Institute" },
-  { title: "Backend Web Development", institution: "Instinct Institute" },
-  { title: "Mobile App Development", institution: "Instinct Institute" },
-  { title: "Web Development with Next.js", institution: "Sabai Code" },
-  { title: "Python for Data Science", institution: "Sabai Code" },
 ];
 
 /* ------------------------------- Organizations ------------------------------ */

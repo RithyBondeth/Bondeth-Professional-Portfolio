@@ -91,7 +91,7 @@ export default function LandingSkills(props: { lang: TLocale }) {
                     the badges rather than covering them, so it works over any
                     background and costs no extra layer. */}
                 <div className="absolute inset-y-0 left-0 w-28 sm:w-52 z-10 pointer-events-none flex items-center pl-4 sm:pl-6">
-                  <span className="text-[10px] font-mono text-muted-foreground dark:text-muted-foreground/60 uppercase tracking-[0.15em] sm:tracking-[0.2em] select-none">
+                  <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-[0.15em] sm:tracking-[0.2em] select-none">
                     {category}
                   </span>
                 </div>

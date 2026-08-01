@@ -52,7 +52,7 @@ export default async function ProjectsPage({ params }: IProjectsPageProps) {
           <h1 className="mt-3 text-4xl font-bold text-foreground sm:text-5xl">
             {dict.projects.allProjectsHeading}
           </h1>
-          <p className="mb-10 mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          <p className="mb-10 mt-4 max-w-2xl text-sm leading-relaxed text-field-muted-foreground">
             {dict.projects.allProjectsBlurb}
           </p>
         </AnimateIn>

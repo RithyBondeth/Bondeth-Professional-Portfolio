@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import { flushSync } from "react-dom";
+import { NAV_ICON_BUTTON } from "@/lib/utils";
 import { useTheme } from "@/components/utils/theme/theme-provider";
 
 const subscribe = () => () => {};
@@ -15,7 +16,10 @@ type TDocWithViewTransition = Document & {
 };
 
 /* --------------------------------- Utilities -------------------------------- */
-function SunIcon({ className }: { className?: string }) {
+/* Full SVG props, not just `className` — the call sites pass `data-btn-glyph`,
+   and a `{ className }`-only signature silently dropped it, so `.btn-fx`'s
+   hover glyph animation never ran on this button. */
+function SunIcon({ className, ...props }: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       className={className}
@@ -23,6 +27,7 @@ function SunIcon({ className }: { className?: string }) {
       stroke="currentColor"
       strokeWidth={1.75}
       viewBox="0 0 24 24"
+      {...props}
     >
       <circle cx="12" cy="12" r="4" />
       <path
@@ -33,7 +38,7 @@ function SunIcon({ className }: { className?: string }) {
   );
 }
 
-function MoonIcon({ className }: { className?: string }) {
+function MoonIcon({ className, ...props }: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       className={className}
@@ -41,6 +46,7 @@ function MoonIcon({ className }: { className?: string }) {
       stroke="currentColor"
       strokeWidth={1.75}
       viewBox="0 0 24 24"
+      {...props}
     >
       <path
         strokeLinecap="round"
@@ -132,7 +138,7 @@ export default function ThemeToggle(props: { label: string }) {
       onClick={toggleTheme}
       aria-label={label}
       title={label}
-      className="btn-fx btn-fx-icon flex size-11 items-center justify-center rounded border border-border/60 text-muted-foreground hover:border-primary/40 hover:text-primary lg:size-7"
+      className={NAV_ICON_BUTTON}
     >
       {isDark ? (
         <SunIcon data-btn-glyph className="w-3.5 h-3.5" />

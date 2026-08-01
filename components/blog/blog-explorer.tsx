@@ -196,10 +196,10 @@ export function BlogExplorer({
               <Link
                 key={t.slug}
                 href={`/${lang}/blog/tags/${t.slug}`}
-                className="rounded border border-primary/10 bg-primary/5 px-2 py-0.5 font-mono text-[10px] text-primary dark:text-primary/70 hover:border-primary/40 hover:bg-primary/10 transition-colors"
+                className="rounded border border-primary/10 bg-primary/5 px-2 py-0.5 font-mono text-[10px] text-primary hover:border-primary/40 hover:bg-primary/10 transition-colors"
               >
                 #{t.tag}
-                <span className="ml-1 text-muted-foreground dark:text-muted-foreground/60">
+                <span className="ml-1 text-muted-foreground">
                   {t.count}
                 </span>
               </Link>
@@ -233,7 +233,7 @@ export function BlogExplorer({
                   which the old auto-height cards did not. */}
               <Link
                 href={`/${lang}/blog/${post.slug}`}
-                className="card-interactive flex h-full flex-col overflow-hidden rounded-lg border border-border/60 bg-card/40"
+                className="card-interactive flex h-full flex-col overflow-hidden rounded-lg border border-border/60 bg-card"
               >
                 <BlogCover
                   post={post}
@@ -245,7 +245,7 @@ export function BlogExplorer({
                   {/* Meta line — date, reading time and category on one row.
                       The category used to be a second stacked pill; folding it
                       in here reclaims a whole line of vertical space. */}
-                  <div className="mb-3 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[11px] text-muted-foreground dark:text-muted-foreground/60">
+                  <div className="mb-3 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[11px] text-muted-foreground">
                     <time>
                       {new Date(post.date).toLocaleDateString(
                         lang === "km" ? "km-KH" : "en-US",
@@ -258,7 +258,7 @@ export function BlogExplorer({
                     <span>
                       {post.readingTime} {labels.minRead}
                     </span>
-                    <span className="ml-auto uppercase tracking-[0.16em] text-primary dark:text-primary/70">
+                    <span className="ml-auto uppercase tracking-[0.16em] text-primary">
                       {post.category}
                     </span>
                   </div>

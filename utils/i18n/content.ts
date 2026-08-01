@@ -2,7 +2,6 @@ import {
   siteConfig,
   experiences,
   educations,
-  trainingCourses,
   projects,
 } from "@/utils/constants/portfolio.constant";
 import {
@@ -10,7 +9,6 @@ import {
   IProject,
   ISiteConfig,
   IEducation,
-  ITrainingCourse,
 } from "@/utils/interfaces/portfolio";
 import { kmContent } from "./content.km";
 import type { TLocale } from ".";
@@ -37,14 +35,6 @@ export function getExperiences(lang: TLocale): IExperience[] {
 export function getEducations(lang: TLocale): IEducation[] {
   if (lang !== "km") return educations;
   return educations.map((edu, i) => ({ ...edu, ...kmContent.educations[i] }));
-}
-
-export function getTrainingCourses(lang: TLocale): ITrainingCourse[] {
-  if (lang !== "km") return trainingCourses;
-  return trainingCourses.map((course, i) => ({
-    ...course,
-    ...kmContent.trainingCourses[i],
-  }));
 }
 
 export function getProjects(lang: TLocale): IProject[] {

@@ -2,7 +2,9 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { FileText, Languages } from "lucide-react";
+import { NAV_ICON_BUTTON } from "@/lib/utils";
 import { gsap } from "@/components/utils/animations/gsap";
 import { scrollToSection } from "@/components/utils/animations/smooth-scroll";
 import {
@@ -46,7 +48,12 @@ function persistLocaleCookie(target: TLocale) {
   document.cookie = `NEXT_LOCALE=${target};path=/;max-age=31536000`;
 }
 
-function SearchIcon({ className }: { className?: string }) {
+/* These take the full SVG props like every icon in components/utils/icons, NOT
+   just `className`. They used to take only `className`, which silently dropped
+   the `data-btn-glyph` marker at the call site — so `.btn-fx`'s hover glyph
+   animation never ran on the search or theme buttons, while it did on every
+   icon that came from the shared module. */
+function SearchIcon({ className, ...props }: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       className={className}
@@ -56,6 +63,7 @@ function SearchIcon({ className }: { className?: string }) {
       strokeLinecap="round"
       strokeLinejoin="round"
       viewBox="0 0 24 24"
+      {...props}
     >
       <circle cx="11" cy="11" r="7" />
       <path d="m21 21-4.3-4.3" />
@@ -63,7 +71,10 @@ function SearchIcon({ className }: { className?: string }) {
   );
 }
 
-function ChevronDownIcon({ className }: { className?: string }) {
+function ChevronDownIcon({
+  className,
+  ...props
+}: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       className={className}
@@ -73,6 +84,7 @@ function ChevronDownIcon({ className }: { className?: string }) {
       strokeLinecap="round"
       strokeLinejoin="round"
       viewBox="0 0 24 24"
+      {...props}
     >
       <path d="m6 9 6 6 6-6" />
     </svg>
@@ -80,113 +92,40 @@ function ChevronDownIcon({ className }: { className?: string }) {
 }
 
 /* -------------------------------- Components -------------------------------- */
-/** View Transitions API — not yet in every TS lib. */
-type TDocWithViewTransition = Document & {
-  startViewTransition?: (cb: () => void | Promise<void>) => {
-    finished: Promise<void>;
-  };
-};
-
-/**
- * Resolver that ends the in-flight locale view transition.
- *
- * Module scope is deliberate: switching locale remounts LanguageSwitcher, so a
- * ref would be torn down with the old instance and the transition would never
- * be told the new page had arrived — it would hang until the browser's 4s
- * timeout. The module survives the remount, so the newly mounted instance can
- * resolve the transition its predecessor started.
- */
-let endLocaleTransition: (() => void) | null = null;
-
-function resolveLocaleTransition() {
-  endLocaleTransition?.();
-  endLocaleTransition = null;
-}
-
-function LanguageSwitcher(props: { lang: TLocale }) {
+function LanguageSwitcher(props: { lang: TLocale; label: string }) {
   /* ---------------------------------- Props --------------------------------- */
-  const { lang } = props;
+  const { lang, label } = props;
 
   /* ---------------------------------- Utils --------------------------------- */
   const pathname = usePathname();
-  const router = useRouter();
-  const labels: Record<TLocale, string> = { en: "EN", km: "ខ្មែរ" };
+
+  // With two locales this is a straight toggle; the modulo keeps it honest if a
+  // third is ever added — it would then cycle rather than silently stick.
+  const next = locales[(locales.indexOf(lang) + 1) % locales.length];
 
   function switchedPath(target: TLocale): string {
     const rest = pathname.replace(/^\/(en|km)(?=\/|$)/, "");
     return `/${target}${rest}`;
   }
 
-  /**
-   * Changing locale swaps the `[lang]` route segment, which remounts the whole
-   * subtree — nav, footer and every entry animation rebuild at once, so the
-   * switch lands with a hard snap. A view transition cross-fades the old page
-   * into the new one instead.
-   *
-   * `router.push` resolves before the new page paints, so the transition is
-   * held open by a promise that only settles once the pathname has changed.
-   */
-  useEffect(() => {
-    resolveLocaleTransition();
-  }, [pathname]);
-
-  function handleSwitch(
-    e: React.MouseEvent<HTMLAnchorElement>,
-    target: TLocale,
-  ) {
+  function handleSwitch(target: TLocale) {
     persistLocaleCookie(target);
-    if (target === lang) return;
-
-    const doc = document as TDocWithViewTransition;
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    // Without the API, or with reduced motion, let <Link> navigate as usual.
-    if (!doc.startViewTransition || reduce) return;
-
-    e.preventDefault();
-    const root = document.documentElement;
-    root.classList.add("locale-switching");
-
-    const transition = doc.startViewTransition(
-      () =>
-        new Promise<void>((resolve) => {
-          endLocaleTransition = resolve;
-          // Never hold the frozen snapshot for long: if the new page is slow,
-          // drop the cross-fade rather than leave the page looking hung.
-          setTimeout(() => {
-            if (endLocaleTransition === resolve) resolveLocaleTransition();
-          }, 600);
-          router.push(switchedPath(target));
-        }),
-    );
-    transition.finished.finally(() => {
-      root.classList.remove("locale-switching");
-    });
   }
 
   /* -------------------------------- Render UI ------------------------------- */
+  // A <Link>, not a <button>: this navigates, so it has to keep its href for
+  // middle-click, "open in new tab", and crawlers following the alternate
+  // locale. It only *looks* like the theme toggle — see NAV_ICON_BUTTON.
   return (
-    <div className="flex items-center gap-0.5 rounded border border-border/60 px-1 lg:py-0.5">
-      {locales.map((locale, i) => (
-        <span key={locale} className="flex items-center">
-          {i > 0 && (
-            <span className="text-muted-foreground dark:text-muted-foreground/30 text-[10px] mx-0.5">
-              |
-            </span>
-          )}
-          <Link
-            href={switchedPath(locale)}
-            onClick={(e) => handleSwitch(e, locale)}
-            className={`flex min-h-11 items-center rounded px-1.5 font-mono text-[11px] transition-colors lg:min-h-0 lg:py-0.5 ${
-              lang === locale
-                ? "text-primary"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            {labels[locale]}
-          </Link>
-        </span>
-      ))}
-    </div>
+    <Link
+      href={switchedPath(next)}
+      onClick={() => handleSwitch(next)}
+      aria-label={label}
+      title={label}
+      className={NAV_ICON_BUTTON}
+    >
+      <Languages data-btn-glyph className="w-3.5 h-3.5" />
+    </Link>
   );
 }
 
@@ -384,6 +323,26 @@ export default function Navbar(props: { lang: TLocale }) {
           : "bg-transparent"
       }`}
     >
+      {/* Top Scrim Section — the nav is transparent at scroll-top, which was
+          fine over a pale sky ramp but not over this background: the ribbon
+          field runs all the way to iris, and mono labels at 11-12px simply
+          disappeared whenever a dark band drifted under the bar.
+
+          A scrim rather than a permanent solid bar, so the hero still opens
+          without a hard chrome edge across it. It is taller than the bar and
+          fades out below it, which keeps ~90% background behind the type and
+          nothing at all by the time it reaches the page. It fades away entirely
+          once `scrolled` swaps in the real bar, so the two never stack.
+
+          `-z-10` keeps it behind the nav's own content — inside the nav's
+          stacking context, so it still paints above the page. */}
+      <div
+        aria-hidden
+        className={`pointer-events-none absolute inset-x-0 top-0 -z-10 h-[160%] bg-linear-to-b from-background/90 from-40% via-background/70 via-65% to-transparent transition-opacity duration-300 ${
+          scrolled || menuOpen ? "opacity-0" : "opacity-100"
+        }`}
+      />
+
       {/* Scroll Progress Bar Section */}
       <div
         className="absolute bottom-0 left-0 h-px bg-primary/70 transition-[width] duration-75 ease-out pointer-events-none"
@@ -424,7 +383,7 @@ export default function Navbar(props: { lang: TLocale }) {
                   : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
               }`}
             >
-              <span className="text-primary dark:text-primary/40 mr-1 text-[10px] hidden xl:inline">
+              <span className="text-primary mr-1 text-[10px] hidden xl:inline">
                 01.
               </span>
               {dict.nav.explore}
@@ -476,7 +435,7 @@ export default function Navbar(props: { lang: TLocale }) {
                       : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
                   }`}
                 >
-                  <span className="text-primary dark:text-primary/40 mr-1 text-[10px] hidden xl:inline">
+                  <span className="text-primary mr-1 text-[10px] hidden xl:inline">
                     0{i + 2}.
                   </span>
                   {dict.nav[navKeyFromHref(href)]}
@@ -493,7 +452,7 @@ export default function Navbar(props: { lang: TLocale }) {
               className="btn-fx btn-fx-outline flex items-center gap-2 pl-2.5 pr-2 py-1.5 text-xs font-mono text-muted-foreground border border-border/60 rounded hover:text-foreground"
             >
               <SearchIcon data-btn-glyph className="w-3.5 h-3.5" />
-              <kbd className="text-[10px] text-muted-foreground dark:text-muted-foreground/70">
+              <kbd className="text-[10px] text-muted-foreground">
                 ⌘K
               </kbd>
             </button>
@@ -503,15 +462,17 @@ export default function Navbar(props: { lang: TLocale }) {
               href={siteConfig.resume}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-3 py-1.5 text-xs font-mono tracking-wide whitespace-nowrap text-primary border border-primary/30 rounded hover:bg-primary/5 transition-all"
+              aria-label={dict.nav.resume}
+              title={dict.nav.resume}
+              className={NAV_ICON_BUTTON}
             >
-              {dict.nav.resume}
+              <FileText data-btn-glyph className="w-3.5 h-3.5" />
             </a>
           </li>
-          <li className="ml-2">
-            <LanguageSwitcher lang={lang} />
+          <li>
+            <LanguageSwitcher lang={lang} label={dict.nav.toggleLanguage} />
           </li>
-          <li className="ml-1">
+          <li>
             <ThemeToggle label={dict.nav.toggleTheme} />
           </li>
         </ul>
@@ -522,11 +483,11 @@ export default function Navbar(props: { lang: TLocale }) {
             type="button"
             onClick={openCommandPalette}
             aria-label={dict.commandPalette.open}
-            className="btn-fx btn-fx-icon flex size-11 items-center justify-center rounded border border-border/60 text-muted-foreground hover:border-primary/40 hover:text-primary"
+            className={NAV_ICON_BUTTON}
           >
             <SearchIcon data-btn-glyph className="w-3.5 h-3.5" />
           </button>
-          <LanguageSwitcher lang={lang} />
+          <LanguageSwitcher lang={lang} label={dict.nav.toggleLanguage} />
           <ThemeToggle label={dict.nav.toggleTheme} />
           <button
             className="btn-fx btn-fx-icon flex size-11 items-center justify-center rounded text-muted-foreground hover:bg-foreground/5 hover:text-foreground"
@@ -569,7 +530,7 @@ export default function Navbar(props: { lang: TLocale }) {
                         : "text-muted-foreground border-transparent hover:text-foreground hover:border-border"
                     }`}
                   >
-                    <span className="text-primary dark:text-primary/40 text-[10px]">
+                    <span className="text-primary text-[10px]">
                       0{i + 1}.
                     </span>
                     {dict.nav[navKeyFromHref(href)]}

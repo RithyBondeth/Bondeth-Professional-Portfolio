@@ -6,8 +6,3 @@ export interface IEducation {
   description: string;
   achievements: string[];
 }
-
-export interface ITrainingCourse {
-  title: string;
-  institution: string;
-}

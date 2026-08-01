@@ -97,7 +97,7 @@ export function ProficiencyDots(props: { level: TSkillLevel }) {
       {([1, 2, 3] as const).map((dot) => (
         <span
           key={dot}
-          className={`w-1.5 h-1.5 rounded-full ${
+          className={`w-1 h-1 rounded-full ${
             dot <= level ? "bg-current" : "bg-muted-foreground/25"
           }`}
         />
@@ -130,7 +130,7 @@ export function SkillBadge(props: { skill: ISkill; levelLabel: string }) {
   /* -------------------------------- Render UI ------------------------------- */
   return (
     <div
-      className="card-interactive group relative isolate overflow-hidden flex items-center gap-3 px-6 py-3.5 rounded-lg border border-border/50 bg-card whitespace-nowrap shrink-0 select-none [--card-lift:-2px] [--brand:var(--brand-light)] dark:[--brand:var(--brand-dark)]"
+      className="card-interactive group relative isolate overflow-hidden flex items-center gap-2.5 px-5 py-3.5 rounded-md border border-border/50 bg-card whitespace-nowrap shrink-0 select-none [--card-lift:-2px] [--brand:var(--brand-light)] dark:[--brand:var(--brand-dark)]"
       style={
         {
           "--brand-light": skill.colorLight ?? skill.color,
@@ -154,11 +154,11 @@ export function SkillBadge(props: { skill: ISkill; levelLabel: string }) {
         </span>
       )}
 
-      <span className="relative z-1 flex items-center gap-3">
+      <span className="relative z-1 flex items-center gap-2.5">
         {Icon && (
-          <Icon className="w-6 h-6 shrink-0 text-(--brand) transition-transform duration-300 motion-safe:group-hover:scale-125" />
+          <Icon className="w-5 h-5 shrink-0 text-(--brand) transition-transform duration-300 motion-safe:group-hover:scale-125" />
         )}
-        <span className="text-base font-mono text-muted-foreground transition-colors duration-300 group-hover:text-foreground">
+        <span className="text-sm font-mono text-muted-foreground transition-colors duration-300 group-hover:text-foreground">
           {skill.name}
         </span>
         <span className="sr-only">{levelLabel}</span>

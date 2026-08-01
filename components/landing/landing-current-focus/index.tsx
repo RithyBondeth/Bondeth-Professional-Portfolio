@@ -1,13 +1,13 @@
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
 import { ScrambleText } from "@/components/utils/animations/scramble-text";
 import { SplitReveal } from "@/components/utils/animations/split-reveal";
-import Link from "next/link";
+import { StatusChip } from "@/components/utils/status-chip";
 import { getDictionary, type TLocale } from "@/utils/i18n";
 import { Globe } from "./globe";
 
 export default function LandingCurrentFocus(props: { lang: TLocale }) {
   const { lang } = props;
-  const { currentFocus, labs } = getDictionary(lang);
+  const { currentFocus } = getDictionary(lang);
 
   return (
     <section
@@ -38,27 +38,14 @@ export default function LandingCurrentFocus(props: { lang: TLocale }) {
             </SplitReveal>
 
             <AnimateIn from="up" delay={0.1}>
-              <p className="mt-5 max-w-xl text-sm leading-relaxed text-muted-foreground">
+              <p className="mt-5 max-w-xl text-sm leading-relaxed text-field-muted-foreground">
                 {currentFocus.blurb}
               </p>
             </AnimateIn>
 
             <AnimateIn from="up" delay={0.15}>
-              <div className="mt-7 flex flex-wrap items-center gap-3">
-                <div className="animated-border inline-flex items-center gap-2 rounded-full px-3 py-1.5 font-mono text-[11px] text-emerald-500">
-                  <span className="relative flex h-2 w-2" aria-hidden>
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-50 motion-reduce:animate-none" />
-                    <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-                  </span>
-                  {currentFocus.status}
-                </div>
-                <Link
-                  href={`/${lang}/labs`}
-                  className="inline-flex min-h-11 items-center gap-2 rounded border border-primary/25 px-3 font-mono text-[11px] text-primary transition-colors hover:bg-primary/5"
-                >
-                  {labs.navLabel}
-                  <span aria-hidden>→</span>
-                </Link>
+              <div className="mt-7">
+                <StatusChip>{currentFocus.status}</StatusChip>
               </div>
             </AnimateIn>
           </div>

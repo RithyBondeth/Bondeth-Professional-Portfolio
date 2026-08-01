@@ -14,6 +14,7 @@ export const en = {
     resumeMobile: "Resume.pdf",
     toggleMenu: "Toggle menu",
     toggleTheme: "Switch theme",
+    toggleLanguage: "Switch language",
     skipToContent: "Skip to content",
   },
   hero: {
@@ -63,7 +64,7 @@ export const en = {
     ],
     globe: {
       pinLabel: "Phnom Penh, Cambodia",
-      photoCaption: "Bondeth👨🏼‍💻",
+      photoCaption: "Phnom Penh",
     },
   },
   skills: {
@@ -81,7 +82,6 @@ export const en = {
   },
   education: {
     heading: "Academic background",
-    trainingCourses: "Training Courses",
   },
   projects: {
     heading: "Things I've built",

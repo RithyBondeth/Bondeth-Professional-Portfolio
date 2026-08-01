@@ -62,13 +62,6 @@ export const kmContent = {
       ],
     },
   ],
-  trainingCourses: [
-    { title: "ការអភិវឌ្ឍវែបផ្នែក Frontend", institution: "Instinct Institute" },
-    { title: "ការអភិវឌ្ឍវែបផ្នែក Backend", institution: "Instinct Institute" },
-    { title: "ការអភិវឌ្ឍកម្មវិធីទូរស័ព្ទ", institution: "Instinct Institute" },
-    { title: "ការអភិវឌ្ឍវែបជាមួយ Next.js", institution: "Sabai Code" },
-    { title: "Python សម្រាប់វិទ្យាសាស្ត្រទិន្នន័យ", institution: "Sabai Code" },
-  ],
   projects: [
     {
       description:

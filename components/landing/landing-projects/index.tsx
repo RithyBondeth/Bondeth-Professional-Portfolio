@@ -40,7 +40,7 @@ export default function LandingProjects(props: { lang: TLocale }) {
             {dict.projects.heading}
           </SplitReveal>
           <AnimateIn from="up" distance={24} delay={0.1}>
-            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-field-muted-foreground">
               {dict.projects.featuredBlurb}
             </p>
           </AnimateIn>

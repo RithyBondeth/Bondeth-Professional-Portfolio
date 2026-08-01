@@ -38,7 +38,7 @@ export default function NotFound() {
         The page you&apos;re looking for doesn&apos;t exist or has been moved.
         Let&apos;s get you back on track.
       </p>
-      <p className="text-muted-foreground dark:text-muted-foreground/70 text-sm sm:text-base max-w-sm leading-relaxed mb-10">
+      <p className="text-muted-foreground text-sm sm:text-base max-w-sm leading-relaxed mb-10">
         ទំព័រដែលអ្នកកំពុងស្វែងរកមិនមានទេ ឬត្រូវបានផ្លាស់ទី។
         តោះនាំអ្នកត្រឡប់ទៅផ្លូវដើមវិញ។
       </p>
@@ -46,7 +46,7 @@ export default function NotFound() {
       {/* CTA */}
       <Link
         href="/"
-        className="btn-fx btn-fx-primary group inline-flex items-center gap-2 px-6 py-3 rounded bg-primary text-primary-foreground font-mono text-sm tracking-wide"
+        className="btn-fx btn-fx-primary group inline-flex items-center gap-2 px-6 py-3 rounded bg-primary-fill text-primary-foreground font-mono text-sm tracking-wide"
       >
         <span aria-hidden className="transition-transform group-hover:-translate-x-1">
           ←

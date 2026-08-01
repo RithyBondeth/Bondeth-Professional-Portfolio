@@ -124,14 +124,14 @@ export default function ContactForm(props: { lang: TLocale }) {
     return (
       <div
         ref={successCardRef}
-        className="rounded border border-emerald-500/20 bg-emerald-500/5 p-8 text-center"
+        className="rounded border border-status-success/25 bg-status-success/5 p-8 text-center"
       >
-        <h3 className="text-emerald-400 font-bold mb-2">{t.successTitle}</h3>
+        <h3 className="text-status-success font-bold mb-2">{t.successTitle}</h3>
         <p className="text-muted-foreground text-sm">{t.successBody}</p>
         <button
           type="button"
           onClick={() => setStatus("idle")}
-          className="mt-6 min-h-11 px-3 text-xs font-mono text-emerald-400/80 hover:text-emerald-400 underline underline-offset-4"
+          className="mt-6 min-h-11 px-3 text-xs font-mono text-status-success/80 hover:text-status-success underline underline-offset-4"
         >
           {t.sendAnother}
         </button>
@@ -244,7 +244,7 @@ export default function ContactForm(props: { lang: TLocale }) {
         <p
           role="alert"
           aria-live="polite"
-          className="text-red-400 text-xs font-mono"
+          className="text-status-danger text-xs font-mono"
         >
           {errorMessage ?? t.errorFallback}
         </p>
@@ -254,7 +254,7 @@ export default function ContactForm(props: { lang: TLocale }) {
       <button
         disabled={status === "loading"}
         type="submit"
-        className="btn-fx btn-fx-primary mt-2 flex items-center justify-center gap-2 w-full px-6 py-3 bg-primary text-primary-foreground rounded font-mono text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+        className="btn-fx btn-fx-primary mt-2 flex items-center justify-center gap-2 w-full px-6 py-3 bg-primary-fill text-primary-foreground rounded font-mono text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <span className="text-primary-foreground/60">▸</span>
         {status === "loading" ? (

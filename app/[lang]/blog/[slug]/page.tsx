@@ -162,7 +162,7 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
             used to sit in fought the title for weight), the title is the hero,
             and the meta reads as one quiet byline row underneath. */}
         <AnimateIn delay={0.05} className="max-w-3xl">
-          <p className="mb-4 font-mono text-xs uppercase tracking-[0.25em] text-primary dark:text-primary/70">
+          <p className="mb-4 font-mono text-xs uppercase tracking-[0.25em] text-primary">
             {post.category}
           </p>
           <h1 className="mb-5 text-3xl font-bold leading-tight text-foreground sm:text-4xl lg:text-5xl">
@@ -172,7 +172,7 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
             {post.excerpt}
           </p>
 
-          <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 border-y border-border/40 py-4 font-mono text-xs text-muted-foreground dark:text-muted-foreground/70">
+          <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 border-y border-border/40 py-4 font-mono text-xs text-muted-foreground">
             <span className="text-foreground">
               {dict.blog.writtenBy}{" "}
               <span className="font-semibold">{siteConfig.name}</span>
@@ -303,7 +303,7 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
                             post={related}
                             className="aspect-2/1 mb-3 transition-colors group-hover:border-primary/40"
                           />
-                          <div className="flex items-center gap-2 text-[10px] font-mono text-muted-foreground dark:text-muted-foreground/60 mb-1.5">
+                          <div className="flex items-center gap-2 text-[10px] font-mono text-muted-foreground mb-1.5">
                             <time>
                               {new Date(related.date).toLocaleDateString(
                                 lang === "km" ? "km-KH" : "en-US",

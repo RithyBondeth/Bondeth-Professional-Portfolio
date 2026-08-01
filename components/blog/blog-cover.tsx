@@ -76,7 +76,7 @@ export function BlogCover({
           className="object-cover"
         />
       ) : (
-        <div className="absolute inset-0 overflow-hidden bg-[#07090e] [container-type:size]">
+        <div className="absolute inset-0 overflow-hidden bg-technical-surface-elevated [container-type:size]">
           {/* Base — a faintly blue-lifted top fading to near-black, so the
               plate has vertical depth before anything sits on it. */}
           <div

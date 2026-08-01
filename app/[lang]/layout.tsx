@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono, Kantumruy_Pro, Noto_Serif } from "next/font/google";
 import { notFound } from "next/navigation";
+import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "../globals.css";
@@ -10,7 +11,7 @@ import Footer from "@/components/footer";
 import CommandPalette from "@/components/command-palette";
 import { ThemeProvider } from "@/components/utils/theme/theme-provider";
 import { SmoothScroll } from "@/components/utils/animations/smooth-scroll";
-import { GradientWave } from "@/components/utils/animations/gradient-wave";
+import { RibbonField } from "@/components/utils/animations/ribbon-field";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
 import { locales, hasLocale, getDictionary } from "@/utils/i18n";
 import { getSiteConfig } from "@/utils/i18n/content";
@@ -126,18 +127,13 @@ export default async function RootLayout({
         kantumruyPro.variable,
       )}
     >
-      <body className="min-h-full flex flex-col">
-        {/* Prevent theme flash: sets `data-theme` on <html> before anything
-            paints. It must be an attribute React does not render itself —
-            writing a class here instead would be undone when React reconciles
-            <html className={...}> during hydration, flashing light before the
-            provider's layout effect put the class back.
-            `async` is what makes this legal — React only hoists and executes a
-            script it renders itself when the script is async; a sync one throws
-            on the client during navigations such as the language switch. Inline
-            scripts ignore async for ordering, so it still runs immediately. */}
-        <script
-          async
+      <body className="isolate min-h-full flex flex-col">
+        {/* Prevent theme flash: Next injects this into <head> before hydration
+            and tracks it across client navigations, so React never encounters a
+            raw script while rebuilding the locale layout. */}
+        <Script
+          id="theme-initializer"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `try{var t=localStorage.getItem('theme');t=t==='light'||t==='dark'?t:'light';document.documentElement.dataset.theme=t;document.documentElement.style.colorScheme=t}catch(e){document.documentElement.dataset.theme='light';document.documentElement.style.colorScheme='light'}`,
           }}
@@ -153,10 +149,10 @@ export default async function RootLayout({
               puts a `transform` on #smooth-content, and a transformed ancestor
               turns `fixed` into "fixed relative to that element", which would
               make this scroll away with the page. */}
-          <GradientWave />
+          <RibbonField />
           <a
             href="#main-content"
-            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-100 focus:rounded focus:bg-primary focus:px-4 focus:py-2 focus:font-mono focus:text-sm focus:text-primary-foreground focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring"
+            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-100 focus:rounded focus:bg-primary-fill focus:px-4 focus:py-2 focus:font-mono focus:text-sm focus:text-primary-foreground focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring"
           >
             {dict.nav.skipToContent}
           </a>

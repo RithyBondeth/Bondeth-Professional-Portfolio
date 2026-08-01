@@ -29,7 +29,7 @@ export default function LandingRecommendations(props: { lang: TLocale }) {
               {recommendations.heading}
             </SplitReveal>
             <AnimateIn from="up" delay={0.1}>
-              <p className="mt-5 max-w-xl text-sm leading-7 text-muted-foreground">
+              <p className="mt-5 max-w-xl text-sm leading-7 text-field-muted-foreground">
                 {recommendations.blurb}
               </p>
             </AnimateIn>
@@ -80,7 +80,7 @@ export default function LandingRecommendations(props: { lang: TLocale }) {
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               href={`/${lang}/#contact`}
-              className="inline-flex min-h-11 items-center gap-2 btn-fx btn-fx-primary rounded bg-primary px-4 font-mono text-xs font-medium text-primary-foreground"
+              className="inline-flex min-h-11 items-center gap-2 btn-fx btn-fx-primary rounded bg-primary-fill px-4 font-mono text-xs font-medium text-primary-foreground"
             >
               {recommendations.requestReference}
               <ArrowRight aria-hidden data-btn-arrow className="size-3.5" />

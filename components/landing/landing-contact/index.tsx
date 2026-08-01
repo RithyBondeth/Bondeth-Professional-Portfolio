@@ -3,6 +3,7 @@ import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
 import { ScrambleText } from "@/components/utils/animations/scramble-text";
 import { SplitReveal } from "@/components/utils/animations/split-reveal";
 import { Magnetic } from "@/components/utils/animations/magnetic";
+import { StatusChip } from "@/components/utils/status-chip";
 import {
   GitHubIcon,
   LinkedInIcon,
@@ -41,14 +42,13 @@ export default function LandingContact(props: { lang: TLocale }) {
         <div className="mt-10 grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
           <div>
             <AnimateIn from="left" delay={0.1}>
-              <p className="max-w-xl text-sm leading-7 text-muted-foreground">
+              <p className="max-w-xl text-sm leading-7 text-field-muted-foreground">
                 {dict.contact.blurb}
               </p>
 
-              <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5 font-mono text-[11px] text-emerald-500">
-                <span className="size-2 rounded-full bg-emerald-500" aria-hidden />
+              <StatusChip className="mt-6">
                 {dict.contact.availability}
-              </div>
+              </StatusChip>
 
               <div className="mt-9 rounded-lg border border-border/60 bg-card p-5">
                 <h3 className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.18em] text-foreground">

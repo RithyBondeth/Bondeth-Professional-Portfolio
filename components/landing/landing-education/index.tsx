@@ -2,14 +2,13 @@ import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
 import { ScrambleText } from "@/components/utils/animations/scramble-text";
 import { SplitReveal } from "@/components/utils/animations/split-reveal";
 import { getDictionary, type TLocale } from "@/utils/i18n";
-import { getEducations, getTrainingCourses } from "@/utils/i18n/content";
+import { getEducations } from "@/utils/i18n/content";
 
 export default function LandingEducation(props: { lang: TLocale }) {
   /* ---------------------------------- Props --------------------------------- */
   const { lang } = props;
   const dict = getDictionary(lang);
   const educations = getEducations(lang);
-  const trainingCourses = getTrainingCourses(lang);
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
@@ -93,37 +92,6 @@ export default function LandingEducation(props: { lang: TLocale }) {
             </div>
           ))}
         </StaggerIn>
-
-        {/* Training Courses Section */}
-        <AnimateIn from="zoom-in" delay={0.1}>
-          <div className="mt-12">
-            <h3 className="text-foreground font-semibold text-sm mb-5 flex items-center gap-2 font-mono">
-              <BookOpenIcon className="w-4 h-4 text-primary" />
-              <span className="text-muted-foreground">{"//"}</span>{" "}
-              {dict.education.trainingCourses}
-            </h3>
-            <StaggerIn
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5"
-              from="zoom-in"
-              stagger={0.05}
-              staggerFrom="random"
-            >
-              {trainingCourses.map((course) => (
-                <div
-                  key={course.title}
-                  className="card-interactive flex flex-col gap-1 px-4 py-3 rounded border border-border/50 bg-card [--card-lift:-2px]"
-                >
-                  <span className="text-foreground text-xs font-medium">
-                    {course.title}
-                  </span>
-                  <span className="text-muted-foreground text-[11px] font-mono">
-                    {course.institution}
-                  </span>
-                </div>
-              ))}
-            </StaggerIn>
-          </div>
-        </AnimateIn>
       </div>
     </section>
   );
@@ -202,20 +170,3 @@ function LocationPinIcon({ className }: { className?: string }) {
   );
 }
 
-function BookOpenIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={1.75}
-        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-      />
-    </svg>
-  );
-}

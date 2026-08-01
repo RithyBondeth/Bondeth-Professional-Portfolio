@@ -31,7 +31,7 @@ export default function LandingServices(props: { lang: TLocale }) {
               {services.heading}
             </SplitReveal>
             <AnimateIn from="up" distance={24} delay={0.1}>
-              <p className="mt-4 max-w-2xl text-sm leading-7 text-muted-foreground">
+              <p className="mt-4 max-w-2xl text-sm leading-7 text-field-muted-foreground">
                 {services.blurb}
               </p>
             </AnimateIn>
@@ -41,7 +41,7 @@ export default function LandingServices(props: { lang: TLocale }) {
             <Magnetic strength={0.3} className="inline-block">
               <Link
                 href={`/${lang}/#contact`}
-                className="inline-flex min-h-11 shrink-0 items-center gap-2 btn-fx btn-fx-primary rounded bg-primary px-4 font-mono text-xs font-medium text-primary-foreground"
+                className="inline-flex min-h-11 shrink-0 items-center gap-2 btn-fx btn-fx-primary rounded bg-primary-fill px-4 font-mono text-xs font-medium text-primary-foreground"
               >
                 {services.discussProject}
                 <ArrowRight aria-hidden data-btn-arrow className="size-3.5" />

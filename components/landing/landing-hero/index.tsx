@@ -520,15 +520,15 @@ export default function LandingHero(props: { lang: TLocale }) {
             </h1>
 
             {/* Typewriter Subtitle */}
-            <h2 className="hero-subtitle text-lg sm:text-xl text-muted-foreground mb-6 font-mono h-7 flex items-center lg:justify-start justify-center gap-0.5">
-              <span className="text-primary dark:text-primary/60 mr-1">$</span>
+            <h2 className="hero-subtitle text-lg sm:text-xl text-field-muted-foreground mb-6 font-mono h-7 flex items-center lg:justify-start justify-center gap-0.5">
+              <span className="text-primary mr-1">$</span>
               <span className="text-slate-600 dark:text-slate-300">
                 {typed}
               </span>
               <span className="inline-block w-0.5 h-5 bg-primary ml-0.5 animate-[blink_1s_step-end_infinite]" />
             </h2>
 
-            <p className="hero-tagline text-muted-foreground text-base max-w-lg mx-auto lg:mx-0 mb-7 sm:mb-10 leading-relaxed">
+            <p className="hero-tagline text-field-muted-foreground text-base max-w-lg mx-auto lg:mx-0 mb-7 sm:mb-10 leading-relaxed">
               {localized.tagline}
             </p>
 
@@ -540,7 +540,7 @@ export default function LandingHero(props: { lang: TLocale }) {
                     e.preventDefault();
                     scrollToSection("projects");
                   }}
-                  className="btn-fx btn-fx-primary block px-6 py-2.5 bg-primary text-primary-foreground rounded font-mono text-sm font-medium text-center"
+                  className="btn-fx btn-fx-primary block px-6 py-2.5 bg-primary-fill text-primary-foreground rounded font-mono text-sm font-medium text-center"
                 >
                   {dict.hero.viewWork}
                 </a>
@@ -562,7 +562,7 @@ export default function LandingHero(props: { lang: TLocale }) {
                     e.preventDefault();
                     scrollToSection("contact");
                   }}
-                  className="btn-fx btn-fx-outline block px-6 py-2.5 border border-border text-muted-foreground rounded font-mono text-sm font-medium hover:text-foreground text-center"
+                  className="btn-fx btn-fx-outline block px-6 py-2.5 border border-border text-field-muted-foreground rounded font-mono text-sm font-medium hover:text-foreground text-center"
                 >
                   {dict.hero.getInTouch}
                 </a>
@@ -580,8 +580,8 @@ export default function LandingHero(props: { lang: TLocale }) {
       </div>
 
       {/* Scroll Indicator Section */}
-      <div className="hero-scroll absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground">
-        <span className="text-[10px] font-mono tracking-[0.2em] uppercase text-muted-foreground dark:text-muted-foreground/60">
+      <div className="hero-scroll absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-field-muted-foreground">
+        <span className="text-[10px] font-mono tracking-[0.2em] uppercase text-field-muted-foreground">
           {dict.hero.scroll}
         </span>
         <div className="w-px h-10 bg-linear-to-b from-border to-transparent" />
@@ -595,7 +595,7 @@ export default function LandingHero(props: { lang: TLocale }) {
           role="presentation"
           className="absolute inset-0 z-40 bg-background flex items-center justify-center px-6"
         >
-          <div className="w-full max-w-md font-code text-xs sm:text-sm text-muted-foreground space-y-2">
+          <div className="w-full max-w-md font-code text-xs sm:text-sm text-field-muted-foreground space-y-2">
             {BOOT_LINES.map((line, i) => (
               <div key={i} className="boot-line flex gap-2 opacity-0">
                 <span className="text-primary">$</span>

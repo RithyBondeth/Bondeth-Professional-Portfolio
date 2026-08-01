@@ -16,6 +16,7 @@ export const km: TDictionary = {
     resumeMobile: "ប្រវត្តិរូប (PDF)",
     toggleMenu: "បើក/បិទម៉ឺនុយ",
     toggleTheme: "ប្តូរផ្ទៃពណ៌",
+    toggleLanguage: "ប្តូរភាសា",
     skipToContent: "រំលងទៅមាតិកា",
   },
   hero: {
@@ -87,7 +88,6 @@ export const km: TDictionary = {
   },
   education: {
     heading: "ប្រវត្តិការសិក្សា",
-    trainingCourses: "វគ្គបណ្តុះបណ្តាល",
   },
   projects: {
     heading: "ស្នាដៃដែលខ្ញុំបានបង្កើត",

@@ -34,7 +34,7 @@ export default async function TagsPage({ params }: ITagsPageProps) {
         </AnimateIn>
 
         <AnimateIn delay={0.1}>
-          <p className="text-muted-foreground text-sm max-w-2xl mb-12 leading-relaxed">
+          <p className="text-field-muted-foreground text-sm max-w-2xl mb-12 leading-relaxed">
             {dict.blog.allTagsBlurb}
           </p>
         </AnimateIn>
@@ -46,10 +46,10 @@ export default async function TagsPage({ params }: ITagsPageProps) {
                 <Link
                   key={t.slug}
                   href={`/${lang}/blog/tags/${t.slug}`}
-                  className="rounded border border-primary/10 bg-primary/5 px-4 py-2 font-mono text-sm text-primary dark:text-primary/70 hover:border-primary/40 hover:bg-primary/10 transition-colors"
+                  className="rounded border border-primary/10 bg-primary/5 px-4 py-2 font-mono text-sm text-primary hover:border-primary/40 hover:bg-primary/10 transition-colors"
                 >
                   #{t.tag}
-                  <span className="ml-2 text-muted-foreground dark:text-muted-foreground/60">
+                  <span className="ml-2 text-muted-foreground">
                     {t.count}
                   </span>
                 </Link>
