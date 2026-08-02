@@ -92,6 +92,7 @@ export function GrainField({ className }: { className?: string }) {
   return (
     <div
       aria-hidden
+      data-print-hide
       className={`pointer-events-none fixed inset-0 -z-10 overflow-hidden ${className ?? ""}`}
       // Rough CSS stand-in (corner glows on the back colour) for the first
       // paint and for no-WebGL sessions.

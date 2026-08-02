@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FileText, Languages } from "lucide-react";
 import { NAV_ICON_BUTTON } from "@/lib/utils";
+import { trackCvDownload } from "@/utils/functions/track-cv-download";
 import { gsap } from "@/components/utils/animations/gsap";
 import { scrollToSection } from "@/components/utils/animations/smooth-scroll";
 import {
@@ -458,16 +459,17 @@ export default function Navbar(props: { lang: TLocale }) {
             </button>
           </li>
           <li>
-            <a
-              href={siteConfig.resume}
-              target="_blank"
-              rel="noopener noreferrer"
+            {/* The readable resume, not the file. The PDF is one tracked click
+                away on that page, and an HTML résumé is what a phone, a search
+                engine and the Khmer locale can all actually use. */}
+            <Link
+              href={`/${lang}/resume`}
               aria-label={dict.nav.resume}
               title={dict.nav.resume}
               className={NAV_ICON_BUTTON}
             >
               <FileText data-btn-glyph className="w-3.5 h-3.5" />
-            </a>
+            </Link>
           </li>
           <li>
             <LanguageSwitcher lang={lang} label={dict.nav.toggleLanguage} />
@@ -543,7 +545,10 @@ export default function Navbar(props: { lang: TLocale }) {
                 href={siteConfig.resume}
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={() => setMenuOpen(false)}
+                onClick={() => {
+                  trackCvDownload("navbar-mobile");
+                  setMenuOpen(false);
+                }}
                 className="flex min-h-11 items-center justify-center gap-2 rounded border border-primary/20 bg-primary/5 px-3 text-xs font-mono text-primary transition-colors hover:bg-primary/10"
               >
                 {dict.nav.resumeMobile}

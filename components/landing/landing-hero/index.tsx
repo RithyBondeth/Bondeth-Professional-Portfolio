@@ -6,6 +6,7 @@ import { Magnetic } from "@/components/utils/animations/magnetic";
 import { TiltCard } from "@/components/utils/animations/tilt-card";
 import { scrollToSection } from "@/components/utils/animations/smooth-scroll";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
+import { trackCvDownload } from "@/utils/functions/track-cv-download";
 import { getDictionary, type TLocale } from "@/utils/i18n";
 import { getSiteConfig } from "@/utils/i18n/content";
 
@@ -550,6 +551,7 @@ export default function LandingHero(props: { lang: TLocale }) {
                   href={siteConfig.resume}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => trackCvDownload("hero")}
                   className="btn-fx btn-fx-outline block px-6 py-2.5 border border-primary/20 text-primary rounded font-mono text-sm font-medium text-center"
                 >
                   {dict.hero.downloadCv}

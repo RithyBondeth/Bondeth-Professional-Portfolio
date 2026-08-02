@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import { useTheme } from "@/components/utils/theme/theme-provider";
 import { useMounted } from "@/components/utils/hooks/use-mounted";
 import { siteConfig, navLinks } from "@/utils/constants/portfolio.constant";
+import { trackCvDownload } from "@/utils/functions/track-cv-download";
 import {
   GitHubIcon,
   LinkedInIcon,
@@ -237,9 +238,20 @@ export default function CommandPalette(props: {
         id: "resume",
         group: "general",
         label: cp.openResume,
-        keywords: "resume cv download curriculum",
+        keywords: "resume cv curriculum vitae experience",
         icon: <FileIcon />,
-        run: () => window.open(siteConfig.resume, "_blank", "noopener"),
+        run: () => router.push(localizeHref("/resume", lang)),
+      },
+      {
+        id: "resume-pdf",
+        group: "general",
+        label: cp.downloadResume,
+        keywords: "resume cv download pdf curriculum file",
+        icon: <FileIcon />,
+        run: () => {
+          trackCvDownload("command-palette");
+          window.open(siteConfig.resume, "_blank", "noopener");
+        },
       },
     ];
 

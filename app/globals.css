@@ -1026,3 +1026,89 @@ html.theme-switching::view-transition-new(root) {
     animation-iteration-count: 1 !important;
   }
 }
+
+/* ── Print ──────────────────────────────────────────────────────────────────
+   Site-wide, not resume-only: any page should survive Cmd-P.
+
+   The load-bearing rule is the ScrollSmoother reset. #smooth-wrapper is
+   `position: fixed` with `overflow: hidden` and #smooth-content carries a
+   transform, so on paper the document is exactly one viewport tall and
+   everything below the fold is simply gone. Unpinning the wrapper is what
+   makes a multi-page print possible at all.
+
+   Everything else is ink economy: the ambient shader (and its CSS gradient
+   stand-in), the nav, the footer and anything marked data-print-hide carry
+   nothing onto paper, and the theme tokens are forced to black-on-white so a
+   reader printing from dark mode doesn't empty a cartridge. ── */
+@media print {
+  #smooth-wrapper {
+    position: static !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+  #smooth-content {
+    transform: none !important;
+  }
+
+  nav,
+  footer,
+  [data-print-hide] {
+    display: none !important;
+  }
+
+  /* Paper is white and ink is black, whatever the screen was showing. */
+  :root,
+  [data-theme="dark"] {
+    --background: #ffffff;
+    --foreground: #000000;
+    --card: #ffffff;
+    --card-foreground: #000000;
+    --muted-foreground: #3f3f46;
+    --field-muted-foreground: #3f3f46;
+    --border: #c8c8cd;
+    --primary: #000000;
+    --primary-fill: #000000;
+    --primary-foreground: #ffffff;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  /* Effects that cost ink and say nothing on paper. */
+  *,
+  *::before,
+  *::after {
+    background-image: none !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    filter: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+
+  @page {
+    margin: 16mm;
+  }
+
+  /* Never split a role, a degree or a heading across a page break. */
+  [data-print-keep] {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  h1,
+  h2,
+  h3 {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  /* A link is useless on paper unless its destination is on the paper. */
+  a[data-print-url]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+    word-break: break-all;
+  }
+}

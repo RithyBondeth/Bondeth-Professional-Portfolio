@@ -38,6 +38,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       alternates: { languages: languageAlternates("/projects") },
     });
 
+    entries.push({
+      url: `${siteConfig.url}/${locale}/resume`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+      alternates: { languages: languageAlternates("/resume") },
+    });
+
     entries.push(
       {
         url: `${siteConfig.url}/${locale}/labs`,
