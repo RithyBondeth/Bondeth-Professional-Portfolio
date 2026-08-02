@@ -24,7 +24,7 @@ export default function ProjectLoading() {
             <Skeleton className="mt-6 h-4 w-full max-w-2xl" />
             <Skeleton className="mt-2 h-4 w-5/6 max-w-xl" />
           </div>
-          <Skeleton className="aspect-[16/10] w-full rounded border border-border/60" />
+          <Skeleton className="aspect-16/10 w-full rounded border border-border/60" />
         </div>
 
         {/* Detail cards */}
