@@ -26,7 +26,7 @@ export const km: TDictionary = {
       "អ្នកអភិវឌ្ឍន៍កម្មវិធីទូរស័ព្ទ",
     ],
     viewWork: "./មើលស្នាដៃ",
-    downloadCv: "./ទាញយក-CV",
+    resume: "./ប្រវត្តិរូប",
     getInTouch: "./ទាក់ទងខ្ញុំ",
     scroll: "រំកិលចុះ",
   },

@@ -25,86 +25,60 @@ import { getSiteConfig } from "@/utils/i18n/content";
 
 /* --------------------------------- Portrait -------------------------------- */
 /**
- * The portrait is a transparent PNG (background already cut out), so we render a
- * full code editor BEHIND it — two "files" filling the panel left and right. The
- * person sits in front, hiding the code directly behind him while the snippets
- * stay visible around his silhouette. Editor colours come from the shared
- * `.editor-*` / `.tok-*` tokens in globals.css and follow the theme; they used
- * to be fixed dark literals, which left a black rectangle sitting on a light
- * page once the gradient-wave background landed.
+ * The two halves of ONE source file, running down either side of the portrait.
+ *
+ * They used to be three unrelated snippets — a `fs.readFileSync` config loader,
+ * a generic `UserService`, and a raw `<!DOCTYPE html>` document — sharing a
+ * panel labelled `bondeth.png`. Three languages, none of them his, none of them
+ * related to each other.
+ *
+ * This is retrieval code: embed a query, score every chunk by cosine
+ * similarity, keep the best few. It is the same thing the RAG lab on this site
+ * does, so the backdrop is now his actual domain rather than tutorial
+ * boilerplate. Lines stay under ~38 characters because the columns are ~47% of
+ * a narrow panel and anything longer is clipped mid-word.
  */
-const LEFT_CODE = `const fs = require('fs');
-const path = require('path');
-const readline = require('readline');
+const LEFT_CODE = `import { embed } from "@/lib/ai";
+import { db } from "@/lib/db";
 
-function log(msg) {
-  const time = new Date().toISOString();
-  console.log(\`[\${time}] \${msg}\`);
+type Chunk = {
+  id: string;
+  text: string;
+  vector: number[];
+};
+
+export async function search(
+  q: string,
+) {
+  const query = await embed(q);
+  const all = await db.chunk.all();
+
+  return all
+    .map(withScore(query))
+    .sort(byScore)
+    .slice(0, 5);
+}`;
+
+const RIGHT_CODE = `function cosine(
+  a: number[],
+  b: number[],
+) {
+  let dot = 0;
+  let na = 0;
+  let nb = 0;
+
+  for (let i = 0; i < a.length; i++) {
+    dot += a[i] * b[i];
+    na += a[i] * a[i];
+    nb += b[i] * b[i];
+  }
+
+  return dot / Math.sqrt(na * nb);
 }
 
-function loadConfig(filePath) {
-  try {
-    const data = fs.readFileSync(filePath, 'utf8');
-    return JSON.parse(data);
-  } catch (err) {
-    log('Failed to load config: ' + err.message);
-    return {};
-  }
-}
-
-function start() {
-  log('Application started');
-  const config = loadConfig(path.join(__dirname));
-  log('Config loaded: ' + JSON.stringify(config));
-}
-
-start();
-
-// Watch for changes
-fs.watch('.', (eventType, filename) => {
-  if (filename) {
-    log(\`File changed: \${filename}\`);
-  }
-});`;
-
-const RIGHT_CODE = `class UserService {
-  constructor(db) {
-    this.db = db;
-  }
-
-  async getUser(id) {
-    const res = await this.db.query(
-      'SELECT * FROM users WHERE id = $1',
-      [id]
-    );
-    return res.rows[0];
-  }
-}
-
-module.exports = UserService;
-
-app.get('/api/user/:id', async (req, res) => {
-  try {
-    const user = await userService.getUser(req.params.id);
-    if (!user) return res.status(404).json({ error: 'Not found' });
-    res.json(user);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Developer Dashboard</title>
-  </head>
-  <body>
-    <div class="container">
-      <h1>Welcome, Developer</h1>
-    </div>
-  </body>
-</html>`;
+// Weak matches never reach the
+// model's context window.
+const MIN_SCORE = 0.72;`;
 
 const KEYWORDS = new Set([
   "import",
@@ -134,6 +108,9 @@ const KEYWORDS = new Set([
   "require",
   "try",
   "catch",
+  // The backdrop is TypeScript now, so its type-level keywords count too.
+  "type",
+  "interface",
 ]);
 
 interface IToken {
@@ -230,10 +207,11 @@ function CodeColumn(props: {
 
         let budget = vis;
         return (
-          <div key={i} className="flex gap-3">
-            <span className="editor-gutter w-4 shrink-0 text-right tabular-nums">
-              {i + 1}
-            </span>
+          // No line-number gutter: this is one file split across two columns,
+          // so a gutter per column put two "line 1"s side by side. Without them
+          // the code reads as what it is here — texture behind a portrait,
+          // not a file anyone is meant to follow.
+          <div key={i}>
             <code className="whitespace-pre">
               {line.tokens.map((tok, j) => {
                 if (budget <= 0) return null;
@@ -256,6 +234,15 @@ function CodeColumn(props: {
   );
 }
 
+/**
+ * The portrait is a transparent PNG (background already cut out), so a code
+ * editor renders BEHIND it — one file split into two columns down either side.
+ * The person sits in front, occluding the code directly behind him while the
+ * rest stays visible around his silhouette. Editor colours come from the shared
+ * `.editor-*` / `.tok-*` tokens in globals.css and follow the theme; they used
+ * to be fixed dark literals, which left a black rectangle sitting on a light
+ * page once the gradient-wave background landed.
+ */
 function PortraitPanel(props: { alt: string }) {
   // Kick off (and replay) the typing animation whenever the panel is on screen.
   const ref = useRef<HTMLElement>(null);
@@ -286,38 +273,39 @@ function PortraitPanel(props: { alt: string }) {
             surface the hero's profile.ts block uses, so the two windows stay in
             step and both follow the theme instead of staying black in it. */}
         <div className="editor-window relative rounded-md overflow-hidden">
-          {/* Window Chrome */}
-          <div className="editor-chrome flex items-center gap-1.5 px-4 py-3 border-b">
-            <span aria-hidden className="w-3 h-3 rounded-full bg-red-500/80" />
-            <span
-              aria-hidden
-              className="w-3 h-3 rounded-full bg-yellow-500/70"
-            />
-            <span
-              aria-hidden
-              className="w-3 h-3 rounded-full bg-green-500/70"
-            />
-            <span className="editor-label ml-3 text-[11px] font-code select-none">
+          {/* Tab strip — matches the hero's panel. The metadata is the
+              portrait's real intrinsic size, so the chrome describes the asset
+              it is actually framing. */}
+          <div className="editor-tabs text-[11px] font-code select-none">
+            <span className="editor-tab">
               bondeth.png
+              <span className="editor-chip">PNG</span>
             </span>
+            <span className="editor-meta text-[10px]">819 × 1157</span>
           </div>
 
           {/* Code editor behind + person in front. The person is a transparent
               cut-out, so the code shows around him and is hidden behind him. */}
           <div className="relative">
-            <CodeColumn
-              code={LEFT_CODE}
-              className="top-4 bottom-4 left-4 w-[47%]"
-              active={active}
-              cps={58}
-            />
-            <CodeColumn
-              code={RIGHT_CODE}
-              className="top-4 bottom-4 right-4 w-[47%]"
-              active={active}
-              cps={52}
-              delay={0.4}
-            />
+            {/* The backdrop is masked away from where he stands. Before this the
+                code ran straight into his face and shoulders, which read as a
+                collision rather than a composition; fading it out around the
+                silhouette turns the same two layers into depth. */}
+            <div className="portrait-code-veil absolute inset-0">
+              <CodeColumn
+                code={LEFT_CODE}
+                className="top-4 bottom-4 left-4 w-[47%]"
+                active={active}
+                cps={58}
+              />
+              <CodeColumn
+                code={RIGHT_CODE}
+                className="top-4 bottom-4 right-4 w-[47%]"
+                active={active}
+                cps={52}
+                delay={0.4}
+              />
+            </div>
 
             {/* Person — a little padding so he doesn't touch the edges */}
             <div className="relative mx-auto w-[86%] pt-6">

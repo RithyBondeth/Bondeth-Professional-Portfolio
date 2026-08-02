@@ -1,16 +1,8 @@
 import { siteConfig } from "@/utils/constants/portfolio.constant";
-import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
+import { AnimateIn } from "@/components/utils/animations/animate-in";
 import { ScrambleText } from "@/components/utils/animations/scramble-text";
 import { SplitReveal } from "@/components/utils/animations/split-reveal";
-import { Magnetic } from "@/components/utils/animations/magnetic";
 import { StatusChip } from "@/components/utils/status-chip";
-import {
-  GitHubIcon,
-  LinkedInIcon,
-  FacebookIcon,
-  InstagramIcon,
-  MailIcon,
-} from "@/components/utils/icons";
 import { ArrowRight, Clock3 } from "lucide-react";
 import ContactForm from "./contact-form";
 import { getDictionary, type TLocale } from "@/utils/i18n";
@@ -87,68 +79,7 @@ export default function LandingContact(props: { lang: TLocale }) {
             </div>
           </AnimateIn>
         </div>
-
-        {/* Social Links Section */}
-        <div className="mt-12 border-t border-border/50 pt-8">
-          <StaggerIn
-            className="flex gap-4"
-            from="zoom-in"
-            stagger={0.1}
-            delay={0.2}
-          >
-            <SocialLink
-              href={siteConfig.github}
-              label="GitHub"
-              icon={<GitHubIcon className="w-4 h-4" />}
-            />
-            <SocialLink
-              href={siteConfig.linkedin}
-              label="LinkedIn"
-              icon={<LinkedInIcon className="w-4 h-4" />}
-            />
-            <SocialLink
-              href={siteConfig.facebook}
-              label="Facebook"
-              icon={<FacebookIcon className="w-4 h-4" />}
-            />
-            <SocialLink
-              href={siteConfig.instagram}
-              label="Instagram"
-              icon={<InstagramIcon className="w-4 h-4" />}
-            />
-            <SocialLink
-              href={`mailto:${siteConfig.email}`}
-              label="Email"
-              icon={<MailIcon className="w-4 h-4" />}
-            />
-          </StaggerIn>
-        </div>
       </div>
     </section>
-  );
-}
-
-/* --------------------------------- Utilities -------------------------------- */
-function SocialLink(props: {
-  href: string;
-  label: string;
-  icon: React.ReactNode;
-}) {
-  /* ---------------------------------- Props --------------------------------- */
-  const { href, label, icon } = props;
-
-  /* -------------------------------- Render UI ------------------------------- */
-  return (
-    <Magnetic strength={0.45} className="inline-block">
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label={label}
-        className="btn-fx btn-fx-icon w-10 h-10 flex items-center justify-center rounded border border-border/60 text-muted-foreground hover:text-primary hover:border-primary/40"
-      >
-        {icon}
-      </a>
-    </Magnetic>
   );
 }

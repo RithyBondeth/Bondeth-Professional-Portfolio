@@ -20,7 +20,7 @@ export const en = {
   hero: {
     titles: ["Full Stack Developer", "AI Engineer", "Mobile App Developer"],
     viewWork: "./view-work",
-    downloadCv: "./download-cv",
+    resume: "./resume",
     getInTouch: "./get-in-touch",
     scroll: "scroll",
   },

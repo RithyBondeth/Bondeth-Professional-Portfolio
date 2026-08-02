@@ -26,9 +26,20 @@ const notoSerif = Noto_Serif({
   variable: "--font-serif",
 });
 
+// NOT preloaded, unlike the other two. Both locales share this layout, so
+// next/font emits a preload <link> for every font in the module graph on every
+// page — which put Kantumruy's two subsets (89kB, the Khmer one alone is 56kB)
+// in the critical path of the English pages, competing with Noto Serif, the
+// font /en actually renders its LCP text in.
+//
+// Nothing on /en can reference this family: the only rule that reaches for it
+// is `html[lang="km"]` (globals.css). On /km the browser discovers it while
+// parsing that render-blocking stylesheet — a touch later than a preload, and
+// `display: swap` means text paints in the fallback either way.
 const kantumruyPro = Kantumruy_Pro({
   subsets: ["khmer", "latin"],
   variable: "--font-khmer",
+  preload: false,
 });
 
 /* --------------------------------- Metadata --------------------------------- */

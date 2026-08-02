@@ -7,6 +7,28 @@ import { getDictionary, type TLocale } from "@/utils/i18n";
 
 type TFormStatus = "idle" | "loading" | "success" | "error";
 
+/* --------------------------------- Icons ---------------------------------- */
+/* The select below runs with `appearance: none`, so this is the ONLY arrow the
+   control has — same geometry in Chrome, Safari, Firefox and every mobile
+   browser, instead of three different browser-drawn glyphs each parked wherever
+   that engine decides. `currentColor` also means it follows the theme for free,
+   which a background-image data URI would not. */
+function ChevronDownIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      viewBox="0 0 24 24"
+      {...props}
+    >
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  );
+}
+
 export default function ContactForm(props: { lang: TLocale }) {
   /* ---------------------------------- Props --------------------------------- */
   const { lang } = props;
@@ -17,6 +39,12 @@ export default function ContactForm(props: { lang: TLocale }) {
   const [status, setStatus] = useState<TFormStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [message, setMessage] = useState("");
+  // Drives the placeholder-vs-value colour of the project-type select: a select
+  // showing its "pick one" option should read as muted the way the sibling
+  // inputs' placeholders do. Kept in state rather than as a
+  // `:has(option[value=""]:checked)` rule so the swap is one code path in every
+  // engine, with no dependency on how each one invalidates `:has()`.
+  const [projectType, setProjectType] = useState("");
 
   /* ---------------------------------- Utils --------------------------------- */
   const successCardRef = useRef<HTMLDivElement>(null);
@@ -107,6 +135,7 @@ export default function ContactForm(props: { lang: TLocale }) {
         track("contact_form_submitted");
         setStatus("success");
         setMessage("");
+        setProjectType("");
         (e.target as HTMLFormElement).reset();
       } else {
         const body = await response.json().catch(() => null);
@@ -198,21 +227,44 @@ export default function ContactForm(props: { lang: TLocale }) {
         >
           {t.projectType}
         </label>
-        <select
-          id="projectType"
-          name="projectType"
-          defaultValue=""
-          className="rounded border border-border/60 bg-background px-4 py-2.5 text-sm text-foreground transition-colors focus:border-primary/50 focus:outline-hidden"
-        >
-          <option value="" disabled>
-            {t.projectTypePlaceholder}
-          </option>
-          {t.projectTypes.map((type) => (
-            <option key={type} value={type}>
-              {type}
+        {/* The arrow is ours, not the browser's — see ChevronDownIcon above. The
+            wrapper exists only to anchor it; the select still owns the box, the
+            border and the focus state, so the control stays one hit target. */}
+        <div className="relative">
+          <select
+            id="projectType"
+            name="projectType"
+            value={projectType}
+            onChange={(event) => setProjectType(event.currentTarget.value)}
+            className={`peer w-full cursor-pointer appearance-none rounded border border-border/60 bg-background py-2.5 pl-4 pr-11 text-sm transition-colors focus:border-primary/50 focus:outline-hidden ${
+              projectType ? "text-foreground" : "text-muted-foreground"
+            }`}
+          >
+            {/* The popped-open list is drawn by the OS, so these colours only
+                land where the engine honours them (Chrome/Firefox on Windows
+                and Linux). `color-scheme` in globals.css covers the rest. */}
+            <option
+              value=""
+              disabled
+              className="bg-background text-muted-foreground"
+            >
+              {t.projectTypePlaceholder}
             </option>
-          ))}
-        </select>
+            {t.projectTypes.map((type) => (
+              <option
+                key={type}
+                value={type}
+                className="bg-background text-foreground"
+              >
+                {type}
+              </option>
+            ))}
+          </select>
+          <ChevronDownIcon
+            aria-hidden
+            className="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground transition-colors peer-focus:text-primary"
+          />
+        </div>
       </div>
 
       {/* Message Section */}

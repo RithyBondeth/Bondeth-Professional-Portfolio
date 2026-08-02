@@ -10,8 +10,48 @@ import { ScrambleText } from "@/components/utils/animations/scramble-text";
 import { SplitReveal } from "@/components/utils/animations/split-reveal";
 import { VelocitySkew } from "@/components/utils/animations/velocity-skew";
 import { ProficiencyDots, SkillBadge } from "./skill-badge";
+import { SkillIconSprite } from "./skill-icon-sprite";
 
-const COPIES_PER_HALF = 8;
+/**
+ * The marquee scrolls a track by exactly -50%, so the track is the caller's
+ * `half` rendered twice and the wrap is seamless as long as ONE half is wider
+ * than the viewport. Anything past that is markup nobody can ever see.
+ *
+ * This used to be a flat 8 copies per half — 16 badges per skill, 576 badges
+ * on the page, and 1.5MB of HTML for a section that shows maybe a dozen pills
+ * at a time. Sizing each row to its own content instead means a row of three
+ * skills still repeats enough to fill the screen while a row of seven barely
+ * repeats at all.
+ */
+/**
+ * Width one half must reach: a 4K viewport, so the wrap still has something to
+ * wrap to on the widest screen anyone is likely to open this on. Falling short
+ * is a visible bug — the track runs out and the row goes blank until the loop
+ * comes back around — which is why this is generous and why {@link badgeWidth}
+ * deliberately guesses low.
+ */
+const MIN_HALF_PX = 4000;
+/** Even a very wide row repeats, so the loop reads as a cycle and not a jump. */
+const MIN_COPIES = 2;
+
+/**
+ * Estimated rendered width of a badge, in px: fixed furniture (padding, icon,
+ * dots, gaps) plus the name.
+ *
+ * Tuned to UNDER-estimate, and that direction is the whole point. Guessing
+ * high divides MIN_HALF_PX by too large a row and emits too FEW copies, which
+ * is the one failure that shows on screen; guessing low just costs a little
+ * markup. Measured against the real render, this sits ~10% under across the
+ * name lengths actually in use (Git → Tailwind CSS).
+ */
+function badgeWidth(skill: ISkill) {
+  return 90 + skill.name.length * 6;
+}
+
+function copiesPerHalf(skills: ISkill[]) {
+  const rowPx = skills.reduce((sum, s) => sum + badgeWidth(s) + 12, 0);
+  return Math.max(MIN_COPIES, Math.ceil(MIN_HALF_PX / rowPx));
+}
 
 export default function LandingSkills(props: { lang: TLocale }) {
   /* ---------------------------------- Props --------------------------------- */
@@ -31,6 +71,12 @@ export default function LandingSkills(props: { lang: TLocale }) {
       id="skills"
       className="relative isolate py-16 sm:py-20 lg:py-24 overflow-hidden"
     >
+      {/* Every icon's geometry, defined once. The badges below reference these
+          by id, so this has to be in the document before them. */}
+      <SkillIconSprite
+        icons={skillGroups.flatMap(({ skills }) => skills.map((s) => s.icon))}
+      />
+
       {/* Heading Section */}
       <div className="max-w-6xl mx-auto px-6 mb-16">
         <AnimateIn from="zoom-in">
@@ -69,7 +115,7 @@ export default function LandingSkills(props: { lang: TLocale }) {
         {skillGroups.map(({ category, skills }, i) => {
           const direction = i % 2 === 0 ? "rtl" : "ltr";
           const half: ISkill[] = Array.from(
-            { length: COPIES_PER_HALF * skills.length },
+            { length: copiesPerHalf(skills) * skills.length },
             (_, j) => skills[j % skills.length],
           );
           const track = [...half, ...half];

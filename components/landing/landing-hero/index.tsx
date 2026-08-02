@@ -1,12 +1,19 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
+import Link from "next/link";
+import { FileText, LayoutGrid, Mail } from "lucide-react";
 import { gsap, SplitText } from "@/components/utils/animations/gsap";
 import { Magnetic } from "@/components/utils/animations/magnetic";
 import { TiltCard } from "@/components/utils/animations/tilt-card";
 import { scrollToSection } from "@/components/utils/animations/smooth-scroll";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
-import { trackCvDownload } from "@/utils/functions/track-cv-download";
 import { getDictionary, type TLocale } from "@/utils/i18n";
 import { getSiteConfig } from "@/utils/i18n/content";
 
@@ -69,6 +76,100 @@ function useTypewriter(phrases: string[], startDelay = 1200) {
 }
 
 /* --------------------------------- Utilities -------------------------------- */
+/**
+ * The panel's source, one entry per rendered line.
+ *
+ * It is a list rather than a single `<pre>` because the gutter is generated
+ * from it: line numbers used to be a hard-coded `length: 18` that outran the
+ * code by three rows, leaving an empty gutter and a caret stranded in blank
+ * space at the bottom of the panel. Deriving both from one array makes that
+ * particular mistake unrepresentable.
+ *
+ * The code is real TypeScript, not a prop: it compiles, and `satisfies` refers
+ * to a type the reader can actually see above it. The previous version ended on
+ * `satisfies Developer` with no `Developer` anywhere in the panel. Nothing is
+ * wider than 34 characters, which is what keeps the widest line inside a 375px
+ * phone without a horizontal scroll.
+ */
+const K = (t: string) => <span className="tok-keyword">{t}</span>;
+const I = (t: string) => <span className="tok-ident">{t}</span>;
+const S = (t: string) => <span className="tok-string">{t}</span>;
+const C = (t: string) => <span className="tok-comment">{t}</span>;
+
+const PROFILE_LINES: React.ReactNode[] = [
+  <>{K("type")} {I("Engineer")} = {"{"}</>,
+  <>{"  "}{I("name")}: {K("string")};</>,
+  <>{"  "}{I("based")}: {S("`${string}, ${string}`")};</>,
+  <>{"  "}{I("focus")}: {K("string")}[];</>,
+  <>{"  "}{I("stack")}: {I("Record")}&lt;{K("string")}, {K("string")}[]&gt;;</>,
+  <>{"  "}{I("shipping")}: {K("boolean")};</>,
+  <>{"};"}</>,
+  <>{" "}</>,
+  <>{K("export")} {K("const")} {I("bondeth")} = {"{"}</>,
+  <>{"  "}{I("name")}: {S('"Hem RithyBondeth"')},</>,
+  <>{"  "}{I("based")}: {S('"Phnom Penh, KH"')},</>,
+  <>{"  "}{I("focus")}: [{S('"full-stack"')}, {S('"AI"')}],</>,
+  <>{"  "}{I("stack")}: {"{"}</>,
+  <>{"    "}{I("web")}: [{S('"Next.js"')}, {S('"Nuxt.js"')}],</>,
+  <>{"    "}{I("api")}: [{S('"Nest.js"')}, {S('"FastAPI"')}],</>,
+  <>{"  },"}</>,
+  <>{"  "}{I("shipping")}: {K("true")},</>,
+  <>{"}"} {K("satisfies")} {I("Engineer")};</>,
+];
+
+/**
+ * The panel's one live element: the real current time in Phnom Penh, ticking.
+ *
+ * It replaces a caret that blinked in an empty row below the code — motion that
+ * looked like a rendering bug rather than a cursor. A clock earns its movement:
+ * it is the only thing on the panel that proves `based: "Phnom Penh, KH"`
+ * rather than asserting it, and it follows the same principle the globe already
+ * works on, deriving something true from the actual UTC clock.
+ *
+ * Its own component so the per-second tick re-renders one text node instead of
+ * the whole hero. Renders a placeholder on the server: the time is by
+ * definition different there, so there is nothing to match.
+ */
+function PhnomPenhClock() {
+  const reduced = useReducedMotion();
+
+  // The wall clock is an external store, so it is read through
+  // useSyncExternalStore rather than mirrored into state from an effect — the
+  // same shape as useReducedMotion above. getSnapshot returns the formatted
+  // string, which is stable by value between ticks, so React re-renders only
+  // when the displayed time actually changes.
+  const subscribe = useCallback(
+    (onChange: () => void) => {
+      // Reduced motion keeps the hour and minute but drops the ticking second.
+      const id = setInterval(onChange, reduced ? 30_000 : 1000);
+      return () => clearInterval(id);
+    },
+    [reduced],
+  );
+
+  const getSnapshot = useCallback(
+    () =>
+      new Intl.DateTimeFormat("en-GB", {
+        timeZone: "Asia/Phnom_Penh",
+        hour: "2-digit",
+        minute: "2-digit",
+        ...(reduced ? {} : { second: "2-digit" }),
+        hour12: false,
+      }).format(new Date()),
+    [reduced],
+  );
+
+  // The server has no meaningful "now" for this panel, so it renders a dashed
+  // placeholder of the same width and the client fills it in on hydration.
+  const now = useSyncExternalStore(subscribe, getSnapshot, () => null);
+
+  return (
+    <span className="tabular-nums">
+      {now ?? (reduced ? "--:--" : "--:--:--")} ICT
+    </span>
+  );
+}
+
 function CodeBlock() {
   return (
     <div className="group relative w-full max-w-sm xl:max-w-md">
@@ -91,25 +192,23 @@ function CodeBlock() {
             the theme now instead of staying black in both: a black rectangle
             was the one thing on the page that ignored the light background. */}
         <div className="editor-window relative rounded-md overflow-hidden transition-colors duration-500 group-hover:border-primary/40">
-          {/* Window Chrome Section — the traffic lights pick up a soft bloom on
-              hover, the one place colour is allowed in this monochrome theme. */}
-          <div className="editor-chrome flex items-center gap-1.5 px-4 py-3 border-b">
-            <span className="w-3 h-3 rounded-full bg-red-500/80 transition-shadow duration-300 group-hover:shadow-[0_0_8px_rgb(239_68_68/0.7)]" />
-            <span className="w-3 h-3 rounded-full bg-yellow-500/70 transition-shadow duration-300 group-hover:shadow-[0_0_8px_rgb(234_179_8/0.7)]" />
-            <span className="w-3 h-3 rounded-full bg-green-500/70 transition-shadow duration-300 group-hover:shadow-[0_0_8px_rgb(34_197_94/0.7)]" />
-            <span className="editor-label ml-3 text-[11px] font-code select-none transition-colors duration-300 group-hover:text-foreground">
+          {/* Tab strip — see `.editor-tab` in globals.css for why this is a tab
+              and not three traffic lights. */}
+          <div className="editor-tabs text-[11px] font-code select-none">
+            <span className="editor-tab">
               profile.ts
+              <span className="editor-chip">TS</span>
             </span>
           </div>
 
           {/* Line Numbers + Code Section — the type steps down a notch on
-              phones so the widest line (`location`) clears 375px without
-              needing a horizontal scroll, and the tighter leading keeps the
-              whole window from dominating the stacked mobile hero. */}
+              phones so the widest line (`stack: Record<…>`) clears 375px
+              without needing a horizontal scroll, and the tighter leading keeps
+              the whole window from dominating the stacked mobile hero. */}
           <div className="flex text-[10px] min-[360px]:text-[11px] sm:text-xs font-code leading-[1.75] sm:leading-6 overflow-x-auto">
-            {/* Line Numbers */}
+            {/* Line Numbers — generated from the source, never hand-counted. */}
             <div className="editor-gutter select-none text-right pr-3 pl-3 sm:pr-4 sm:pl-4 py-4 sm:py-5 border-r shrink-0">
-              {Array.from({ length: 18 }, (_, i) => (
+              {PROFILE_LINES.map((_, i) => (
                 <div key={i}>{i + 1}</div>
               ))}
             </div>
@@ -118,65 +217,23 @@ function CodeBlock() {
                 palette (globals.css), the same one landing-about's tokenizer
                 emits, and they swap with the theme. */}
             <pre className="tok-punct py-4 sm:py-5 pl-3 sm:pl-4 pr-2 min-[360px]:pr-4 sm:pr-6">
-              <span className="tok-comment">{"// Developer profile"}</span>
-              {"\n"}
-              <span className="tok-keyword">{"const"}</span>{" "}
-              <span className="tok-ident">{"developer"}</span>
-              {" = {\n"}
-              {"  "}
-              <span className="tok-ident">{"name"}</span>
-              {": "}
-              <span className="tok-string">{'"Hem RithyBondeth"'}</span>
-              {",\n"}
-              {"  "}
-              <span className="tok-ident">{"role"}</span>
-              {": [\n"}
-              {"    "}
-              <span className="tok-string">{'"Full Stack Dev"'}</span>
-              {",\n"}
-              {"    "}
-              <span className="tok-string">{'"AI Engineer"'}</span>
-              {",\n"}
-              {"  ],\n"}
-              {"  "}
-              <span className="tok-ident">{"location"}</span>
-              {": "}
-              <span className="tok-string">
-                {'"Phnom Penh, Cambodia"'}
-              </span>
-              {",\n"}
-              {"  "}
-              <span className="tok-ident">{"stack"}</span>
-              {": [\n"}
-              {"    "}
-              <span className="tok-string">{'"Next.js"'}</span>
-              {", "}
-              <span className="tok-string">{'"Nuxt.js"'}</span>
-              {",\n"}
-              {"    "}
-              <span className="tok-string">{'"FastAPI"'}</span>
-              {", "}
-              <span className="tok-string">{'"Nest.js"'}</span>
-              {",\n"}
-              {"    "}
-              <span className="tok-string">{'"MongoDB"'}</span>
-              {", "}
-              <span className="tok-string">{'"Flutter"'}</span>
-              {",\n"}
-              {"  ],\n"}
-              {"  "}
-              <span className="tok-ident">{"available"}</span>
-              {": "}
-              <span className="tok-keyword">{"true"}</span>
-              {",\n"}
-              {"} "}
-              <span className="tok-keyword">{"satisfies"}</span>{" "}
-              <span className="tok-ident">{"Developer"}</span>
-              {";\n\n"}
-              <span className="tok-string animate-[blink_1s_step-end_infinite]">
-                {"▊"}
-              </span>
+              {PROFILE_LINES.map((line, i) => (
+                <div key={i}>{line}</div>
+              ))}
             </pre>
+          </div>
+
+          {/* Evaluation row — the panel's one live element. An editor puts
+              results under the source, so that is where this sits. */}
+          <div className="editor-chrome flex items-center justify-between gap-4 border-t px-4 py-2.5 text-[10px] font-code">
+            <span className="flex items-center gap-2">
+              <span className="tok-punct" aria-hidden>
+                →
+              </span>
+              {C("bondeth.based")}
+              <PhnomPenhClock />
+            </span>
+            <span className="editor-label">UTC+7</span>
           </div>
         </div>
       </TiltCard>
@@ -533,6 +590,15 @@ export default function LandingHero(props: { lang: TLocale }) {
               {localized.tagline}
             </p>
 
+            {/* Three CTAs on one row, so they have to read as a hierarchy
+                rather than as three equal options: filled → tinted outline →
+                quiet outline. Each carries a leading glyph on the house
+                `data-btn-glyph` hook, which brings the shared transition and
+                the reduced-motion opt-out with it.
+
+                `min-h-11` is the 44px touch target, and it also forces the
+                three to match height once Khmer wraps a label that English
+                keeps on one line. */}
             <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
               <Magnetic strength={0.3} className="hero-cta-item">
                 <a
@@ -541,21 +607,30 @@ export default function LandingHero(props: { lang: TLocale }) {
                     e.preventDefault();
                     scrollToSection("projects");
                   }}
-                  className="btn-fx btn-fx-primary block px-6 py-2.5 bg-primary-fill text-primary-foreground rounded font-mono text-sm font-medium text-center"
+                  className="btn-fx btn-fx-primary flex min-h-11 items-center justify-center gap-2 rounded bg-primary-fill px-5 py-2.5 text-center font-mono text-sm font-medium text-primary-foreground"
                 >
+                  <LayoutGrid
+                    aria-hidden
+                    data-btn-glyph
+                    className="size-4 shrink-0"
+                  />
                   {dict.hero.viewWork}
                 </a>
               </Magnetic>
               <Magnetic strength={0.3} className="hero-cta-item">
-                <a
-                  href={siteConfig.resume}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => trackCvDownload("hero")}
-                  className="btn-fx btn-fx-outline block px-6 py-2.5 border border-primary/20 text-primary rounded font-mono text-sm font-medium text-center"
+                {/* The résumé PAGE, not the file — the PDF is one tracked click
+                    away there, and the label promises a page accordingly. */}
+                <Link
+                  href={`/${lang}/resume`}
+                  className="btn-fx btn-fx-outline flex min-h-11 items-center justify-center gap-2 rounded border border-primary/20 px-5 py-2.5 text-center font-mono text-sm font-medium text-primary"
                 >
-                  {dict.hero.downloadCv}
-                </a>
+                  <FileText
+                    aria-hidden
+                    data-btn-glyph
+                    className="size-4 shrink-0"
+                  />
+                  {dict.hero.resume}
+                </Link>
               </Magnetic>
               <Magnetic strength={0.3} className="hero-cta-item">
                 <a
@@ -564,8 +639,9 @@ export default function LandingHero(props: { lang: TLocale }) {
                     e.preventDefault();
                     scrollToSection("contact");
                   }}
-                  className="btn-fx btn-fx-outline block px-6 py-2.5 border border-border text-field-muted-foreground rounded font-mono text-sm font-medium hover:text-foreground text-center"
+                  className="btn-fx btn-fx-outline flex min-h-11 items-center justify-center gap-2 rounded border border-border px-5 py-2.5 text-center font-mono text-sm font-medium text-field-muted-foreground hover:text-foreground"
                 >
+                  <Mail aria-hidden data-btn-glyph className="size-4 shrink-0" />
                   {dict.hero.getInTouch}
                 </a>
               </Magnetic>

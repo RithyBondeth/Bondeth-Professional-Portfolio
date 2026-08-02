@@ -25,6 +25,12 @@ export function ProjectCard(props: {
               src={project.image}
               alt={`${project.title} preview`}
               fill
+              // Without this, `fill` means `sizes="100vw"` and the browser
+              // picks the widest srcset candidate — a 3840px render of a
+              // preview that is never shown above 420px. The card is
+              // `min(84vw, 420px)` in the landing strip and a third of a
+              // max-w-6xl grid on /projects, so 420 covers the widest case.
+              sizes="(min-width: 640px) 420px, 90vw"
               data-card-media
               className="object-cover"
             />

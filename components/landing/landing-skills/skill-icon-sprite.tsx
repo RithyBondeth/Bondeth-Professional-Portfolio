@@ -37,17 +37,25 @@ import {
 } from "react-icons/si";
 import { FaAws } from "react-icons/fa";
 import type { IconType } from "react-icons";
-import { skillIconId } from "./skill-icon-id";
+import {
+  hasSkillIcon,
+  skillIconId,
+  type TSkillIconKey,
+} from "./skill-icon-id";
 import { SiOpenai } from "./skill-icon-openai";
 
 /**
  * The icon components stay on the server. A marquee row repeats each badge
- * seven or eight times over, so inlining these produced hundreds of copies of
- * the same path data in the prerendered HTML — and shipped all 37 icon
+ * until it outruns the viewport, so inlining these produced hundreds of copies
+ * of the same path data in the prerendered HTML — and shipped all 37 icon
  * components to the browser besides. The sprite below emits each icon's
  * geometry exactly once and badges point at it with `<use>`.
+ *
+ * Typed against `TSkillIconKey`, so this map and the key list in
+ * `./skill-icon-id` cannot drift: adding a key there without a component here
+ * (or vice versa) is a type error.
  */
-const ICON_MAP: Record<string, IconType> = {
+const ICON_MAP: Record<TSkillIconKey, IconType> = {
   SiTypescript,
   SiReact,
   SiNextdotjs,
@@ -86,10 +94,6 @@ const ICON_MAP: Record<string, IconType> = {
   SiLinux,
   FaAws,
 };
-
-export function hasSkillIcon(icon: string) {
-  return icon in ICON_MAP;
-}
 
 /**
  * Pulls the drawable innards and the viewBox out of a react-icons component.

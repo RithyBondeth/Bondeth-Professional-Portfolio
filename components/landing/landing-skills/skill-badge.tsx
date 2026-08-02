@@ -1,105 +1,21 @@
 "use client";
 
-import {
-  PixelRipple,
-  useRippleHover,
-} from "@/components/utils/animations/pixel-ripple";
-import {
-  ISkill,
-  type TSkillLevel,
-} from "@/utils/interfaces/portfolio";
-import {
-  SiReact,
-  SiNextdotjs,
-  SiVuedotjs,
-  SiNuxt,
-  SiTypescript,
-  SiTailwindcss,
-  SiPython,
-  SiNodedotjs,
-  SiNestjs,
-  SiPostgresql,
-  SiMongodb,
-  SiRedis,
-  SiGraphql,
-  SiFastapi,
-  SiRabbitmq,
-  SiAnthropic,
-  SiGooglegemini,
-  SiLangchain,
-  SiLanggraph,
-  SiOllama,
-  SiHuggingface,
-  SiFlutter,
-  SiSwift,
-  SiKotlin,
-  SiGit,
-  SiDocker,
-  SiGithub,
-  SiVercel,
-  SiNetlify,
-  SiDigitalocean,
-  SiGooglecloud,
-  SiCloudflare,
-  SiNginx,
-  SiGithubactions,
-  SiLinux,
-} from "react-icons/si";
-import { FaAws } from "react-icons/fa";
-import type { IconType } from "react-icons";
-import { SiOpenai } from "./skill-icon-openai";
+import { ISkill, type TSkillLevel } from "@/utils/interfaces/portfolio";
+import { hasSkillIcon, skillIconId } from "./skill-icon-id";
 
-const ICON_MAP: Record<string, IconType> = {
-  SiTypescript,
-  SiReact,
-  SiNextdotjs,
-  SiVuedotjs,
-  SiNuxt,
-  SiTailwindcss,
-  SiPython,
-  SiNodedotjs,
-  SiNestjs,
-  SiPostgresql,
-  SiMongodb,
-  SiRedis,
-  SiGraphql,
-  SiFastapi,
-  SiRabbitmq,
-  SiOpenai,
-  SiAnthropic,
-  SiGooglegemini,
-  SiLangchain,
-  SiLanggraph,
-  SiOllama,
-  SiHuggingface,
-  SiFlutter,
-  SiSwift,
-  SiKotlin,
-  SiGit,
-  SiDocker,
-  SiGithub,
-  SiVercel,
-  SiNetlify,
-  SiDigitalocean,
-  SiGooglecloud,
-  SiCloudflare,
-  SiNginx,
-  SiGithubactions,
-  SiLinux,
-  FaAws,
-};
-
-/** A three-dot meter; dots up to `level` are filled with the current text colour. */
+/**
+ * A three-dot meter; dots up to `level` are filled with the current text
+ * colour. See `.prof-dot` in globals.css.
+ */
 export function ProficiencyDots(props: { level: TSkillLevel }) {
   const { level } = props;
   return (
-    <span className="flex items-center gap-0.5" aria-hidden>
+    <span className="prof-dots" aria-hidden>
       {([1, 2, 3] as const).map((dot) => (
         <span
           key={dot}
-          className={`w-1 h-1 rounded-full ${
-            dot <= level ? "bg-current" : "bg-muted-foreground/25"
-          }`}
+          className="prof-dot"
+          data-on={dot <= level || undefined}
         />
       ))}
     </span>
@@ -107,64 +23,47 @@ export function ProficiencyDots(props: { level: TSkillLevel }) {
 }
 
 /**
- * One marquee pill. On hover a pixel wave ripples out from the centre in the
- * brand's colour (MarqueeTrack pauses the row at the same time, so the badge is
- * stationary while it plays).
+ * One marquee pill.
  *
- * See {@link useRippleHover} for why the canvas is mounted lazily.
+ * The icon is a `<use>` into {@link SkillIconSprite}, which defines each
+ * icon's geometry exactly once per page. Inlining the `<path>` instead — which
+ * is what rendering the react-icons component does — repeated a few hundred
+ * bytes of curve data for every copy of every badge in every row, and shipped
+ * all 37 icon components to the browser besides. Hence the `<use>`, and hence
+ * `./skill-icon-id` being the dependency-free module it is: this file is a
+ * Client Component and must not reach the sprite's imports.
  *
- * The brand colour is published as `--brand`, resolved per theme from
- * `--brand-light` / `--brand-dark`, and everything downstream — icon, glow,
- * canvas — reads that one variable.
+ * Everything visual lives in `.skill-badge` (globals.css) rather than in
+ * utility classes, for the same volume reason — see the comment there. The
+ * only thing that varies per badge is the brand colour, published as
+ * `--brand-light` / `--brand-dark` and resolved per theme into `--brand`,
+ * which the icon, the dots and the hover glow all read.
  */
 export function SkillBadge(props: { skill: ISkill; levelLabel: string }) {
   /* ---------------------------------- Props --------------------------------- */
   const { skill, levelLabel } = props;
 
-  /* -------------------------------- All States ------------------------------- */
-  const { hovered, mounted, hoverProps } = useRippleHover();
-
-  /* ---------------------------------- Utils --------------------------------- */
-  const Icon = ICON_MAP[skill.icon];
-
   /* -------------------------------- Render UI ------------------------------- */
   return (
     <div
-      className="card-interactive group relative isolate overflow-hidden flex items-center gap-2.5 px-5 py-3.5 rounded-md border border-border/50 bg-card whitespace-nowrap shrink-0 select-none [--card-lift:-2px] [--brand:var(--brand-light)] dark:[--brand:var(--brand-dark)]"
+      className="card-interactive skill-badge"
       style={
         {
           "--brand-light": skill.colorLight ?? skill.color,
           "--brand-dark": skill.color,
-          "--pixel-color": "var(--brand)",
-          // card-interactive reads --card-glow for its hover shadow; retinting
-          // it here brands the glow without forking the shared hover rules.
-          "--card-glow":
-            "0 8px 24px -10px color-mix(in oklab, var(--brand) 50%, transparent), 0 0 0 1px color-mix(in oklab, var(--brand) 35%, transparent)",
         } as React.CSSProperties
       }
       title={`${skill.name} — ${levelLabel}`}
-      {...hoverProps}
     >
-      {/* Decorative pixel wave, behind the content but above the card fill.
-          No negative z-index — that would put it behind the card's own
-          background and hide it entirely. */}
-      {mounted && (
-        <span className="absolute inset-0" aria-hidden>
-          <PixelRipple active={hovered} gap={6} speed={35} />
-        </span>
-      )}
-
-      <span className="relative z-1 flex items-center gap-2.5">
-        {Icon && (
-          <Icon className="w-5 h-5 shrink-0 text-(--brand) transition-transform duration-300 motion-safe:group-hover:scale-125" />
+      <span className="skill-badge-body">
+        {hasSkillIcon(skill.icon) && (
+          <svg className="skill-badge-icon" aria-hidden focusable="false">
+            <use href={`#${skillIconId(skill.icon)}`} />
+          </svg>
         )}
-        <span className="text-sm font-mono text-muted-foreground transition-colors duration-300 group-hover:text-foreground">
-          {skill.name}
-        </span>
+        <span className="skill-badge-name">{skill.name}</span>
         <span className="sr-only">{levelLabel}</span>
-        <span className="ml-0.5 shrink-0 text-(--brand)" aria-hidden>
-          <ProficiencyDots level={skill.level} />
-        </span>
+        <ProficiencyDots level={skill.level} />
       </span>
     </div>
   );

@@ -1,9 +1,14 @@
 import { track } from "@vercel/analytics";
 
-/** Where the visitor was when they took the CV. */
+/**
+ * Where the visitor was when they took the CV.
+ *
+ * Only the places that actually serve the FILE belong here. The hero CTA and
+ * the desktop navbar icon both open /[lang]/resume instead, and a page view is
+ * already a page view — counting them as downloads would inflate the number
+ * that matters.
+ */
 export type TCvDownloadSource =
-  | "hero"
-  | "navbar"
   | "navbar-mobile"
   | "command-palette"
   | "resume-page";

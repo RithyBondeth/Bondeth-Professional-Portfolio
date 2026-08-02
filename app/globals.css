@@ -69,6 +69,12 @@
 
 /* ── Light mode (the default; overridden by [data-theme="dark"] below) ── */
 :root {
+  /* The one piece of UI the page CANNOT paint itself: the option list a native
+     <select> pops open is drawn by the OS, and so are scrollbars and the text
+     caret. `color-scheme` is the only lever over them — without it they render
+     in light chrome even under [data-theme="dark"], which is exactly the
+     browser-decides-for-you look the rest of this file avoids. */
+  color-scheme: light;
   /* Noto Serif (--font-serif) is the English text font. --font-mono drives
      every terminal-style accent (nav, buttons, chips, eyebrows) as well as the
      page's base text, so it's remapped to Noto Serif here too — everything
@@ -253,6 +259,8 @@
 
 /* ── Dark mode ── */
 [data-theme="dark"] {
+  /* Flips the OS-drawn chrome — select popups, scrollbars, caret. See :root. */
+  color-scheme: dark;
   /* The mirror of light mode: every neutral carries the same blue the
      gradient-wave does, because a pure-grey card (#141414) on a navy ground
      reads as dead grey exactly the way a pure-grey one did on sky blue.
@@ -650,6 +658,83 @@ html[lang="km"] :is(h1, h2, h3, h4, h5, h6) {
   color: var(--editor-label);
 }
 
+/* ── Editor tab strip — what replaced the three macOS traffic lights.
+   The lights were the most borrowed thing on the page and said nothing: three
+   dots that are not buttons, on a window that does not close. A tab strip is
+   the part of an editor a developer actually reads, and every piece of it can
+   carry something true — the file's name, its language, and (on the portrait)
+   the asset's real dimensions. Same chrome tokens as everything else, so the
+   two windows stay in step. ── */
+.editor-tabs {
+  display: flex;
+  align-items: stretch;
+  background: var(--editor-chrome);
+  border-bottom: 1px solid var(--editor-rule);
+}
+
+.editor-tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  background: var(--editor-bg);
+  color: var(--foreground);
+  border-right: 1px solid var(--editor-rule);
+}
+
+/* The active marker sits on the strip's own bottom rule rather than above the
+   tab: this strip IS the top edge of the window, so a top accent lands on the
+   border and the rounded corner and reads as nothing. At the bottom it meets
+   the code surface, which is where it has contrast to work against — and it
+   replaces the divider under the active tab instead of competing with it. */
+.editor-tab::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 -1px 0;
+  height: 1px;
+  background: var(--primary);
+}
+
+/* The language chip. Deliberately not a coloured logo — it reads as file
+   metadata, which is what it is. */
+.editor-chip {
+  font-size: 9px;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  padding: 0.1875rem 0.3125rem;
+  border-radius: 3px;
+  color: var(--editor-label);
+  background: color-mix(in oklab, var(--editor-label) 14%, transparent);
+}
+
+/* The clearing behind the portrait. The code backdrop is masked out of an
+   ellipse centred on where he actually stands — slightly below middle, since
+   he runs from the top of the frame to the bottom of it — and dimmed, so it
+   sits behind him as texture instead of colliding with his face. The mask is
+   on a wrapper rather than on each column so both fade to the same shape. */
+.portrait-code-veil {
+  opacity: 0.85;
+  --portrait-clearing: radial-gradient(
+    54% 52% at 56% 40%,
+    transparent 40%,
+    #000 92%
+  );
+  -webkit-mask-image: var(--portrait-clearing);
+  mask-image: var(--portrait-clearing);
+}
+
+/* Right-hand metadata (dimensions, encoding) — pushed to the far end of the
+   strip so the tab keeps its natural width. */
+.editor-meta {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-inline: 0.875rem;
+  color: var(--editor-label);
+}
+
 .tok-comment { color: var(--code-comment); }
 .tok-keyword { color: var(--code-keyword); }
 .tok-ident   { color: var(--code-ident); }
@@ -821,6 +906,105 @@ html[lang="km"] :is(h1, h2, h3, h4, h5, h6) {
   }
 }
 
+/* ── Skill badge: the marquee pill ──────────────────────────────────────────
+   Written as CSS rather than utility classes for one reason — volume. The
+   marquee repeats every skill until the row is wider than the viewport, so a
+   few hundred of these land in the prerendered HTML. Each utility class string
+   is ~290 bytes, and the `--card-glow` value (identical on every badge, only
+   the colour it mixes changes) is another ~230, so as Tailwind they cost
+   roughly half a megabyte of markup that says the same thing over and over.
+   Here it is stated once and the badge carries only what actually differs:
+   its two brand colours.
+
+   `--brand` is the one variable everything downstream reads — icon tint, the
+   proficiency dots, the hover glow. It resolves per theme from the inline
+   `--brand-light` / `--brand-dark`. ── */
+.skill-badge {
+  --card-lift: -2px;
+  --brand: var(--brand-light);
+  --card-glow:
+    0 8px 24px -10px color-mix(in oklab, var(--brand) 50%, transparent),
+    0 0 0 1px color-mix(in oklab, var(--brand) 35%, transparent);
+
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.875rem 1.25rem;
+  border-radius: var(--radius-md);
+  border: 1px solid color-mix(in oklab, var(--border) 50%, transparent);
+  background-color: var(--card);
+  white-space: nowrap;
+  user-select: none;
+}
+
+[data-theme="dark"] .skill-badge {
+  --brand: var(--brand-dark);
+}
+
+.skill-badge-body {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.skill-badge-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  color: var(--brand);
+  transition: transform 300ms;
+}
+
+.skill-badge-name {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-family: var(--font-mono);
+  color: var(--muted-foreground);
+  transition: color 300ms;
+}
+
+.skill-badge:hover .skill-badge-name {
+  color: var(--foreground);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .skill-badge:hover .skill-badge-icon {
+    transform: scale(1.25);
+  }
+}
+
+/* The three-dot proficiency meter, shared with the section's legend. Filled
+   dots take the current text colour so the badge can tint them with --brand
+   and the legend can tint them with --primary. */
+.prof-dots {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+}
+
+.prof-dot {
+  width: 0.25rem;
+  height: 0.25rem;
+  border-radius: 9999px;
+  background-color: color-mix(in oklab, var(--muted-foreground) 25%, transparent);
+}
+
+.prof-dot[data-on] {
+  background-color: currentColor;
+}
+
+.skill-badge .prof-dots {
+  margin-left: 0.125rem;
+  flex-shrink: 0;
+  color: var(--brand);
+}
+
 /* ── Buttons: the shared treatment for every clickable control ──────────────
    Same story as the cards — the primary CTA class string was duplicated
    near-verbatim in seven places, each doing nothing but `transition-colors
@@ -922,6 +1106,16 @@ html[lang="km"] :is(h1, h2, h3, h4, h5, h6) {
   .btn-fx-icon:hover [data-btn-glyph],
   .btn-fx-icon:focus-visible [data-btn-glyph] {
     transform: scale(1.12) rotate(-6deg);
+  }
+
+  /* A labelled button's leading glyph gets the lift without the tilt: the
+     rotate above works on a bare icon button, where the glyph IS the control,
+     but next to a word it reads as the icon coming loose. */
+  .btn-fx-primary:hover [data-btn-glyph],
+  .btn-fx-primary:focus-visible [data-btn-glyph],
+  .btn-fx-outline:hover [data-btn-glyph],
+  .btn-fx-outline:focus-visible [data-btn-glyph] {
+    transform: scale(1.1);
   }
 
   .btn-fx:hover [data-btn-arrow],
