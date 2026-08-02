@@ -9,7 +9,7 @@ export default function BlogPostLoading() {
     <main
       aria-busy="true"
       aria-label="Loading post"
-      className="flex-1 pt-32 pb-24 px-6 bg-background font-sans"
+      className="flex-1 pt-32 pb-16 sm:pb-24 px-6 bg-background font-sans"
     >
       <div className="mx-auto max-w-6xl">
         {/* Back link */}

@@ -42,7 +42,7 @@ export default async function ProjectsPage({ params }: IProjectsPageProps) {
     <main
       id="main-content"
       tabIndex={-1}
-      className="flex-1 px-6 pb-24 pt-32 font-sans"
+      className="flex-1 px-6 pb-16 sm:pb-24 pt-32 font-sans"
     >
       <div className="mx-auto max-w-6xl">
         <AnimateIn>

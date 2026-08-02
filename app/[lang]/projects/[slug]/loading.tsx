@@ -9,7 +9,7 @@ export default function ProjectLoading() {
     <main
       aria-busy="true"
       aria-label="Loading project"
-      className="flex-1 bg-background px-6 pb-24 pt-32 font-sans"
+      className="flex-1 bg-background px-6 pb-16 sm:pb-24 pt-32 font-sans"
     >
       <div className="mx-auto max-w-5xl">
         {/* Back link */}

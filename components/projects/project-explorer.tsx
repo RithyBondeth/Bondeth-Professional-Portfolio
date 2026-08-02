@@ -7,8 +7,16 @@ import type { IProject } from "@/utils/interfaces/portfolio";
 import type { TProjectCategory } from "@/utils/types/portfolio";
 import type { TDictionary, TLocale } from "@/utils/i18n";
 
-const CATEGORIES = ["All", "Web", "AI", "Mobile"] as const;
 type TFilter = "All" | TProjectCategory;
+
+/**
+ * Derived from the data rather than hardcoded, so a category can never be
+ * offered with nothing behind it — a new filter appears the moment the first
+ * project in it ships, and not before. Order follows the projects array.
+ */
+function getCategories(projects: IProject[]): TFilter[] {
+  return ["All", ...new Set(projects.map((project) => project.category))];
+}
 
 export function ProjectExplorer(props: {
   projects: IProject[];
@@ -18,6 +26,7 @@ export function ProjectExplorer(props: {
   const { projects, dict, lang } = props;
 
   /* -------------------------------- All States ------------------------------- */
+  const categories = getCategories(projects);
   const [filter, setFilter] = useState<TFilter>("All");
   const filtered = projects.filter(
     (project) => filter === "All" || project.category === filter,
@@ -106,7 +115,7 @@ export function ProjectExplorer(props: {
           aria-hidden
           className="absolute left-0 top-1 bottom-1 w-0 rounded bg-primary"
         />
-        {CATEGORIES.map((category) => (
+        {categories.map((category) => (
           <button
             key={category}
             type="button"

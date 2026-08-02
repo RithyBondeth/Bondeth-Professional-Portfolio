@@ -107,6 +107,14 @@ export const en = {
     technologies: "Technologies",
     publicResources: "Public resources",
     liveProduct: "Live product",
+    linkKinds: {
+      app: "Live product",
+      site: "Visit website",
+      appstore: "App Store",
+      playstore: "Google Play",
+      download: "Download",
+      repo: "Source code",
+    },
     limitedNoticeTitle: "Public information only",
     limitedNotice:
       "This profile intentionally includes only publicly available information. Internal architecture, workflows, metrics, security details, and project materials are omitted to respect confidentiality and public-sector security requirements.",

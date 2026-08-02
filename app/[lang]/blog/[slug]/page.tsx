@@ -133,7 +133,7 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
-    <main id="main-content" tabIndex={-1} className="flex-1 pt-32 pb-24 px-6 bg-background font-sans">
+    <main id="main-content" tabIndex={-1} className="flex-1 pt-32 pb-16 sm:pb-24 px-6 bg-background font-sans">
       <ReadingProgress backToTopLabel={dict.blog.backToTop} />
       <div className="mx-auto max-w-6xl">
         {/* Structured Data (JSON-LD) */}

@@ -58,7 +58,7 @@ export default function Footer(props: { lang: TLocale }) {
         from="up"
         distance={24}
         stagger={0.1}
-        className="max-w-6xl mx-auto px-6 py-12 grid grid-cols-1 sm:grid-cols-3 gap-10"
+        className="max-w-6xl mx-auto px-6 py-10 sm:py-12 grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-10"
       >
         {/* Brand Section */}
         <div className="sm:col-span-1 flex flex-col gap-3">
@@ -132,7 +132,9 @@ export default function Footer(props: { lang: TLocale }) {
           <p className="text-muted-foreground text-[10px] font-mono uppercase tracking-[0.2em]">
             {dict.footer.navigation}
           </p>
-          <ul className="flex flex-col gap-2">
+          {/* Two columns while the footer is stacked — eight single-file links
+              were the tallest block on a phone by a wide margin. */}
+          <ul className="grid grid-cols-2 gap-x-4 gap-y-2 sm:flex sm:flex-col sm:gap-2">
             {primaryNavLinks.map(({ href }, i) => (
               <li key={href}>
                 <Link

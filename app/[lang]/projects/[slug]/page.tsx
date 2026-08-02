@@ -3,7 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AnimateIn } from "@/components/utils/animations/animate-in";
-import { ExternalLinkIcon } from "@/components/utils/icons";
+import { ProjectLinkIcon } from "@/components/projects/project-link-icon";
+import { getLinkLabel } from "@/utils/functions/project-links";
 import { projects, siteConfig } from "@/utils/constants/portfolio.constant";
 import { getProjects } from "@/utils/i18n/content";
 import { getDictionary, hasLocale, locales, type TLocale } from "@/utils/i18n";
@@ -81,7 +82,7 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
     <main
       id="main-content"
       tabIndex={-1}
-      className="flex-1 bg-background px-6 pb-24 pt-32 font-sans"
+      className="flex-1 bg-background px-6 pb-16 sm:pb-24 pt-32 font-sans"
     >
       <script
         type="application/ld+json"
@@ -180,7 +181,7 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
           </AnimateIn>
         </div>
 
-        {project.live && (
+        {project.links.length > 0 && (
           <AnimateIn from="up" delay={0.12}>
             <section className="mt-6 rounded border border-border/60 bg-card p-6">
               <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
@@ -190,17 +191,24 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
                 {dict.projects.publicResources}
               </h2>
               <div className="mt-5 flex flex-wrap gap-3">
-                {project.live && (
+                {project.links.map((link, index) => (
                   <a
-                    href={project.live}
+                    key={link.url}
+                    href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="btn-fx btn-fx-primary inline-flex items-center gap-2 rounded bg-primary-fill px-4 py-2.5 font-mono text-xs text-primary-foreground"
+                    // The head of the list is the project's main entry point,
+                    // so it gets the filled treatment and the rest sit beside it.
+                    className={
+                      index === 0
+                        ? "btn-fx btn-fx-primary inline-flex items-center gap-2 rounded bg-primary-fill px-4 py-2.5 font-mono text-xs text-primary-foreground"
+                        : "btn-fx inline-flex items-center gap-2 rounded border border-border/60 bg-muted/40 px-4 py-2.5 font-mono text-xs text-muted-foreground hover:border-primary/30 hover:text-primary"
+                    }
                   >
-                    {dict.projects.liveProduct}
-                    <ExternalLinkIcon className="h-3.5 w-3.5" />
+                    {getLinkLabel(link.kind, dict)}
+                    <ProjectLinkIcon kind={link.kind} className="h-3.5 w-3.5" />
                   </a>
-                )}
+                ))}
               </div>
             </section>
           </AnimateIn>

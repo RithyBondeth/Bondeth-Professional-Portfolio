@@ -1,1 +1,1 @@
-export type TProjectCategory = "Web" | "AI" | "Mobile";
+export type TProjectCategory = "Web" | "AI" | "macOS" | "Mobile";

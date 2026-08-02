@@ -9,7 +9,7 @@ export default function BlogLoading() {
     <main
       aria-busy="true"
       aria-label="Loading blog"
-      className="flex-1 pt-32 pb-24 px-6 font-sans"
+      className="flex-1 pt-32 pb-16 sm:pb-24 px-6 font-sans"
     >
       <div className="max-w-4xl mx-auto">
         {/* Heading block */}

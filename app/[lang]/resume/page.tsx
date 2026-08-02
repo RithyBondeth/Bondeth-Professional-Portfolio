@@ -61,7 +61,7 @@ export default async function ResumePage({ params }: IResumePageProps) {
     <main
       id="main-content"
       tabIndex={-1}
-      className="flex-1 px-6 pb-24 pt-32 font-sans print:px-0 print:pb-0 print:pt-0"
+      className="flex-1 px-6 pb-16 sm:pb-24 pt-32 font-sans print:px-0 print:pb-0 print:pt-0"
     >
       <article className="mx-auto max-w-3xl">
         <p

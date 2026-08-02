@@ -167,3 +167,38 @@ export function ExternalLinkIcon({
     </svg>
   );
 }
+
+/* -------------------------------- Download Icon ----------------------------- */
+export function DownloadIcon({
+  className,
+  ...props
+}: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      {...props}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"
+      />
+    </svg>
+  );
+}
+
+/* --------------------------------- Apple Icon ------------------------------- */
+export function AppleIcon({
+  className,
+  ...props
+}: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg className={className} fill="currentColor" viewBox="0 0 24 24" {...props}>
+      <path d="M16.365 1.43c0 1.14-.42 2.2-1.12 3-.79.9-2.07 1.6-3.12 1.51-.13-1.1.42-2.25 1.09-2.99.76-.85 2.09-1.48 3.15-1.52zM20.5 17.02c-.54 1.25-.8 1.81-1.5 2.92-.97 1.55-2.34 3.48-4.03 3.49-1.5.02-1.89-.98-3.93-.97-2.04.01-2.46 1-3.97.98-1.69-.02-2.98-1.76-3.95-3.31C.4 15.79-.07 10.71 1.75 8.03c1.29-1.9 3.33-3.01 5.24-3.01 1.95 0 3.17 1.07 4.78 1.07 1.56 0 2.51-1.07 4.76-1.07 1.7 0 3.5.93 4.79 2.53-4.21 2.31-3.53 8.32.18 9.47z" />
+    </svg>
+  );
+}
