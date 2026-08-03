@@ -25,6 +25,16 @@ function getDomains(projects: IProject[]): string[] {
 
 const isPractice = (project: IProject) => project.tier === "practice";
 
+/**
+ * Public-sector work is pulled into its own labelled block rather than mixed
+ * into the grid. Two reasons: it carries a different disclosure contract (these
+ * are the "limited public profile" entries), and it reads as a credential
+ * rather than as another product — which is lost when it sits between a PDF
+ * tool and a wallet app.
+ */
+const isGovernment = (project: IProject) =>
+  (project.domains ?? []).includes("GovTech");
+
 export function ProjectExplorer(props: {
   projects: IProject[];
   dict: TDictionary;
@@ -45,7 +55,12 @@ export function ProjectExplorer(props: {
   // Production work and practice work are filtered together but rendered as two
   // groups: shown in one grid, a Tesla clone reads as a peer of a national
   // government platform, which flatters neither.
-  const filtered = projects.filter((p) => matches(p) && !isPractice(p));
+  const filtered = projects.filter(
+    (p) => matches(p) && !isPractice(p) && !isGovernment(p),
+  );
+  const government = projects.filter(
+    (p) => matches(p) && !isPractice(p) && isGovernment(p),
+  );
   const practice = projects.filter((p) => matches(p) && isPractice(p));
 
   /* ---------------------------------- Utils --------------------------------- */
@@ -172,7 +187,7 @@ export function ProjectExplorer(props: {
         </div>
       )}
 
-      {filtered.length > 0 || practice.length > 0 ? (
+      {filtered.length > 0 || government.length > 0 || practice.length > 0 ? (
         <>
           {filtered.length > 0 && (
             <div
@@ -185,6 +200,24 @@ export function ProjectExplorer(props: {
                 </div>
               ))}
             </div>
+          )}
+
+          {government.length > 0 && (
+            <section className="mt-16 border-t border-border/50 pt-10">
+              <h2 className="font-mono text-xs uppercase tracking-[0.25em] text-muted-foreground">
+                {dict.projects.government}
+              </h2>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
+                {dict.projects.governmentBlurb}
+              </p>
+              <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {government.map((project) => (
+                  <div key={project.slug}>
+                    <ProjectCard project={project} dict={dict} lang={lang} />
+                  </div>
+                ))}
+              </div>
+            </section>
           )}
 
           {practice.length > 0 && (

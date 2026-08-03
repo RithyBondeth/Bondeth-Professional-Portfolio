@@ -6,6 +6,7 @@ import { AnimateIn } from "@/components/utils/animations/animate-in";
 import { ProjectLinkIcon } from "@/components/projects/project-link-icon";
 import { TopicCluster } from "@/components/topic-cluster";
 import { TechBadges } from "@/components/projects/tech-badges";
+import { ProjectCard } from "@/components/projects/project-card";
 import { SkillIconSprite } from "@/components/landing/landing-skills/skill-icon-sprite";
 import { techIconKeys } from "@/components/projects/tech-icon-map";
 import { getLinkLabel } from "@/utils/functions/project-links";
@@ -69,6 +70,34 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
   if (!project) notFound();
 
   const dict = getDictionary(lang);
+
+  // Everything a visitor could actually navigate to, in the curated order the
+  // constants file declares. Confidential projects have no detail route, so
+  // they must not appear as a prev/next destination either.
+  const siblings = getProjects(lang).filter(
+    (item) => item.visibility !== "confidential",
+  );
+  const index = siblings.findIndex((item) => item.slug === project.slug);
+  const previousProject = index > 0 ? siblings[index - 1] : null;
+  const nextProject =
+    index >= 0 && index < siblings.length - 1 ? siblings[index + 1] : null;
+
+  // Related by shared domain, falling back to platform when a project carries
+  // no domains. Practice work is excluded unless you're already looking at it,
+  // so a government platform never recommends a Tesla clone.
+  const domains = new Set(project.domains ?? []);
+  const related = siblings
+    .filter((item) => item.slug !== project.slug)
+    .filter((item) =>
+      project.tier === "practice" ? true : item.tier !== "practice",
+    )
+    .filter((item) =>
+      domains.size > 0
+        ? (item.domains ?? []).some((d) => domains.has(d))
+        : item.category === project.category,
+    )
+    .slice(0, 3);
+
   const visibilityLabel =
     project.visibility === "limited"
       ? dict.projects.limitedProject
@@ -96,12 +125,14 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
       />
 
       {/* Icon geometry for the tech badges below, defined once. */}
-      <SkillIconSprite icons={techIconKeys(project.tags)} />
+      <SkillIconSprite
+        icons={[project, ...related].flatMap((item) => techIconKeys(item.tags))}
+      />
 
       <div className="mx-auto max-w-5xl">
         <AnimateIn>
           <Link
-            href={`/${lang}/#projects`}
+            href={`/${lang}/projects`}
             className="mb-8 inline-flex items-center gap-2 font-mono text-xs text-muted-foreground transition-colors hover:text-primary"
           >
             <span aria-hidden>←</span>
@@ -143,11 +174,7 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
           </div>
 
           <AnimateIn from="right" distance={40} delay={0.08}>
-            <ProjectPreview
-              title={project.title}
-              image={project.image}
-              gradient={project.gradient}
-            />
+            <ProjectPreview title={project.title} image={project.image} />
           </AnimateIn>
         </div>
 
@@ -205,11 +232,37 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
           </AnimateIn>
         </div>
 
+        {/* Renders only when there's something real to report — an empty
+            "Outcome" heading is worse than no heading at all. */}
+        {project.outcomes && project.outcomes.length > 0 && (
+          <AnimateIn from="up" delay={0.1}>
+            <section className="mt-6 rounded border border-border/60 bg-card p-6">
+              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
+                03 / {dict.projects.outcome}
+              </p>
+              <h2 className="mt-4 text-xl font-semibold text-foreground">
+                {dict.projects.outcome}
+              </h2>
+              <ul className="mt-5 flex flex-col gap-3">
+                {project.outcomes.map((item) => (
+                  <li
+                    key={item}
+                    className="flex gap-3 text-sm leading-7 text-muted-foreground"
+                  >
+                    <span aria-hidden className="mt-2.5 size-1.5 shrink-0 rounded-full bg-primary" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          </AnimateIn>
+        )}
+
         {project.links.length > 0 && (
           <AnimateIn from="up" delay={0.12}>
             <section className="mt-6 rounded border border-border/60 bg-card p-6">
               <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
-                03 / {dict.projects.publicResources}
+                {project.outcomes?.length ? "04" : "03"} / {dict.projects.publicResources}
               </p>
               <h2 className="mt-4 text-xl font-semibold text-foreground">
                 {dict.projects.publicResources}
@@ -245,42 +298,85 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
           relatedPostSlug={project.relatedPost}
           relatedLabPath={project.relatedLab}
         />
+
+        {/* The page used to end here, with `back` as the only way out. */}
+        {related.length > 0 && (
+          <AnimateIn from="up" className="mt-16">
+            <h2 className="font-mono text-xs uppercase tracking-[0.25em] text-muted-foreground">
+              {dict.projects.relatedProjects}
+            </h2>
+            <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {related.map((item) => (
+                <ProjectCard
+                  key={item.slug}
+                  project={item}
+                  dict={dict}
+                  lang={lang}
+                />
+              ))}
+            </div>
+          </AnimateIn>
+        )}
+
+        {(previousProject || nextProject) && (
+          <AnimateIn from="up" className="mt-12">
+            <nav
+              aria-label={`${dict.projects.previousProject} / ${dict.projects.nextProject}`}
+              className="grid gap-3 border-t border-border/40 pt-8 sm:grid-cols-2"
+            >
+              {previousProject ? (
+                <Link
+                  href={`/${lang}/projects/${previousProject.slug}`}
+                  className="group rounded-lg border border-border/60 bg-card/40 p-4 transition-colors hover:border-primary/40"
+                >
+                  <span className="mb-2 flex items-center gap-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                    <span aria-hidden>←</span>
+                    {dict.projects.previousProject}
+                  </span>
+                  <span className="line-clamp-2 text-sm font-semibold leading-snug text-foreground group-hover:text-primary">
+                    {previousProject.title}
+                  </span>
+                </Link>
+              ) : (
+                <span />
+              )}
+              {nextProject && (
+                <Link
+                  href={`/${lang}/projects/${nextProject.slug}`}
+                  className="group rounded-lg border border-border/60 bg-card/40 p-4 text-right transition-colors hover:border-primary/40"
+                >
+                  <span className="mb-2 flex items-center justify-end gap-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                    {dict.projects.nextProject}
+                    <span aria-hidden>→</span>
+                  </span>
+                  <span className="line-clamp-2 text-sm font-semibold leading-snug text-foreground group-hover:text-primary">
+                    {nextProject.title}
+                  </span>
+                </Link>
+              )}
+            </nav>
+          </AnimateIn>
+        )}
       </div>
     </main>
   );
 }
 
-function ProjectPreview(props: {
-  title: string;
-  image: string | null;
-  gradient: string;
-}) {
-  const { title, image, gradient } = props;
+function ProjectPreview(props: { title: string; image: string }) {
+  const { title, image } = props;
 
   return (
     <div className="relative aspect-16/10 overflow-hidden rounded border border-border/60 bg-card shadow-2xl shadow-black/10">
-      {image ? (
-        <Image
-          src={image}
-          alt={`${title} preview`}
-          fill
-          priority
-          className="object-cover"
-        />
-      ) : (
-        <div className={`absolute inset-0 bg-linear-to-br ${gradient}`}>
-          <div className="absolute inset-x-0 top-0 flex h-8 items-center gap-1.5 bg-background/70 px-3 backdrop-blur-sm">
-            <span className="h-2 w-2 rounded-full bg-red-500/70" />
-            <span className="h-2 w-2 rounded-full bg-yellow-500/70" />
-            <span className="h-2 w-2 rounded-full bg-green-500/70" />
-          </div>
-          <div className="absolute inset-0 top-8 flex items-center justify-center">
-            <span className="font-mono text-sm text-foreground/70">
-              {title}
-            </span>
-          </div>
-        </div>
-      )}
+      <Image
+        src={image}
+        alt={`${title} preview`}
+        fill
+        priority
+        // Without this, `fill` implies sizes="100vw" and the browser fetches a
+        // viewport-wide source for a panel never wider than ~460px.
+        sizes="(min-width: 1024px) 460px, 90vw"
+        className="object-cover"
+      />
     </div>
   );
 }

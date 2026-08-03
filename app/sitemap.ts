@@ -90,7 +90,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           url: `${siteConfig.url}/${locale}/projects/${project.slug}`,
           lastModified: new Date(),
           changeFrequency: "monthly" as const,
-          priority: project.visibility === "public" ? 0.7 : 0.5,
+          // Practice work sinks below everything else: a Tesla clone built to
+          // learn scroll animations was ranking level with a national
+          // government platform, which is not the impression the sitemap
+          // should be giving a crawler.
+          priority:
+            project.tier === "practice"
+              ? 0.3
+              : project.visibility === "public"
+                ? 0.7
+                : 0.5,
           alternates: {
             languages: languageAlternates(`/projects/${project.slug}`),
           },

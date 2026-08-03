@@ -87,6 +87,13 @@ export const en = {
     heading: "Academic background",
   },
   projects: {
+    government: "Public sector",
+    governmentBlurb:
+      "Platforms built for Cambodian government institutions. These profiles carry public information only — internal architecture and operational detail stay private.",
+    relatedProjects: "Related projects",
+    previousProject: "Previous project",
+    nextProject: "Next project",
+    outcome: "Outcome",
     myRole: "My role",
     practice: "Practice & early work",
     practiceBlurb:

@@ -325,12 +325,14 @@ export const projects: IProject[] = [
     category: "macOS",
     domains: ["Developer Tools"],
     tier: "production",
-    // TODO(bondeth): fill these in — both render only when set.
-    year: null,
-    role: null,
+    year: "2026",
+    role: "Sole developer",
+    // TODO(bondeth): one line each — users reached, volume handled, a
+    // number that moved. Renders as its own section once non-empty.
+    outcomes: [],
     visibility: "public",
     links: [{ kind: "site", url: "https://bondex-notch.bondeth.site" }],
-    image: "/previews/bondex-notch.png",
+    image: "/previews/bondex-notch.webp",
     gradient: "from-indigo-600/20 via-indigo-500/10 to-slate-800",
   },
   {
@@ -351,12 +353,14 @@ export const projects: IProject[] = [
     category: "Web",
     domains: ["Recruitment"],
     tier: "production",
-    // TODO(bondeth): fill these in — both render only when set.
-    year: null,
-    role: null,
+    year: "2025 – present",
+    role: "Sole developer",
+    // TODO(bondeth): one line each — users reached, volume handled, a
+    // number that moved. Renders as its own section once non-empty.
+    outcomes: [],
     visibility: "public",
     links: [{ kind: "app", url: "https://talent.apsara.social" }],
-    image: "/previews/apsara-talent.png",
+    image: "/previews/apsara-talent.webp",
     gradient: "from-blue-600/20 via-cyan-500/10 to-slate-800",
   },
   {
@@ -377,12 +381,14 @@ export const projects: IProject[] = [
     category: "Web",
     domains: ["AI"],
     tier: "production",
-    // TODO(bondeth): fill these in — both render only when set.
-    year: null,
-    role: null,
+    year: "2026",
+    role: "Sole developer",
+    // TODO(bondeth): one line each — users reached, volume handled, a
+    // number that moved. Renders as its own section once non-empty.
+    outcomes: [],
     visibility: "public",
     links: [{ kind: "app", url: "https://assistant.apsara.social" }],
-    image: "/previews/apsara-assistant.png",
+    image: "/previews/apsara-assistant.webp",
     gradient: "from-violet-600/20 via-purple-500/10 to-slate-800",
   },
   {
@@ -403,12 +409,14 @@ export const projects: IProject[] = [
     category: "Web",
     domains: ["AI"],
     tier: "production",
-    // TODO(bondeth): fill these in — both render only when set.
-    year: null,
-    role: null,
+    year: "2026",
+    role: "Sole developer",
+    // TODO(bondeth): one line each — users reached, volume handled, a
+    // number that moved. Renders as its own section once non-empty.
+    outcomes: [],
     visibility: "public",
     links: [{ kind: "app", url: "https://agentic.apsara.social" }],
-    image: "/previews/apsara-agentic.png",
+    image: "/previews/apsara-agentic.webp",
     gradient: "from-emerald-600/20 via-teal-500/10 to-slate-800",
   },
   {
@@ -429,12 +437,14 @@ export const projects: IProject[] = [
     category: "Web",
     domains: ["AI", "Education"],
     tier: "production",
-    // TODO(bondeth): fill these in — both render only when set.
-    year: null,
-    role: null,
+    year: "2026",
+    role: "Sole developer",
+    // TODO(bondeth): one line each — users reached, volume handled, a
+    // number that moved. Renders as its own section once non-empty.
+    outcomes: [],
     visibility: "public",
     links: [{ kind: "app", url: "https://elearning.apsara.social" }],
-    image: "/previews/apsara-elearning.png",
+    image: "/previews/apsara-elearning.webp",
     gradient: "from-slate-600/20 via-gray-500/10 to-slate-800",
   },
   {
@@ -454,12 +464,14 @@ export const projects: IProject[] = [
     category: "Mobile",
     domains: ["Fintech", "AI"],
     tier: "production",
-    // TODO(bondeth): fill these in — both render only when set.
-    year: null,
-    role: null,
+    year: "2026",
+    role: "Sole developer",
+    // TODO(bondeth): one line each — users reached, volume handled, a
+    // number that moved. Renders as its own section once non-empty.
+    outcomes: [],
     visibility: "public",
     links: [{ kind: "app", url: "https://wallet.apsara.social" }],
-    image: "/previews/apsara-wallet.png",
+    image: "/previews/apsara-wallet.webp",
     gradient: "from-green-600/20 via-green-500/10 to-slate-800",
   },
   {
@@ -479,12 +491,14 @@ export const projects: IProject[] = [
     category: "Web",
     domains: ["Productivity"],
     tier: "production",
-    // TODO(bondeth): fill these in — both render only when set.
-    year: null,
-    role: null,
+    year: "2026",
+    role: "Sole developer",
+    // TODO(bondeth): one line each — users reached, volume handled, a
+    // number that moved. Renders as its own section once non-empty.
+    outcomes: [],
     visibility: "public",
     links: [{ kind: "app", url: "https://pdfflow.bondeth.site" }],
-    image: "/previews/pdfflow.png",
+    image: "/previews/pdfflow.webp",
     gradient: "from-blue-600/20 via-blue-500/10 to-slate-800",
   },
   {
@@ -502,12 +516,14 @@ export const projects: IProject[] = [
     category: "Web",
     domains: ["Developer Tools"],
     tier: "production",
-    // TODO(bondeth): fill these in — both render only when set.
-    year: null,
-    role: null,
+    year: "2026",
+    role: "Sole developer",
+    // TODO(bondeth): one line each — users reached, volume handled, a
+    // number that moved. Renders as its own section once non-empty.
+    outcomes: [],
     visibility: "public",
     links: [{ kind: "app", url: "https://reahu.bondeth.site" }],
-    image: "/previews/reahu-generator.png",
+    image: "/previews/reahu-generator.webp",
     gradient: "from-red-600/20 via-red-500/10 to-slate-800",
   },
   {
@@ -528,12 +544,14 @@ export const projects: IProject[] = [
     category: "Web",
     domains: ["GovTech"],
     tier: "production",
-    // TODO(bondeth): fill these in — both render only when set.
-    year: null,
-    role: null,
+    year: "2025 – present",
+    role: "Software Engineer, Digital Economy and Business Committee",
+    // TODO(bondeth): one line each — users reached, volume handled, a
+    // number that moved. Renders as its own section once non-empty.
+    outcomes: [],
     visibility: "limited",
     links: [{ kind: "app", url: "https://digitaleconomy.gov.kh/?lang=kh" }],
-    image: "/previews/debc-website.png",
+    image: "/previews/debc-website.webp",
     gradient: "from-blue-700/20 via-indigo-500/10 to-slate-800",
   },
   {
@@ -554,12 +572,14 @@ export const projects: IProject[] = [
     category: "Web",
     domains: ["GovTech"],
     tier: "production",
-    // TODO(bondeth): fill these in — both render only when set.
-    year: null,
-    role: null,
+    year: "2025 – present",
+    role: "Software Engineer, Digital Economy and Business Committee",
+    // TODO(bondeth): one line each — users reached, volume handled, a
+    // number that moved. Renders as its own section once non-empty.
+    outcomes: [],
     visibility: "limited",
     links: [{ kind: "app", url: "https://informal.digitaleconomy.gov.kh/km" }],
-    image: "/previews/informal-economy.png",
+    image: "/previews/informal-economy.webp",
     gradient: "from-amber-600/20 via-orange-500/10 to-slate-800",
   },
   {
@@ -578,14 +598,16 @@ export const projects: IProject[] = [
     category: "Web",
     domains: ["GovTech", "Fintech"],
     tier: "production",
-    // TODO(bondeth): fill these in — both render only when set.
     year: null,
     role: null,
+    // TODO(bondeth): one line each — users reached, volume handled, a
+    // number that moved. Renders as its own section once non-empty.
+    outcomes: [],
     visibility: "limited",
     links: [
       { kind: "app", url: "https://edf-cip-website-dev.intechdevkh.com/en" },
     ],
-    image: "/previews/cambodia-investment-platform.png",
+    image: "/previews/cambodia-investment-platform.webp",
     gradient: "from-emerald-700/20 via-green-500/10 to-slate-800",
   },
   {
@@ -605,15 +627,16 @@ export const projects: IProject[] = [
     category: "Web",
     domains: ["Community"],
     tier: "production",
-    // TODO(bondeth): fill these in — both render only when set.
-    year: null,
-    role: null,
+    year: "2023 – 2024",
+    role: "Developer, freelance team",
+    // TODO(bondeth): one line each — users reached, volume handled, a
+    // number that moved. Renders as its own section once non-empty.
+    outcomes: [],
     visibility: "public",
     links: [
       { kind: "app", url: "https://codehub-bondeth.netlify.app/signin" },
-      { kind: "repo", url: "https://github.com/bondeth/codehub" },
     ],
-    image: "/previews/codehub.png",
+    image: "/previews/codehub.webp",
     gradient: "from-rose-600/20 via-pink-500/10 to-slate-800",
   },
   {
@@ -632,15 +655,17 @@ export const projects: IProject[] = [
     category: "Web",
     domains: [],
     tier: "practice",
-    // TODO(bondeth): fill these in — both render only when set.
-    year: null,
-    role: null,
+    year: "2026",
+    role: "Sole developer",
+    // TODO(bondeth): one line each — users reached, volume handled, a
+    // number that moved. Renders as its own section once non-empty.
+    outcomes: [],
     visibility: "public",
     links: [
       { kind: "app", url: "https://apple-bondeth.vercel.app" },
-      { kind: "repo", url: "https://github.com/bondeth/apple-clone" },
+      { kind: "repo", url: "https://github.com/RithyBondeth/Next-Apple-Clone" },
     ],
-    image: "/previews/apple-clone.png",
+    image: "/previews/apple-clone.webp",
     gradient: "from-zinc-600/20 via-slate-500/10 to-slate-800",
   },
   {
@@ -659,15 +684,16 @@ export const projects: IProject[] = [
     category: "Web",
     domains: [],
     tier: "practice",
-    // TODO(bondeth): fill these in — both render only when set.
     year: null,
     role: null,
+    // TODO(bondeth): one line each — users reached, volume handled, a
+    // number that moved. Renders as its own section once non-empty.
+    outcomes: [],
     visibility: "public",
     links: [
       { kind: "app", url: "https://tesla-bondeth.vercel.app" },
-      { kind: "repo", url: "https://github.com/bondeth/tesla-clone" },
     ],
-    image: "/previews/tesla-clone.png",
+    image: "/previews/tesla-clone.webp",
     gradient: "from-zinc-600/20 via-slate-500/10 to-slate-800",
   },
   {
@@ -686,15 +712,16 @@ export const projects: IProject[] = [
     category: "Web",
     domains: [],
     tier: "practice",
-    // TODO(bondeth): fill these in — both render only when set.
     year: null,
     role: null,
+    // TODO(bondeth): one line each — users reached, volume handled, a
+    // number that moved. Renders as its own section once non-empty.
+    outcomes: [],
     visibility: "public",
     links: [
       { kind: "app", url: "https://sabynews-clone-bondeth.netlify.app" },
-      { kind: "repo", url: "https://github.com/bondeth/sabynews-clone" },
     ],
-    image: "/previews/sabynews-clone.png",
+    image: "/previews/sabynews-clone.webp",
     gradient: "from-red-600/20 via-rose-500/10 to-slate-800",
   },
   {
@@ -713,15 +740,16 @@ export const projects: IProject[] = [
     category: "Web",
     domains: [],
     tier: "practice",
-    // TODO(bondeth): fill these in — both render only when set.
     year: null,
     role: null,
+    // TODO(bondeth): one line each — users reached, volume handled, a
+    // number that moved. Renders as its own section once non-empty.
+    outcomes: [],
     visibility: "public",
     links: [
       { kind: "app", url: "https://bondeth-blog.vercel.app" },
-      { kind: "repo", url: "https://github.com/bondeth/bondeth-blog" },
     ],
-    image: "/previews/bondeth-vlog.png",
+    image: "/previews/bondeth-vlog.webp",
     gradient: "from-slate-600/20 via-gray-500/10 to-slate-800",
   },
 ];

@@ -9,7 +9,19 @@ import { ProjectCard } from "@/components/projects/project-card";
 import { getProjects } from "@/utils/i18n/content";
 import { getDictionary, type TLocale } from "@/utils/i18n";
 
+/**
+ * The homepage strip — Bondeth's own selection: the native macOS app first,
+ * then the Apsara product line.
+ *
+ * Public-sector work is deliberately not here. It gets its own labelled section
+ * on /projects instead, so the homepage reads as product work and the
+ * government platforms are found as a distinct credential rather than mixed in.
+ *
+ * Kept explicit rather than derived: "which five best represent me" is an
+ * editorial judgement, and no sort over the data can make it.
+ */
 const FEATURED_SLUGS = [
+  "bondex-notch",
   "apsara-agentic",
   "apsara-assistant",
   "apsara-elearning",

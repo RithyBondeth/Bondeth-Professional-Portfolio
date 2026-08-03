@@ -39,6 +39,16 @@ export interface IProject {
   year?: string | null;
   /** What you personally owned, in a few words. */
   role?: string | null;
+  /**
+   * What the work actually achieved — users reached, volume handled, a number
+   * that moved, a decision it unblocked. One short line each.
+   *
+   * Deliberately left empty rather than filled with plausible-sounding figures:
+   * these are the claims an interviewer checks, and an invented one is worse
+   * than an absent one. The section renders only when this has entries, so a
+   * project with nothing measurable to report simply doesn't show it.
+   */
+  outcomes?: string[] | null;
   /** Slug of a blog post about this work. */
   relatedPost?: string | null;
   /** Path of a lab that demonstrates a technique it uses. */
@@ -58,8 +68,21 @@ export interface IProject {
    * reach it. Empty for projects with no public surface at all.
    */
   links: IProjectLink[];
-  /** URL to a screenshot/preview image */
-  image: string | null;
-  /** Tailwind gradient classes used as a fallback when image is null */
+  /**
+   * Screenshot path. Always known — whether it is *shown* is a separate,
+   * visibility-level decision, which is why this is required rather than
+   * nullable. A confidential project still has a screenshot on disk; the card
+   * just doesn't render it.
+   */
+  image: string;
+  /**
+   * Tailwind gradient for the card plate when the screenshot is withheld.
+   *
+   * Reads as dead data at a glance — nothing uses it today, because there are
+   * currently no confidential projects. It is the paired half of
+   * `visibility: "confidential"`: that state deliberately hides the screenshot,
+   * and this is what the card shows instead. Delete the two together or not at
+   * all.
+   */
   gradient: string;
 }
