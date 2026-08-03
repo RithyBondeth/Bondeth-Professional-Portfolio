@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { SkillIconSprite } from "@/components/landing/landing-skills/skill-icon-sprite";
+import { techIconKeys } from "@/components/projects/tech-icon-map";
 import { AnimateIn } from "@/components/utils/animations/animate-in";
 import { ScrambleText } from "@/components/utils/animations/scramble-text";
 import { SplitReveal } from "@/components/utils/animations/split-reveal";
@@ -64,6 +66,10 @@ export default function LandingProjects(props: { lang: TLocale }) {
        the featured work IS the section. Reduced motion / no-JS falls back to a
        native swipe strip via HorizontalScroll itself. */
     <section id="projects" className="relative isolate">
+      {/* Icon geometry for the featured cards' tech badges. */}
+      <SkillIconSprite
+        icons={featured.flatMap((project) => techIconKeys(project.tags))}
+      />
       <HorizontalScroll header={header} trackClassName="items-stretch py-2">
         {featured.map((project) => (
           <div

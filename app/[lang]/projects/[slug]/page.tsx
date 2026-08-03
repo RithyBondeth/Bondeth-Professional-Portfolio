@@ -5,6 +5,9 @@ import { notFound } from "next/navigation";
 import { AnimateIn } from "@/components/utils/animations/animate-in";
 import { ProjectLinkIcon } from "@/components/projects/project-link-icon";
 import { TopicCluster } from "@/components/topic-cluster";
+import { TechBadges } from "@/components/projects/tech-badges";
+import { SkillIconSprite } from "@/components/landing/landing-skills/skill-icon-sprite";
+import { techIconKeys } from "@/components/projects/tech-icon-map";
 import { getLinkLabel } from "@/utils/functions/project-links";
 import { projects, siteConfig } from "@/utils/constants/portfolio.constant";
 import { getProjects } from "@/utils/i18n/content";
@@ -91,6 +94,9 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
           __html: JSON.stringify(projectJsonLd).replace(/</g, "\\u003c"),
         }}
       />
+
+      {/* Icon geometry for the tech badges below, defined once. */}
+      <SkillIconSprite icons={techIconKeys(project.tags)} />
 
       <div className="mx-auto max-w-5xl">
         <AnimateIn>
@@ -183,16 +189,7 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
               <h2 className="mt-4 text-xl font-semibold text-foreground">
                 {dict.projects.technologies}
               </h2>
-              <div className="mt-5 flex flex-wrap gap-2">
-                {project.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="rounded border border-border/60 bg-background px-2.5 py-1.5 font-mono text-xs text-muted-foreground"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
+              <TechBadges tags={project.tags} size="md" className="mt-5" />
 
               {project.role && (
                 <div className="mt-6 border-t border-border/50 pt-5">

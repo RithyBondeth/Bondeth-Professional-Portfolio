@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { TiltCard } from "@/components/utils/animations/tilt-card";
+import { TechBadges } from "@/components/projects/tech-badges";
 import { ProjectLinkIcon } from "@/components/projects/project-link-icon";
 import {
   getLinkLabel,
@@ -95,16 +96,7 @@ export function ProjectCard(props: {
               : project.description}
           </p>
 
-          <div className="flex flex-wrap gap-1">
-            {project.tags.slice(0, 5).map((tag) => (
-              <span
-                key={tag}
-                className="rounded border border-border/60 bg-muted/40 px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
+          <TechBadges tags={project.tags.slice(0, 6)} />
 
           <div className="flex items-center gap-2 border-t border-border/40 pt-3">
             {project.visibility !== "confidential" && (

@@ -50,6 +50,12 @@ export const SKILL_ICON_KEYS = [
   "SiGithubactions",
   "SiLinux",
   "FaAws",
+  // Used by project tech badges rather than the skills marquee.
+  "SiKubernetes",
+  "SiSupabase",
+  "SiFirebase",
+  "SiDart",
+  "SiApple",
 ] as const;
 
 export type TSkillIconKey = (typeof SKILL_ICON_KEYS)[number];

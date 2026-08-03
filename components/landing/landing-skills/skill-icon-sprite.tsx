@@ -34,6 +34,11 @@ import {
   SiNginx,
   SiGithubactions,
   SiLinux,
+  SiKubernetes,
+  SiSupabase,
+  SiFirebase,
+  SiDart,
+  SiApple,
 } from "react-icons/si";
 import { FaAws } from "react-icons/fa";
 import type { IconType } from "react-icons";
@@ -93,6 +98,11 @@ const ICON_MAP: Record<TSkillIconKey, IconType> = {
   SiGithubactions,
   SiLinux,
   FaAws,
+  SiKubernetes,
+  SiSupabase,
+  SiFirebase,
+  SiDart,
+  SiApple,
 };
 
 /**
