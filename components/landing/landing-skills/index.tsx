@@ -149,13 +149,19 @@ export default function LandingSkills(props: { lang: TLocale }) {
                 <MarqueeTrack
                   direction={direction}
                   duration={60}
-                  className="py-2 [mask-image:linear-gradient(to_right,transparent_0,black_7rem,black_calc(100%_-_3rem),transparent_100%)] sm:[mask-image:linear-gradient(to_right,transparent_0,black_13rem,black_calc(100%_-_6rem),transparent_100%)]"
+                  className="py-2 mask-[linear-gradient(to_right,transparent_0,black_7rem,black_calc(100%-3rem),transparent_100%)] sm:mask-[linear-gradient(to_right,transparent_0,black_13rem,black_calc(100%-6rem),transparent_100%)]"
                 >
+                  {/* Only the first pass through the skill set is real content.
+                      Everything after it exists to make the loop seamless, and a
+                      screen reader was reading all of it — 416 badges on this
+                      page, so "TypeScript, Expert" eleven times in a row. The
+                      duplicates are decorative and now say so. */}
                   {track.map((skill, j) => (
                     <SkillBadge
                       key={j}
                       skill={skill}
                       levelLabel={levelLabels[skill.level]}
+                      decorative={j >= skills.length}
                     />
                   ))}
                 </MarqueeTrack>

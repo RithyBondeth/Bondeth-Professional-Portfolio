@@ -39,9 +39,14 @@ export function ProficiencyDots(props: { level: TSkillLevel }) {
  * `--brand-light` / `--brand-dark` and resolved per theme into `--brand`,
  * which the icon, the dots and the hover glow all read.
  */
-export function SkillBadge(props: { skill: ISkill; levelLabel: string }) {
+export function SkillBadge(props: {
+  skill: ISkill;
+  levelLabel: string;
+  /** A loop duplicate: shown, but hidden from assistive tech and from tooltips. */
+  decorative?: boolean;
+}) {
   /* ---------------------------------- Props --------------------------------- */
-  const { skill, levelLabel } = props;
+  const { skill, levelLabel, decorative = false } = props;
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
@@ -53,7 +58,9 @@ export function SkillBadge(props: { skill: ISkill; levelLabel: string }) {
           "--brand-dark": skill.color,
         } as React.CSSProperties
       }
-      title={`${skill.name} — ${levelLabel}`}
+      {...(decorative
+        ? { "aria-hidden": true as const }
+        : { title: `${skill.name} — ${levelLabel}` })}
     >
       <span className="skill-badge-body">
         {hasSkillIcon(skill.icon) && (
@@ -62,7 +69,7 @@ export function SkillBadge(props: { skill: ISkill; levelLabel: string }) {
           </svg>
         )}
         <span className="skill-badge-name">{skill.name}</span>
-        <span className="sr-only">{levelLabel}</span>
+        {!decorative && <span className="sr-only">{levelLabel}</span>}
         <ProficiencyDots level={skill.level} />
       </span>
     </div>
