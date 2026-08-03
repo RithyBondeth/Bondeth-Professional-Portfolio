@@ -951,6 +951,33 @@ html[lang="km"] :is(h1, h2, h3, h4, h5, h6) {
   --brand: var(--brand-dark);
 }
 
+/* Project tech badges reuse the same two-colour contract as .skill-badge.
+   The tint lands on the icon alone, not the chip: colouring the label too
+   would put a dozen competing brand colours into a paragraph-sized block of
+   text and cost the row its readability. The logo carries the colour, the
+   label stays quiet. */
+.tech-badge {
+  --brand: var(--brand-light);
+  transition:
+    border-color 200ms,
+    transform 200ms;
+}
+
+[data-theme="dark"] .tech-badge {
+  --brand: var(--brand-dark);
+}
+
+.tech-badge-icon {
+  color: var(--brand);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tech-badge:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in oklab, var(--brand) 45%, transparent);
+  }
+}
+
 .skill-badge-body {
   position: relative;
   z-index: 1;

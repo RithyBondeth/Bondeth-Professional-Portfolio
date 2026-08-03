@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { AnimateIn } from "@/components/utils/animations/animate-in";
 import { ScrambleText } from "@/components/utils/animations/scramble-text";
 import { ProjectExplorer } from "@/components/projects/project-explorer";
+import { SkillIconSprite } from "@/components/landing/landing-skills/skill-icon-sprite";
+import { techIconKeys } from "@/components/projects/tech-icon-map";
 import { getProjects } from "@/utils/i18n/content";
 import { getDictionary, hasLocale } from "@/utils/i18n";
 
@@ -58,6 +60,10 @@ export default async function ProjectsPage({ params }: IProjectsPageProps) {
         </AnimateIn>
 
         <AnimateIn delay={0.08}>
+          {/* Icon geometry for every card's tech badges, defined once. */}
+          <SkillIconSprite
+            icons={projects.flatMap((project) => techIconKeys(project.tags))}
+          />
           <ProjectExplorer projects={projects} dict={dict} lang={lang} />
         </AnimateIn>
       </div>
