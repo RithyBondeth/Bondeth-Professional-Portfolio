@@ -15,6 +15,8 @@ import { BlogCover } from "@/components/blog/blog-cover";
 import { mdxComponents } from "@/components/blog/mdx-components";
 import { TableOfContents } from "@/components/blog/table-of-contents";
 import { BlogShare } from "@/components/blog/blog-share";
+import { TopicCluster } from "@/components/topic-cluster";
+import { FacebookIcon, YouTubeIcon } from "@/components/utils/icons";
 import { ReadingProgress } from "@/components/blog/reading-progress";
 import rehypePrettyCode, {
   type Options as PrettyCodeOptions,
@@ -115,6 +117,15 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
   const tableOfContents = getTableOfContents(post.content);
   const articleUrl = `${siteConfig.url}/${lang}/blog/${post.slug}`;
 
+  // The note is the hub of a topic cluster — it's the piece that declares which
+  // article, lab, and video cover the same ground. An article finds its cluster
+  // by looking for the note pointing back at it, so the map lives in one file.
+  const hub =
+    post.format === "note"
+      ? post
+      : (allPosts.find((item) => item.relatedPost === post.slug) ?? null);
+
+
   /* ------------------------------ Structured Data ----------------------------- */
   const blogPostJsonLd = {
     "@context": "https://schema.org",
@@ -162,9 +173,18 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
             used to sit in fought the title for weight), the title is the hero,
             and the meta reads as one quiet byline row underneath. */}
         <AnimateIn delay={0.05} className="max-w-3xl">
-          <p className="mb-4 font-mono text-xs uppercase tracking-[0.25em] text-primary">
-            {post.category}
-          </p>
+          <div className="mb-4 flex flex-wrap items-center gap-2">
+            <p className="font-mono text-xs uppercase tracking-[0.25em] text-primary">
+              {post.category}
+            </p>
+            {/* Notes announce themselves here rather than in the nav — it's the
+                only place the shorter format needs to be called out. */}
+            {post.format === "note" && (
+              <span className="rounded border border-accent-note/40 bg-accent-note/10 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-accent-note">
+                {post.series ? `#${post.series}` : dict.blog.formatNote}
+              </span>
+            )}
+          </div>
           <h1 className="mb-5 text-3xl font-bold leading-tight text-foreground sm:text-4xl lg:text-5xl">
             {post.title}
           </h1>
@@ -192,6 +212,27 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
             <span>
               {post.readingTime} {dict.blog.minRead}
             </span>
+            {post.source && (
+              <>
+                <span aria-hidden className="text-muted-foreground/40">
+                  ·
+                </span>
+                <a
+                  href={post.source.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 transition-colors hover:text-primary"
+                >
+                  {post.source.platform === "youtube" ? (
+                    <YouTubeIcon aria-hidden className="size-3.5" />
+                  ) : (
+                    <FacebookIcon aria-hidden className="size-3.5" />
+                  )}
+                  {dict.blog.originallyOn}{" "}
+                  {post.source.platform === "youtube" ? "YouTube" : "Facebook"}
+                </a>
+              </>
+            )}
           </div>
         </AnimateIn>
 
@@ -225,6 +266,13 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
                 }}
               />
             </AnimateIn>
+
+            {/* Same topic, other formats */}
+            <TopicCluster
+              lang={lang}
+              current={post.format === "note" ? "note" : "post"}
+              hubSlug={hub?.slug}
+            />
 
             {/* Post Footer Section */}
             <footer className="mt-16 border-t border-border/40 pt-8">

@@ -9,5 +9,6 @@ export interface ISiteConfig {
   linkedin: string;
   facebook: string;
   instagram: string;
+  youtube: string;
   resume: string;
 }

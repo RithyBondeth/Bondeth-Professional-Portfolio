@@ -8,6 +8,7 @@ import LandingExperience from "@/components/landing/landing-experience";
 import LandingEducation from "@/components/landing/landing-education";
 import LandingServices from "@/components/landing/landing-services";
 import LandingProjects from "@/components/landing/landing-projects";
+import LandingMedia from "@/components/landing/landing-media";
 import LandingRecommendations from "@/components/landing/landing-recommendations";
 import LandingContact from "@/components/landing/landing-contact";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
@@ -60,6 +61,7 @@ export default async function IndexPage({ params }: IHomePageProps) {
       siteConfig.linkedin,
       siteConfig.facebook,
       siteConfig.instagram,
+      siteConfig.youtube,
     ],
     address: {
       "@type": "PostalAddress",
@@ -103,10 +105,13 @@ export default async function IndexPage({ params }: IHomePageProps) {
       {/* Section 8: Projects */}
       <LandingProjects lang={lang} />
 
-      {/* Section 9: Recommendations */}
+      {/* Section 9: Media */}
+      <LandingMedia lang={lang} />
+
+      {/* Section 10: Recommendations */}
       <LandingRecommendations lang={lang} />
 
-      {/* Section 10: Contact */}
+      {/* Section 11: Contact */}
       <LandingContact lang={lang} />
     </main>
   );

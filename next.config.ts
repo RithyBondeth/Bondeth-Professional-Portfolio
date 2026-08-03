@@ -13,6 +13,19 @@ const nextConfig: NextConfig = {
     // everything that can't take it.
     formats: ["image/avif", "image/webp"],
   },
+
+  // /notes was briefly its own section before the short-form pieces moved into
+  // the blog as `format: "note"`. Permanent, since the URLs were published.
+  async redirects() {
+    return [
+      { source: "/:lang(en|km)/notes", destination: "/:lang/blog", permanent: true },
+      {
+        source: "/:lang(en|km)/notes/:slug",
+        destination: "/:lang/blog/:slug",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

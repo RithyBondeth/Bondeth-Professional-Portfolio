@@ -11,4 +11,5 @@ export type TProjectLinkKind =
   | "appstore"
   | "playstore"
   | "download"
-  | "repo";
+  | "repo"
+  | "video";

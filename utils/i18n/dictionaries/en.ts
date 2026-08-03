@@ -87,6 +87,11 @@ export const en = {
     heading: "Academic background",
   },
   projects: {
+    myRole: "My role",
+    practice: "Practice & early work",
+    practiceBlurb:
+      "Built to learn a technique rather than to ship a product. Kept here because progression is part of the story.",
+    filterDomain: "Domain",
     heading: "Things I've built",
     featuredBlurb:
       "Selected public work and limited profiles that show the products and systems I've contributed to.",
@@ -114,6 +119,7 @@ export const en = {
       playstore: "Google Play",
       download: "Download",
       repo: "Source code",
+      video: "Watch the video",
     },
     limitedNoticeTitle: "Public information only",
     limitedNotice:
@@ -343,6 +349,37 @@ export const en = {
       relatedArticle: "Designing LLM Evals That Catch Real Regressions",
     },
   },
+  cluster: {
+    heading: "// this topic, in every format",
+    blurb:
+      "The same idea at three depths — a 60-second explainer, the full write-up, and something you can actually run.",
+    formats: {
+      note: "60-second note",
+      post: "Deep dive",
+      project: "Project",
+      lab: "Interactive lab",
+      video: "Video",
+    },
+  },
+  blogFormats: {
+    label: "Format",
+    all: "All",
+    note: "60-second notes",
+    article: "Deep dives",
+  },
+  media: {
+    label: "// channel.md",
+    heading: "How it actually works",
+    blurb:
+      "I make technical videos in English and Khmer — breaking down the ideas behind the systems I work on, for an audience that mostly doesn't get this material in its own language.",
+    playLabel: "Play video",
+    loadNotice:
+      "Playing loads the player from YouTube, which sets its own cookies.",
+    watchOnYouTube: "Watch on YouTube",
+    subscribe: "Visit the channel",
+    readPost: "Read the written version",
+    languageBadge: { en: "English", km: "Khmer" },
+  },
   recommendations: {
     heading: "Recommendations & professional references",
     blurb:
@@ -440,6 +477,8 @@ export const en = {
     rights: "All rights reserved.",
   },
   blog: {
+    formatNote: "60-second note",
+    originallyOn: "Originally on",
     heading: "Technical Insights",
     blurb:
       "Sharing my journey through software engineering, AI research, and building digital products. Expect deep dives, tutorials, and occasional rants about clean code.",

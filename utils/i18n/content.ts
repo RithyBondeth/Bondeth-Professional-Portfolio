@@ -39,8 +39,11 @@ export function getEducations(lang: TLocale): IEducation[] {
 
 export function getProjects(lang: TLocale): IProject[] {
   if (lang !== "km") return projects;
-  return projects.map((project, i) => ({
+  // Keyed by slug, not index: an untranslated project falls back to English
+  // rather than silently inheriting its neighbour's copy.
+  return projects.map((project) => ({
     ...project,
-    ...kmContent.projects[i],
+    ...(kmContent.projects[project.slug as keyof typeof kmContent.projects] ??
+      {}),
   }));
 }

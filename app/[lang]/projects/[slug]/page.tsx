@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AnimateIn } from "@/components/utils/animations/animate-in";
 import { ProjectLinkIcon } from "@/components/projects/project-link-icon";
+import { TopicCluster } from "@/components/topic-cluster";
 import { getLinkLabel } from "@/utils/functions/project-links";
 import { projects, siteConfig } from "@/utils/constants/portfolio.constant";
 import { getProjects } from "@/utils/i18n/content";
@@ -112,6 +113,19 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
                 <span className="font-mono text-xs text-muted-foreground">
                   {project.category}
                 </span>
+                {project.domains?.map((domain) => (
+                  <span
+                    key={domain}
+                    className="font-mono text-xs text-muted-foreground"
+                  >
+                    · {domain}
+                  </span>
+                ))}
+                {project.year && (
+                  <span className="font-mono text-xs text-muted-foreground">
+                    · {project.year}
+                  </span>
+                )}
               </div>
               <h1 className="text-4xl font-bold leading-tight text-foreground sm:text-5xl lg:text-6xl">
                 {project.title}
@@ -153,8 +167,10 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
               <h2 className="mt-4 text-xl font-semibold text-foreground">
                 {dict.projects.overview}
               </h2>
+              {/* `overview`, not `description` — the hero above already shows
+                  the description, and this card used to repeat it verbatim. */}
               <p className="mt-4 text-sm leading-7 text-muted-foreground">
-                {project.description}
+                {project.overview ?? project.description}
               </p>
             </section>
           </AnimateIn>
@@ -177,6 +193,17 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
                   </span>
                 ))}
               </div>
+
+              {project.role && (
+                <div className="mt-6 border-t border-border/50 pt-5">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
+                    {dict.projects.myRole}
+                  </p>
+                  <p className="mt-2 text-sm leading-7 text-muted-foreground">
+                    {project.role}
+                  </p>
+                </div>
+              )}
             </section>
           </AnimateIn>
         </div>
@@ -213,6 +240,14 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
             </section>
           </AnimateIn>
         )}
+
+        {/* Writing and labs covering the same ground, when this project has any. */}
+        <TopicCluster
+          lang={lang}
+          current="project"
+          relatedPostSlug={project.relatedPost}
+          relatedLabPath={project.relatedLab}
+        />
       </div>
     </main>
   );

@@ -11,15 +11,24 @@ const BLOG_DIR = path.join(process.cwd(), "content/blog");
 /**
  * Loads a single blog post by its slug and parses its frontmatter.
  *
+ * A missing Khmer file falls back to the English one rather than 404ing. The
+ * #AIIn60Seconds notes are written Khmer-first and translated after, so the
+ * reverse gap is real too — either way, showing the language we have beats
+ * showing nothing.
+ *
  * @param slug - The MDX file name without the extension
- * @returns The parsed post, or null when no matching file exists
+ * @returns The parsed post, or null when no file exists in either language
  */
 export async function getPostBySlug(
   slug: string,
   lang: TLocale = "en",
 ): Promise<IPost | null> {
-  const fileName = lang === "km" ? `${slug}.km.mdx` : `${slug}.mdx`;
-  const filePath = path.join(BLOG_DIR, fileName);
+  const preferred = path.join(
+    BLOG_DIR,
+    lang === "km" ? `${slug}.km.mdx` : `${slug}.mdx`,
+  );
+  const fallback = path.join(BLOG_DIR, `${slug}.mdx`);
+  const filePath = fs.existsSync(preferred) ? preferred : fallback;
 
   if (!fs.existsSync(filePath)) {
     return null;
@@ -35,6 +44,12 @@ export async function getPostBySlug(
     excerpt: data.excerpt,
     category: data.category ?? "Tech",
     tags: data.tags,
+    format: data.format ?? "article",
+    series: data.series ?? null,
+    source: data.source ?? null,
+    relatedPost: data.relatedPost ?? null,
+    relatedLab: data.relatedLab ?? null,
+    relatedVideo: data.relatedVideo ?? null,
     cover: data.cover ?? null,
     coverAlt: data.coverAlt ?? null,
     readingTime: getReadingTime(content),

@@ -14,6 +14,7 @@ import {
   LinkedInIcon,
   FacebookIcon,
   InstagramIcon,
+  YouTubeIcon,
   MailIcon,
 } from "@/components/utils/icons";
 import { Logo } from "@/components/utils/icons/logo";
@@ -117,6 +118,17 @@ export default function Footer(props: { lang: TLocale }) {
             </Magnetic>
             <Magnetic strength={0.45} className="inline-block">
               <a
+                href={siteConfig.youtube}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="YouTube"
+                className="btn-fx btn-fx-icon w-8 h-8 flex items-center justify-center rounded border border-border/60 text-muted-foreground hover:text-primary hover:border-primary/40"
+              >
+                <YouTubeIcon data-btn-glyph className="w-3.5 h-3.5" />
+              </a>
+            </Magnetic>
+            <Magnetic strength={0.45} className="inline-block">
+              <a
                 href={`mailto:${siteConfig.email}`}
                 aria-label="Email"
                 className="btn-fx btn-fx-icon w-8 h-8 flex items-center justify-center rounded border border-border/60 text-muted-foreground hover:text-primary hover:border-primary/40"
@@ -204,6 +216,16 @@ export default function Footer(props: { lang: TLocale }) {
                 className="text-muted-foreground hover:text-primary text-xs font-mono transition-colors"
               >
                 instagram.com/rithybondeth
+              </a>
+            </li>
+            <li>
+              <a
+                href={siteConfig.youtube}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-primary text-xs font-mono transition-colors"
+              >
+                youtube.com/@rithybondeth6588
               </a>
             </li>
           </ul>

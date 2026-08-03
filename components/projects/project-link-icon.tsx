@@ -3,6 +3,7 @@ import {
   DownloadIcon,
   ExternalLinkIcon,
   GitHubIcon,
+  YouTubeIcon,
 } from "@/components/utils/icons";
 import type { TProjectLinkKind } from "@/utils/types/portfolio";
 
@@ -20,6 +21,8 @@ export function ProjectLinkIcon(props: {
       return <AppleIcon className={className} />;
     case "repo":
       return <GitHubIcon className={className} />;
+    case "video":
+      return <YouTubeIcon className={className} />;
     default:
       return <ExternalLinkIcon className={className} />;
   }

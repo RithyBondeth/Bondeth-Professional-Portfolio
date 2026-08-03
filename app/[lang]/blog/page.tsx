@@ -34,6 +34,7 @@ export default async function BlogPage({ params }: IBlogPageProps) {
       cover,
       coverAlt,
       readingTime,
+      format,
     }) => ({
       slug,
       title,
@@ -44,6 +45,7 @@ export default async function BlogPage({ params }: IBlogPageProps) {
       cover,
       coverAlt,
       readingTime,
+      format,
     }),
   );
 
@@ -89,6 +91,7 @@ export default async function BlogPage({ params }: IBlogPageProps) {
               tags={tags}
               lang={lang}
               labels={dict.blog}
+              formatLabels={dict.blogFormats}
             />
           </AnimateIn>
         ) : (

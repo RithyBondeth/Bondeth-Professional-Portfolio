@@ -6,6 +6,7 @@ import {
   ISiteConfig,
   IEducation,
   IOrganization,
+  IVideo,
 } from "@/utils/interfaces/portfolio";
 
 /* -------------------------------- Site Config ------------------------------- */
@@ -27,8 +28,30 @@ export const siteConfig: ISiteConfig = {
   linkedin: "https://linkedin.com/in/hem-rithybondeth",
   facebook: "https://www.facebook.com/profile.php?id=100094498908703",
   instagram: "https://www.instagram.com/r.bondeth/",
+  youtube: "https://www.youtube.com/@rithybondeth6588",
   resume: "/files/bondeth-resume.pdf",
 };
+
+/* ---------------------------------- Videos ---------------------------------- */
+/**
+ * Curated YouTube uploads, newest first. See IVideo for why this is a hand-kept
+ * list rather than a Data API call.
+ */
+export const videos: IVideo[] = [
+  {
+    id: "LMBePWuJJJA",
+    title: "How Does AI Actually Work? — Explained Simply",
+    titleKm: "តើ AI ដំណើរការយ៉ាងដូចម្តេច? — ពន្យល់ដោយសាមញ្ញ",
+    description:
+      "A plain-language walkthrough of what actually happens inside a modern AI model — no maths background needed. Subtitled in Khmer.",
+    descriptionKm:
+      "ការពន្យល់ជាភាសាសាមញ្ញអំពីអ្វីដែលកើតឡើងនៅខាងក្នុងម៉ូដែល AI សម័យទំនើប ដោយមិនត្រូវការចំណេះដឹងគណិតវិទ្យា។ មានអក្សររត់ជាភាសាខ្មែរ។",
+    thumbnail: "/videos/how-ai-works.webp",
+    languages: ["en", "km"],
+    topics: ["AI", "Fundamentals", "Explainer"],
+    relatedPost: "can-ai-replace-humans",
+  },
+];
 
 /* --------------------------------- Nav Links -------------------------------- */
 export const navLinks: INavLink[] = [
@@ -290,9 +313,21 @@ export const projects: IProject[] = [
     slug: "bondex-notch",
     title: "Bondex Notch",
     description:
-      "A native macOS utility that turns the notch into a live view of your music, coding agents, live tasks, downloads, system status and files. Built in Swift and SwiftUI — no Electron and no embedded web view, so widgets you switch off stop sampling instead of running unseen.",
-    tags: ["Swift", "SwiftUI", "macOS", "Apple Events"],
+      "A native macOS utility that turns the notch into a live view of your music, coding agents, running tasks, downloads, and system status.",
+    overview:
+      "Built in Swift and SwiftUI rather than Electron or an embedded web view, so it ships as one native binary instead of a bundled browser. Each widget owns its own polling lifecycle, which is what lets a widget you switch off stop sampling entirely rather than merely hide — the distinction that matters on a surface the machine keeps on screen all day.",
+    tags: [
+      "Swift",
+      "SwiftUI",
+      "macOS",
+      "Apple Events",
+    ],
     category: "macOS",
+    domains: ["Developer Tools"],
+    tier: "production",
+    // TODO(bondeth): fill these in — both render only when set.
+    year: null,
+    role: null,
     visibility: "public",
     links: [{ kind: "site", url: "https://bondex-notch.bondeth.site" }],
     image: "/previews/bondex-notch.png",
@@ -302,26 +337,23 @@ export const projects: IProject[] = [
     slug: "apsara-talent",
     title: "Apsara Talent",
     description:
-      "The Apsara Talent platform is designed to address the challenges of the recruitment process by simplifying and improving job matching for freelancers and employers.",
+      "A recruitment platform matching Cambodian freelancers with employers, built as a set of NestJS microservices behind a Next.js front end.",
+    overview:
+      "Job matching is read-heavy with bursty writes around posting and application deadlines, so the backend is split into NestJS services communicating over RabbitMQ rather than shipped as one deployable. PostgreSQL holds the relational records, MongoDB the document-shaped listings, and Redis carries caching and session state. It runs on Kubernetes behind Nginx and Cloudflare, instrumented with Sentry for errors and Prometheus and Grafana for metrics.",
     tags: [
-      "Typescript",
+      "TypeScript",
       "Next.js",
-      "Nest.js",
+      "NestJS",
       "Microservices",
-      "Firebase",
       "PostgreSQL",
-      "MongoDB",
-      "Redis",
-      "RabbitMQ",
-      "Docker",
       "Kubernetes",
-      "Cloudflare",
-      "Sentry",
-      "Grafana",
-      "Prometheus",
-      "Nginx",
     ],
-    category: "AI",
+    category: "Web",
+    domains: ["Recruitment"],
+    tier: "production",
+    // TODO(bondeth): fill these in — both render only when set.
+    year: null,
+    role: null,
     visibility: "public",
     links: [{ kind: "app", url: "https://talent.apsara.social" }],
     image: "/previews/apsara-talent.png",
@@ -331,24 +363,23 @@ export const projects: IProject[] = [
     slug: "apsara-assistant",
     title: "Apsara Assistant",
     description:
-      "Apsara Assistant is an AI-powered sales assistant designed for Cambodian online sellers. It helps businesses automatically reply to customer messages, manage conversations, and increase sales — all in Khmer and English.",
+      "An AI sales assistant for Cambodian online sellers — it answers customer messages, manages conversations, and works in Khmer and English.",
+    overview:
+      "Cambodian sellers work bilingually: Khmer and English arrive in the same inbox and often inside a single thread, so detection and generation both have to hold across the switch rather than assume one language per conversation. A Python FastAPI service owns the model calls and conversation state, with a Next.js front end for the seller's inbox. PostgreSQL and MongoDB store message history, Redis handles queuing and rate limits, and the stack runs in Docker behind Cloudflare with Sentry, Prometheus, and Grafana.",
     tags: [
-      "Typescript",
+      "TypeScript",
       "Next.js",
       "Python",
       "FastAPI",
-      "PostgreSQL",
-      "Redis",
-      "MongoDB",
       "LLM APIs",
-      "Docker",
-      "Cloudflare",
-      "Sentry",
-      "Grafana",
-      "Prometheus",
-      "Nginx",
+      "PostgreSQL",
     ],
-    category: "AI",
+    category: "Web",
+    domains: ["AI"],
+    tier: "production",
+    // TODO(bondeth): fill these in — both render only when set.
+    year: null,
+    role: null,
     visibility: "public",
     links: [{ kind: "app", url: "https://assistant.apsara.social" }],
     image: "/previews/apsara-assistant.png",
@@ -358,24 +389,23 @@ export const projects: IProject[] = [
     slug: "apsara-agentic",
     title: "Apsara Agentic",
     description:
-      "Apsara Agentic is a production-ready backend system for building an AI-powered agentic coding platform. It explores how modern AI agents can understand tasks, reason through problems, and generate code using large language models.",
+      "A production backend for an agentic coding platform — the layer that lets a model read a task, work through it, and produce code.",
+    overview:
+      "The hard part of an agentic system isn't the model call, it's everything around it: task state, tool execution, and the loop that decides when the agent is actually finished. A FastAPI service holds that orchestration, with a Next.js client on top, PostgreSQL and MongoDB for run history and task state, and Redis for the work queue. Deployed in Docker behind Cloudflare with Sentry, Prometheus, and Grafana.",
     tags: [
-      "Typescript",
+      "TypeScript",
       "Next.js",
       "Python",
       "FastAPI",
-      "PostgreSQL",
-      "MongoDB",
-      "Redis",
       "LLM APIs",
-      "Docker",
-      "Cloudflare",
-      "Sentry",
-      "Grafana",
-      "Prometheus",
-      "Nginx",
+      "PostgreSQL",
     ],
-    category: "AI",
+    category: "Web",
+    domains: ["AI"],
+    tier: "production",
+    // TODO(bondeth): fill these in — both render only when set.
+    year: null,
+    role: null,
     visibility: "public",
     links: [{ kind: "app", url: "https://agentic.apsara.social" }],
     image: "/previews/apsara-agentic.png",
@@ -385,25 +415,23 @@ export const projects: IProject[] = [
     slug: "apsara-elearning",
     title: "Apsara Elearning",
     description:
-      "Apsara Elearning is a first AI-powered elearning platform built for Cambodian students. Learn Math, Physics, Chemistry, and more with Apsara Elearning — your personal AI mentor that speaks Khmer.",
+      "An AI-tutored learning platform for Cambodian students, from kindergarten to university, with a mentor that explains in Khmer.",
+    overview:
+      "The gap here is language, not content: most good material for Math, Physics, and Chemistry exists in English, which puts it furthest from the students who need it most. The AI mentor explains and answers in Khmer. Built as a Next.js front end over NestJS microservices communicating on RabbitMQ, with PostgreSQL, MongoDB, and Redis behind them, running in Docker behind Cloudflare with Sentry, Prometheus, and Grafana.",
     tags: [
-      "Typescript",
+      "TypeScript",
       "Next.js",
-      "Nest.js",
+      "NestJS",
       "Microservices",
-      "RabbitMQ",
-      "PostgreSQL",
-      "Redis",
-      "MongoDB",
       "LLM APIs",
-      "Docker",
-      "Cloudflare",
-      "Sentry",
-      "Grafana",
-      "Prometheus",
-      "Nginx",
+      "RabbitMQ",
     ],
-    category: "AI",
+    category: "Web",
+    domains: ["AI", "Education"],
+    tier: "production",
+    // TODO(bondeth): fill these in — both render only when set.
+    year: null,
+    role: null,
     visibility: "public",
     links: [{ kind: "app", url: "https://elearning.apsara.social" }],
     image: "/previews/apsara-elearning.png",
@@ -413,20 +441,22 @@ export const projects: IProject[] = [
     slug: "apsara-wallet",
     title: "Apsara Wallet",
     description:
-      "Apsara Wallet is a personal finance app for Cambodia. Track spending across multiple wallets in riel and dollars, scan receipts on your device, set budgets that actually hold, and see where your money goes.",
+      "A personal finance app for Cambodia — multi-wallet tracking in riel and dollars, on-device receipt scanning, and budgets that hold.",
+    overview:
+      "Cambodia runs on two currencies at once, so a wallet that treats one as primary is wrong from the first screen; balances, budgets, and totals all carry riel and dollars side by side rather than converting one into the other. Receipt scanning happens on the device. Flutter and Dart on the client against a FastAPI backend, with PostgreSQL, MongoDB, and Redis behind it.",
     tags: [
       "Flutter",
       "Dart",
-      "Next.js",
       "FastAPI",
       "PostgreSQL",
-      "Redis",
-      "MongoDB",
       "LLM APIs",
-      "Docker",
-      "Cloudflare",
     ],
     category: "Mobile",
+    domains: ["Fintech", "AI"],
+    tier: "production",
+    // TODO(bondeth): fill these in — both render only when set.
+    year: null,
+    role: null,
     visibility: "public",
     links: [{ kind: "app", url: "https://wallet.apsara.social" }],
     image: "/previews/apsara-wallet.png",
@@ -436,19 +466,22 @@ export const projects: IProject[] = [
     slug: "pdfflow",
     title: "PDFlow",
     description:
-      "PDFlow is a mobile app that allows you to create and edit PDFs on your device. It is built for Cambodian users to easily create and edit PDFs on their devices.",
+      "A PDF creation and editing tool built for Cambodian users, with a deliberately small surface: create, edit, done.",
+    overview:
+      "PDF editing is something people reach for once a month and abandon if it takes more than a few clicks, so the feature list is kept short on purpose rather than grown to match desktop editors. A Nuxt and Tailwind front end sits over a FastAPI backend, with Redis holding job state for the operations slow enough to need it. Deployed in Docker behind Nginx and Cloudflare with Sentry for error tracking.",
     tags: [
-      "Typescript",
+      "TypeScript",
       "Nuxt.js",
       "Tailwind CSS",
       "FastAPI",
       "Redis",
-      "Docker",
-      "Cloudflare",
-      "Sentry",
-      "Nginx",
     ],
     category: "Web",
+    domains: ["Productivity"],
+    tier: "production",
+    // TODO(bondeth): fill these in — both render only when set.
+    year: null,
+    role: null,
     visibility: "public",
     links: [{ kind: "app", url: "https://pdfflow.bondeth.site" }],
     image: "/previews/pdfflow.png",
@@ -458,16 +491,20 @@ export const projects: IProject[] = [
     slug: "reahu-generator",
     title: "Reahu Generator",
     description:
-    "Reahu Generator is a tool that allows you to generate READMEs for your projects. It is built for Cambodian users to easily generate READMEs for their projects.",
+      "A GitHub profile README generator — pick a layout, fill in the fields, and copy working markdown out the other end.",
+    overview:
+      "A good profile README is memorable, but writing one means copying snippets, fixing broken badge links, and pushing repeatedly just to see how it renders. Reahu does the assembly and shows the result before it reaches GitHub. A Next.js and Tailwind app with no backend of its own, deployed in Docker behind Nginx and Cloudflare.",
     tags: [
-      "Typescript",
+      "TypeScript",
       "Next.js",
       "Tailwind CSS",
-      "Docker",
-      "Cloudflare",
-      "Nginx",
     ],
     category: "Web",
+    domains: ["Developer Tools"],
+    tier: "production",
+    // TODO(bondeth): fill these in — both render only when set.
+    year: null,
+    role: null,
     visibility: "public",
     links: [{ kind: "app", url: "https://reahu.bondeth.site" }],
     image: "/previews/reahu-generator.png",
@@ -477,21 +514,23 @@ export const projects: IProject[] = [
     slug: "debc-website",
     title: "DEBC Website",
     description:
-      "Official website for the Digital Economy and Business Committee of Cambodia. Built to inform the public on digital economy policies, news, and government services.",
+      "The official website of Cambodia's Digital Economy and Business Committee, publishing policy, news, and government services.",
+    overview:
+      "A government site's binding requirement isn't its feature list, it's staying up and staying readable on whatever device and connection the public actually has. Next.js over a NestJS API with Supabase and PostgreSQL behind it, deployed on AWS in Docker behind Nginx, monitored with Sentry, Prometheus, and Grafana.",
     tags: [
-      "Typescript",
+      "TypeScript",
       "Next.js",
-      "Nest.js",
+      "NestJS",
       "Supabase",
       "PostgreSQL",
-      "Docker",
       "AWS",
-      "Sentry",
-      "Grafana",
-      "Prometheus",
-      "Nginx",
     ],
     category: "Web",
+    domains: ["GovTech"],
+    tier: "production",
+    // TODO(bondeth): fill these in — both render only when set.
+    year: null,
+    role: null,
     visibility: "limited",
     links: [{ kind: "app", url: "https://digitaleconomy.gov.kh/?lang=kh" }],
     image: "/previews/debc-website.png",
@@ -501,24 +540,23 @@ export const projects: IProject[] = [
     slug: "informal-economy",
     title: "Informal Economy",
     description:
-      "A platform developed in collaboration with the Ministry of Economy and Finance (MEF) to register and support informal economy workers across Cambodia.",
+      "A national registration platform for Cambodia's informal economy workers, built with the Ministry of Economy and Finance.",
+    overview:
+      "Registering informal workers at national scale means designing for someone filling in a form once, on a phone, possibly with help — so the failure modes that matter are dropped submissions and ambiguous state, not throughput. Next.js and NestJS microservices communicate over RabbitMQ, with PostgreSQL and Supabase for storage, running on Kubernetes and AWS behind Nginx and monitored with Sentry, Prometheus, and Grafana.",
     tags: [
-      "Typescript",
+      "TypeScript",
       "Next.js",
-      "Nest.js",
+      "NestJS",
       "Microservices",
-      "PostgreSQL",
-      "Supabase",
-      "RabbitMQ",
-      "Docker",
       "Kubernetes",
       "AWS",
-      "Sentry",
-      "Grafana",
-      "Prometheus",
-      "Nginx",
     ],
     category: "Web",
+    domains: ["GovTech"],
+    tier: "production",
+    // TODO(bondeth): fill these in — both render only when set.
+    year: null,
+    role: null,
     visibility: "limited",
     links: [{ kind: "app", url: "https://informal.digitaleconomy.gov.kh/km" }],
     image: "/previews/informal-economy.png",
@@ -528,9 +566,21 @@ export const projects: IProject[] = [
     slug: "cambodia-investment-platform",
     title: "Cambodia Investment Platform",
     description:
-      "Landing page for Cambodia Investment Platform — a platform that connects startups, MSMEs, investors, and the public through trusted digital financing mechanisms to support entrepreneurship, innovation, business growth, and economic development.",
-    tags: ["Typescript", "Next.js", "Tailwind CSS", "Vercel"],
+      "The landing site for Cambodia Investment Platform, connecting startups, MSMEs, investors, and the public to digital financing.",
+    overview:
+      "A landing page for a financing mechanism has one job and it's an editorial one: explain a complicated instrument to four audiences — founders, small businesses, investors, and the public — without losing any of them or writing four different pages. Next.js and Tailwind, deployed on Vercel.",
+    tags: [
+      "TypeScript",
+      "Next.js",
+      "Tailwind CSS",
+      "Vercel",
+    ],
     category: "Web",
+    domains: ["GovTech", "Fintech"],
+    tier: "production",
+    // TODO(bondeth): fill these in — both render only when set.
+    year: null,
+    role: null,
     visibility: "limited",
     links: [
       { kind: "app", url: "https://edf-cip-website-dev.intechdevkh.com/en" },
@@ -542,16 +592,22 @@ export const projects: IProject[] = [
     slug: "code-hub",
     title: "Code Hub",
     description:
-      "A developer community platform built during my freelance career. Features authentication with Google, Facebook, and GitHub SSO, enabling developers to discover and share projects.",
+      "A developer community platform from my freelance years, with Google, Facebook, and GitHub SSO for discovering and sharing projects.",
+    overview:
+      "Three SSO providers was the actual build: each returns a different shape of profile, and reconciling them into one account without duplicating a user who signs in a second way through a different provider is most of the work in a social login flow. React on the front, NestJS API, PostgreSQL for accounts and projects, Firebase alongside for auth plumbing, containerised with Docker.",
     tags: [
-      "Typescript",
+      "TypeScript",
       "React.js",
-      "Nest.js",
+      "NestJS",
       "PostgreSQL",
       "Firebase",
-      "Docker",
     ],
     category: "Web",
+    domains: ["Community"],
+    tier: "production",
+    // TODO(bondeth): fill these in — both render only when set.
+    year: null,
+    role: null,
     visibility: "public",
     links: [
       { kind: "app", url: "https://codehub-bondeth.netlify.app/signin" },
@@ -564,9 +620,21 @@ export const projects: IProject[] = [
     slug: "apple-clone",
     title: "Apple Clone",
     description:
-      "A front-end clone of the Apple website featuring the iconic full-screen model showcases, smooth scroll sections, and navigation — built to sharpen UI implementation skills.",
-    tags: ["Typescript", "React.js", "Tailwind CSS", "Vercel"],
+      "A front-end rebuild of Apple's product pages — full-screen model showcases, scroll-driven sections, and navigation.",
+    overview:
+      "Practice work. The interesting constraint in Apple's layouts is that scroll position drives the content rather than merely moving past it, which is a different implementation problem from a static page and the reason this was worth rebuilding. React, TypeScript, and Tailwind on Vercel.",
+    tags: [
+      "TypeScript",
+      "React.js",
+      "Tailwind CSS",
+      "Vercel",
+    ],
     category: "Web",
+    domains: [],
+    tier: "practice",
+    // TODO(bondeth): fill these in — both render only when set.
+    year: null,
+    role: null,
     visibility: "public",
     links: [
       { kind: "app", url: "https://apple-bondeth.vercel.app" },
@@ -579,9 +647,21 @@ export const projects: IProject[] = [
     slug: "tesla-clone",
     title: "Tesla Clone",
     description:
-      "A front-end clone of the Tesla website featuring the iconic full-screen model showcases, smooth scroll sections, and navigation — built to sharpen UI implementation skills.",
-    tags: ["Typescript", "React.js", "Tailwind CSS", "Vercel"],
+      "A front-end rebuild of Tesla's site — full-screen model showcases, smooth scroll sections, and navigation.",
+    overview:
+      "Practice work, built alongside the Apple rebuild to compare how two companies solve the same full-bleed product page differently. React, TypeScript, and Tailwind on Vercel.",
+    tags: [
+      "TypeScript",
+      "React.js",
+      "Tailwind CSS",
+      "Vercel",
+    ],
     category: "Web",
+    domains: [],
+    tier: "practice",
+    // TODO(bondeth): fill these in — both render only when set.
+    year: null,
+    role: null,
     visibility: "public",
     links: [
       { kind: "app", url: "https://tesla-bondeth.vercel.app" },
@@ -594,9 +674,21 @@ export const projects: IProject[] = [
     slug: "sabynews-clone",
     title: "Sabynews Clone",
     description:
-      "A pixel-faithful clone of the Sabay News website, built to practice replicating real-world Khmer news portal layouts with complex grids and category navigation.",
-    tags: ["Typescript", "React.js", "Tailwind CSS", "Vercel"],
+      "A pixel-faithful rebuild of the Sabay News portal — dense Khmer-language grids and category navigation.",
+    overview:
+      "Practice work, and a harder layout problem than it looks: Khmer sets at a different line height to Latin, so a news grid tuned on English copy breaks the moment real headlines go into it. React, TypeScript, and Tailwind on Vercel.",
+    tags: [
+      "TypeScript",
+      "React.js",
+      "Tailwind CSS",
+      "Vercel",
+    ],
     category: "Web",
+    domains: [],
+    tier: "practice",
+    // TODO(bondeth): fill these in — both render only when set.
+    year: null,
+    role: null,
     visibility: "public",
     links: [
       { kind: "app", url: "https://sabynews-clone-bondeth.netlify.app" },
@@ -609,9 +701,21 @@ export const projects: IProject[] = [
     slug: "bondeth-vlog",
     title: "Bondeth Vlog",
     description:
-      "My oldschool personal vlog and portfolio site — an early project showcasing blog posts, projects, and skills with a distinctive animated 3D logo.",
-    tags: ["Typescript", "React.js", "Tailwind CSS", "Vercel"],
+      "My first personal site — blog posts, projects, and skills behind an animated 3D logo.",
+    overview:
+      "Early work, kept here as a marker of where the current site started. React, TypeScript, and Tailwind on Vercel.",
+    tags: [
+      "TypeScript",
+      "React.js",
+      "Tailwind CSS",
+      "Vercel",
+    ],
     category: "Web",
+    domains: [],
+    tier: "practice",
+    // TODO(bondeth): fill these in — both render only when set.
+    year: null,
+    role: null,
     visibility: "public",
     links: [
       { kind: "app", url: "https://bondeth-blog.vercel.app" },

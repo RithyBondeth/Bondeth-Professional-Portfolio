@@ -16,6 +16,7 @@ interface IBlogExplorerProps {
   tags: ITagCount[];
   lang: TLocale;
   labels: TDictionary["blog"];
+  formatLabels: TDictionary["blogFormats"];
 }
 
 export function BlogExplorer({
@@ -24,10 +25,12 @@ export function BlogExplorer({
   tags,
   lang,
   labels,
+  formatLabels,
 }: IBlogExplorerProps) {
   /* -------------------------------- All States ------------------------------- */
   const [query, setQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedFormat, setSelectedFormat] = useState<"all" | "note" | "article">("all");
 
   /* ---------------------------------- Utils --------------------------------- */
   const normalized = query.trim().toLowerCase();
@@ -52,14 +55,32 @@ export function BlogExplorer({
         ? posts
         : posts.filter((post) => post.category === selectedCategory);
 
-    if (!normalized) return byCategory;
-    return byCategory.filter((post) => {
+    // `format` is optional in frontmatter and defaults to "article", so an
+    // untagged legacy post still answers the "Deep dives" filter correctly.
+    const byFormat =
+      selectedFormat === "all"
+        ? byCategory
+        : byCategory.filter(
+            (post) => (post.format ?? "article") === selectedFormat,
+          );
+
+    if (!normalized) return byFormat;
+    return byFormat.filter((post) => {
       const haystack = [post.title, post.excerpt, post.category, ...post.tags]
         .join(" ")
         .toLowerCase();
       return haystack.includes(normalized);
     });
-  }, [posts, normalized, selectedCategory]);
+  }, [posts, normalized, selectedCategory, selectedFormat]);
+
+  const formatCounts = useMemo(
+    () => ({
+      note: posts.filter((post) => post.format === "note").length,
+      article: posts.filter((post) => (post.format ?? "article") !== "note")
+        .length,
+    }),
+    [posts],
+  );
 
   const countLabel = `${filtered.length} ${
     filtered.length === 1 ? labels.postSingular : labels.postPlural
@@ -170,6 +191,37 @@ export function BlogExplorer({
                 {category.category}
                 <span className="ml-1 text-muted-foreground">
                   {category.count}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Format Filter Section — the one piece of the old /notes section worth
+          keeping: a reader who wants the short Khmer explainers can get just
+          those without a second nav item to guess at. Hidden entirely when
+          every post is the same format, so it never adds noise for nothing. */}
+      {formatCounts.note > 0 && formatCounts.article > 0 && (
+        <div className="mb-10">
+          <p className="mb-3 font-mono text-xs uppercase tracking-[0.25em] text-muted-foreground">
+            <span className="text-primary">::</span> {formatLabels.label}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {(["all", "article", "note"] as const).map((value) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => {
+                  captureFlip();
+                  setSelectedFormat(value);
+                }}
+                aria-pressed={selectedFormat === value}
+                className="btn-fx btn-fx-chip rounded border border-border bg-card/60 px-3 py-1.5 font-mono text-xs text-muted-foreground hover:text-foreground aria-pressed:border-primary/50 aria-pressed:bg-primary/10 aria-pressed:text-primary"
+              >
+                {formatLabels[value]}
+                <span className="ml-1 text-muted-foreground">
+                  {value === "all" ? posts.length : formatCounts[value]}
                 </span>
               </button>
             ))}

@@ -30,6 +30,7 @@ export default async function TagPage({ params }: ITagPageProps) {
       cover,
       coverAlt,
       readingTime,
+      format,
     }) => ({
       slug,
       title,
@@ -40,6 +41,7 @@ export default async function TagPage({ params }: ITagPageProps) {
       cover,
       coverAlt,
       readingTime,
+      format,
     }),
   );
 
@@ -71,6 +73,7 @@ export default async function TagPage({ params }: ITagPageProps) {
                 tags={[]}
                 lang={lang}
                 labels={dict.blog}
+                formatLabels={dict.blogFormats}
               />
             </AnimateIn>
           ) : (

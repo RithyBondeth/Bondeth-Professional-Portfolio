@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AnimateIn } from "@/components/utils/animations/animate-in";
 import { RagRetrievalLab } from "@/components/labs/rag-retrieval-lab";
+import { TopicCluster } from "@/components/topic-cluster";
 import { getDictionary, hasLocale } from "@/utils/i18n";
 
 interface IRagRetrievalPageProps {
@@ -91,19 +92,13 @@ export default async function RagRetrievalPage({
           </section>
         </AnimateIn>
 
-        <AnimateIn from="up" delay={0.15}>
-          <div className="mt-8 rounded border border-border/60 bg-card p-6">
-            <p className="font-mono text-[10px] uppercase tracking-wider text-primary">
-              {labs.rag.relatedReading}
-            </p>
-            <Link
-              href={`/${lang}/blog/rag-pgvector-postgres`}
-              className="mt-3 inline-flex min-h-11 items-center text-sm font-semibold text-foreground transition-colors hover:text-primary"
-            >
-              {labs.rag.relatedArticle} →
-            </Link>
-          </div>
-        </AnimateIn>
+        {/* Supersedes the old single "related reading" link — the cluster
+            surfaces the note and video alongside the same blog post. */}
+        <TopicCluster
+          lang={lang}
+          current="lab"
+          hubSlug="rag-in-60-seconds"
+        />
       </div>
     </main>
   );

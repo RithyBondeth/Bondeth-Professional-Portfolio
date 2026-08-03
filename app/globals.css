@@ -48,6 +48,7 @@
   --color-primary-foreground: var(--primary-foreground);
   --color-primary-fill: var(--primary-fill);
   --color-primary: var(--primary);
+  --color-accent-note: var(--accent-note);
   --color-status-success: var(--status-success);
   --color-status-success-surface: var(--status-success-surface);
   --color-status-warning: var(--status-warning);
@@ -160,6 +161,10 @@
   /* Semantic state text. These are deliberately darker than the decorative
      Tailwind 400/500 shades because they are used for 9–12px labels on light
      surfaces. Technical panels override them with light-on-dark partners. */
+  /* The #AIIn60Seconds short-form marker. Indigo reads as a sibling of the
+     primary rather than a state colour, so a note badge never looks like a
+     success or warning pill. Darkened here for 10px labels on white. */
+  --accent-note: #4c56c0;
   --status-success: #047857;
   --status-success-surface: #ecfdf5;
   --status-warning: #92400e;
@@ -290,6 +295,7 @@
   --accent: #a5e0fd;
   --accent-foreground: #08121c;
   --destructive: oklch(0.704 0.191 22.216);
+  --accent-note: #94a2ff;
   --status-success: #34d399;
   --status-success-surface: #052e16;
   --status-warning: #fcd34d;

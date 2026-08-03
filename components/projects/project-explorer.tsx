@@ -18,6 +18,13 @@ function getCategories(projects: IProject[]): TFilter[] {
   return ["All", ...new Set(projects.map((project) => project.category))];
 }
 
+/** Same derivation for domains, which are additive — a project can carry several. */
+function getDomains(projects: IProject[]): string[] {
+  return [...new Set(projects.flatMap((project) => project.domains ?? []))];
+}
+
+const isPractice = (project: IProject) => project.tier === "practice";
+
 export function ProjectExplorer(props: {
   projects: IProject[];
   dict: TDictionary;
@@ -27,10 +34,19 @@ export function ProjectExplorer(props: {
 
   /* -------------------------------- All States ------------------------------- */
   const categories = getCategories(projects);
+  const domains = getDomains(projects);
   const [filter, setFilter] = useState<TFilter>("All");
-  const filtered = projects.filter(
-    (project) => filter === "All" || project.category === filter,
-  );
+  const [domain, setDomain] = useState<string | null>(null);
+
+  const matches = (project: IProject) =>
+    (filter === "All" || project.category === filter) &&
+    (!domain || (project.domains ?? []).includes(domain));
+
+  // Production work and practice work are filtered together but rendered as two
+  // groups: shown in one grid, a Tesla clone reads as a peer of a national
+  // government platform, which flatters neither.
+  const filtered = projects.filter((p) => matches(p) && !isPractice(p));
+  const practice = projects.filter((p) => matches(p) && isPractice(p));
 
   /* ---------------------------------- Utils --------------------------------- */
   const gridRef = useRef<HTMLDivElement>(null);
@@ -73,7 +89,7 @@ export function ProjectExplorer(props: {
           { opacity: 1, scale: 1, duration: 0.45, ease: "smooth" },
         ),
     });
-  }, [filter]);
+  }, [filter, domain]);
 
   // Sliding thumb under the active filter — jumps instantly under reduced
   // motion, glides otherwise. Re-measured on resize.
@@ -132,14 +148,63 @@ export function ProjectExplorer(props: {
         ))}
       </div>
 
-      {filtered.length > 0 ? (
-        <div ref={gridRef} className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((project) => (
-            <div key={project.slug} data-flip-id={project.slug}>
-              <ProjectCard project={project} dict={dict} lang={lang} />
-            </div>
+      {domains.length > 0 && (
+        <div className="mb-10 flex flex-wrap items-center gap-2">
+          <span className="mr-1 font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+            {dict.projects.filterDomain}
+          </span>
+          {domains.map((item) => (
+            <button
+              key={item}
+              type="button"
+              onClick={() => {
+                if (gridRef.current && motionOK()) {
+                  flipState.current = Flip.getState(gridRef.current.children);
+                }
+                setDomain((current) => (current === item ? null : item));
+              }}
+              aria-pressed={domain === item}
+              className="btn-fx btn-fx-chip rounded border border-border bg-card/60 px-3 py-1.5 font-mono text-xs text-muted-foreground hover:text-foreground aria-pressed:border-primary/50 aria-pressed:bg-primary/10 aria-pressed:text-primary"
+            >
+              {item}
+            </button>
           ))}
         </div>
+      )}
+
+      {filtered.length > 0 || practice.length > 0 ? (
+        <>
+          {filtered.length > 0 && (
+            <div
+              ref={gridRef}
+              className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+            >
+              {filtered.map((project) => (
+                <div key={project.slug} data-flip-id={project.slug}>
+                  <ProjectCard project={project} dict={dict} lang={lang} />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {practice.length > 0 && (
+            <section className="mt-16 border-t border-border/50 pt-10">
+              <h2 className="font-mono text-xs uppercase tracking-[0.25em] text-muted-foreground">
+                {dict.projects.practice}
+              </h2>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
+                {dict.projects.practiceBlurb}
+              </p>
+              <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {practice.map((project) => (
+                  <div key={project.slug} className="opacity-90">
+                    <ProjectCard project={project} dict={dict} lang={lang} />
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+        </>
       ) : (
         <div className="rounded border border-dashed border-border py-20 text-center">
           <p className="font-mono text-sm text-muted-foreground">

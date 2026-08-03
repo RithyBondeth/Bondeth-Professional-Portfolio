@@ -1,0 +1,48 @@
+---
+title: "RAG in 60 Seconds"
+date: "2026-07-09"
+excerpt: "An LLM only knows what it was trained on. RAG lets it go look something up before it answers. Here's the whole loop in six steps."
+category: "AI"
+format: "note"
+series: "AIIn60Seconds"
+tags: ["AIIn60Seconds", "RAG", "LLM", "AI"]
+source:
+  platform: "facebook"
+  url: "https://www.facebook.com/share/p/1Ea32y2Ce5/"
+relatedPost: "rag-pgvector-postgres"
+relatedLab: "/labs/rag-retrieval"
+---
+
+A model like ChatGPT only knows what was in its training data.
+
+Picture a football fan who stopped following the news last year. They still know the rules, still know the old squad — but ask who won last weekend and they'll guess. And the guess will sound exactly as confident as a fact.
+
+That's the problem. A wrong answer delivered confidently is more dangerous than "I don't know."
+
+**RAG (Retrieval-Augmented Generation)** fixes it by letting the model look something up before it answers.
+
+## The six steps
+
+![Six steps in a loop: a question is embedded into a vector, a vector search finds the nearest documents, the relevant chunks are extracted, combined with the original question into one prompt, and the model returns a grounded answer with citations. Steps two through four are retrieval — get them wrong and the final answer is confidently wrong too.](/notes/rag-six-steps.svg)
+
+1. **The user asks a question** — in plain language.
+2. **An embedding model turns the query into a vector** — a list of numbers standing for the *meaning*, not the words.
+3. **A vector database finds relevant documents** — comparing that vector against your own content to find what's closest in meaning.
+4. **Pull out the important chunks** — not whole documents, just the passages that actually answer the question.
+5. **Combine those chunks with the query** — into a single prompt.
+6. **The LLM answers from that context** — and can cite where each claim came from.
+
+Step 6 is the whole point: the model stops answering from memory and starts answering from what you just handed it.
+
+## Why it matters
+
+- Answers grounded in **your own data**, not general internet knowledge.
+- Access to the **latest information** without waiting for a new model generation.
+- **No retraining** — adding a document just means adding it to the index.
+- **Fewer hallucinations**, because there's real text underneath the answer.
+
+That last one isn't a total fix. RAG reduces invention, but if retrieval pulls the wrong passage the model will be confidently wrong about *that* instead. Retrieval quality is the thing that actually determines whether any of this works.
+
+## Want to try it?
+
+I've written up building this pipeline on the Postgres you already have, using pgvector — no separate vector database required. And the lab on this site lets you run retrieval yourself and watch which chunks get selected, and why.

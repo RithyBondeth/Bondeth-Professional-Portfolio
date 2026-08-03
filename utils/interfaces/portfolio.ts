@@ -7,3 +7,4 @@ export * from "./portfolio/education.interface";
 export * from "./portfolio/organization.interface";
 export * from "./portfolio/project.interface";
 export * from "./portfolio/project-link.interface";
+export * from "./portfolio/video.interface";
