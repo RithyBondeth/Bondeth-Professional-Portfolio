@@ -1,10 +1,14 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+import { gsap, ScrollSmoother } from "@/components/utils/animations/gsap";
 import { GridPattern } from "@/components/ui/grid-pattern";
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Grid Field — the site's ambient background: MagicUI's `GridPattern`, an SVG
    `<pattern>` of hairlines skewed the way the component's own demo skews it,
-   drifting slowly along that skew, with a scatter of cells fading in and out
-   over the top of it.
+   streaming upward as the page scrolls so that descending reads as falling
+   THROUGH the grid, with a scatter of cells fading in and out over the top.
 
    Same behaviour contract the grain field it replaced was held to:
    - Mounted ONCE from the root layout, fixed to the viewport, aria-hidden. Not
@@ -14,17 +18,23 @@ import { GridPattern } from "@/components/ui/grid-pattern";
    - Landing sections carry no background of their own, so this shows through.
    - Reduced motion holds the lattice still and every cell fully painted.
 
-   The DRIFT is the animation that actually reads; the cell fade alone did not.
+   MOVEMENT is what makes this read as animated; the cell fade alone did not.
    That is a consequence of the layout rather than a preference — see the
    contrast budget below for why the cells cannot be bright enough in dark mode
-   for a fade to register, and `.grid-drift` in globals.css for why movement
-   succeeds where brightness fails.
+   for a fade to register. There are three layers of it, and they compose by
+   nesting rather than by fighting over one `transform`:
 
-   Unlike the shader backgrounds this replaces, it is a SERVER component and
-   ships no client JavaScript — including the animation, which is keyframes in
-   globals.css rather than the framer-motion loop MagicUI's AnimatedGridPattern
-   uses. So there is nothing to hydrate and no first-paint gap to cover with a
-   CSS stand-in: the grid is in the server-rendered HTML, already moving.
+     scroll fall (here, GSAP)  →  idle drift (CSS)  →  skew (CSS)
+
+   The idle drift is what keeps the field alive when the page is sitting still;
+   the fall is what the reader actually feels.
+
+   It is a CLIENT component, which the two shader backgrounds before it also
+   were, but for a smaller reason: everything except the scroll binding is
+   still CSS and server-rendered markup. The grid is in the SSR HTML and
+   correct before hydration — only the falling waits for JS. GSAP is already
+   in the bundle on every route (SmoothScroll, the hero), so the marginal cost
+   is this file.
    ──────────────────────────────────────────────────────────────────────────── */
 
 /* ---------------------------------- Palette --------------------------------- */
@@ -114,8 +124,73 @@ const SQUARES: Array<[number, number]> = [
 const VIGNETTE =
   "radial-gradient(ellipse 90% 70% at 50% 45%, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%)";
 
+/* ---------------------------------- Falling --------------------------------- */
+/** How far the lattice travels per pixel scrolled. 0.35 puts it at roughly a
+ *  third of the page's own speed — enough that scrolling clearly drives it,
+ *  little enough that it reads as ground passing underneath rather than as a
+ *  second page sliding behind the first. */
+const FALL_RATE = 0.35;
+
 /* ------------------------------ The React layer ----------------------------- */
 export function GridField({ className }: { className?: string }) {
+  const fallRef = useRef<HTMLDivElement>(null);
+
+  /* Scroll drives the lattice upward, so descending the page feels like
+     descending THROUGH the grid rather than sliding a picture behind it.
+
+     Two things make this exact rather than approximate:
+
+     - The translation is taken modulo one cell. Without it the offset grows
+       without bound and the grid leaves the viewport a few screens in; with it
+       the value stays inside (-44, 0] forever. That wrap is invisible for the
+       same reason the idle drift's is — a lattice translated by exactly one
+       period maps onto itself, and it still holds after the skew, since
+       skewY leaves a pure vertical translation unchanged.
+
+     - It prefers ScrollSmoother's own scroll position to window.scrollY.
+       ScrollSmoother lags the content behind the native scrollbar by `smooth`
+       seconds, so the raw window value LEADS what is actually on screen and the
+       grid would run slightly ahead of the page. `scrollTop()` is the position
+       the reader can see. The fallback covers touch and reduced-motion
+       sessions, where the smoother is never created and native scroll is the
+       only truth.
+
+     This reads the position on GSAP's ticker rather than from a
+     ScrollTrigger's `onUpdate`. A trigger was the first attempt and it did not
+     work: with `start: 0, end: "max"` the end resolves once, at creation, and
+     on a page whose height is still settling (fonts, images) it latched onto a
+     stale value and stopped firing — the grid sat at y=0 no matter how far
+     the page scrolled. A ticker callback has no geometry to go stale, and the
+     early-out below means an idle page does no work beyond one comparison.
+
+     GSAP's matchMedia handles the reduced-motion opt-out and re-evaluates it if
+     the preference changes mid-session, which is why the gate is here rather
+     than in the `@media` block that governs the idle drift. */
+  useEffect(() => {
+    const mm = gsap.matchMedia();
+    mm.add("(prefers-reduced-motion: no-preference)", () => {
+      const el = fallRef.current;
+      if (!el) return;
+      // quickSetter skips GSAP's per-call property parsing — this runs on every
+      // frame the page is moving, which is exactly what it is for.
+      const setY = gsap.quickSetter(el, "y", "px");
+      let last: number | null = null;
+
+      const update = () => {
+        const scrolled = ScrollSmoother.get()?.scrollTop() ?? window.scrollY;
+        const y = -((scrolled * FALL_RATE) % CELL);
+        if (y === last) return;
+        last = y;
+        setY(y);
+      };
+
+      update();
+      gsap.ticker.add(update);
+      return () => gsap.ticker.remove(update);
+    });
+    return () => mm.revert();
+  }, []);
+
   return (
     <div
       aria-hidden
@@ -132,24 +207,31 @@ export function GridField({ className }: { className?: string }) {
         className="absolute inset-0"
         style={{ maskImage: VIGNETTE, WebkitMaskImage: VIGNETTE }}
       >
-        {/* Two instances, not one, and the split is what makes the drift
-            seamless. Sliding the lattice by exactly one cell maps the hairline
-            pattern onto itself, so the loop point is invisible — but the
+        {/* Two instances, not one, and the split is what makes both the drift
+            and the fall seamless. Sliding the lattice by exactly one cell maps
+            the hairline pattern onto itself, so the wrap is invisible — but the
             highlighted cells sit at fixed coordinates and would snap back a row
-            every 14 seconds. So the lines drift and the cells stay put.
+            every time it happened. So the lines move and the cells stay put,
+            breathing where they are.
 
             Both are overscanned vertically, straight from the component's demo:
             a 12° skew on a viewport-sized box would drag empty corners into
-            view, so each is drawn at 200% height and pulled up 30%. The drift
+            view, so each is drawn at 200% height and pulled up 30%. The moving
             layer takes its skew from `.grid-drift` rather than a Tailwind
             utility, since its animation owns the whole `transform`. */}
-        <GridPattern
-          width={CELL}
-          height={CELL}
-          x={-1}
-          y={-1}
-          className={`inset-x-0 inset-y-[-30%] h-[200%] grid-drift ${LINE_INK}`}
-        />
+        {/* The fall is its own wrapper rather than another class on the SVG:
+            the SVG's `transform` already belongs to the idle-drift keyframes,
+            and a second animation cannot share the property. Nesting composes
+            them instead — scroll offset outside, idle drift and skew inside. */}
+        <div ref={fallRef} className="absolute inset-0">
+          <GridPattern
+            width={CELL}
+            height={CELL}
+            x={-1}
+            y={-1}
+            className={`inset-x-0 inset-y-[-30%] h-[200%] grid-drift ${LINE_INK}`}
+          />
+        </div>
         {/* `stroke-transparent` is why this one contributes cells and nothing
             else: GridPattern always draws its hairline path, and a second set
             over the drifting one would beat against it as they slid apart. */}
