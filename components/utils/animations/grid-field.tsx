@@ -2,8 +2,9 @@ import { GridPattern } from "@/components/ui/grid-pattern";
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Grid Field — the site's ambient background: MagicUI's `GridPattern`, an SVG
-   `<pattern>` of hairlines with a scatter of cells filled in, skewed the way
-   the component's own demo skews it, and breathing in and out on a loop.
+   `<pattern>` of hairlines skewed the way the component's own demo skews it,
+   drifting slowly along that skew, with a scatter of cells fading in and out
+   over the top of it.
 
    Same behaviour contract the grain field it replaced was held to:
    - Mounted ONCE from the root layout, fixed to the viewport, aria-hidden. Not
@@ -11,15 +12,19 @@ import { GridPattern } from "@/components/ui/grid-pattern";
      where one instance's grid ends and the next one's starts over — and with a
      12° skew the two would not even meet at the same angle.
    - Landing sections carry no background of their own, so this shows through.
-   - Reduced motion holds every cell still, fully painted.
+   - Reduced motion holds the lattice still and every cell fully painted.
+
+   The DRIFT is the animation that actually reads; the cell fade alone did not.
+   That is a consequence of the layout rather than a preference — see the
+   contrast budget below for why the cells cannot be bright enough in dark mode
+   for a fade to register, and `.grid-drift` in globals.css for why movement
+   succeeds where brightness fails.
 
    Unlike the shader backgrounds this replaces, it is a SERVER component and
    ships no client JavaScript — including the animation, which is keyframes in
-   globals.css (`.grid-breathe`) rather than the framer-motion loop MagicUI's
-   AnimatedGridPattern uses. See the comment on that rule for what the CSS gives
-   up to get there and how it makes the loop up. The consequence here is that
-   there is nothing to hydrate and no first-paint gap to cover with a CSS
-   stand-in: the grid is in the server-rendered HTML, already moving.
+   globals.css rather than the framer-motion loop MagicUI's AnimatedGridPattern
+   uses. So there is nothing to hydrate and no first-paint gap to cover with a
+   CSS stand-in: the grid is in the server-rendered HTML, already moving.
    ──────────────────────────────────────────────────────────────────────────── */
 
 /* ---------------------------------- Palette --------------------------------- */
@@ -27,27 +32,32 @@ import { GridPattern } from "@/components/ui/grid-pattern";
    which is a fixed grey that would sit unchanged on a #f8f9fb page and a
    #0a0f18 one. Lines take `--border`, filled cells `--primary`.
 
-   The alpha on the filled cells is a contrast budget. Every landing section is
-   transparent, so this grid IS the ground body copy sits on, and a filled cell
-   is 43px square — wide enough to sit entirely behind a word. The animation
-   does not relax this: it drives element `opacity`, which MULTIPLIES the fill
+   The alpha on the filled cells is a contrast budget, and it is also the reason
+   the cell fade could never have carried this on its own. Every landing section
+   is transparent, so this grid IS the ground body copy sits on; a filled cell
+   is 43px square, wide enough to sit entirely behind a word; and the content
+   column is `max-w-6xl`, so on a 1440px viewport text covers ~94% of the width
+   and there is no empty margin to hide a brighter effect in. The animation does
+   not relax any of it: it drives element `opacity`, which MULTIPLIES the fill
    alpha, so a cell at the top of its cycle is exactly as dark as a static one
    and every number below still describes the worst case.
 
    dark: ground #0a0f18 (L 0.0047), text #a1a1a1 (L 0.356). 4.5:1 caps the
    composite at L 0.0402, and --primary there is #7dd3fc at L 0.580, so the fill
-   cannot exceed 6.2% — hence 5%.
+   cannot exceed 6.2% — hence 5%. A fade between 0 and 5% is not something the
+   eye reports as movement, which is what the drift is for.
 
    light: ground #f8f9fb (L 0.955), text #303546 (L 0.0357). The same rule caps
    the composite at ≥ L 0.336, and --primary there is #08375d at L 0.0357, which
-   would allow 67%. 8% is a taste call, not a limit.
+   would allow 67%. 14% is a taste call, not a limit — the cells read clearly
+   here, and this theme is the one where the fade does pull its weight.
 
    The hairlines get more room in both themes than the cells do, since even at
    full opacity --border lands at L 0.372 (light) and L 0.0408 (dark) — the
    light one clears the floor outright, the dark one sits at the ceiling, and
    60% pulls it to a comfortable 5.1:1. */
-const GRID_INK =
-  "stroke-border/55 fill-primary/8 dark:stroke-border/60 dark:fill-primary/5";
+const LINE_INK = "stroke-border/55 dark:stroke-border/60";
+const CELL_INK = "stroke-transparent fill-primary/14 dark:fill-primary/5";
 
 /** 44px, not the component's stock 40. It divides the 1408px `max-w-6xl`
  *  content column into a whole number of cells, so the column edges land on
@@ -122,16 +132,34 @@ export function GridField({ className }: { className?: string }) {
         className="absolute inset-0"
         style={{ maskImage: VIGNETTE, WebkitMaskImage: VIGNETTE }}
       >
+        {/* Two instances, not one, and the split is what makes the drift
+            seamless. Sliding the lattice by exactly one cell maps the hairline
+            pattern onto itself, so the loop point is invisible — but the
+            highlighted cells sit at fixed coordinates and would snap back a row
+            every 14 seconds. So the lines drift and the cells stay put.
+
+            Both are overscanned vertically, straight from the component's demo:
+            a 12° skew on a viewport-sized box would drag empty corners into
+            view, so each is drawn at 200% height and pulled up 30%. The drift
+            layer takes its skew from `.grid-drift` rather than a Tailwind
+            utility, since its animation owns the whole `transform`. */}
+        <GridPattern
+          width={CELL}
+          height={CELL}
+          x={-1}
+          y={-1}
+          className={`inset-x-0 inset-y-[-30%] h-[200%] grid-drift ${LINE_INK}`}
+        />
+        {/* `stroke-transparent` is why this one contributes cells and nothing
+            else: GridPattern always draws its hairline path, and a second set
+            over the drifting one would beat against it as they slid apart. */}
         <GridPattern
           width={CELL}
           height={CELL}
           x={-1}
           y={-1}
           squares={SQUARES}
-          // Overscanned vertically and skewed, straight from the component's
-          // demo: a 12° skew on a viewport-sized box would drag empty corners
-          // into view, so it is drawn at 200% height and pulled up 30%.
-          className={`inset-x-0 inset-y-[-30%] h-[200%] skew-y-12 grid-breathe ${GRID_INK}`}
+          className={`inset-x-0 inset-y-[-30%] h-[200%] skew-y-12 grid-breathe ${CELL_INK}`}
         />
       </div>
     </div>
