@@ -601,6 +601,54 @@ html[lang="km"] :is(h1, h2, h3, h4, h5, h6) {
   animation: type-caret 1s steps(1) infinite;
 }
 
+/* ── Grid field: the filled cells fade in and out, so the background breathes
+   instead of sitting there as a printed sheet.
+
+   This is MagicUI's AnimatedGridPattern behaviour, done in CSS rather than
+   with its framer-motion implementation. That matters for more than one
+   dependency: the motion version needs `useState` + a `setInterval` to shuffle
+   square positions, which would turn <GridField> into a client component and
+   put a per-tick React render behind every page on the site. As keyframes it
+   stays a server component that ships no JavaScript at all, and the browser
+   runs the whole thing on the compositor.
+
+   What framer-motion buys upstream is genuine randomness — squares jump to new
+   coordinates each cycle. CSS cannot randomise, so the illusion is built from
+   incommensurate periods instead: four durations (7/8.5/10.5/13s, chosen so no
+   two share a small common multiple) crossed with six delays, over cells whose
+   own coordinates are already irregular. 24 combinations across 28 cells means
+   the pattern does not visibly repeat inside the time anyone spends on a page.
+
+   The selector reaches `> svg > rect` on purpose. GridPattern renders the
+   pattern-filled backdrop as a direct child <rect> and the highlighted cells
+   inside a nested <svg>, so this animates the cells and leaves the hairline
+   grid — which should stay put — alone. ── */
+@keyframes grid-cell-breathe {
+  0%, 100% { opacity: 0; }
+  50%      { opacity: 1; }
+}
+
+/* Reduced motion keeps every cell at rest, fully painted — which is exactly
+   the static grid this animation was added to, so nothing is lost but the
+   movement. Hence the opt-IN media query: no animation is the base state. */
+@media (prefers-reduced-motion: no-preference) {
+  .grid-breathe > svg > rect {
+    animation: grid-cell-breathe 10s ease-in-out infinite;
+  }
+
+  .grid-breathe > svg > rect:nth-child(4n + 1) { animation-duration: 7s; }
+  .grid-breathe > svg > rect:nth-child(4n + 2) { animation-duration: 8.5s; }
+  .grid-breathe > svg > rect:nth-child(4n + 3) { animation-duration: 10.5s; }
+  .grid-breathe > svg > rect:nth-child(4n)     { animation-duration: 13s; }
+
+  .grid-breathe > svg > rect:nth-child(6n + 1) { animation-delay: 0s; }
+  .grid-breathe > svg > rect:nth-child(6n + 2) { animation-delay: -1.9s; }
+  .grid-breathe > svg > rect:nth-child(6n + 3) { animation-delay: -3.7s; }
+  .grid-breathe > svg > rect:nth-child(6n + 4) { animation-delay: -5.3s; }
+  .grid-breathe > svg > rect:nth-child(6n + 5) { animation-delay: -7.1s; }
+  .grid-breathe > svg > rect:nth-child(6n)     { animation-delay: -8.9s; }
+}
+
 /* ── Hero name gradient — lives on the whole h1 (no-JS / reduced-motion
    fallback) AND on every SplitText char (.hero-char), because background-clip
    can't reach across the per-char transform layers once the name is split.
