@@ -601,6 +601,82 @@ html[lang="km"] :is(h1, h2, h3, h4, h5, h6) {
   animation: type-caret 1s steps(1) infinite;
 }
 
+/* ── Grid field: the lattice drifts, and the filled cells fade in and out.
+
+   MOTION, NOT BRIGHTNESS, is what makes this readable as animated, and that is
+   forced by the layout. Landing sections are transparent and the content column
+   is `max-w-6xl` — 1408px, so on a 1440px viewport body copy spans ~94% of the
+   width. There is no empty margin to hide a brighter effect in, which means the
+   cells are stuck at 5% alpha in dark mode (see grid-field.tsx for that
+   budget), and a slow fade between 0 and 5% is invisible. The eye picks up
+   MOVEMENT at far lower contrast than it picks up a slow change in brightness,
+   so the primary animation is the lattice sliding, not the cells pulsing.
+
+   The drift is seamless rather than looped-with-a-jump: the pattern repeats
+   every 44px, so translating it by exactly one cell maps it onto itself and the
+   restart is undetectable. That only holds for the hairlines. The highlighted
+   cells sit at fixed coordinates and would visibly snap back, which is why
+   grid-field.tsx draws them as a SECOND, stationary GridPattern rather than
+   letting one instance carry both.
+
+   The skew lives in the keyframes, not in a Tailwind `skew-y-12`, because an
+   animated `transform` replaces the utility's wholesale — the two cannot share
+   the property. It is repeated on the base rule so reduced motion still gets a
+   skewed grid rather than a square one.
+
+   The cell fade is MagicUI's AnimatedGridPattern behaviour, done in CSS rather
+   than with its framer-motion implementation. That matters for more than one
+   dependency: the motion version needs `useState` + a `setInterval` to shuffle
+   square positions, which would turn <GridField> into a client component and
+   put a per-tick React render behind every page on the site. As keyframes it
+   stays a server component that ships no JavaScript at all.
+
+   What framer-motion buys upstream is genuine randomness — squares jump to new
+   coordinates each cycle. CSS cannot randomise, so the illusion is built from
+   incommensurate periods instead: four durations crossed with six delays, over
+   cells whose own coordinates are already irregular. ── */
+.grid-drift {
+  transform: skewY(12deg);
+}
+
+@keyframes grid-drift {
+  from { transform: skewY(12deg) translateY(0); }
+  to   { transform: skewY(12deg) translateY(44px); }
+}
+
+@keyframes grid-cell-breathe {
+  0%, 100% { opacity: 0.1; }
+  50%      { opacity: 1; }
+}
+
+/* Reduced motion holds the lattice still and every cell fully painted — which
+   is exactly the static grid this was added to, so nothing is lost but the
+   movement. Hence the opt-IN media query: no animation is the base state. */
+@media (prefers-reduced-motion: no-preference) {
+  .grid-drift {
+    animation: grid-drift 14s linear infinite;
+    /* A full-viewport layer whose transform changes every frame. Promoting it
+       once is cheaper than letting the compositor rediscover that each time. */
+    will-change: transform;
+  }
+
+  .grid-breathe > svg > rect {
+    animation: grid-cell-breathe 6s ease-in-out infinite;
+  }
+
+  .grid-breathe > svg > rect:nth-child(4n + 1) { animation-duration: 4s; }
+  .grid-breathe > svg > rect:nth-child(4n + 2) { animation-duration: 5.5s; }
+  .grid-breathe > svg > rect:nth-child(4n + 3) { animation-duration: 7s; }
+  .grid-breathe > svg > rect:nth-child(4n)     { animation-duration: 9s; }
+
+  .grid-breathe > svg > rect:nth-child(6n + 1) { animation-delay: 0s; }
+  .grid-breathe > svg > rect:nth-child(6n + 2) { animation-delay: -1.3s; }
+  .grid-breathe > svg > rect:nth-child(6n + 3) { animation-delay: -2.6s; }
+  .grid-breathe > svg > rect:nth-child(6n + 4) { animation-delay: -3.9s; }
+  .grid-breathe > svg > rect:nth-child(6n + 5) { animation-delay: -5.2s; }
+  .grid-breathe > svg > rect:nth-child(6n)     { animation-delay: -6.5s; }
+}
+
 /* ── Hero name gradient — lives on the whole h1 (no-JS / reduced-motion
    fallback) AND on every SplitText char (.hero-char), because background-clip
    can't reach across the per-char transform layers once the name is split.
