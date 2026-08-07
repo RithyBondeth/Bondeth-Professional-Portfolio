@@ -248,7 +248,7 @@ const BOOT_KEY = "rb-boot-done";
 const BOOT_LINES = [
   "init portfolio --profile=bondeth",
   "load modules [gsap, next, tailwind]",
-  "mount background --gradient-wave",
+  "mount background --canvas-reveal",
   "ready ✓",
 ];
 
@@ -548,12 +548,12 @@ export default function LandingHero(props: { lang: TLocale }) {
       ref={containerRef}
       className="min-h-screen flex flex-col items-center justify-center text-foreground relative isolate overflow-hidden"
     >
-      {/* No background layers of its own. The gradient-wave ribbons are a
-          single fixed layer in the root layout and show through this section,
-          as they do through every other one — the hero used to own a copy, plus
-          aurora orbs, a scan-line sweep, a centre glow and a vignette, and that
-          stack both muddied the ribbons and was more than the compositor could
-          carry alongside them. */}
+      {/* No background layers of its own. The canvas-reveal dot field is a
+          single fixed layer in the root layout and shows through this section,
+          as it does through every other one — the hero used to own a copy of
+          the background, plus aurora orbs, a scan-line sweep, a centre glow and
+          a vignette, and that stack both muddied the field and was more than
+          the compositor could carry alongside it. */}
 
       {/* Main Content Section */}
       {/* `min-h-screen` is the floor, not the ceiling: once the code window
