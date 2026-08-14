@@ -7,8 +7,8 @@ import "../globals.css";
 import { cn } from "@/lib/utils";
 import Nav from "@/components/navbar";
 import Footer from "@/components/footer";
-import CommandPalette from "@/components/command-palette";
-import PixelChatbot from "@/components/chatbot/pixel-chatbot";
+import DeferredCommandPalette from "@/components/command-palette/deferred-command-palette";
+import DeferredPixelChatbot from "@/components/chatbot/deferred-pixel-chatbot";
 import { ThemeProvider, ThemeScript } from "@/components/utils/theme/theme-provider";
 import { SmoothScroll } from "@/components/utils/animations/smooth-scroll";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
@@ -144,8 +144,8 @@ export default async function RootLayout({
             {children}
             <Footer lang={lang} />
           </SmoothScroll>
-          <CommandPalette lang={lang} posts={palettePosts} />
-          <PixelChatbot lang={lang} />
+          <DeferredCommandPalette lang={lang} posts={palettePosts} />
+          <DeferredPixelChatbot lang={lang} />
         </ThemeProvider>
         <Analytics />
         <SpeedInsights />

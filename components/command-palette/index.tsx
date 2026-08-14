@@ -26,10 +26,7 @@ import {
   localizeHref,
   type TLocale,
 } from "@/utils/i18n";
-
-/* --------------------------------- Event ----------------------------------- */
-/** Fired by the navbar trigger button to open the palette. */
-export const OPEN_COMMAND_PALETTE = "command-palette:open";
+import { OPEN_COMMAND_PALETTE } from "./events";
 
 /* ---------------------------------- Icons ---------------------------------- */
 const iconProps = {
@@ -123,15 +120,16 @@ interface IAction {
 export default function CommandPalette(props: {
   lang: TLocale;
   posts: ICommandPalettePost[];
+  initialOpen?: boolean;
 }) {
   /* ---------------------------------- Props --------------------------------- */
-  const { lang, posts } = props;
+  const { lang, posts, initialOpen = false } = props;
   const dict = getDictionary(lang);
   const cp = dict.commandPalette;
 
   /* -------------------------------- All States ------------------------------ */
   const mounted = useMounted();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(initialOpen);
   const [query, setQuery] = useState("");
   const [storedActiveIndex, setActiveIndex] = useState(0);
   const [copied, setCopied] = useState(false);

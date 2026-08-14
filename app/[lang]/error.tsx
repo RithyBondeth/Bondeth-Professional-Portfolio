@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ArrowLeft, RefreshCw } from "lucide-react";
-import { PixelRobot } from "@/components/chatbot/pixel-chatbot";
+import { PixelRobot } from "@/components/chatbot/pixel-robot";
 
 export default function SegmentError({
   error,

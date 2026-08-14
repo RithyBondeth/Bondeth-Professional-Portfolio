@@ -7,7 +7,9 @@ import { SplitReveal } from "@/components/utils/animations/split-reveal";
 import { SkillBadge } from "./skill-badge";
 import { SkillIconSprite } from "./skill-icon-sprite";
 
-const MIN_HALF_PX = 4000;
+// A half only needs to cover a wide desktop viewport. The previous 4000px
+// target emitted hundreds of duplicate badges into the initial HTML.
+const MIN_HALF_PX = 2200;
 
 function estimatedTileWidth(skill: ISkill) {
   return 112 + skill.name.length * 7;
