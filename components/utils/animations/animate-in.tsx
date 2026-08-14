@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { gsap } from "./gsap";
+import { gsap } from "./gsap-scroll";
 
 /* ------------------------------- Reveal types ------------------------------ */
 /**
@@ -90,10 +90,9 @@ interface IRevealCommon extends IRevealTuning {
   /** ScrollTrigger start position. Default "top 88%". */
   start?: string;
   /**
-   * By default a reveal replays every time the element enters the viewport —
-   * it reverses when you scroll back up past it and plays again on the way
-   * down. Set `once` to freeze it after the first play. Ignored when `scrub`
-   * is on (scrubbed tweens always track scroll in both directions).
+   * Reveals freeze after their first play by default so reading content stays
+   * stable when a visitor reverse-scrolls. Set `once={false}` for an effect
+   * that intentionally replays. Ignored when `scrub` is on.
    */
   once?: boolean;
   /**
@@ -120,7 +119,7 @@ export function AnimateIn(props: IRevealCommon) {
     ease = "smooth",
     scrub = false,
     start = "top 88%",
-    once = false,
+    once = true,
     distance,
     scale = 1,
     rotate = 0,
@@ -143,6 +142,13 @@ export function AnimateIn(props: IRevealCommon) {
       blur,
     };
 
+    // Never hide content that is already visible (or already passed) when the
+    // browser restores a scroll/hash position during hydration.
+    if (el.getBoundingClientRect().top <= window.innerHeight * 0.98) {
+      gsap.set(el, TO_VARS);
+      return;
+    }
+
     const mm = gsap.matchMedia();
     mm.add("(prefers-reduced-motion: no-preference)", () => {
       const tween = gsap.fromTo(el, buildFromVars(from, tune), {
@@ -153,13 +159,18 @@ export function AnimateIn(props: IRevealCommon) {
         scrollTrigger: {
           trigger: el,
           start,
-          end: scrub ? "top 45%" : undefined,
-          scrub: scrub ? 1 : false,
-          once: scrub ? false : once,
-          // Replay on every entry (and reverse on the way back up) unless the
-          // caller opted into a one-shot reveal.
-          toggleActions:
-            scrub || once ? undefined : "play none none reverse",
+          ...(scrub
+            ? { end: "top 45%", scrub: 1 }
+            : {
+                once,
+                // Omitting toggleActions is important when `once` is true:
+                // GSAP supplies its own default only when the key is absent.
+                // An explicit `undefined` bypasses that default and crashes
+                // when ScrollTrigger calls `.split()` on the value.
+                ...(!once && {
+                  toggleActions: "play none none reverse",
+                }),
+              }),
         },
       });
       return () => {
@@ -221,7 +232,7 @@ export function StaggerIn(
     ease = "smooth",
     scrub = false,
     start = "top 85%",
-    once = false,
+    once = true,
     distance,
     scale = 1,
     rotate = 0,
@@ -245,6 +256,11 @@ export function StaggerIn(
     };
     const targets = Array.from(el.children);
 
+    if (el.getBoundingClientRect().top <= window.innerHeight * 0.98) {
+      gsap.set(targets, TO_VARS);
+      return;
+    }
+
     const mm = gsap.matchMedia();
     mm.add("(prefers-reduced-motion: no-preference)", () => {
       const tween = gsap.fromTo(targets, buildFromVars(from, tune), {
@@ -256,13 +272,14 @@ export function StaggerIn(
         scrollTrigger: {
           trigger: el,
           start,
-          end: scrub ? "top 40%" : undefined,
-          scrub: scrub ? 1 : false,
-          once: scrub ? false : once,
-          // Replay on every entry (and reverse on the way back up) unless the
-          // caller opted into a one-shot reveal.
-          toggleActions:
-            scrub || once ? undefined : "play none none reverse",
+          ...(scrub
+            ? { end: "top 40%", scrub: 1 }
+            : {
+                once,
+                ...(!once && {
+                  toggleActions: "play none none reverse",
+                }),
+              }),
         },
       });
       return () => {

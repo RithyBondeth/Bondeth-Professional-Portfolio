@@ -33,28 +33,20 @@ import { useTheme } from "@/components/utils/theme/theme-provider";
    cyan is only 1.70:1. The demo survives it because its sole text is huge bold
    white, which only owes 3:1. A tagline does not get that discount.
 
-   So `dark` walks the three hues down onto the black ground until every band
-   clears luminance 0.040 — the ceiling at which #a1a1a1 still makes 4.5:1.
-   Measured: #1e2a78 = 0.033, #0f3a4d = 0.037, #3d2a6b = 0.037. The corner
-   geometry, the bend and the grain all survive; only the neon comes off.
-   `intensity` and `noise` go UP to compensate — on a darker ramp the grain is
-   what keeps the field from reading as flat murk.
-
-   `light` keeps the demo's hues pulled far toward white. It needs the opposite
-   bound — dark ink on a light ground — and clears it comfortably: the floor for
-   #303546 (0.036) is luminance 0.338, and the three tints land at 0.55 / 0.72 /
-   0.68. */
+   Both ramps now stay within the portfolio's warm ink, paper and coral brand
+   family. The low chroma keeps the shader atmospheric instead of competing
+   with the Pixel B mark or the content hierarchy. */
 const PALETTES = {
   dark: {
-    back: "#000000",
-    colors: ["#1e2a78", "#0f3a4d", "#3d2a6b"],
+    back: "#141413",
+    colors: ["#1f1f1e", "#2d2d2b", "#0b0b0b"],
     softness: 0.6,
     intensity: 0.42,
     noise: 0.42,
   },
   light: {
-    back: "#ffffff",
-    colors: ["#a9c4ff", "#a5e6ff", "#eaccff"],
+    back: "#faf9f5",
+    colors: ["#f0eee6", "#e3dacc", "#f6f6f4"],
     softness: 0.75,
     intensity: 0.22,
     noise: 0.18,

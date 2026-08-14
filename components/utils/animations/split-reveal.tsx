@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { gsap, SplitText } from "./gsap";
+import { SplitText } from "gsap/SplitText";
+import { gsap } from "./gsap-scroll";
+
+gsap.registerPlugin(SplitText);
 
 type TSplitGranularity = "lines" | "words" | "chars";
 
@@ -58,6 +61,10 @@ export function SplitReveal(props: ISplitRevealProps) {
     const el = ref.current;
     if (!el) return;
 
+    // A restored deep-link must stay readable immediately. Splitting/hiding a
+    // heading that is already on screen is the refresh flash users perceived.
+    if (el.getBoundingClientRect().top <= window.innerHeight * 0.98) return;
+
     const mm = gsap.matchMedia();
     mm.add("(prefers-reduced-motion: no-preference)", () => {
       const split = SplitText.create(el, {
@@ -81,11 +88,14 @@ export function SplitReveal(props: ISplitRevealProps) {
             scrollTrigger: {
               trigger: el,
               start,
-              end: scrub ? "top 45%" : undefined,
-              scrub: scrub ? 1 : false,
-              once: scrub ? false : once,
-              toggleActions:
-                scrub || once ? undefined : "play none none reverse",
+              ...(scrub
+                ? { end: "top 45%", scrub: 1 }
+                : {
+                    once,
+                    ...(!once && {
+                      toggleActions: "play none none reverse",
+                    }),
+                  }),
             },
           });
         },

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { gsap, ScrollTrigger } from "./gsap";
+import { gsap, ScrollTrigger } from "./gsap-scroll";
 
 /**
  * Pins the showcase to the viewport and translates its inner track sideways as
@@ -71,8 +71,7 @@ export function HorizontalScroll(props: {
         scrollTrigger: {
           trigger: section,
           // The panel is exactly one viewport tall, so pinning it at the top
-          // means the sideways motion begins the moment the section fills the
-          // screen — right in the middle of the scroll, never at the tail end.
+          // centres the complete header + card composition predictably.
           start: "top top",
           end: () => `+=${getScrollAmount()}`,
           scrub: 1,
@@ -109,10 +108,10 @@ export function HorizontalScroll(props: {
           viewport height) keeps the pin height stable on mobile. */}
       <div
         ref={pinRef}
-        className="h-svh flex flex-col justify-center overflow-hidden gap-8"
+        className="flex h-svh flex-col justify-center gap-8 overflow-hidden"
       >
         {header ? (
-          <div className="max-w-6xl mx-auto px-6 w-full shrink-0">{header}</div>
+          <div className="mx-auto w-full max-w-6xl shrink-0 px-6">{header}</div>
         ) : null}
 
         <div className="overflow-hidden">
