@@ -11,7 +11,7 @@ export const en = {
     labs: "Labs",
     blog: "Blog",
     resume: "Resume",
-    resumeMobile: "Resume.pdf",
+    resumeMobile: "Resume",
     toggleMenu: "Toggle menu",
     toggleTheme: "Switch theme",
     toggleLanguage: "Switch language",
@@ -19,9 +19,9 @@ export const en = {
   },
   hero: {
     titles: ["Full Stack Developer", "AI Engineer", "Mobile App Developer"],
-    viewWork: "./view-work",
-    resume: "./resume",
-    getInTouch: "./get-in-touch",
+    viewWork: "View selected work",
+    resume: "View resume",
+    getInTouch: "Get in touch",
     scroll: "scroll",
   },
   about: {
@@ -39,6 +39,7 @@ export const en = {
     heading: "What I'm focused on now",
     blurb:
       "A snapshot of the work, technologies, and opportunities receiving my attention right now.",
+    principle: "Build with clarity. Improve with curiosity.",
     status: "Open to meaningful collaborations",
     items: [
       {
@@ -67,7 +68,7 @@ export const en = {
       photoCaption: "Phnom Penh",
       // Announced by the globe canvas, which is focusable and rotatable.
       a11yLabel:
-        "Globe pinned on Phnom Penh, Cambodia. Use the arrow keys to rotate it.",
+        "Transparent globe with Bondeth's portrait and logo pinned on Phnom Penh, Cambodia. Use the arrow keys to rotate it.",
     },
   },
   skills: {
@@ -468,13 +469,25 @@ export const en = {
         "Oops! Something went wrong. Please try again or email me directly.",
       networkError:
         "Couldn't reach the server. Check your connection and try again.",
+      privacyNotice: "Your details are used only to respond to your inquiry.",
+      privacyLink: "Read the Privacy Policy",
     },
   },
   footer: {
     navigation: "Navigation",
+    resources: "Resources",
     contact: "Contact",
     basedIn: "based in Phnom Penh, Cambodia.",
     rights: "All rights reserved.",
+    privacy: "Privacy Policy",
+    terms: "Terms of Use",
+    resume: "Resume",
+    availability: "Open to selected software and AI collaborations.",
+    ctaEyebrow: "Have a project in mind?",
+    ctaTitle: "Let's build something useful.",
+    ctaAction: "Start a conversation",
+    location: "Phnom Penh, Cambodia · UTC+7",
+    madeWithCare: "Designed and made with care in Phnom Penh",
   },
   blog: {
     formatNote: "60-second note",
@@ -482,7 +495,6 @@ export const en = {
     heading: "Technical Insights",
     blurb:
       "Sharing my journey through software engineering, AI research, and building digital products. Expect deep dives, tutorials, and occasional rants about clean code.",
-    subscribeRss: "Subscribe via RSS",
     backToAll: "back to all posts",
     viewMore: "View more posts",
     minRead: "min read",
@@ -516,7 +528,7 @@ export const en = {
   },
   resume: {
     eyebrow: "$ cat resume.md",
-    heading: "Résumé",
+    heading: "Resume",
     blurb:
       "The same material as the PDF, readable on any screen and in both languages. Print this page for a copy laid out for paper.",
     downloadPdf: "Download PDF",
@@ -542,8 +554,8 @@ export const en = {
     toggleTheme: "Toggle theme",
     copyEmail: "Copy email address",
     emailCopied: "Email copied to clipboard",
-    openResume: "Open résumé",
-    downloadResume: "Download résumé (PDF)",
+    openResume: "Open resume",
+    downloadResume: "Download resume (PDF)",
     viewGithub: "View GitHub profile",
     viewLinkedin: "View LinkedIn profile",
     viewFacebook: "View Facebook profile",
