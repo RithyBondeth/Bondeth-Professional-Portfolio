@@ -1,0 +1,1024 @@
+.chatbot {
+  position: fixed;
+  right: clamp(1rem, 3vw, 2.25rem);
+  bottom: clamp(1rem, 3vw, 2rem);
+  z-index: 60;
+  font-family: var(--font-ui);
+}
+
+.launcher {
+  position: relative;
+  display: grid;
+  width: 78px;
+  height: 82px;
+  place-items: end center;
+  border: 0;
+  background: transparent;
+  cursor: grab;
+  filter: drop-shadow(0 13px 20px rgb(0 0 0 / 0.16));
+  touch-action: none;
+  user-select: none;
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), filter 220ms ease,
+    opacity 180ms ease;
+}
+
+.launcher:hover {
+  filter: drop-shadow(0 17px 24px rgb(0 0 0 / 0.22));
+  transform: translateY(-3px);
+}
+
+.launcher:active {
+  cursor: grabbing;
+}
+
+.launcher:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 6px;
+}
+
+.launcherOpen {
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(8px) scale(0.86);
+}
+
+.launcherGlow {
+  position: absolute;
+  right: 4px;
+  bottom: 0;
+  left: 4px;
+  height: 12px;
+  background: var(--brand-pixel);
+  opacity: 0.12;
+  filter: blur(10px);
+  animation: glowPulse 2.4s ease-in-out infinite;
+}
+
+.launcherStatus {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--background);
+  border-radius: 999px;
+  background: var(--status-success);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.14);
+}
+
+.speechBubble {
+  position: absolute;
+  top: -12px;
+  right: -5px;
+  z-index: 4;
+  padding: 5px 9px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--background) 94%, transparent);
+  color: var(--foreground);
+  font-family: var(--font-ui);
+  font-size: 8px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  box-shadow: 0 8px 20px rgb(0 0 0 / 0.1);
+  backdrop-filter: blur(10px);
+  animation: bubbleBob 3.2s ease-in-out infinite;
+}
+
+.speechBubble::after {
+  display: none;
+}
+
+.robot {
+  position: relative;
+  display: block;
+  width: 66px;
+  height: 76px;
+  image-rendering: pixelated;
+  animation: robotFloat 3.4s ease-in-out infinite;
+}
+
+.robotSmall {
+  transform: scale(0.5);
+  transform-origin: center;
+  animation: none;
+}
+
+.antenna {
+  position: absolute;
+  top: 2px;
+  left: 31px;
+  width: 4px;
+  height: 12px;
+  background: var(--foreground);
+}
+
+.antennaTip {
+  position: absolute;
+  top: 0;
+  left: 28px;
+  width: 10px;
+  height: 7px;
+  background: var(--brand-pixel);
+  box-shadow: 2px 2px 0 var(--foreground);
+}
+
+.robotHead {
+  position: absolute;
+  top: 13px;
+  left: 8px;
+  z-index: 2;
+  width: 50px;
+  height: 36px;
+  border: 4px solid var(--foreground);
+  background: var(--card);
+  box-shadow: inset -5px -5px 0 var(--secondary), 2px 3px 0 rgb(20 20 19 / 0.12);
+}
+
+.earLeft,
+.earRight {
+  position: absolute;
+  top: 24px;
+  width: 8px;
+  height: 17px;
+  border: 3px solid var(--foreground);
+  background: var(--brand-pixel);
+}
+
+.earLeft {
+  left: 2px;
+}
+
+.earRight {
+  right: 2px;
+}
+
+.eyeLeft,
+.eyeRight {
+  position: absolute;
+  top: 9px;
+  width: 8px;
+  height: 8px;
+  background: var(--foreground);
+  animation: blink 4.8s steps(1, end) infinite;
+}
+
+.eyeLeft {
+  left: 9px;
+}
+
+.eyeRight {
+  right: 9px;
+}
+
+.mouth {
+  position: absolute;
+  right: 0;
+  bottom: 6px;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  gap: 3px;
+}
+
+.mouth span {
+  width: 4px;
+  height: 3px;
+  background: var(--brand-pixel);
+}
+
+.robotBody {
+  position: absolute;
+  top: 48px;
+  left: 15px;
+  z-index: 1;
+  width: 36px;
+  height: 25px;
+  border: 4px solid var(--foreground);
+  background: var(--brand-pixel);
+  box-shadow: 2px 3px 0 rgb(20 20 19 / 0.12);
+}
+
+.bodyLight {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  width: 5px;
+  height: 5px;
+  background: var(--status-success-surface);
+  box-shadow: 0 0 0 2px rgb(20 20 19 / 0.22);
+}
+
+.bodyMark {
+  position: absolute;
+  right: 5px;
+  bottom: 2px;
+  color: var(--foreground);
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.armLeft,
+.armRight {
+  position: absolute;
+  top: 53px;
+  width: 9px;
+  height: 15px;
+  border: 3px solid var(--foreground);
+  background: var(--card);
+}
+
+.armLeft {
+  left: 8px;
+  transform: rotate(8deg);
+}
+
+.armRight {
+  right: 8px;
+  transform: rotate(-8deg);
+}
+
+.robotGreeting .armRight {
+  top: 39px;
+  right: 3px;
+  z-index: 3;
+  height: 18px;
+  transform: rotate(28deg);
+  transform-origin: 50% 100%;
+  animation: robotWave 3.6s steps(2, end) infinite;
+}
+
+.robotGreeting .armRight::before {
+  position: absolute;
+  top: -9px;
+  left: -3px;
+  width: 9px;
+  height: 9px;
+  border: 3px solid var(--foreground);
+  background: var(--card);
+  content: "";
+}
+
+.robotHello {
+  position: absolute;
+  top: -26px;
+  left: 8px;
+  z-index: 5;
+  padding: 4px 6px;
+  border: 2px solid var(--foreground);
+  background: var(--background);
+  box-shadow: 3px 3px 0 var(--border);
+  color: var(--foreground);
+  font-family: var(--font-ui);
+  font-size: 8px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.robotHello::after {
+  position: absolute;
+  bottom: -5px;
+  left: 30px;
+  width: 5px;
+  height: 5px;
+  border-right: 2px solid var(--foreground);
+  border-bottom: 2px solid var(--foreground);
+  background: var(--background);
+  content: "";
+}
+
+:global(html[lang="km"]) .speechBubble,
+:global(html[lang="km"]) .robotHello {
+  letter-spacing: normal;
+}
+
+.panel {
+  position: absolute;
+  right: calc(0px - var(--panel-shift-x, 0px));
+  bottom: calc(0px - var(--panel-shift-y, 0px));
+  display: flex;
+  width: min(388px, calc(100vw - 2rem));
+  height: min(540px, calc(100dvh - 7rem));
+  min-height: 450px;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--border) 78%, transparent);
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--background) 92%, transparent);
+  box-shadow: 0 28px 80px rgb(0 0 0 / 0.16), 0 8px 24px rgb(0 0 0 / 0.08),
+    inset 0 1px 0 rgb(255 255 255 / 0.08);
+  backdrop-filter: blur(22px) saturate(1.08);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(16px) scale(0.96);
+  transform-origin: right bottom;
+  transition: opacity 180ms ease, transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.panelOpen {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+.panelDockLeft {
+  right: auto;
+  left: var(--panel-shift-x, 0px);
+  transform-origin: left bottom;
+}
+
+.panelDockTop {
+  top: var(--panel-shift-y, 0px);
+  bottom: auto;
+  transform-origin: right top;
+}
+
+.panelDockLeft.panelDockTop {
+  transform-origin: left top;
+}
+
+.robotHeadFrame {
+  display: grid;
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
+  place-items: center;
+}
+
+.robotHeadFrameSmall {
+  width: 17px;
+  height: 17px;
+  flex-basis: 17px;
+}
+
+.robotHeadIcon {
+  position: relative;
+  display: block;
+  width: 24px;
+  height: 24px;
+  image-rendering: pixelated;
+}
+
+.robotHeadFrameSmall .robotHeadIcon {
+  transform: scale(0.68);
+}
+
+.headAntenna {
+  position: absolute;
+  top: 0;
+  left: 11px;
+  width: 2px;
+  height: 5px;
+  background: var(--foreground);
+}
+
+.headAntennaTip {
+  position: absolute;
+  top: 0;
+  left: 9px;
+  width: 6px;
+  height: 3px;
+  background: var(--brand-pixel);
+}
+
+.headEarLeft,
+.headEarRight {
+  position: absolute;
+  top: 9px;
+  width: 3px;
+  height: 8px;
+  border: 1px solid var(--foreground);
+  background: var(--brand-pixel);
+}
+
+.headEarLeft {
+  left: 0;
+}
+
+.headEarRight {
+  right: 0;
+}
+
+.headFace {
+  position: absolute;
+  top: 4px;
+  left: 2px;
+  width: 20px;
+  height: 17px;
+  border: 2px solid var(--foreground);
+  background: var(--card);
+  box-shadow: inset -2px -2px 0 var(--secondary), 1px 2px 0 rgb(0 0 0 / 0.1);
+}
+
+.headEyeLeft,
+.headEyeRight {
+  position: absolute;
+  top: 5px;
+  width: 3px;
+  height: 3px;
+  background: var(--foreground);
+}
+
+.headEyeLeft {
+  left: 4px;
+}
+
+.headEyeRight {
+  right: 4px;
+}
+
+.headMouth {
+  position: absolute;
+  right: 5px;
+  bottom: 3px;
+  left: 5px;
+  height: 2px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--brand-pixel) 0 3px,
+    transparent 3px 5px
+  );
+}
+
+.header {
+  position: relative;
+  display: flex;
+  min-height: 82px;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 62%, transparent);
+  background: color-mix(in srgb, var(--card) 64%, transparent);
+  padding: 14px 16px;
+}
+
+.header::after {
+  position: absolute;
+  top: 17px;
+  right: 61px;
+  width: 4px;
+  height: 4px;
+  background: var(--brand-pixel);
+  box-shadow: 7px 0 0 color-mix(in srgb, var(--brand-pixel) 55%, transparent),
+    14px 0 0 color-mix(in srgb, var(--brand-pixel) 24%, transparent);
+  content: "";
+}
+
+.avatar {
+  display: grid;
+  width: 50px;
+  height: 50px;
+  flex: 0 0 50px;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--border) 78%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--secondary) 72%, transparent);
+  box-shadow: 0 8px 18px rgb(0 0 0 / 0.07);
+}
+
+.headerCopy {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.eyebrow {
+  overflow: hidden;
+  color: var(--primary);
+  font-family: var(--font-code);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.headerCopy strong {
+  overflow: hidden;
+  color: var(--foreground);
+  font-family: var(--font-ui);
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--muted-foreground);
+  font-family: var(--font-ui);
+  font-size: 11px;
+}
+
+.status i {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--status-success);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--status-success) 14%, transparent);
+}
+
+.minimize {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--border) 72%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--background) 76%, transparent);
+  color: var(--foreground);
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+
+.minimize:hover {
+  border-color: color-mix(in srgb, var(--primary) 38%, var(--border));
+  background: var(--secondary);
+  color: var(--primary);
+}
+
+.minimize:focus-visible,
+.suggestions button:focus-visible,
+.composer button:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.composer input:focus-visible {
+  outline: none;
+}
+
+.minimize svg {
+  width: 15px;
+}
+
+.messages {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+  padding: 20px 16px 16px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--card) 16%, transparent),
+    transparent 32%
+  );
+  scrollbar-width: thin;
+}
+
+.messageRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 9px;
+}
+
+.messageRowUser {
+  justify-content: flex-end;
+}
+
+.botAvatar {
+  display: grid;
+  width: 27px;
+  height: 27px;
+  flex: 0 0 27px;
+  place-items: center;
+}
+
+.botMessage,
+.userMessage {
+  max-width: 82%;
+  border: 1px solid color-mix(in srgb, var(--border) 72%, transparent);
+  padding: 11px 13px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  line-height: 1.5;
+  box-shadow: 0 7px 18px rgb(0 0 0 / 0.06);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.botMessage {
+  border-radius: 14px 14px 14px 4px;
+  background: color-mix(in srgb, var(--card) 88%, transparent);
+  color: var(--card-foreground);
+  white-space: normal;
+}
+
+.botMessage > :first-child {
+  margin-top: 0;
+}
+
+.botMessage > :last-child {
+  margin-bottom: 0;
+}
+
+.botMessage p,
+.botMessage ul,
+.botMessage ol,
+.botMessage blockquote,
+.botMessage pre,
+.botMessage table {
+  margin: 0 0 9px;
+}
+
+.botMessage h1,
+.botMessage h2,
+.botMessage h3,
+.botMessage h4 {
+  margin: 12px 0 6px;
+  color: var(--foreground);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.botMessage h1,
+.botMessage h2 {
+  padding-bottom: 4px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+}
+
+.botMessage ul,
+.botMessage ol {
+  padding-left: 19px;
+}
+
+.botMessage li + li {
+  margin-top: 4px;
+}
+
+.botMessage a {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.botMessage strong {
+  color: var(--foreground);
+  font-weight: 700;
+}
+
+.botMessage code {
+  border: 1px solid color-mix(in srgb, var(--border) 72%, transparent);
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--secondary) 82%, transparent);
+  padding: 1px 4px;
+  font-family: var(--font-code);
+  font-size: 0.88em;
+}
+
+.botMessage pre {
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid color-mix(in srgb, var(--border) 76%, transparent);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--background) 88%, var(--card));
+  padding: 10px;
+  scrollbar-width: thin;
+}
+
+.botMessage pre code {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  white-space: pre;
+}
+
+.botMessage blockquote {
+  border-left: 3px solid var(--brand-pixel);
+  padding-left: 9px;
+  color: var(--muted-foreground);
+}
+
+.botMessage table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 11px;
+  scrollbar-width: thin;
+}
+
+.botMessage th,
+.botMessage td {
+  border: 1px solid color-mix(in srgb, var(--border) 76%, transparent);
+  padding: 5px 7px;
+  text-align: left;
+}
+
+.botMessage th {
+  background: color-mix(in srgb, var(--secondary) 72%, transparent);
+  color: var(--foreground);
+  font-weight: 700;
+}
+
+.userMessage {
+  border-color: color-mix(in srgb, var(--primary-fill) 54%, transparent);
+  border-radius: 14px 14px 4px 14px;
+  background: var(--primary-fill);
+  color: var(--primary-foreground);
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--primary-fill) 20%, transparent);
+}
+
+.suggestions {
+  display: grid;
+  gap: 8px;
+  margin: 1px 0 0 34px;
+}
+
+.suggestions button {
+  display: flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid color-mix(in srgb, var(--border) 62%, transparent);
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--background) 62%, transparent);
+  padding: 9px 11px;
+  color: var(--foreground);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 180ms ease, background 180ms ease, color 180ms ease,
+    transform 180ms ease;
+}
+
+.suggestions button:hover {
+  border-color: color-mix(in srgb, var(--primary) 34%, var(--border));
+  background: color-mix(in srgb, var(--primary) 5%, var(--card));
+  color: var(--primary);
+  transform: translateY(-1px);
+}
+
+.suggestions button:disabled {
+  cursor: wait;
+  opacity: 0.58;
+}
+
+.typingIndicator {
+  display: flex;
+  min-width: 58px;
+  height: 42px;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border: 1px solid color-mix(in srgb, var(--border) 72%, transparent);
+  border-radius: 14px 14px 14px 4px;
+  background: color-mix(in srgb, var(--card) 88%, transparent);
+  box-shadow: 0 7px 18px rgb(0 0 0 / 0.06);
+}
+
+.typingIndicator i {
+  width: 5px;
+  height: 5px;
+  background: var(--brand-pixel);
+  animation: typingPulse 1s steps(2, end) infinite;
+}
+
+.typingIndicator i:nth-child(2) {
+  animation-delay: 160ms;
+}
+
+.typingIndicator i:nth-child(3) {
+  animation-delay: 320ms;
+}
+
+.chatError {
+  margin-left: 35px;
+  border-left: 2px solid var(--status-danger, #d45d4c);
+  padding: 7px 10px;
+  color: var(--muted-foreground);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.composer {
+  display: flex;
+  gap: 8px;
+  margin: 0 12px 7px;
+  border: 1px solid color-mix(in srgb, var(--border) 76%, transparent);
+  border-radius: 15px;
+  background: color-mix(in srgb, var(--background) 80%, transparent);
+  padding: 5px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.06);
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.composer:focus-within {
+  border-color: color-mix(in srgb, var(--primary) 52%, var(--border));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 12%, transparent),
+    0 8px 24px rgb(0 0 0 / 0.06);
+}
+
+.composer input {
+  min-width: 0;
+  height: 40px;
+  flex: 1;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  padding: 0 10px;
+  color: var(--foreground);
+  font-family: var(--font-ui);
+  font-size: 13px;
+}
+
+.composer input::placeholder {
+  color: var(--muted-foreground);
+}
+
+.composer input:disabled {
+  cursor: wait;
+}
+
+.composer button {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  place-items: center;
+  border: 0;
+  border-radius: 11px;
+  background: var(--brand-pixel);
+  color: var(--foreground);
+  cursor: pointer;
+  box-shadow: 0 7px 16px color-mix(in srgb, var(--primary-fill) 24%, transparent);
+  transition: transform 160ms ease, box-shadow 160ms ease, opacity 120ms ease;
+}
+
+.composer button:hover:not(:disabled) {
+  box-shadow: 0 9px 20px color-mix(in srgb, var(--primary-fill) 34%, transparent);
+  transform: translateY(-1px);
+}
+
+.composer button:disabled {
+  cursor: not-allowed;
+  opacity: 0.38;
+}
+
+.composer button svg {
+  width: 16px;
+}
+
+.previewNote {
+  background: transparent;
+  padding: 0 12px 11px;
+  color: var(--muted-foreground);
+  font-family: var(--font-code);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-align: center;
+}
+
+.previewNote a {
+  color: var(--foreground);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--primary) 55%, transparent);
+  text-underline-offset: 2px;
+}
+
+.previewNote a:hover {
+  color: var(--primary);
+}
+
+@keyframes robotFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes robotWave {
+  0%, 10%, 20% {
+    transform: rotate(22deg);
+  }
+  5%, 15% {
+    transform: rotate(42deg);
+  }
+  25%, 100% {
+    transform: rotate(28deg);
+  }
+}
+
+@keyframes bubbleBob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes glowPulse {
+  0%,
+  100% {
+    opacity: 0.12;
+    transform: scaleX(0.86);
+  }
+  50% {
+    opacity: 0.3;
+    transform: scaleX(1.08);
+  }
+}
+
+@keyframes blink {
+  0%,
+  46%,
+  50%,
+  100% {
+    transform: scaleY(1);
+  }
+  48% {
+    transform: scaleY(0.2);
+  }
+}
+
+@keyframes typingPulse {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+
+@media (max-width: 520px) {
+  .chatbot {
+    right: 0.75rem;
+    bottom: 0.75rem;
+  }
+
+  .panel {
+    position: fixed;
+    right: 0.75rem;
+    bottom: 0.75rem;
+    left: 0.75rem;
+    width: auto;
+    height: min(590px, calc(100dvh - 1.5rem));
+    min-height: 0;
+  }
+
+  .panelDockLeft,
+  .panelDockTop,
+  .panelDockLeft.panelDockTop {
+    top: auto;
+    right: 0.75rem;
+    bottom: 0.75rem;
+    left: 0.75rem;
+    transform-origin: center bottom;
+  }
+
+  .launcher {
+    width: 72px;
+    height: 76px;
+    transform: scale(0.94);
+    transform-origin: right bottom;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .launcher,
+  .panel,
+  .suggestions button,
+  .composer button {
+    transition-duration: 0.01ms;
+  }
+
+  .robot,
+  .speechBubble,
+  .launcherGlow,
+  .eyeLeft,
+  .eyeRight,
+  .robotGreeting .armRight {
+    animation: none;
+  }
+
+  .typingIndicator i {
+    animation: none;
+    opacity: 0.72;
+  }
+}
