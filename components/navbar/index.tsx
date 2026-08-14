@@ -16,7 +16,7 @@ import {
 import { MenuIcon, CloseIcon } from "@/components/utils/icons";
 import { Logo } from "@/components/utils/icons/logo";
 import ThemeToggle from "@/components/utils/theme/theme-toggle";
-import { OPEN_COMMAND_PALETTE } from "@/components/command-palette";
+import { OPEN_COMMAND_PALETTE } from "@/components/command-palette/events";
 import {
   locales,
   localizeHref,

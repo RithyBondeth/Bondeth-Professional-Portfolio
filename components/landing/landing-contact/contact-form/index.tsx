@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { track } from "@vercel/analytics";
-import { gsap } from "@/components/utils/animations/gsap";
 import { getDictionary, type TLocale } from "@/utils/i18n";
 
 type TFormStatus = "idle" | "loading" | "success" | "error";
@@ -48,71 +47,9 @@ export default function ContactForm(props: { lang: TLocale }) {
   const [projectType, setProjectType] = useState("");
 
   /* ---------------------------------- Utils --------------------------------- */
-  const successCardRef = useRef<HTMLDivElement>(null);
-  const loadingDotsRef = useRef<HTMLSpanElement>(null);
   // The localized label already ends in "..." — the animated span owns the
   // dots while loading, so trim them off the static text.
   const sendingLabel = t.sending.replace(/[.…]+$/, "");
-
-  /* --------------------------------- Effects -------------------------------- */
-  // Success card entrance: "snap" scale/fade plus a subtle emerald glow pulse.
-  useEffect(() => {
-    if (status !== "success") return;
-    const card = successCardRef.current;
-    if (!card) return;
-
-    const mm = gsap.matchMedia();
-    mm.add("(prefers-reduced-motion: no-preference)", () => {
-      const tl = gsap.timeline();
-      tl.fromTo(
-        card,
-        { opacity: 0, scale: 0.94 },
-        { opacity: 1, scale: 1, duration: 0.5, ease: "snap" },
-      )
-        .fromTo(
-          card,
-          { boxShadow: "0 0 0 0 rgba(52, 211, 153, 0)" },
-          {
-            boxShadow: "0 0 32px 0 rgba(52, 211, 153, 0.25)",
-            duration: 0.45,
-            ease: "snap",
-          },
-          "-=0.2",
-        )
-        .to(card, {
-          boxShadow: "0 0 0 0 rgba(52, 211, 153, 0)",
-          duration: 0.9,
-          ease: "power2.out",
-          clearProps: "boxShadow",
-        });
-      return () => tl.kill();
-    });
-
-    return () => mm.revert();
-  }, [status]);
-
-  // Terminal-style ellipsis while sending: the dots tick ". .. ..." in place.
-  useEffect(() => {
-    if (status !== "loading") return;
-    const dots = loadingDotsRef.current;
-    if (!dots) return;
-
-    const mm = gsap.matchMedia();
-    mm.add("(prefers-reduced-motion: no-preference)", () => {
-      const frames = [".", "..", "..."];
-      const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.3 });
-      frames.forEach((frame, index) => {
-        tl.set(dots, { textContent: frame }, index * 0.3);
-      });
-      return () => {
-        tl.kill();
-        // Rest on the full ellipsis, matching the static label.
-        dots.textContent = "...";
-      };
-    });
-
-    return () => mm.revert();
-  }, [status]);
 
   /* --------------------------------- Methods -------------------------------- */
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -153,8 +90,7 @@ export default function ContactForm(props: { lang: TLocale }) {
   if (status === "success") {
     return (
       <div
-        ref={successCardRef}
-        className="rounded-lg border border-status-success/25 bg-status-success/5 p-8 text-center"
+        className="contact-success-pop rounded-lg border border-status-success/25 bg-status-success/5 p-8 text-center"
       >
         <h3 className="text-status-success font-bold mb-2">{t.successTitle}</h3>
         <p className="text-muted-foreground text-sm">{t.successBody}</p>
@@ -321,9 +257,8 @@ export default function ContactForm(props: { lang: TLocale }) {
           <span>
             {sendingLabel}
             <span
-              ref={loadingDotsRef}
               aria-hidden
-              className="inline-block w-[3ch] text-left"
+              className="inline-block w-[3ch] animate-pulse text-left motion-reduce:animate-none"
             >
               ...
             </span>

@@ -7,7 +7,7 @@ import { ArrowDown, ArrowUpRight, FileText, Mail } from "lucide-react";
 import { Magnetic } from "@/components/utils/animations/magnetic";
 import { scrollToSection } from "@/components/utils/animations/smooth-scroll";
 import { TiltCard } from "@/components/utils/animations/tilt-card";
-import { PixelRobot } from "@/components/chatbot/pixel-chatbot";
+import { PixelRobot } from "@/components/chatbot/pixel-robot";
 import { getDictionary, type TLocale } from "@/utils/i18n";
 import { getSiteConfig } from "@/utils/i18n/content";
 

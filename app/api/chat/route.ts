@@ -30,6 +30,11 @@ const MAX_TOTAL_LENGTH = 6_000;
 const RATE_LIMIT = 12;
 const RATE_WINDOW_MS = 60_000;
 const REQUEST_TIMEOUT_MS = 25_000;
+const UPSTREAM_ATTEMPTS = 2;
+const RETRY_DELAY_MS = 450;
+const RETRYABLE_UPSTREAM_STATUSES = new Set([429, 500, 502, 503, 504]);
+
+export const maxDuration = 30;
 
 function parseMessages(value: unknown): ChatMessage[] | null {
   if (!Array.isArray(value) || value.length === 0 || value.length > MAX_MESSAGES) {
@@ -87,6 +92,41 @@ function noStoreJson(body: Record<string, unknown>, status = 200) {
   });
 }
 
+async function requestMistral(
+  apiKey: string,
+  body: string,
+  signal: AbortSignal,
+) {
+  let response: Response | null = null;
+
+  for (let attempt = 1; attempt <= UPSTREAM_ATTEMPTS; attempt += 1) {
+    response = await fetch(MISTRAL_CHAT_URL, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body,
+      cache: "no-store",
+      signal,
+    });
+
+    const shouldRetry =
+      attempt < UPSTREAM_ATTEMPTS &&
+      RETRYABLE_UPSTREAM_STATUSES.has(response.status);
+    if (!shouldRetry) return response;
+
+    await response.body?.cancel();
+    await wait(RETRY_DELAY_MS);
+  }
+
+  return response;
+}
+
+function wait(delay: number) {
+  return new Promise<void>((resolve) => setTimeout(resolve, delay));
+}
+
 export async function POST(request: Request) {
   const { allowed, retryAfter } = rateLimit(
     `portfolio-chat:${getClientId(request)}`,
@@ -136,26 +176,20 @@ export async function POST(request: Request) {
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  const requestBody = JSON.stringify({
+    model: process.env.MISTRAL_CHAT_MODEL ?? DEFAULT_MODEL,
+    messages: [
+      { role: "system", content: buildChatbotSystemPrompt(lang) },
+      ...messages,
+    ],
+    temperature: 0.25,
+    max_tokens: 450,
+  });
 
   try {
-    const response = await fetch(MISTRAL_CHAT_URL, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: process.env.MISTRAL_CHAT_MODEL ?? DEFAULT_MODEL,
-        messages: [
-          { role: "system", content: buildChatbotSystemPrompt(lang) },
-          ...messages,
-        ],
-        temperature: 0.25,
-        max_tokens: 450,
-      }),
-      cache: "no-store",
-      signal: controller.signal,
-    });
+    const response = await requestMistral(apiKey, requestBody, controller.signal);
+
+    if (!response) throw new Error("Mistral did not return a response.");
 
     if (!response.ok) {
       console.error(`Mistral chat request failed with status ${response.status}.`);

@@ -1,7 +1,7 @@
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
 import { SplitReveal } from "@/components/utils/animations/split-reveal";
 import { StatusChip } from "@/components/utils/status-chip";
-import { WireframeDottedGlobe } from "@/components/ui/wireframe-dotted-globe";
+import { DeferredGlobe } from "./deferred-globe";
 import { getDictionary, type TLocale } from "@/utils/i18n";
 
 export default function LandingCurrentFocus(props: { lang: TLocale }) {
@@ -62,7 +62,7 @@ export default function LandingCurrentFocus(props: { lang: TLocale }) {
           </div>
 
           <AnimateIn from="right" delay={0.15} distance={40}>
-            <WireframeDottedGlobe
+            <DeferredGlobe
               label={currentFocus.globe.pinLabel}
               description={currentFocus.globe.a11yLabel}
               className="mx-auto max-w-100 lg:max-w-115"
