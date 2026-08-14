@@ -1,6 +1,5 @@
 import { siteConfig } from "@/utils/constants/portfolio.constant";
 import { AnimateIn } from "@/components/utils/animations/animate-in";
-import { ScrambleText } from "@/components/utils/animations/scramble-text";
 import { SplitReveal } from "@/components/utils/animations/split-reveal";
 import { StatusChip } from "@/components/utils/status-chip";
 import { ArrowRight, Clock3 } from "lucide-react";
@@ -19,7 +18,7 @@ export default function LandingContact(props: { lang: TLocale }) {
         {/* Heading Section */}
         <AnimateIn from="left">
           <p className="text-primary font-mono text-xs tracking-[0.25em] uppercase mb-1">
-            <ScrambleText text="$ contact --init" />
+            {lang === "km" ? "ចាប់ផ្តើមការសន្ទនា" : "Start a conversation"}
           </p>
         </AnimateIn>
 

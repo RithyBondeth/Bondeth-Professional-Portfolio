@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, Bot, Code2, PanelsTopLeft, Smartphone } from "lucide-react";
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
-import { ScrambleText } from "@/components/utils/animations/scramble-text";
 import { SplitReveal } from "@/components/utils/animations/split-reveal";
 import { Magnetic } from "@/components/utils/animations/magnetic";
 import { getDictionary, type TLocale } from "@/utils/i18n";
@@ -17,7 +16,7 @@ export default function LandingServices(props: { lang: TLocale }) {
       <div className="mx-auto max-w-6xl">
         <AnimateIn from="left">
           <p className="font-mono text-xs uppercase tracking-[0.25em] text-primary">
-            <ScrambleText text="// services" />
+            {lang === "km" ? "អ្វីដែលខ្ញុំផ្តល់ជូន" : "What I can help with"}
           </p>
         </AnimateIn>
 
@@ -41,7 +40,7 @@ export default function LandingServices(props: { lang: TLocale }) {
             <Magnetic strength={0.3} className="inline-block">
               <Link
                 href={`/${lang}/#contact`}
-                className="inline-flex min-h-11 shrink-0 items-center gap-2 btn-fx btn-fx-primary rounded bg-primary-fill px-4 font-mono text-xs font-medium text-primary-foreground"
+                className="inline-flex min-h-11 shrink-0 items-center gap-2 btn-fx btn-fx-primary rounded-lg bg-primary-fill px-4 font-mono text-xs font-medium text-primary-foreground"
               >
                 {services.discussProject}
                 <ArrowRight aria-hidden data-btn-arrow className="size-3.5" />
@@ -67,7 +66,7 @@ export default function LandingServices(props: { lang: TLocale }) {
                 <div className="flex items-start justify-between gap-4">
                   <span
                     data-card-icon
-                    className="flex size-10 items-center justify-center rounded border border-primary/20 bg-primary/5 text-primary"
+                    className="flex size-10 items-center justify-center rounded-lg border border-primary/20 bg-primary/5 text-primary"
                   >
                     <Icon aria-hidden className="size-5" />
                   </span>

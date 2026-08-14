@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { PixelBOg } from "@/components/brand/pixel-b-og";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
 
 export const alt = `${siteConfig.name} — ${siteConfig.title}`;
@@ -19,22 +20,22 @@ export default function Image() {
           flexDirection: "column",
           justifyContent: "center",
           padding: "80px",
-          background: "#07090e",
-          color: "#edf0f8",
-          fontFamily: "monospace",
+          background: "#141413",
+          color: "#faf9f5",
+          fontFamily: "sans-serif",
         }}
       >
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "12px",
+            gap: "18px",
             fontSize: 28,
-            color: "#34d399",
+            color: "#d97757",
             marginBottom: 24,
           }}
         >
-          <span>&gt;</span>
+          <PixelBOg size={58} inverse />
           <span>{siteConfig.url.replace("https://", "")}</span>
         </div>
         <div style={{ fontSize: 84, fontWeight: 700, lineHeight: 1.1 }}>
@@ -43,7 +44,7 @@ export default function Image() {
         <div
           style={{
             fontSize: 40,
-            color: "#979ba9",
+            color: "#b8b2a9",
             marginTop: 24,
           }}
         >
@@ -56,7 +57,7 @@ export default function Image() {
             left: 0,
             width: "100%",
             height: "8px",
-            background: "#34d399",
+            background: "#d97757",
           }}
         />
       </div>

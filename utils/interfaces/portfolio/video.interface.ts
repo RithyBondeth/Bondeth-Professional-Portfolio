@@ -15,7 +15,7 @@ export interface IVideo {
   description: string;
   descriptionKm?: string;
   /**
-   * Self-hosted poster under /public/videos. Mirroring YouTube's thumbnail
+   * Self-hosted poster under /public. Mirroring YouTube's thumbnail
    * keeps the section free of third-party requests until someone presses play.
    */
   thumbnail: string;

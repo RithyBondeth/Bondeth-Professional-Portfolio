@@ -146,7 +146,7 @@ export async function TopicCluster(props: ITopicClusterProps) {
           );
 
           const className =
-            "card-interactive flex gap-3 rounded border border-border/60 bg-background/70 p-4 h-full";
+            "card-interactive flex gap-3 rounded-lg border border-border/60 bg-background/70 p-4 h-full";
 
           return (
             <li key={`${entry.format}-${entry.href}`}>

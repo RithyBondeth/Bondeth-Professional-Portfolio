@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
-import { ScrambleText } from "@/components/utils/animations/scramble-text";
 import { SplitReveal } from "@/components/utils/animations/split-reveal";
 import { YouTubeIcon } from "@/components/utils/icons";
 import { siteConfig, videos } from "@/utils/constants/portfolio.constant";
@@ -60,7 +59,7 @@ export default function LandingMedia(props: { lang: TLocale }) {
         <div className="max-w-2xl">
           <AnimateIn from="left" distance={40}>
             <p className="font-mono text-xs uppercase tracking-[0.25em] text-primary">
-              <ScrambleText text={media.label} />
+              {lang === "km" ? "វីដេអូ និងការពន្យល់" : "Stories and explainers"}
             </p>
           </AnimateIn>
           <SplitReveal
@@ -96,7 +95,7 @@ export default function LandingMedia(props: { lang: TLocale }) {
               {featured.languages.map((code) => (
                 <span
                   key={code}
-                  className="rounded border border-primary/30 bg-primary/5 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-primary"
+                  className="rounded-lg border border-primary/30 bg-primary/5 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-primary"
                 >
                   {media.languageBadge[code]}
                 </span>
@@ -104,7 +103,7 @@ export default function LandingMedia(props: { lang: TLocale }) {
               {featured.topics.map((topic) => (
                 <span
                   key={topic}
-                  className="rounded border border-border/60 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground"
+                  className="rounded-lg border border-border/60 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground"
                 >
                   {topic}
                 </span>
@@ -124,7 +123,7 @@ export default function LandingMedia(props: { lang: TLocale }) {
                 href={siteConfig.youtube}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-fx btn-fx-primary inline-flex min-h-11 items-center gap-2 rounded bg-primary-fill px-4 font-mono text-xs font-medium text-primary-foreground"
+                className="btn-fx btn-fx-primary inline-flex min-h-11 items-center gap-2 rounded-lg bg-primary-fill px-4 font-mono text-xs font-medium text-primary-foreground"
               >
                 <YouTubeIcon aria-hidden className="size-3.5" />
                 {media.subscribe}
@@ -133,7 +132,7 @@ export default function LandingMedia(props: { lang: TLocale }) {
                 href={watchUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex min-h-11 items-center gap-2 rounded border border-border/60 px-4 font-mono text-xs text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
+                className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-border/60 px-4 font-mono text-xs text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
               >
                 {media.watchOnYouTube}
               </a>
