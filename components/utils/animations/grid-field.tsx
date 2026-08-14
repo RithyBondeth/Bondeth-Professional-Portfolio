@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { gsap, ScrollSmoother } from "@/components/utils/animations/gsap";
+import { gsap } from "@/components/utils/animations/gsap";
 import { GridPattern } from "@/components/ui/grid-pattern";
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -29,12 +29,8 @@ import { GridPattern } from "@/components/ui/grid-pattern";
    The idle drift is what keeps the field alive when the page is sitting still;
    the fall is what the reader actually feels.
 
-   It is a CLIENT component, which the two shader backgrounds before it also
-   were, but for a smaller reason: everything except the scroll binding is
-   still CSS and server-rendered markup. The grid is in the SSR HTML and
-   correct before hydration — only the falling waits for JS. GSAP is already
-   in the bundle on every route (SmoothScroll, the hero), so the marginal cost
-   is this file.
+   It is a CLIENT component only for the scroll binding: the grid itself is
+   server-rendered CSS/SVG and is correct before hydration.
    ──────────────────────────────────────────────────────────────────────────── */
 
 /* ---------------------------------- Palette --------------------------------- */
@@ -147,13 +143,8 @@ export function GridField({ className }: { className?: string }) {
        period maps onto itself, and it still holds after the skew, since
        skewY leaves a pure vertical translation unchanged.
 
-     - It prefers ScrollSmoother's own scroll position to window.scrollY.
-       ScrollSmoother lags the content behind the native scrollbar by `smooth`
-       seconds, so the raw window value LEADS what is actually on screen and the
-       grid would run slightly ahead of the page. `scrollTop()` is the position
-       the reader can see. The fallback covers touch and reduced-motion
-       sessions, where the smoother is never created and native scroll is the
-       only truth.
+     - Native window.scrollY is the single source of truth. This keeps the fixed
+       background synchronized with the page and refresh restoration.
 
      This reads the position on GSAP's ticker rather than from a
      ScrollTrigger's `onUpdate`. A trigger was the first attempt and it did not
@@ -177,7 +168,7 @@ export function GridField({ className }: { className?: string }) {
       let last: number | null = null;
 
       const update = () => {
-        const scrolled = ScrollSmoother.get()?.scrollTop() ?? window.scrollY;
+        const scrolled = window.scrollY;
         const y = -((scrolled * FALL_RATE) % CELL);
         if (y === last) return;
         last = y;

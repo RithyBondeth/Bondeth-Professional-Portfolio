@@ -81,37 +81,16 @@ export default async function IndexPage({ params }: IHomePageProps) {
         }}
       />
 
-      {/* Section 1: Hero */}
       <LandingHero lang={lang} />
-
-      {/* Section 2: About */}
       <LandingAbout lang={lang} />
-
-      {/* Section 3: Current Focus */}
       <LandingCurrentFocus lang={lang} />
-
-      {/* Section 4: Skills */}
       <LandingSkills lang={lang} />
-
-      {/* Section 5: Experience */}
       <LandingExperience lang={lang} />
-
-      {/* Section 6: Education */}
       <LandingEducation lang={lang} />
-
-      {/* Section 7: Services */}
       <LandingServices lang={lang} />
-
-      {/* Section 8: Projects */}
       <LandingProjects lang={lang} />
-
-      {/* Section 9: Media */}
       <LandingMedia lang={lang} />
-
-      {/* Section 10: Recommendations */}
       <LandingRecommendations lang={lang} />
-
-      {/* Section 11: Contact */}
       <LandingContact lang={lang} />
     </main>
   );

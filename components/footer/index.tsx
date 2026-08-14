@@ -2,12 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ArrowUpRight } from "lucide-react";
 import {
   siteConfig,
   primaryNavLinks,
 } from "@/utils/constants/portfolio.constant";
-import { StaggerIn } from "@/components/utils/animations/animate-in";
-import { Magnetic } from "@/components/utils/animations/magnetic";
 import { scrollToSection } from "@/components/utils/animations/smooth-scroll";
 import {
   GitHubIcon,
@@ -42,8 +41,7 @@ export default function Footer(props: { lang: TLocale }) {
   const onHome = pathname === `/${lang}`;
   const year = new Date().getFullYear();
 
-  // See components/navbar/index.tsx for why in-page section links need to
-  // go through scrollToSection instead of a plain hash href.
+  // Match the navbar's animated same-page section navigation.
   function handleNavClick(e: React.MouseEvent, href: string) {
     if (!href.startsWith("/#") || !onHome) return;
     e.preventDefault();
@@ -53,203 +51,110 @@ export default function Footer(props: { lang: TLocale }) {
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
-    <footer className="overflow-hidden border-t border-border/50 [--muted-foreground:var(--field-muted-foreground)]">
-      {/* Main Content Section */}
-      <StaggerIn
-        from="up"
-        distance={24}
-        stagger={0.1}
-        className="max-w-6xl mx-auto px-6 py-10 sm:py-12 grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-10"
-      >
-        {/* Brand Section */}
-        <div className="sm:col-span-1 flex flex-col gap-3">
-          <div className="flex items-center">
-            <Logo className="text-base" />
-            <span className="sr-only">{siteConfig.name}</span>
+    <footer className="relative overflow-hidden border-t border-border/55 bg-card/20 [--muted-foreground:var(--field-muted-foreground)]">
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-56 bg-[radial-gradient(circle_at_75%_0%,color-mix(in_srgb,var(--primary)_10%,transparent),transparent_58%)]" />
+
+      <div className="relative mx-auto max-w-6xl px-6 pt-12 sm:pt-16">
+        <div className="flex flex-col gap-6 rounded-3xl border border-border/65 bg-background/65 p-6 shadow-sm backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between sm:p-8">
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary">
+              {dict.footer.ctaEyebrow}
+            </p>
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+              {dict.footer.ctaTitle}
+            </h2>
           </div>
-          <p className="text-muted-foreground text-xs leading-relaxed max-w-xs">
-            {localized.title} {dict.footer.basedIn}
-          </p>
-          {/* Social Icons Section */}
-          <div className="flex items-center gap-2 mt-1">
-            <Magnetic strength={0.45} className="inline-block">
-              <a
-                href={siteConfig.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="GitHub"
-                className="btn-fx btn-fx-icon w-8 h-8 flex items-center justify-center rounded border border-border/60 text-muted-foreground hover:text-primary hover:border-primary/40"
-              >
-                <GitHubIcon data-btn-glyph className="w-3.5 h-3.5" />
+          <Link
+            href={`/${lang}#contact`}
+            onClick={(event) => handleNavClick(event, "/#contact")}
+            className="btn-fx btn-fx-primary inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-primary-fill px-5 py-3 font-mono text-xs font-semibold text-primary-foreground"
+          >
+            {dict.footer.ctaAction}
+            <ArrowUpRight data-btn-glyph aria-hidden className="size-4" />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-2 gap-x-8 gap-y-10 py-12 sm:py-14 lg:grid-cols-[1.45fr_0.75fr_0.75fr_1fr] lg:gap-12">
+          <div className="col-span-2 lg:col-span-1">
+            <Link href={`/${lang}`} aria-label={siteConfig.name} className="inline-flex">
+              <Logo className="text-base" />
+            </Link>
+            <p className="mt-4 max-w-sm text-sm leading-6 text-field-muted-foreground">
+              {localized.title} {dict.footer.basedIn}
+            </p>
+            <p className="mt-2 max-w-sm text-xs leading-5 text-muted-foreground">
+              {dict.footer.availability}
+            </p>
+
+            <div className="mt-5 flex flex-wrap items-center gap-2">
+              {[
+                { href: siteConfig.github, label: "GitHub", Icon: GitHubIcon },
+                { href: siteConfig.linkedin, label: "LinkedIn", Icon: LinkedInIcon },
+                { href: siteConfig.facebook, label: "Facebook", Icon: FacebookIcon },
+                { href: siteConfig.instagram, label: "Instagram", Icon: InstagramIcon },
+                { href: siteConfig.youtube, label: "YouTube", Icon: YouTubeIcon },
+              ].map(({ href, label, Icon }) => (
+                <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label} className="btn-fx btn-fx-icon grid size-9 place-items-center rounded-xl border border-border/65 bg-background/45 text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary">
+                  <Icon data-btn-glyph className="size-3.5" />
+                </a>
+              ))}
+              <a href={`mailto:${siteConfig.email}`} aria-label="Email" className="btn-fx btn-fx-icon grid size-9 place-items-center rounded-xl border border-border/65 bg-background/45 text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary">
+                <MailIcon data-btn-glyph className="size-3.5" />
               </a>
-            </Magnetic>
-            <Magnetic strength={0.45} className="inline-block">
-              <a
-                href={siteConfig.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="LinkedIn"
-                className="btn-fx btn-fx-icon w-8 h-8 flex items-center justify-center rounded border border-border/60 text-muted-foreground hover:text-primary hover:border-primary/40"
-              >
-                <LinkedInIcon data-btn-glyph className="w-3.5 h-3.5" />
-              </a>
-            </Magnetic>
-            <Magnetic strength={0.45} className="inline-block">
-              <a
-                href={siteConfig.facebook}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Facebook"
-                className="btn-fx btn-fx-icon w-8 h-8 flex items-center justify-center rounded border border-border/60 text-muted-foreground hover:text-primary hover:border-primary/40"
-              >
-                <FacebookIcon data-btn-glyph className="w-3.5 h-3.5" />
-              </a>
-            </Magnetic>
-            <Magnetic strength={0.45} className="inline-block">
-              <a
-                href={siteConfig.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Instagram"
-                className="btn-fx btn-fx-icon w-8 h-8 flex items-center justify-center rounded border border-border/60 text-muted-foreground hover:text-primary hover:border-primary/40"
-              >
-                <InstagramIcon data-btn-glyph className="w-3.5 h-3.5" />
-              </a>
-            </Magnetic>
-            <Magnetic strength={0.45} className="inline-block">
-              <a
-                href={siteConfig.youtube}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="YouTube"
-                className="btn-fx btn-fx-icon w-8 h-8 flex items-center justify-center rounded border border-border/60 text-muted-foreground hover:text-primary hover:border-primary/40"
-              >
-                <YouTubeIcon data-btn-glyph className="w-3.5 h-3.5" />
-              </a>
-            </Magnetic>
-            <Magnetic strength={0.45} className="inline-block">
-              <a
-                href={`mailto:${siteConfig.email}`}
-                aria-label="Email"
-                className="btn-fx btn-fx-icon w-8 h-8 flex items-center justify-center rounded border border-border/60 text-muted-foreground hover:text-primary hover:border-primary/40"
-              >
-                <MailIcon data-btn-glyph className="w-3.5 h-3.5" />
-              </a>
-            </Magnetic>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+              {dict.footer.navigation}
+            </h3>
+            <ul className="mt-4 space-y-2.5">
+              {primaryNavLinks
+                .filter(({ href }) => !["/labs", "/blog"].includes(href))
+                .map(({ href }) => (
+                  <li key={href}>
+                    <Link href={localizeHref(href, lang)} onClick={(event) => handleNavClick(event, href)} className="text-xs text-field-muted-foreground transition-colors hover:text-primary">
+                      {dict.nav[navKeyFromHref(href)]}
+                    </Link>
+                  </li>
+                ))}
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+              {dict.footer.resources}
+            </h3>
+            <ul className="mt-4 space-y-2.5 text-xs">
+              <li><Link href={`/${lang}/projects`} className="text-field-muted-foreground transition-colors hover:text-primary">{dict.nav.projects}</Link></li>
+              <li><Link href={`/${lang}/labs`} className="text-field-muted-foreground transition-colors hover:text-primary">{dict.nav.labs}</Link></li>
+              <li><Link href={`/${lang}/blog`} className="text-field-muted-foreground transition-colors hover:text-primary">{dict.nav.blog}</Link></li>
+              <li><Link href={`/${lang}/resume`} className="text-field-muted-foreground transition-colors hover:text-primary">{dict.footer.resume}</Link></li>
+            </ul>
+          </div>
+
+          <div className="col-span-2 sm:col-span-1">
+            <h3 className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+              {dict.footer.contact}
+            </h3>
+            <a href={`mailto:${siteConfig.email}`} className="mt-4 inline-block break-all text-sm font-medium text-foreground underline decoration-primary/35 underline-offset-4 transition-colors hover:text-primary">
+              {siteConfig.email}
+            </a>
+            <p className="mt-3 font-mono text-[10px] leading-5 text-muted-foreground">
+              {dict.footer.location}
+            </p>
           </div>
         </div>
+      </div>
 
-        {/* Quick Nav Section */}
-        <div className="flex flex-col gap-3">
-          <p className="text-muted-foreground text-[10px] font-mono uppercase tracking-[0.2em]">
-            {dict.footer.navigation}
-          </p>
-          {/* Two columns while the footer is stacked — eight single-file links
-              were the tallest block on a phone by a wide margin. */}
-          <ul className="grid grid-cols-2 gap-x-4 gap-y-2 sm:flex sm:flex-col sm:gap-2">
-            {primaryNavLinks.map(({ href }, i) => (
-              <li key={href}>
-                <Link
-                  href={localizeHref(href, lang)}
-                  onClick={(e) => handleNavClick(e, href)}
-                  className="text-muted-foreground hover:text-primary text-xs font-mono transition-colors flex items-center gap-1.5"
-                >
-                  <span className="text-primary text-[9px]">
-                    0{i + 1}.
-                  </span>
-                  {dict.nav[navKeyFromHref(href)]}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Contact Section */}
-        <div className="flex flex-col gap-3">
-          <p className="text-muted-foreground text-[10px] font-mono uppercase tracking-[0.2em]">
-            {dict.footer.contact}
-          </p>
-          <ul className="flex flex-col gap-2">
-            <li>
-              <a
-                href={`mailto:${siteConfig.email}`}
-                className="text-muted-foreground hover:text-primary text-xs font-mono transition-colors break-all"
-              >
-                {siteConfig.email}
-              </a>
-            </li>
-            <li>
-              <a
-                href={siteConfig.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary text-xs font-mono transition-colors"
-              >
-                github.com/Rithybondeth
-              </a>
-            </li>
-            <li>
-              <a
-                href={siteConfig.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary text-xs font-mono transition-colors"
-              >
-                linkedin.com/in/rithybondeth
-              </a>
-            </li>
-            <li>
-              <a
-                href={siteConfig.facebook}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary text-xs font-mono transition-colors"
-              >
-                facebook.com/rithybondeth
-              </a>
-            </li>
-            <li>
-              <a
-                href={siteConfig.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary text-xs font-mono transition-colors"
-              >
-                instagram.com/rithybondeth
-              </a>
-            </li>
-            <li>
-              <a
-                href={siteConfig.youtube}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary text-xs font-mono transition-colors"
-              >
-                youtube.com/@rithybondeth6588
-              </a>
-            </li>
-          </ul>
-        </div>
-      </StaggerIn>
-
-      {/* Bottom Bar Section */}
-      <div className="border-t border-border/40 px-6 py-4">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p className="text-muted-foreground text-[10px] font-mono">
-            <span className="text-muted-foreground">
-              {"/* "}
-            </span>
-            © {year} {siteConfig.name}. {dict.footer.rights}
-            <span className="text-muted-foreground">
-              {" */"}
-            </span>
-          </p>
-          <p className="text-muted-foreground text-[10px] font-mono">
-            Built with Next.js &amp; Tailwind CSS
-            <span className="text-primary ml-2">
-              v1.0.0
-            </span>
-          </p>
+      <div className="relative border-t border-border/45 px-6 pb-24 pt-5 sm:py-5">
+        <div className="mx-auto flex max-w-6xl flex-col gap-3 text-[10px] text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <span>© {year} {siteConfig.name}. {dict.footer.rights}</span>
+            <Link href={`/${lang}/privacy`} className="transition-colors hover:text-primary">{dict.footer.privacy}</Link>
+            <Link href={`/${lang}/terms`} className="transition-colors hover:text-primary">{dict.footer.terms}</Link>
+          </div>
+          <p>{dict.footer.madeWithCare}</p>
         </div>
       </div>
     </footer>

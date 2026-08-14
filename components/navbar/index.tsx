@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { FileText, Languages } from "lucide-react";
 import { NAV_ICON_BUTTON } from "@/lib/utils";
 import { trackCvDownload } from "@/utils/functions/track-cv-download";
-import { gsap } from "@/components/utils/animations/gsap";
 import { scrollToSection } from "@/components/utils/animations/smooth-scroll";
 import {
   navLinks,
@@ -140,11 +139,11 @@ export default function Navbar(props: { lang: TLocale }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [exploreOpen, setExploreOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
-  const [progress, setProgress] = useState(0);
+  const [navHidden, setNavHidden] = useState(false);
 
   /* ---------------------------------- Utils --------------------------------- */
   const pathname = usePathname();
-  const navRef = useRef<HTMLElement>(null);
+  const progressRef = useRef<HTMLDivElement>(null);
   const linksRef = useRef<HTMLUListElement>(null);
   const indicatorRef = useRef<HTMLSpanElement>(null);
   const exploreRef = useRef<HTMLLIElement>(null);
@@ -154,12 +153,9 @@ export default function Navbar(props: { lang: TLocale }) {
   const onHome = pathname === `/${lang}`;
   const isExploreActive = EXPLORE_IDS.includes(activeSection);
 
-  // In-page section links ("/#about" etc.) only need scrollToSection when
-  // we're already on the homepage — the smoother's scrollTo replaces the
-  // native hash jump, which lands in the wrong spot once ScrollSmoother is
-  // virtualizing scroll. From any other route, let <Link> do a normal
-  // client-side navigation to "/{lang}#id"; SmoothScroll picks up the hash
-  // once the homepage content mounts.
+  // On the homepage, animate section links with the native helper and update
+  // the URL without triggering a route render. From another route, let Link
+  // navigate normally; the destination resolves its hash after mounting.
   function handleNavClick(e: React.MouseEvent, href: string) {
     if (!href.startsWith("/#") || !onHome) return;
     e.preventDefault();
@@ -193,7 +189,7 @@ export default function Navbar(props: { lang: TLocale }) {
     // Opening the menu must always bring the bar back.
     if (menuOpen && hiddenRef.current) {
       hiddenRef.current = false;
-      gsap.to(navRef.current, { yPercent: 0, duration: 0.4, ease: "smooth" });
+      setNavHidden(false);
     }
   }, [menuOpen]);
 
@@ -205,13 +201,23 @@ export default function Navbar(props: { lang: TLocale }) {
 
     const reduceMq = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-    const onScroll = () => {
+    let frame = 0;
+
+    const update = () => {
+      frame = 0;
       const y = window.scrollY;
       setScrolled(y > 20);
 
       const scrollHeight =
         document.documentElement.scrollHeight - window.innerHeight;
-      setProgress(scrollHeight > 0 ? (y / scrollHeight) * 100 : 0);
+      const progress = scrollHeight > 0 ? Math.min(y / scrollHeight, 1) : 0;
+      // Progress changes on every scroll frame. Keeping it out of React state
+      // avoids re-rendering the entire navigation tree while the page is in
+      // motion; a compositor-only clip is enough to reveal the signal while
+      // preserving the width of its individual pixel blocks.
+      if (progressRef.current) {
+        progressRef.current.style.clipPath = `inset(0 ${(1 - progress) * 100}% 0 0)`;
+      }
 
       // Hide the bar while scrolling down through the page, bring it back the
       // moment the user scrolls up — classic focus-on-content pattern.
@@ -221,20 +227,10 @@ export default function Navbar(props: { lang: TLocale }) {
         const goingUp = y < lastYRef.current - 6;
         if (goingDown && y > 400 && !menuOpenRef.current && !hiddenRef.current) {
           hiddenRef.current = true;
-          gsap.to(navRef.current, {
-            yPercent: -100,
-            duration: 0.45,
-            ease: "smooth",
-            overwrite: "auto",
-          });
+          setNavHidden(true);
         } else if ((goingUp || y <= 400) && hiddenRef.current) {
           hiddenRef.current = false;
-          gsap.to(navRef.current, {
-            yPercent: 0,
-            duration: 0.45,
-            ease: "smooth",
-            overwrite: "auto",
-          });
+          setNavHidden(false);
         }
       }
       lastYRef.current = y;
@@ -257,9 +253,16 @@ export default function Navbar(props: { lang: TLocale }) {
       setActiveSection(current);
     };
 
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+
     window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
+    update();
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (frame) cancelAnimationFrame(frame);
+    };
   }, []);
 
   // One sliding underline glides between active links instead of each link
@@ -279,22 +282,16 @@ export default function Navbar(props: { lang: TLocale }) {
         `[data-nav-id="${targetId}"]`,
       );
       if (!active) {
-        gsap.to(indicator, { opacity: 0, duration: 0.2 });
+        indicator.style.opacity = "0";
         return;
       }
-      const vars = {
-        x: active.offsetLeft + 10,
-        width: Math.max(0, active.offsetWidth - 20),
-        opacity: 1,
-      };
       const reduce = window.matchMedia(
         "(prefers-reduced-motion: reduce)",
       ).matches;
-      if (animate && !reduce) {
-        gsap.to(indicator, { ...vars, duration: 0.45, ease: "smooth" });
-      } else {
-        gsap.set(indicator, vars);
-      }
+      indicator.style.transitionDuration = animate && !reduce ? "450ms" : "0ms";
+      indicator.style.transform = `translateX(${active.offsetLeft + 10}px)`;
+      indicator.style.width = `${Math.max(0, active.offsetWidth - 20)}px`;
+      indicator.style.opacity = "1";
     };
 
     place(true);
@@ -305,23 +302,27 @@ export default function Navbar(props: { lang: TLocale }) {
 
   useEffect(() => {
     if (!menuOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setMenuOpen(false);
     };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKey);
+    };
   }, [menuOpen]);
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
     <nav
-      ref={navRef}
-      // Colors/shadow only — GSAP owns the transform for hide/reveal, and a
-      // CSS `transition-all` would double-ease it.
-      className={`fixed top-0 left-0 right-0 z-50 transition-[background-color,border-color,box-shadow] duration-300 ${
+      className={`fixed top-3 left-3 right-3 z-50 py-1 mx-auto max-w-6xl overflow-hidden rounded-2xl border backdrop-blur-xl transition-[background-color,border-color,box-shadow,transform] duration-300 ease-out lg:overflow-visible ${
+        navHidden ? "-translate-y-[calc(100%+1rem)]" : "translate-y-0"
+      } ${
         scrolled || menuOpen
-          ? "bg-background/95 backdrop-blur-md border-b border-border shadow-xl shadow-black/10 dark:shadow-black/40"
-          : "bg-transparent"
+          ? "border-border/70 bg-background/92 shadow-2xl shadow-black/12 dark:shadow-black/45"
+          : "border-border/45 bg-background/72 shadow-lg shadow-black/6"
       }`}
     >
       {/* Top Scrim Section — the nav is transparent at scroll-top, which was
@@ -339,17 +340,17 @@ export default function Navbar(props: { lang: TLocale }) {
           stacking context, so it still paints above the page. */}
       <div
         aria-hidden
-        className={`pointer-events-none absolute inset-x-0 top-0 -z-10 h-[160%] bg-linear-to-b from-background/90 from-40% via-background/70 via-65% to-transparent transition-opacity duration-300 ${
-          scrolled || menuOpen ? "opacity-0" : "opacity-100"
-        }`}
+        className="hidden"
       />
 
       {/* Scroll Progress Bar Section */}
       <div
-        className="absolute bottom-0 left-0 h-px bg-primary/70 transition-[width] duration-75 ease-out pointer-events-none"
-        style={{ width: `${progress}%` }}
+        ref={progressRef}
+        aria-hidden
+        className="nav-progress-signal pointer-events-none absolute inset-x-0 bottom-0 h-[2px]"
+        style={{ clipPath: "inset(0 100% 0 0)" }}
       />
-      <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div className="mx-auto flex items-center justify-between px-4 py-2.5 sm:px-5">
         {/* Brand Section */}
         <Link
           href={`/${lang}`}
@@ -366,7 +367,7 @@ export default function Navbar(props: { lang: TLocale }) {
           <span
             ref={indicatorRef}
             aria-hidden
-            className="pointer-events-none absolute bottom-0 left-0 h-px w-0 rounded-full bg-primary/70 opacity-0"
+            className="pointer-events-none absolute bottom-0 left-0 h-px w-0 rounded-full bg-primary/70 opacity-0 transition-[transform,width,opacity] ease-out"
           />
           {/* Explore dropdown — groups the homepage's own scroll-sections
               (About, Skills, Experience, Education, Services) so the bar
@@ -378,23 +379,24 @@ export default function Navbar(props: { lang: TLocale }) {
               onClick={() => setExploreOpen((o) => !o)}
               aria-haspopup="true"
               aria-expanded={exploreOpen}
-              className={`relative flex items-center gap-1 px-2.5 xl:px-3 py-1.5 text-xs font-mono tracking-wide whitespace-nowrap transition-colors duration-200 rounded ${
+              className={`relative flex items-center gap-1 px-2.5 xl:px-3 py-1.5 text-xs font-mono tracking-wide whitespace-nowrap transition-colors duration-200 rounded-lg ${
                 isExploreActive
                   ? "text-primary"
                   : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
               }`}
             >
-              <span className="text-primary mr-1 text-[10px] hidden xl:inline">
-                01.
-              </span>
               {dict.nav.explore}
               <ChevronDownIcon
                 className={`w-3 h-3 transition-transform duration-200 ${exploreOpen ? "rotate-180" : ""}`}
               />
             </button>
             <ul
-              className={`absolute left-0 top-full mt-2 min-w-40 flex-col gap-0.5 rounded border border-border bg-background/95 backdrop-blur-md p-1 shadow-xl shadow-black/10 dark:shadow-black/40 ${
-                exploreOpen ? "flex" : "hidden"
+              inert={!exploreOpen}
+              aria-hidden={!exploreOpen}
+              className={`absolute left-0 top-full z-60 mt-2 flex min-w-40 origin-top flex-col gap-0.5 rounded-lg border border-border bg-background/95 p-1 shadow-xl shadow-black/10 backdrop-blur-md transition-[opacity,transform] duration-200 ease-out dark:shadow-black/40 ${
+                exploreOpen
+                  ? "translate-y-0 opacity-100"
+                  : "pointer-events-none -translate-y-1 opacity-0"
               }`}
             >
               {exploreNavLinks.map(({ href }) => {
@@ -404,11 +406,12 @@ export default function Navbar(props: { lang: TLocale }) {
                   <li key={href}>
                     <Link
                       href={localizeHref(href, lang)}
+                      aria-current={isActive ? "location" : undefined}
                       onClick={(e) => {
                         handleNavClick(e, href);
                         setExploreOpen(false);
                       }}
-                      className={`block rounded px-3 py-1.5 text-xs font-mono tracking-wide whitespace-nowrap transition-colors ${
+                      className={`block rounded-lg px-3 py-1.5 text-xs font-mono tracking-wide whitespace-nowrap transition-colors ${
                         isActive
                           ? "text-primary bg-primary/5"
                           : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
@@ -421,7 +424,7 @@ export default function Navbar(props: { lang: TLocale }) {
               })}
             </ul>
           </li>
-          {topNavLinks.map(({ href }, i) => {
+          {topNavLinks.map(({ href }) => {
             const id = href.replace("/#", "").replace("/", "");
             const isActive = activeSection === id;
             return (
@@ -429,16 +432,14 @@ export default function Navbar(props: { lang: TLocale }) {
                 <Link
                   href={localizeHref(href, lang)}
                   data-nav-id={id}
+                  aria-current={isActive ? "location" : undefined}
                   onClick={(e) => handleNavClick(e, href)}
-                  className={`relative px-2.5 xl:px-3 py-1.5 text-xs font-mono tracking-wide whitespace-nowrap transition-colors duration-200 rounded ${
+                  className={`relative px-2.5 xl:px-3 py-1.5 text-xs font-mono tracking-wide whitespace-nowrap transition-colors duration-200 rounded-lg ${
                     isActive
                       ? "text-primary"
                       : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
                   }`}
                 >
-                  <span className="text-primary mr-1 text-[10px] hidden xl:inline">
-                    0{i + 2}.
-                  </span>
                   {dict.nav[navKeyFromHref(href)]}
                 </Link>
               </li>
@@ -450,17 +451,15 @@ export default function Navbar(props: { lang: TLocale }) {
               type="button"
               onClick={openCommandPalette}
               aria-label={dict.commandPalette.open}
-              className="btn-fx btn-fx-outline flex items-center gap-2 pl-2.5 pr-2 py-1.5 text-xs font-mono text-muted-foreground border border-border/60 rounded hover:text-foreground"
+              className="btn-fx btn-fx-outline flex items-center gap-2 pl-2.5 pr-2 py-1.5 text-xs font-mono text-muted-foreground border border-border/60 rounded-lg hover:text-foreground"
             >
               <SearchIcon data-btn-glyph className="w-3.5 h-3.5" />
-              <kbd className="text-[10px] text-muted-foreground">
-                ⌘K
-              </kbd>
+              <span className="hidden xl:inline">{dict.commandPalette.open}</span>
             </button>
           </li>
           <li>
             {/* The readable resume, not the file. The PDF is one tracked click
-                away on that page, and an HTML résumé is what a phone, a search
+                away on that page, and an HTML resume is what a phone, a search
                 engine and the Khmer locale can all actually use. */}
             <Link
               href={`/${lang}/resume`}
@@ -492,7 +491,7 @@ export default function Navbar(props: { lang: TLocale }) {
           <LanguageSwitcher lang={lang} label={dict.nav.toggleLanguage} />
           <ThemeToggle label={dict.nav.toggleTheme} />
           <button
-            className="btn-fx btn-fx-icon flex size-11 items-center justify-center rounded text-muted-foreground hover:bg-foreground/5 hover:text-foreground"
+            className="btn-fx btn-fx-icon flex size-11 items-center justify-center rounded-lg text-muted-foreground hover:bg-foreground/5 hover:text-foreground"
             onClick={() => setMenuOpen((o) => !o)}
             aria-label={dict.nav.toggleMenu}
             aria-expanded={menuOpen}
@@ -513,28 +512,26 @@ export default function Navbar(props: { lang: TLocale }) {
           menuOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
         }`}
       >
-        <div className="overflow-hidden">
+        <div className="max-h-[calc(100dvh-5.5rem)] overflow-y-auto overscroll-contain">
           <ul className="flex flex-col gap-1 border-t border-border px-6 py-4">
-            {navLinks.map(({ href }, i) => {
+            {navLinks.map(({ href }) => {
               const id = href.replace("/#", "").replace("/", "");
               const isActive = activeSection === id;
               return (
                 <li key={href}>
                   <Link
                     href={localizeHref(href, lang)}
+                    aria-current={isActive ? "location" : undefined}
                     onClick={(e) => {
                       handleNavClick(e, href);
                       setMenuOpen(false);
                     }}
-                    className={`flex min-h-11 items-center gap-2 rounded border-l px-3 text-xs font-mono transition-all ${
+                    className={`flex min-h-11 items-center gap-2 rounded-lg border-l px-3 text-xs font-mono transition-all ${
                       isActive
                         ? "text-primary bg-primary/5 border-primary"
                         : "text-muted-foreground border-transparent hover:text-foreground hover:border-border"
                     }`}
                   >
-                    <span className="text-primary text-[10px]">
-                      0{i + 1}.
-                    </span>
                     {dict.nav[navKeyFromHref(href)]}
                   </Link>
                 </li>
@@ -549,7 +546,7 @@ export default function Navbar(props: { lang: TLocale }) {
                   trackCvDownload("navbar-mobile");
                   setMenuOpen(false);
                 }}
-                className="flex min-h-11 items-center justify-center gap-2 rounded border border-primary/20 bg-primary/5 px-3 text-xs font-mono text-primary transition-colors hover:bg-primary/10"
+                className="flex min-h-11 items-center justify-center gap-2 rounded-lg border border-primary/20 bg-primary/5 px-3 text-xs font-mono text-primary transition-colors hover:bg-primary/10"
               >
                 {dict.nav.resumeMobile}
               </a>

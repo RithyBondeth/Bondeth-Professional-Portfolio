@@ -68,7 +68,7 @@ export function StructuredOutputLab(props: {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_0.9fr]">
-      <section className="rounded border border-border/60 bg-card p-5 sm:p-6">
+      <section className="rounded-lg border border-border/60 bg-card p-5 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
@@ -89,7 +89,7 @@ export function StructuredOutputLab(props: {
               key={preset.label}
               type="button"
               onClick={() => loadPreset(preset.value)}
-              className="min-h-11 rounded border border-border/60 bg-background px-3 font-mono text-xs text-muted-foreground transition-colors hover:border-primary/30 hover:text-primary"
+              className="min-h-11 rounded-lg border border-border/60 bg-background px-3 font-mono text-xs text-muted-foreground transition-colors hover:border-primary/30 hover:text-primary"
             >
               {preset.label}
             </button>
@@ -108,7 +108,7 @@ export function StructuredOutputLab(props: {
           onChange={(event) => setInput(event.currentTarget.value)}
           maxLength={2000}
           rows={9}
-          className="mt-2 w-full resize-y rounded border border-border/60 bg-background p-4 text-sm leading-relaxed text-foreground focus:border-primary/50 focus:outline-none focus:ring-1 focus:ring-primary/30"
+          className="mt-2 w-full resize-y rounded-lg border border-border/60 bg-background p-4 text-sm leading-relaxed text-foreground focus:border-primary/50 focus:outline-none focus:ring-1 focus:ring-primary/30"
         />
         <div className="mt-2 flex items-center justify-between gap-4">
           <p className="text-xs leading-relaxed text-muted-foreground">
@@ -133,7 +133,7 @@ export function StructuredOutputLab(props: {
           type="button"
           disabled={!input.trim() || status === "loading"}
           onClick={runExtraction}
-          className="mt-6 flex min-h-12 w-full items-center justify-center gap-2 btn-fx btn-fx-primary rounded bg-primary-fill px-5 font-mono text-sm font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-6 flex min-h-12 w-full items-center justify-center gap-2 btn-fx btn-fx-primary rounded-lg bg-primary-fill px-5 font-mono text-sm font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50"
         >
           <span aria-hidden>▸</span>
           {status === "loading" ? labels.running : labels.run}
@@ -142,7 +142,7 @@ export function StructuredOutputLab(props: {
 
       <section
         aria-live="polite"
-        className="technical-palette rounded border border-border/60 bg-technical-surface p-5 sm:p-6"
+        className="technical-palette rounded-lg border border-border/60 bg-technical-surface p-5 sm:p-6"
       >
         <p className="font-code text-[10px] uppercase tracking-[0.2em] text-primary">
           02 / output.json
@@ -154,10 +154,10 @@ export function StructuredOutputLab(props: {
         {status === "loading" ? (
           <div className="mt-5" aria-hidden>
             <div className="flex flex-wrap items-center gap-2">
-              <Skeleton className="h-6 w-24 rounded" />
+              <Skeleton className="h-6 w-24 rounded-lg" />
               <Skeleton className="h-4 w-28" />
             </div>
-            <div className="mt-4 space-y-2 rounded border border-border/50 bg-black p-4">
+            <div className="mt-4 space-y-2 rounded-lg border border-border/50 bg-black p-4">
               {Array.from({ length: 6 }).map((_, i) => (
                 <Skeleton
                   key={i}
@@ -171,7 +171,7 @@ export function StructuredOutputLab(props: {
           <>
             <div className="mt-5 flex flex-wrap items-center gap-2">
               <span
-                className={`rounded border px-2.5 py-1 font-mono text-[10px] ${
+                className={`rounded-lg border px-2.5 py-1 font-mono text-[10px] ${
                   result.validation.valid
                     ? "border-status-success/25 bg-status-success/5 text-status-success"
                     : "border-status-warning/25 bg-status-warning/5 text-status-warning"
@@ -188,7 +188,7 @@ export function StructuredOutputLab(props: {
               <button
                 type="button"
                 onClick={copyJson}
-                className="ml-auto inline-flex items-center gap-1.5 rounded border border-border/60 bg-background px-2.5 py-1 font-mono text-[10px] text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
+                className="ml-auto inline-flex items-center gap-1.5 rounded-lg border border-border/60 bg-background px-2.5 py-1 font-mono text-[10px] text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
               >
                 {copied ? (
                   <Check className="size-3 text-status-success" aria-hidden />
@@ -199,12 +199,12 @@ export function StructuredOutputLab(props: {
               </button>
             </div>
 
-            <pre className="mt-4 overflow-x-auto rounded border border-border/50 bg-black p-4 text-xs leading-6 text-emerald-300">
+            <pre className="mt-4 overflow-x-auto rounded-lg border border-border/50 bg-black p-4 text-xs leading-6 text-emerald-300">
               <code>{JSON.stringify(result.data, null, 2)}</code>
             </pre>
 
             {!result.validation.valid && (
-              <div className="mt-4 rounded border border-status-warning/20 bg-status-warning/5 p-4">
+              <div className="mt-4 rounded-lg border border-status-warning/20 bg-status-warning/5 p-4">
                 <p className="font-mono text-[10px] uppercase tracking-wider text-status-warning">
                   {labels.missingFields}
                 </p>
@@ -215,7 +215,7 @@ export function StructuredOutputLab(props: {
             )}
           </>
         ) : (
-          <div className="mt-5 flex min-h-64 items-center justify-center rounded border border-dashed border-border/50 bg-black/30 p-8 text-center">
+          <div className="mt-5 flex min-h-64 items-center justify-center rounded-lg border border-dashed border-border/50 bg-black/30 p-8 text-center">
             <p className="max-w-xs font-mono text-xs leading-relaxed text-muted-foreground">
               {labels.emptyOutput}
             </p>

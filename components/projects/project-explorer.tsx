@@ -1,7 +1,8 @@
 "use client";
 
 import { useLayoutEffect, useRef, useState } from "react";
-import { gsap, Flip } from "@/components/utils/animations/gsap";
+import { gsap } from "@/components/utils/animations/gsap";
+import { Flip } from "@/components/utils/animations/gsap-flip";
 import { ProjectCard } from "@/components/projects/project-card";
 import type { IProject } from "@/utils/interfaces/portfolio";
 import type { TProjectCategory } from "@/utils/types/portfolio";
@@ -122,14 +123,14 @@ export function ProjectExplorer(props: {
     <div>
       <div
         ref={barRef}
-        className="relative mb-10 flex w-fit max-w-full gap-1 overflow-x-auto rounded border border-border/40 bg-card/50 p-1"
+        className="relative mb-10 flex w-fit max-w-full gap-1 overflow-x-auto rounded-lg border border-border/40 bg-card/50 p-1"
         aria-label={dict.projects.filterLabel}
       >
         {/* Sliding active-state thumb (decorative — state lives on the buttons) */}
         <span
           ref={thumbRef}
           aria-hidden
-          className="absolute left-0 top-1 bottom-1 w-0 rounded bg-primary"
+          className="absolute left-0 top-1 bottom-1 w-0 rounded-lg bg-primary"
         />
         {categories.map((category) => (
           <button
@@ -137,7 +138,7 @@ export function ProjectExplorer(props: {
             type="button"
             onClick={() => applyFilter(category)}
             aria-pressed={filter === category}
-            className={`btn-fx relative z-10 min-h-11 shrink-0 rounded px-4 font-mono text-xs ${
+            className={`btn-fx relative z-10 min-h-11 shrink-0 rounded-lg px-4 font-mono text-xs ${
               filter === category
                 ? "text-primary-foreground"
                 : "text-muted-foreground hover:bg-foreground/5 hover:text-foreground"
@@ -164,7 +165,7 @@ export function ProjectExplorer(props: {
                 setDomain((current) => (current === item ? null : item));
               }}
               aria-pressed={domain === item}
-              className="btn-fx btn-fx-chip rounded border border-border bg-card/60 px-3 py-1.5 font-mono text-xs text-muted-foreground hover:text-foreground aria-pressed:border-primary/50 aria-pressed:bg-primary/10 aria-pressed:text-primary"
+              className="btn-fx btn-fx-chip rounded-lg border border-border bg-card/60 px-3 py-1.5 font-mono text-xs text-muted-foreground hover:text-foreground aria-pressed:border-primary/50 aria-pressed:bg-primary/10 aria-pressed:text-primary"
             >
               {item}
             </button>
@@ -206,7 +207,7 @@ export function ProjectExplorer(props: {
           )}
         </>
       ) : (
-        <div className="rounded border border-dashed border-border py-20 text-center">
+        <div className="rounded-lg border border-dashed border-border py-20 text-center">
           <p className="font-mono text-sm text-muted-foreground">
             {dict.projects.empty}
           </p>

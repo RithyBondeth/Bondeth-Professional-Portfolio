@@ -75,7 +75,7 @@ export function LlmEvalLab(props: {
 
   return (
     <div>
-      <section className="rounded border border-border/60 bg-card p-5 sm:p-6">
+      <section className="rounded-lg border border-border/60 bg-card p-5 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
@@ -97,7 +97,7 @@ export function LlmEvalLab(props: {
               type="button"
               aria-pressed={selectedIndex === index}
               onClick={() => selectSuite(index)}
-              className={`btn-fx btn-fx-chip min-h-11 rounded border px-3 font-mono text-xs ${
+              className={`btn-fx btn-fx-chip min-h-11 rounded-lg border px-3 font-mono text-xs ${
                 selectedIndex === index
                   ? "border-primary-fill bg-primary-fill text-primary-foreground"
                   : "border-border/60 bg-background text-muted-foreground hover:border-primary/30 hover:text-primary"
@@ -108,7 +108,7 @@ export function LlmEvalLab(props: {
           ))}
         </div>
 
-        <div className="mt-5 rounded border border-border/50 bg-background p-4">
+        <div className="mt-5 rounded-lg border border-border/50 bg-background p-4">
           <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
             {labels.prompt}
           </p>
@@ -152,7 +152,7 @@ export function LlmEvalLab(props: {
             !candidateA.trim() || !candidateB.trim() || status === "loading"
           }
           onClick={runEvaluation}
-          className="mt-6 flex min-h-12 w-full items-center justify-center gap-2 btn-fx btn-fx-primary rounded bg-primary-fill px-5 font-mono text-sm font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-6 flex min-h-12 w-full items-center justify-center gap-2 btn-fx btn-fx-primary rounded-lg bg-primary-fill px-5 font-mono text-sm font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50"
         >
           <span aria-hidden>✓</span>
           {status === "loading" ? labels.running : labels.run}
@@ -161,7 +161,7 @@ export function LlmEvalLab(props: {
 
       <section
         aria-live="polite"
-        className="technical-palette mt-6 rounded border border-border/60 bg-technical-surface p-5 sm:p-6"
+        className="technical-palette mt-6 rounded-lg border border-border/60 bg-technical-surface p-5 sm:p-6"
       >
         <p className="font-code text-[10px] uppercase tracking-[0.2em] text-primary">
           02 / evaluation-report
@@ -176,7 +176,7 @@ export function LlmEvalLab(props: {
               {Array.from({ length: 2 }).map((_, i) => (
                 <div
                   key={i}
-                  className="rounded border border-border/50 bg-black/30 p-5"
+                  className="rounded-lg border border-border/50 bg-black/30 p-5"
                 >
                   <Skeleton className="h-3 w-24" />
                   <Skeleton className="mt-3 h-10 w-20" />
@@ -184,7 +184,7 @@ export function LlmEvalLab(props: {
                 </div>
               ))}
             </div>
-            <div className="mt-5 space-y-3 rounded border border-border/50 p-4">
+            <div className="mt-5 space-y-3 rounded-lg border border-border/50 p-4">
               {Array.from({ length: 4 }).map((_, i) => (
                 <div key={i} className="flex items-center justify-between gap-4">
                   <Skeleton className="h-4 w-1/3" />
@@ -196,7 +196,7 @@ export function LlmEvalLab(props: {
             </div>
           </div>
         ) : !result ? (
-          <div className="mt-5 flex min-h-64 items-center justify-center rounded border border-dashed border-border/50 bg-black/30 p-8 text-center">
+          <div className="mt-5 flex min-h-64 items-center justify-center rounded-lg border border-dashed border-border/50 bg-black/30 p-8 text-center">
             <p className="max-w-sm font-mono text-xs leading-relaxed text-muted-foreground">
               {labels.emptyResults}
             </p>
@@ -219,12 +219,12 @@ export function LlmEvalLab(props: {
             </div>
 
             {result.winner === "tie" && (
-              <p className="mt-4 rounded border border-primary/20 bg-primary/5 p-3 text-center font-mono text-xs text-primary">
+              <p className="mt-4 rounded-lg border border-primary/20 bg-primary/5 p-3 text-center font-mono text-xs text-primary">
                 {labels.tie}
               </p>
             )}
 
-            <div className="mt-5 overflow-x-auto rounded border border-border/50">
+            <div className="mt-5 overflow-x-auto rounded-lg border border-border/50">
               <table className="w-full min-w-[560px] border-collapse text-left text-xs">
                 <thead className="bg-card/70 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                   <tr>
@@ -316,7 +316,7 @@ function CandidateEditor(props: {
         onChange={(event) => onChange(event.currentTarget.value)}
         maxLength={3000}
         rows={8}
-        className="mt-2 w-full resize-y rounded border border-border/60 bg-background p-4 font-mono text-xs leading-6 text-foreground focus:border-primary/50 focus:outline-none focus:ring-1 focus:ring-primary/30"
+        className="mt-2 w-full resize-y rounded-lg border border-border/60 bg-background p-4 font-mono text-xs leading-6 text-foreground focus:border-primary/50 focus:outline-none focus:ring-1 focus:ring-primary/30"
       />
       <p className="mt-1 text-right font-mono text-[10px] text-muted-foreground">
         {value.length}/3,000
@@ -334,7 +334,7 @@ function ScoreCard(props: {
   const { label, score, winner, winnerLabel } = props;
   return (
     <div
-      className={`rounded border p-5 ${
+      className={`rounded-lg border p-5 ${
         winner
           ? "border-status-success/30 bg-status-success/5"
           : "border-border/50 bg-black/30"
@@ -343,7 +343,7 @@ function ScoreCard(props: {
       <div className="flex items-center justify-between gap-3">
         <p className="font-mono text-xs text-muted-foreground">{label}</p>
         {winner && (
-          <span className="rounded bg-status-success/10 px-2 py-1 font-mono text-[10px] text-status-success">
+          <span className="rounded-lg bg-status-success/10 px-2 py-1 font-mono text-[10px] text-status-success">
             {winnerLabel}
           </span>
         )}

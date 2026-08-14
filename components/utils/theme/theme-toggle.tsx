@@ -68,7 +68,7 @@ export default function ThemeToggle(props: { label: string }) {
   /* -------------------------------- Render UI ------------------------------- */
   if (!mounted) {
     return (
-      <span className="flex size-11 items-center justify-center rounded border border-border/60 lg:size-7">
+      <span className="flex size-11 items-center justify-center rounded-lg border border-border/60 lg:size-7">
         <span className="w-3.5 h-3.5" />
       </span>
     );

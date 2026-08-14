@@ -3,10 +3,9 @@ import { organizations } from "@/utils/constants/portfolio.constant";
 import { IOrganization } from "@/utils/interfaces/portfolio";
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
 import { EarlierRoles } from "@/components/landing/landing-experience/earlier-roles";
-import { MarqueeTrack } from "@/components/utils/animations/marquee-track";
-import { ScrambleText } from "@/components/utils/animations/scramble-text";
 import { SplitReveal } from "@/components/utils/animations/split-reveal";
 import { DrawLine } from "@/components/utils/animations/draw-line";
+import { MarqueeTrack } from "@/components/utils/animations/marquee-track";
 import { getDictionary, type TLocale } from "@/utils/i18n";
 import { getExperiences } from "@/utils/i18n/content";
 
@@ -17,6 +16,8 @@ export default function LandingExperience(props: { lang: TLocale }) {
   const experiences = getExperiences(lang);
   const recentExperiences = experiences.slice(0, 3);
   const earlierExperiences = experiences.slice(3);
+  const organizationHalf = organizations;
+  const organizationTrack = [...organizationHalf, ...organizationHalf];
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
@@ -25,7 +26,7 @@ export default function LandingExperience(props: { lang: TLocale }) {
         {/* Heading Section */}
         <AnimateIn from="zoom-in">
           <p className="text-primary font-mono text-xs tracking-[0.25em] uppercase mb-1">
-            <ScrambleText text="// experience.json" />
+            {lang === "km" ? "ដំណើរការងារ" : "Career journey"}
           </p>
         </AnimateIn>
 
@@ -62,7 +63,7 @@ export default function LandingExperience(props: { lang: TLocale }) {
 
                 {/* Anchored to the timeline rail, so it slides sideways rather
                     than lifting — a vertical lift would drift off its node. */}
-                <div className="card-interactive card-interactive-inline bg-background rounded border border-border/60 p-5">
+                <div className="card-interactive card-interactive-inline rounded-lg border border-border/60 bg-background p-5">
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 mb-3">
                     <div>
                       <h3 className="text-foreground font-semibold text-base">
@@ -83,7 +84,7 @@ export default function LandingExperience(props: { lang: TLocale }) {
                     {exp.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="px-2 py-0.5 bg-primary/8 text-primary text-[10px] rounded border border-primary/15 font-mono"
+                        className="px-2 py-0.5 bg-primary/8 text-primary text-[10px] rounded-lg border border-primary/15 font-mono"
                       >
                         {tag}
                       </span>
@@ -105,27 +106,35 @@ export default function LandingExperience(props: { lang: TLocale }) {
         </div>
       </div>
 
-      {/* Organization Logo Marquee Section */}
-      <AnimateIn from="zoom-out" delay={0.1}>
-        <div className="mt-16 pt-12 border-t border-border/40">
-          <p className="text-center text-[10px] font-mono text-muted-foreground uppercase tracking-[0.2em] mb-8">
-            {dict.experience.organizations}
-          </p>
-
-          <div className="relative overflow-hidden">
-            <div className="absolute inset-y-0 left-0 w-24 bg-linear-to-r from-card to-transparent z-10 pointer-events-none" />
-            <div className="absolute inset-y-0 right-0 w-24 bg-linear-to-l from-card to-transparent z-10 pointer-events-none" />
-
-            <MarqueeTrack direction="rtl" duration={40}>
-              {Array.from({ length: 10 }, (_, copy) =>
-                organizations.map((org) => (
-                  <OrgBadge key={`${copy}-${org.name}`} org={org} />
-                )),
-              )}
-            </MarqueeTrack>
+      {/* Organizations Section */}
+      <div className="mx-auto mt-20 w-full">
+        <div className="overflow-hidden rounded-2xl border border-border/50 bg-card/50 py-6 shadow-[0_24px_70px_rgb(0_0_0/.06)] backdrop-blur-sm sm:py-8">
+          <div className="mb-5 flex flex-col items-center gap-2 px-6 text-center sm:mb-7">
+            <p className="text-sm font-semibold tracking-[-.01em] text-foreground sm:text-base">
+              {dict.experience.organizations}
+            </p>
+            <p className="max-w-xl text-xs leading-relaxed text-muted-foreground sm:text-sm">
+              {lang === "km"
+                ? "បទពិសោធន៍នៅក្នុងវិស័យសាធារណៈ ការអប់រំ និងក្រុមផលិតផលឌីជីថល។"
+                : "Experience across public service, education, and digital product teams."}
+            </p>
           </div>
+
+          <MarqueeTrack
+            direction="rtl"
+            duration={48}
+            className="py-2 [mask-image:linear-gradient(to_right,transparent,black_2.5rem,black_calc(100%_-_2.5rem),transparent)] sm:[mask-image:linear-gradient(to_right,transparent,black_6rem,black_calc(100%_-_6rem),transparent)]"
+          >
+            {organizationTrack.map((org, index) => (
+              <OrgBadge key={`${org.name}-${index}`} org={org} />
+            ))}
+          </MarqueeTrack>
+
+          <p className="mt-5 text-center text-[10px] uppercase tracking-[.15em] text-muted-foreground">
+            {lang === "km" ? "ដាក់កណ្ដុរលើដើម្បីផ្អាក" : "Hover to pause"}
+          </p>
         </div>
-      </AnimateIn>
+      </div>
     </section>
   );
 }
@@ -137,16 +146,22 @@ function OrgBadge(props: { org: IOrganization }) {
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
-    <div className="relative flex items-center justify-center px-8 py-5 bg-background/60 border border-border/40 hover:border-primary/20 hover:bg-background/80 transition-all duration-300 shrink-0 select-none group">
-      <div className="relative w-20 h-20">
+    <div
+      tabIndex={0}
+      aria-label={org.name}
+      className="group relative flex h-32 w-40 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border/40 bg-background/75 px-4 py-4 text-center shadow-sm outline-none transition-[border-color,background-color,transform,box-shadow] duration-500 ease-[cubic-bezier(.22,1,.36,1)] hover:-translate-y-0.5 hover:border-primary/30 hover:bg-background hover:shadow-[0_14px_30px_rgb(0_0_0/.08)] focus-visible:-translate-y-0.5 focus-visible:border-primary/40 focus-visible:ring-2 focus-visible:ring-primary/20 sm:h-36 sm:w-44"
+    >
+      <div className="relative h-14 w-full max-w-28 will-change-[opacity,transform] transition-[opacity,transform] duration-500 ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-95 group-hover:opacity-0 group-focus-visible:scale-95 group-focus-visible:opacity-0 sm:h-16 sm:max-w-32">
         <Image
           src={org.logo}
           alt={org.name}
           fill
-          className="object-contain transition-opacity duration-300 group-hover:opacity-20"
+          loading="eager"
+          sizes="128px"
+          className="object-contain opacity-100"
         />
       </div>
-      <span className="absolute inset-0 flex items-center justify-center text-xs font-mono font-medium text-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-300 px-3 text-center leading-snug">
+      <span className="pointer-events-none absolute inset-0 flex translate-y-1.5 items-center justify-center px-4 text-xs font-semibold leading-snug text-foreground opacity-0 will-change-[opacity,transform] transition-[opacity,transform] duration-500 ease-[cubic-bezier(.22,1,.36,1)] group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100">
         {org.name}
       </span>
     </div>

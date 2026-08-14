@@ -49,7 +49,7 @@ export function TechBadges(props: {
                   : undefined
               }
               className={cn(
-                "tech-badge inline-flex items-center rounded border border-border/60 bg-background font-mono text-muted-foreground",
+                "tech-badge inline-flex items-center rounded-lg border border-border/60 bg-background font-mono text-muted-foreground",
                 chip,
               )}
             >

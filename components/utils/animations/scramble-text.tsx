@@ -1,7 +1,11 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { gsap, SCRAMBLE_CHARS } from "./gsap";
+import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin";
+import { gsap } from "./gsap-scroll";
+import { SCRAMBLE_CHARS } from "./gsap";
+
+gsap.registerPlugin(ScrambleTextPlugin);
 
 interface IScrambleTextProps {
   /** Final text. Rendered server-side as-is so SEO/no-JS users see it. */

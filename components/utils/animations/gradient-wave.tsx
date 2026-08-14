@@ -22,7 +22,7 @@ import { useTheme } from "@/components/utils/theme/theme-provider";
      live contexts (~16) and silently kill the oldest, so leaking one per
      remount eventually blanks the background.
    - The palette is a module constant, not a prop with an inline default array.
-     A fresh `["#38bdf8", …]` literal on every render is a new identity, so an
+     A fresh palette literal on every render is a new identity, so an
      effect keyed on it would tear down and rebuild the entire GL context on
      every parent render.
    ──────────────────────────────────────────────────────────────────────────── */
@@ -699,15 +699,12 @@ void main() {
    background — these colours are the literal ground every piece of body copy
    sits on, and `--muted-foreground` is the text that gets closest to failing.
 
-   Light is capped at `#93cff3`: at a full sky-400 (#38bdf8) secondary text
-   scores ~3.7:1, under AA, where against #93cff3 it clears ~4.9:1.
-   Dark is capped at `#1a3454` for the same reason from the other side — the
-   dark `--muted-foreground` (#a1a1a1) holds ~4.8:1 there. The first pass at
-   this was near-flat #0a0a0a and read as no gradient at all.
+   These restrained ink, paper and coral tones support the logo system while
+   keeping the canvas quiet enough for body copy to remain legible.
    ──────────────────────────────────────────────────────────────────────────── */
 const PALETTES: Record<"light" | "dark", string[]> = {
-  light: ["#a8daf8", "#ffffff", "#93cff3", "#ffffff"],
-  dark: ["#0a0f18", "#14283f", "#0d1726", "#1a3454"],
+  light: ["#f0eee6", "#faf9f5", "#e3dacc", "#f6f6f4"],
+  dark: ["#141413", "#1f1f1e", "#0b0b0b", "#2d2d2b"],
 };
 
 /** Vertex-displacement settings — the shape of the sweep, shared by both themes. */

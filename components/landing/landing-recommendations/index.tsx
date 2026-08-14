@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, BadgeCheck, ShieldCheck } from "lucide-react";
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
-import { ScrambleText } from "@/components/utils/animations/scramble-text";
 import { SplitReveal } from "@/components/utils/animations/split-reveal";
 import { LinkedInIcon } from "@/components/utils/icons";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
@@ -18,7 +17,7 @@ export default function LandingRecommendations(props: { lang: TLocale }) {
           <div>
             <AnimateIn from="left" distance={40}>
               <p className="font-mono text-xs uppercase tracking-[0.25em] text-primary">
-                <ScrambleText text="// references.md" />
+                {lang === "km" ? "ការណែនាំ" : "Recommendations"}
               </p>
             </AnimateIn>
             <SplitReveal
@@ -80,7 +79,7 @@ export default function LandingRecommendations(props: { lang: TLocale }) {
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               href={`/${lang}/#contact`}
-              className="inline-flex min-h-11 items-center gap-2 btn-fx btn-fx-primary rounded bg-primary-fill px-4 font-mono text-xs font-medium text-primary-foreground"
+              className="inline-flex min-h-11 items-center gap-2 btn-fx btn-fx-primary rounded-lg bg-primary-fill px-4 font-mono text-xs font-medium text-primary-foreground"
             >
               {recommendations.requestReference}
               <ArrowRight aria-hidden data-btn-arrow className="size-3.5" />
@@ -89,7 +88,7 @@ export default function LandingRecommendations(props: { lang: TLocale }) {
               href={siteConfig.linkedin}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex min-h-11 items-center gap-2 rounded border border-border/60 px-4 font-mono text-xs text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
+              className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-border/60 px-4 font-mono text-xs text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
             >
               <LinkedInIcon aria-hidden className="size-3.5" />
               {recommendations.viewLinkedIn}

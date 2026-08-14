@@ -2,11 +2,13 @@
 
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { gsap, Flip } from "@/components/utils/animations/gsap";
+import { gsap } from "@/components/utils/animations/gsap";
+import { Flip } from "@/components/utils/animations/gsap-flip";
 import { BlogCover } from "@/components/blog/blog-cover";
 import type { IPost } from "@/utils/interfaces/blog";
 import type { ICategoryCount, ITagCount } from "@/utils/functions/blog";
 import type { TDictionary, TLocale } from "@/utils/i18n";
+import { Search, X } from "lucide-react";
 
 type TListPost = Omit<IPost, "content">;
 
@@ -30,7 +32,9 @@ export function BlogExplorer({
   /* -------------------------------- All States ------------------------------- */
   const [query, setQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [selectedFormat, setSelectedFormat] = useState<"all" | "note" | "article">("all");
+  const [selectedFormat, setSelectedFormat] = useState<
+    "all" | "note" | "article"
+  >("all");
 
   /* ---------------------------------- Utils --------------------------------- */
   const normalized = query.trim().toLowerCase();
@@ -115,12 +119,10 @@ export function BlogExplorer({
       {/* Search Section */}
       <div className="mb-8">
         <div className="relative">
-          <span
+          <Search
             aria-hidden
-            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 font-mono text-sm text-muted-foreground"
-          >
-            /
-          </span>
+            className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+          />
           <input
             type="search"
             value={query}
@@ -130,7 +132,7 @@ export function BlogExplorer({
             }}
             placeholder={labels.searchPlaceholder}
             aria-label={labels.searchLabel}
-            className="w-full rounded border border-border bg-card/50 py-2.5 pl-8 pr-24 font-mono text-sm text-foreground placeholder:text-muted-foreground/70 focus:border-primary/40 focus:outline-none focus:ring-1 focus:ring-primary/30 transition-colors"
+            className="w-full rounded-2xl border border-border bg-card/70 py-3 pl-11 pr-24 text-sm text-foreground shadow-sm transition-colors placeholder:text-muted-foreground/70 focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/15"
           />
           {query && (
             <button
@@ -139,26 +141,25 @@ export function BlogExplorer({
                 captureFlip();
                 setQuery("");
               }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 font-mono text-xs text-muted-foreground hover:text-primary transition-colors"
+              className="absolute right-3 top-1/2 inline-flex min-h-8 -translate-y-1/2 items-center gap-1 rounded-full px-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-primary"
             >
               {labels.clearSearch}
+              <X aria-hidden className="size-3.5" />
             </button>
           )}
         </div>
 
         {/* Result Count (only while searching) */}
         {normalized && (
-          <p className="mt-2 font-mono text-xs text-muted-foreground">
-            {countLabel}
-          </p>
+          <p className="mt-2 text-xs text-muted-foreground">{countLabel}</p>
         )}
       </div>
 
       {/* Category Filter Section */}
       {categories.length > 0 && (
         <div className="mb-10">
-          <p className="mb-3 font-mono text-xs uppercase tracking-[0.25em] text-muted-foreground">
-            <span className="text-primary">::</span> {labels.browseCategories}
+          <p className="mb-3 text-sm font-semibold text-foreground">
+            {labels.browseCategories}
           </p>
           <div className="flex flex-wrap gap-2">
             <button
@@ -169,12 +170,10 @@ export function BlogExplorer({
               }}
               aria-pressed={selectedCategory === "all"}
               aria-label={`${labels.allCategories} (${posts.length})`}
-              className="btn-fx btn-fx-chip rounded border border-border bg-card/60 px-3 py-1.5 font-mono text-xs text-muted-foreground hover:text-foreground aria-pressed:border-primary/50 aria-pressed:bg-primary/10 aria-pressed:text-primary"
+              className="btn-fx btn-fx-chip rounded-full border border-border bg-card/60 px-3.5 py-2 text-xs font-medium text-muted-foreground hover:text-foreground aria-pressed:border-primary/50 aria-pressed:bg-primary/10 aria-pressed:text-primary"
             >
               {labels.allCategories}
-              <span className="ml-1 text-muted-foreground">
-                {posts.length}
-              </span>
+              <span className="ml-1 text-muted-foreground">{posts.length}</span>
             </button>
             {categories.map((category) => (
               <button
@@ -186,7 +185,7 @@ export function BlogExplorer({
                 }}
                 aria-pressed={selectedCategory === category.category}
                 aria-label={`${category.category} (${category.count})`}
-                className="btn-fx btn-fx-chip rounded border border-border bg-card/60 px-3 py-1.5 font-mono text-xs text-muted-foreground hover:text-foreground aria-pressed:border-primary/50 aria-pressed:bg-primary/10 aria-pressed:text-primary"
+                className="btn-fx btn-fx-chip rounded-full border border-border bg-card/60 px-3.5 py-2 text-xs font-medium text-muted-foreground hover:text-foreground aria-pressed:border-primary/50 aria-pressed:bg-primary/10 aria-pressed:text-primary"
               >
                 {category.category}
                 <span className="ml-1 text-muted-foreground">
@@ -204,8 +203,8 @@ export function BlogExplorer({
           every post is the same format, so it never adds noise for nothing. */}
       {formatCounts.note > 0 && formatCounts.article > 0 && (
         <div className="mb-10">
-          <p className="mb-3 font-mono text-xs uppercase tracking-[0.25em] text-muted-foreground">
-            <span className="text-primary">::</span> {formatLabels.label}
+          <p className="mb-3 text-sm font-semibold text-foreground">
+            {formatLabels.label}
           </p>
           <div className="flex flex-wrap gap-2">
             {(["all", "article", "note"] as const).map((value) => (
@@ -217,7 +216,7 @@ export function BlogExplorer({
                   setSelectedFormat(value);
                 }}
                 aria-pressed={selectedFormat === value}
-                className="btn-fx btn-fx-chip rounded border border-border bg-card/60 px-3 py-1.5 font-mono text-xs text-muted-foreground hover:text-foreground aria-pressed:border-primary/50 aria-pressed:bg-primary/10 aria-pressed:text-primary"
+                className="btn-fx btn-fx-chip rounded-full border border-border bg-card/60 px-3.5 py-2 text-xs font-medium text-muted-foreground hover:text-foreground aria-pressed:border-primary/50 aria-pressed:bg-primary/10 aria-pressed:text-primary"
               >
                 {formatLabels[value]}
                 <span className="ml-1 text-muted-foreground">
@@ -233,12 +232,12 @@ export function BlogExplorer({
       {tags.length > 0 && (
         <div className="mb-12">
           <div className="mb-3 flex items-center justify-between gap-4">
-            <p className="font-mono text-xs uppercase tracking-[0.25em] text-muted-foreground">
-              <span className="text-primary">#</span> {labels.browseTags}
+            <p className="text-sm font-semibold text-foreground">
+              {labels.browseTags}
             </p>
             <Link
               href={`/${lang}/blog/tags`}
-              className="font-mono text-xs text-muted-foreground hover:text-primary transition-colors"
+              className="text-xs font-medium text-muted-foreground transition-colors hover:text-primary"
             >
               {labels.viewAllTags} →
             </Link>
@@ -248,12 +247,10 @@ export function BlogExplorer({
               <Link
                 key={t.slug}
                 href={`/${lang}/blog/tags/${t.slug}`}
-                className="rounded border border-primary/10 bg-primary/5 px-2 py-0.5 font-mono text-[10px] text-primary hover:border-primary/40 hover:bg-primary/10 transition-colors"
+                className="rounded-full border border-primary/15 bg-primary/5 px-3 py-1 text-xs font-medium text-primary transition-colors hover:border-primary/40 hover:bg-primary/10"
               >
                 #{t.tag}
-                <span className="ml-1 text-muted-foreground">
-                  {t.count}
-                </span>
+                <span className="ml-1 text-muted-foreground">{t.count}</span>
               </Link>
             ))}
           </div>
@@ -297,7 +294,7 @@ export function BlogExplorer({
                   {/* Meta line — date, reading time and category on one row.
                       The category used to be a second stacked pill; folding it
                       in here reclaims a whole line of vertical space. */}
-                  <div className="mb-3 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[11px] text-muted-foreground">
+                  <div className="mb-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
                     <time>
                       {new Date(post.date).toLocaleDateString(
                         lang === "km" ? "km-KH" : "en-US",
@@ -310,7 +307,7 @@ export function BlogExplorer({
                     <span>
                       {post.readingTime} {labels.minRead}
                     </span>
-                    <span className="ml-auto uppercase tracking-[0.16em] text-primary">
+                    <span className="ml-auto font-semibold text-primary">
                       {post.category}
                     </span>
                   </div>
@@ -329,13 +326,13 @@ export function BlogExplorer({
                     {post.tags.slice(0, 3).map((tag) => (
                       <span
                         key={tag}
-                        className="rounded border border-border/60 bg-muted/30 px-2 py-0.5 font-mono text-[10px] text-muted-foreground"
+                        className="rounded-full border border-border/60 bg-muted/30 px-2.5 py-1 text-[11px] text-muted-foreground"
                       >
                         #{tag}
                       </span>
                     ))}
                     {post.tags.length > 3 && (
-                      <span className="font-mono text-[10px] text-muted-foreground/70">
+                      <span className="text-[11px] text-muted-foreground/70">
                         +{post.tags.length - 3}
                       </span>
                     )}
@@ -346,10 +343,8 @@ export function BlogExplorer({
           ))}
         </div>
       ) : (
-        <div className="rounded border border-dashed border-border py-20 text-center">
-          <p className="font-mono text-sm text-muted-foreground">
-            {labels.noResults}
-          </p>
+        <div className="rounded-lg border border-dashed border-border py-20 text-center">
+          <p className="text-sm text-muted-foreground">{labels.noResults}</p>
         </div>
       )}
     </div>

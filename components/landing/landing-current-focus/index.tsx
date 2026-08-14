@@ -1,9 +1,8 @@
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
-import { ScrambleText } from "@/components/utils/animations/scramble-text";
 import { SplitReveal } from "@/components/utils/animations/split-reveal";
 import { StatusChip } from "@/components/utils/status-chip";
+import { WireframeDottedGlobe } from "@/components/ui/wireframe-dotted-globe";
 import { getDictionary, type TLocale } from "@/utils/i18n";
-import { Globe } from "./globe";
 
 export default function LandingCurrentFocus(props: { lang: TLocale }) {
   const { lang } = props;
@@ -25,7 +24,7 @@ export default function LandingCurrentFocus(props: { lang: TLocale }) {
           <div>
             <AnimateIn from="left" distance={40}>
               <p className="mb-1 font-mono text-xs uppercase tracking-[0.25em] text-primary">
-                <ScrambleText text="// now.json" />
+                {lang === "km" ? "បច្ចុប្បន្ន" : "Current focus"}
               </p>
             </AnimateIn>
 
@@ -44,21 +43,29 @@ export default function LandingCurrentFocus(props: { lang: TLocale }) {
             </AnimateIn>
 
             <AnimateIn from="up" delay={0.15}>
-              <div className="mt-7">
+              <blockquote className="mt-5 flex max-w-lg items-center gap-3">
+                <span
+                  aria-hidden
+                  className="h-8 w-px shrink-0 bg-primary/40"
+                />
+                <p className="text-sm font-medium italic leading-relaxed text-foreground/85">
+                  “{currentFocus.principle}”
+                </p>
+              </blockquote>
+            </AnimateIn>
+
+            <AnimateIn from="up" delay={0.2}>
+              <div className="mt-6">
                 <StatusChip>{currentFocus.status}</StatusChip>
               </div>
             </AnimateIn>
           </div>
 
           <AnimateIn from="right" delay={0.15} distance={40}>
-            <Globe
+            <WireframeDottedGlobe
               label={currentFocus.globe.pinLabel}
               description={currentFocus.globe.a11yLabel}
-              photo={{
-                src: "/bondeth-profile.webp",
-                caption: currentFocus.globe.photoCaption,
-              }}
-              className="mx-auto -my-6 max-w-95 lg:my-0 lg:max-w-110"
+              className="mx-auto max-w-100 lg:max-w-115"
             />
           </AnimateIn>
         </div>
@@ -72,7 +79,7 @@ export default function LandingCurrentFocus(props: { lang: TLocale }) {
           {currentFocus.items.map((item, index) => (
             <article
               key={item.label}
-              className="card-interactive group rounded border border-border/60 bg-background/70 p-4 sm:p-5"
+              className="card-interactive group rounded-lg border border-border/60 bg-background/70 p-4 sm:p-5"
             >
               <div className="mb-4 flex items-center justify-between">
                 <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">

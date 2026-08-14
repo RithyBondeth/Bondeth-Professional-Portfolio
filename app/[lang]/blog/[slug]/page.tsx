@@ -125,7 +125,6 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
       ? post
       : (allPosts.find((item) => item.relatedPost === post.slug) ?? null);
 
-
   /* ------------------------------ Structured Data ----------------------------- */
   const blogPostJsonLd = {
     "@context": "https://schema.org",
@@ -144,7 +143,11 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
-    <main id="main-content" tabIndex={-1} className="flex-1 pt-32 pb-16 sm:pb-24 px-6 bg-background font-sans">
+    <main
+      id="main-content"
+      tabIndex={-1}
+      className="flex-1 pt-32 pb-16 sm:pb-24 px-6 bg-background font-sans"
+    >
       <ReadingProgress backToTopLabel={dict.blog.backToTop} />
       <div className="mx-auto max-w-6xl">
         {/* Structured Data (JSON-LD) */}
@@ -159,7 +162,7 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
         <AnimateIn className="max-w-3xl">
           <Link
             href={`/${lang}/blog`}
-            className="text-xs font-mono text-muted-foreground hover:text-primary transition-colors flex items-center gap-2 mb-8 group"
+            className="group mb-8 flex min-h-10 w-fit items-center gap-2 rounded-full border border-border/60 bg-card px-4 text-xs font-medium text-muted-foreground transition-colors hover:border-primary/30 hover:text-primary"
           >
             <span className="group-hover:-translate-x-1 transition-transform">
               ←
@@ -174,13 +177,13 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
             and the meta reads as one quiet byline row underneath. */}
         <AnimateIn delay={0.05} className="max-w-3xl">
           <div className="mb-4 flex flex-wrap items-center gap-2">
-            <p className="font-mono text-xs uppercase tracking-[0.25em] text-primary">
+            <p className="text-sm font-semibold text-primary">
               {post.category}
             </p>
             {/* Notes announce themselves here rather than in the nav — it's the
                 only place the shorter format needs to be called out. */}
             {post.format === "note" && (
-              <span className="rounded border border-accent-note/40 bg-accent-note/10 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-accent-note">
+              <span className="rounded-full border border-accent-note/40 bg-accent-note/10 px-2.5 py-1 text-[11px] font-medium text-accent-note">
                 {post.series ? `#${post.series}` : dict.blog.formatNote}
               </span>
             )}
@@ -192,7 +195,7 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
             {post.excerpt}
           </p>
 
-          <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 border-y border-border/40 py-4 font-mono text-xs text-muted-foreground">
+          <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 border-y border-border/40 py-4 text-xs text-muted-foreground">
             <span className="text-foreground">
               {dict.blog.writtenBy}{" "}
               <span className="font-semibold">{siteConfig.name}</span>
@@ -281,7 +284,7 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
                   <Link
                     key={tag}
                     href={`/${lang}/blog/tags/${slugifyTag(tag)}`}
-                    className="inline-flex min-h-9 items-center rounded border border-border/50 bg-muted/30 px-3 py-1 font-mono text-[11px] text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
+                    className="inline-flex min-h-9 items-center rounded-full border border-border/50 bg-muted/30 px-3 py-1 text-[11px] text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
                   >
                     #{tag}
                   </Link>
@@ -303,9 +306,9 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
                   {olderPost ? (
                     <Link
                       href={`/${lang}/blog/${olderPost.slug}`}
-                      className="group rounded-lg border border-border/60 bg-card/40 p-4 transition-colors hover:border-primary/40"
+                      className="group rounded-2xl border border-border/60 bg-card/40 p-4 transition-colors hover:border-primary/40"
                     >
-                      <span className="mb-2 flex items-center gap-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                      <span className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
                         <ArrowLeft aria-hidden className="size-3.5" />
                         {dict.blog.previousPost}
                       </span>
@@ -319,9 +322,9 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
                   {newerPost && (
                     <Link
                       href={`/${lang}/blog/${newerPost.slug}`}
-                      className="group rounded-lg border border-border/60 bg-card/40 p-4 text-right transition-colors hover:border-primary/40"
+                      className="group rounded-2xl border border-border/60 bg-card/40 p-4 text-right transition-colors hover:border-primary/40"
                     >
-                      <span className="mb-2 flex items-center justify-end gap-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                      <span className="mb-2 flex items-center justify-end gap-2 text-xs font-medium text-muted-foreground">
                         {dict.blog.nextPost}
                         <ArrowRight aria-hidden className="size-3.5" />
                       </span>
@@ -336,8 +339,7 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
               {/* Related Posts Section */}
               {relatedPosts.length > 0 && (
                 <AnimateIn className="mb-10">
-                  <p className="text-primary font-mono text-xs tracking-[0.25em] uppercase mb-6">
-                    <span className="text-muted-foreground">{"//"}</span>{" "}
+                  <p className="mb-6 text-sm font-semibold text-foreground">
                     {dict.blog.relatedPosts}
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -351,7 +353,7 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
                             post={related}
                             className="aspect-2/1 mb-3 transition-colors group-hover:border-primary/40"
                           />
-                          <div className="flex items-center gap-2 text-[10px] font-mono text-muted-foreground mb-1.5">
+                          <div className="mb-1.5 flex items-center gap-2 text-[11px] text-muted-foreground">
                             <time>
                               {new Date(related.date).toLocaleDateString(
                                 lang === "km" ? "km-KH" : "en-US",
@@ -384,7 +386,7 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
 
               <Link
                 href={`/${lang}/blog`}
-                className="inline-flex items-center gap-2 px-6 py-2.5 bg-card border border-border hover:border-primary/40 rounded text-sm font-mono text-muted-foreground hover:text-foreground transition-all"
+                className="inline-flex min-h-11 items-center gap-2 rounded-full border border-border bg-card px-5 text-sm font-semibold text-muted-foreground transition-all hover:border-primary/40 hover:text-foreground"
               >
                 ← {dict.blog.viewMore}
               </Link>

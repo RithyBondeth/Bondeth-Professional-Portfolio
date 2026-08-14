@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { gsap, ScrollTrigger } from "./gsap";
+import { gsap, ScrollTrigger } from "./gsap-scroll";
 
 /**
  * Skews its content in proportion to scroll velocity — fast scrolling makes

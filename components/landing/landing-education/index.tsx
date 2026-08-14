@@ -1,5 +1,4 @@
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
-import { ScrambleText } from "@/components/utils/animations/scramble-text";
 import { SplitReveal } from "@/components/utils/animations/split-reveal";
 import { getDictionary, type TLocale } from "@/utils/i18n";
 import { getEducations } from "@/utils/i18n/content";
@@ -17,7 +16,7 @@ export default function LandingEducation(props: { lang: TLocale }) {
         {/* Heading Section */}
         <AnimateIn from="zoom-in">
           <p className="text-primary font-mono text-xs tracking-[0.25em] uppercase mb-1">
-            <ScrambleText text="// education.md" />
+            {lang === "km" ? "ការសិក្សា" : "Education"}
           </p>
         </AnimateIn>
 
@@ -40,14 +39,14 @@ export default function LandingEducation(props: { lang: TLocale }) {
           {educations.map((edu) => (
             <div
               key={edu.degree}
-              className="card-interactive group rounded border border-border/60 bg-card overflow-hidden"
+              className="card-interactive group overflow-hidden rounded-lg border border-border/60 bg-card"
             >
               {/* Header */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-6 py-5 border-b border-border/50">
                 <div className="flex items-start gap-4">
                   <div
                     data-card-icon
-                    className="mt-0.5 shrink-0 w-9 h-9 rounded border border-primary/20 bg-primary/8 flex items-center justify-center"
+                    className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-primary/20 bg-primary/8"
                   >
                     <GraduationCapIcon className="w-4 h-4 text-primary" />
                   </div>
@@ -61,7 +60,7 @@ export default function LandingEducation(props: { lang: TLocale }) {
                   </div>
                 </div>
                 <div className="sm:text-right shrink-0 pl-13 sm:pl-0">
-                  <span className="inline-block text-muted-foreground text-xs font-mono bg-muted/50 border border-border/50 px-3 py-1 rounded">
+                  <span className="inline-block text-muted-foreground text-xs font-mono bg-muted/50 border border-border/50 px-3 py-1 rounded-lg">
                     {edu.period}
                   </span>
                   <p className="text-muted-foreground text-[11px] mt-1.5 flex items-center gap-1 sm:justify-end">
@@ -169,4 +168,3 @@ function LocationPinIcon({ className }: { className?: string }) {
     </svg>
   );
 }
-

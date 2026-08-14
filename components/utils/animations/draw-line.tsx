@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { gsap } from "./gsap";
+import { gsap } from "./gsap-scroll";
 
 /**
  * A line that draws itself as its surrounding container scrolls through the

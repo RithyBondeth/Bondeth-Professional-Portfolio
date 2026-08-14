@@ -62,7 +62,7 @@ function ContentsLinks(
             href={`#${item.id}`}
             data-toc-id={item.id}
             aria-current={activeId === item.id ? "true" : undefined}
-            className={`block rounded py-1.5 text-sm leading-snug transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 ${
+            className={`block rounded-lg py-1.5 text-sm leading-snug transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 ${
               item.level === 3 ? "pl-4" : ""
             } ${
               activeId === item.id

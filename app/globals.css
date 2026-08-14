@@ -3,6 +3,19 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+/* Only the Khmer subset is registered under this family. Giving it a distinct
+   name prevents Fontsource's optional Latin face from claiming English text
+   before the stack can fall through to Ubuntu. */
+@font-face {
+  font-family: "Kantumruy Pro Khmer";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 700;
+  src: url("../node_modules/@fontsource-variable/kantumruy-pro/files/kantumruy-pro-khmer-wght-normal.woff2")
+    format("woff2-variations");
+  unicode-range: U+1780-17FF, U+19E0-19FF, U+200C-200D, U+25CC;
+}
+
 /* The theme lives in `data-theme` on <html>, not a class: the root layout
    renders `className` on <html>, so a theme *class* set by the pre-hydration
    script gets wiped when React reconciles that className during hydration —
@@ -13,9 +26,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-serif);
-  --font-mono: var(--font-mono);
-  --font-heading: var(--font-serif);
+  --font-sans: var(--font-ui);
+  --font-mono: var(--font-ui);
+  --font-heading: var(--font-ui);
   /* Always true monospace, never remapped by locale — for code, the RB mark,
      and terminal-style covers, which are Latin and must look identical in
      every language. This is the ONLY family that stays monospace now that the
@@ -48,6 +61,7 @@
   --color-primary-foreground: var(--primary-foreground);
   --color-primary-fill: var(--primary-fill);
   --color-primary: var(--primary);
+  --color-brand-pixel: var(--brand-pixel);
   --color-accent-note: var(--accent-note);
   --color-status-success: var(--status-success);
   --color-status-success-surface: var(--status-success-surface);
@@ -59,6 +73,10 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  /* Portfolio radius system: `lg` is the shared 8px radius for cards,
+     controls, media, and loading states; `2xl` is reserved for large floating
+     shells such as the navbar, hero portrait, and full-width marquees.
+     `full` remains exclusive to pills, avatars, dots, and round icon buttons. */
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -76,12 +94,11 @@
      in light chrome even under [data-theme="dark"], which is exactly the
      browser-decides-for-you look the rest of this file avoids. */
   color-scheme: light;
-  /* Noto Serif (--font-serif) is the English text font. --font-mono drives
-     every terminal-style accent (nav, buttons, chips, eyebrows) as well as the
-     page's base text, so it's remapped to Noto Serif here too — everything
-     except code now reads as serif. The html[lang="km"] override below swaps in
-     Kantumruy Pro for Khmer; neither remap touches --font-code. */
-  --font-mono: var(--font-serif), ui-serif, Georgia, serif;
+  /* Ubuntu is the shared UI and reading face. The Khmer locale prepends a
+     unicode-ranged Kantumruy Pro face, while code keeps the separate JetBrains
+     Mono stack in --font-code. */
+  --font-ui: var(--font-ubuntu), Ubuntu, ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-ui);
   /* Near-monochrome, but no longer *pure* grayscale: every neutral carries a
      few points of blue so the ramp sits with the ribbon-field background
      instead of next to it. Skill logos and the profile.ts code block keep their
@@ -99,12 +116,16 @@
      what AAA asks for, and the excess is what makes long reading on this page
      feel harsh. #16181d on #f8f9fb is ~16:1, still far above AAA (7:1) for
      every size, and noticeably calmer. */
-  --background: #f8f9fb;
-  --foreground: #16181d;
-  --card: #ffffff;
-  --card-foreground: #16181d;
-  --popover: #ffffff;
-  --popover-foreground: #16181d;
+  /* Pixel B identity: warm paper, near-black ink and a vivid coral active
+     pixel. The vivid brand pixel is decorative; accessible text and controls
+     use the darker primary pair below. */
+  --brand-pixel: #d97757;
+  --background: #faf9f5;
+  --foreground: #141413;
+  --card: #f6f6f4;
+  --card-foreground: #141413;
+  --popover: #f6f6f4;
+  --popover-foreground: #141413;
   /* --primary is the ACCENT, not the ink. An audit of its ~176 `text-primary`
      uses found them to be eyebrows, mono labels, chips and link-hover states —
      never body copy or headings, which take --foreground. So it can carry the
@@ -127,8 +148,8 @@
      the band it is named after would land near 1.2:1 and vanish. #08375d sits
      at L 0.0357 and holds 4.7:1 there, 12.0:1 over white, and 11.4:1 the other
      way for --primary-foreground on a filled button. */
-  --primary: #08375d;
-  --primary-foreground: #f8f9fb;
+  --primary: #9c4a21;
+  --primary-foreground: #141413;
   /* The FILLED-surface half of the accent, split out from --primary.
 
      --primary is capped at L 0.040 because it has to survive as bare 11px text
@@ -141,22 +162,22 @@
      where there is a fill under `text-primary-foreground` — the `btn-fx-primary`
      set. Hairlines, carets, timeline dots and progress bars stay on --primary,
      because those sit directly on the field and #0d6cb0 scores 2.0:1 there. */
-  --primary-fill: #0d6cb0;
-  --secondary: #eef0f5;
-  --secondary-foreground: #16181d;
-  --muted: #eef0f5;
+  --primary-fill: #d97757;
+  --secondary: #f0eee6;
+  --secondary-foreground: #141413;
+  --muted: #f0eee6;
   /* Surface-secondary copy gets a genuine hierarchy step from body ink while
      retaining 5.7:1 against the page neutral. Text that sits directly on the
      saturated ribbon field uses --field-muted-foreground instead; one token
      cannot be both quiet on white and AA-safe on the darkest ribbon. */
-  --muted-foreground: #5b6475;
-  --field-muted-foreground: #303546;
+  --muted-foreground: #7a786f;
+  --field-muted-foreground: #52514e;
   /* The hover/active partner of --primary, and in the same sky family — the
      two reading as different families was the old bug, not the ratio. One step
      lighter (L 0.089 vs 0.036) so the hover move is visible without leaving the
      hue. */
-  --accent: #0f5590;
-  --accent-foreground: #f8f9fb;
+  --accent: #bf4d43;
+  --accent-foreground: #faf9f5;
   --destructive: oklch(0.577 0.245 27.325);
   /* Semantic state text. These are deliberately darker than the decorative
      Tailwind 400/500 shades because they are used for 9–12px labels on light
@@ -164,7 +185,7 @@
   /* The #AIIn60Seconds short-form marker. Indigo reads as a sibling of the
      primary rather than a state colour, so a note badge never looks like a
      success or warning pill. Darkened here for 10px labels on white. */
-  --accent-note: #4c56c0;
+  --accent-note: #bf4d43;
   --status-success: #047857;
   --status-success-surface: #ecfdf5;
   --status-warning: #92400e;
@@ -180,23 +201,23 @@
      Shifted a few points violet (#9aa8bd → #9aa4c0) to sit with the ultramarine
      and iris bands the field now puts behind these cards; the old value read
      faintly green against them. Still ~2.5:1 on a white card. */
-  --border: #9aa4c0;
-  --input: #eceef4;
-  --ring: #08375d;
+  --border: #e3dacc;
+  --input: #dedcd1;
+  --ring: #d97757;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
   --radius: 0.5rem;
-  --sidebar: #ffffff;
-  --sidebar-foreground: #16181d;
-  --sidebar-primary: #08375d;
-  --sidebar-primary-foreground: #f8f9fb;
-  --sidebar-accent: #eef0f5;
-  --sidebar-accent-foreground: #16181d;
-  --sidebar-border: #9aa4c0;
-  --sidebar-ring: #08375d;
+  --sidebar: #f6f6f4;
+  --sidebar-foreground: #141413;
+  --sidebar-primary: #9c4a21;
+  --sidebar-primary-foreground: #faf9f5;
+  --sidebar-accent: #f0eee6;
+  --sidebar-accent-foreground: #141413;
+  --sidebar-border: #e3dacc;
+  --sidebar-ring: #d97757;
 
   /* Card hover glow. Light mode lifts a card off the page with a soft *dark*
      shadow — the white glow used in dark mode is invisible on a near-white
@@ -207,17 +228,16 @@
      background reads as grey dirt under the card. This is the same tint the
      editor windows use (--editor-shadow); the two disagreed for a while, so
      hovering a card went grey while hovering a code window went blue. */
-  --card-glow:
-    0 12px 40px rgb(8 55 93 / 0.14), 0 2px 8px rgb(8 55 93 / 0.08);
-  --card-glow-sm: 0 0 0 1px rgb(8 55 93 / 0.05);
-  --card-sheen: rgb(8 55 93 / 0.07);
+  --card-glow: 0 12px 40px rgb(67 42 32 / 0.13), 0 2px 8px rgb(67 42 32 / 0.07);
+  --card-glow-sm: 0 0 0 1px rgb(217 119 87 / 0.08);
+  --card-sheen: rgb(217 119 87 / 0.07);
 
   /* Button sheen is the INVERSE of the card sheen: a filled primary button is
      light-on-blue here, so its sheen has to be white to read at all. --btn-wipe
      tints outline buttons, which sit on the page background, so it follows
      --primary instead. */
   --btn-sheen: rgb(255 255 255 / 0.2);
-  --btn-wipe: rgb(8 55 93 / 0.07);
+  --btn-wipe: rgb(217 119 87 / 0.08);
 
   /* ---- Editor windows (see the .editor-* classes further down) ---- */
   /* Translucent rather than solid, and deliberately WITHOUT backdrop-filter:
@@ -225,16 +245,16 @@
      letting them tint straight through reads the same as a frosted panel while
      costing nothing. A real backdrop blur over a layer that repaints 24 times a
      second would mean a second full-size blur pass every frame. */
-  --editor-bg: rgb(255 255 255 / 0.78);
-  --editor-chrome: rgb(255 255 255 / 0.5);
-  --editor-border: rgb(22 24 29 / 0.1);
-  --editor-rule: rgb(22 24 29 / 0.07);
-  --editor-gutter: #aab2c2;
-  --editor-label: #767f91;
+  --editor-bg: rgb(246 246 244 / 0.82);
+  --editor-chrome: rgb(246 246 244 / 0.58);
+  --editor-border: rgb(20 20 19 / 0.12);
+  --editor-rule: rgb(20 20 19 / 0.08);
+  --editor-gutter: #b4afa6;
+  --editor-label: #77736d;
   /* Blue-tinted, so the window casts a shadow that belongs to the background it
      is sitting on rather than a neutral grey one dropped on top of it. */
   --editor-shadow:
-    0 24px 60px rgb(8 55 93 / 0.14), 0 2px 8px rgb(8 55 93 / 0.08);
+    0 24px 60px rgb(67 42 32 / 0.14), 0 2px 8px rgb(67 42 32 / 0.08);
 
   /* Syntax. The dark-mode set (violet-400 / sky-300 / emerald-400) is tuned for
      near-black and sits at 2–3:1 on a light panel; these are the same hues
@@ -253,13 +273,13 @@
   --technical-surface-elevated: #07090e;
   --technical-foreground: #f8f9fb;
   --technical-muted-foreground: #94a3b8;
-  --technical-primary: #7dd3fc;
-  --technical-border: #2b3a4d;
+  --technical-primary: #d97757;
+  --technical-border: #4a3b37;
   --technical-success: #34d399;
   --technical-warning: #fcd34d;
   --technical-danger: #f87171;
-  --inline-code-bg: #e8edf4;
-  --inline-code-foreground: #08375d;
+  --inline-code-bg: #f0eee6;
+  --inline-code-foreground: #9c4a21;
 }
 
 /* ── Dark mode ── */
@@ -270,89 +290,89 @@
      gradient-wave does, because a pure-grey card (#141414) on a navy ground
      reads as dead grey exactly the way a pure-grey one did on sky blue.
      Skill logos and the profile.ts code block keep their own colours. */
-  --background: #0a0f18;
-  --foreground: #fafafa;
-  /* A visible surface step from #0a0f18 without turning cards into grey slabs. */
-  --card: #142131;
-  --card-foreground: #fafafa;
-  --popover: #142131;
-  --popover-foreground: #fafafa;
+  --brand-pixel: #d97757;
+  --background: #141413;
+  --foreground: #faf9f5;
+  /* A warm surface step from the ink background. */
+  --card: #1f1f1e;
+  --card-foreground: #faf9f5;
+  --popover: #1f1f1e;
+  --popover-foreground: #faf9f5;
   /* The accent, inverted — light indigo against the navy, the way #2e2a75 is
      deep sky against the pale — the light-theme accent inverted, same hue both
      themes. Holds 7.6:1 as text over the brightest dark band (#241A5E) and
      ~13:1 the other way for text on a filled button. */
-  --primary: #7dd3fc;
-  --primary-foreground: #08121c;
+  --primary: #d97757;
+  --primary-foreground: #141413;
   /* Dark mode needs no split: a filled button here is already light-on-dark, so
      --primary is the fill and it is a bright sky. Kept as its own token anyway
      so the call sites can say `bg-primary-fill` in both themes. */
-  --primary-fill: #7dd3fc;
-  --secondary: #141d28;
-  --secondary-foreground: #fafafa;
-  --muted: #141d28;
-  --muted-foreground: #9aa4b4;
-  --field-muted-foreground: #a1a1a1;
-  --accent: #a5e0fd;
-  --accent-foreground: #08121c;
+  --primary-fill: #d97757;
+  --secondary: #2d2d2b;
+  --secondary-foreground: #faf9f5;
+  --muted: #2d2d2b;
+  --muted-foreground: #b0aea5;
+  --field-muted-foreground: #e3dacc;
+  --accent: #d97757;
+  --accent-foreground: #141413;
   --destructive: oklch(0.704 0.191 22.216);
-  --accent-note: #94a2ff;
+  --accent-note: #d97757;
   --status-success: #34d399;
   --status-success-surface: #052e16;
   --status-warning: #fcd34d;
   --status-danger: #f87171;
-  --border: #2b3a4d;
-  --input: #16202c;
-  --ring: #7dd3fc;
+  --border: #52514e;
+  --input: #2d2d2b;
+  --ring: #d97757;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --sidebar: #0a0f18;
-  --sidebar-foreground: #a1a1a1;
-  --sidebar-primary: #7dd3fc;
-  --sidebar-primary-foreground: #08121c;
-  --sidebar-accent: #141d28;
-  --sidebar-accent-foreground: #fafafa;
-  --sidebar-border: #2b3a4d;
-  --sidebar-ring: #7dd3fc;
+  --sidebar: #141413;
+  --sidebar-foreground: #e3dacc;
+  --sidebar-primary: #d97757;
+  --sidebar-primary-foreground: #141413;
+  --sidebar-accent: #2d2d2b;
+  --sidebar-accent-foreground: #faf9f5;
+  --sidebar-border: #52514e;
+  --sidebar-ring: #d97757;
 
   /* Dark mode glows OUTWARD rather than casting a shadow — a dark shadow is
      invisible against a near-black ground. Tinted to the same sky the accent
      uses, so a hovered card looks lit by the background rather than by a
      colourless lamp. */
   --card-glow:
-    0 12px 40px rgb(125 211 252 / 0.1), 0 0 14px rgb(125 211 252 / 0.06);
-  --card-glow-sm: 0 0 0 1px rgb(125 211 252 / 0.08);
-  --card-sheen: rgb(125 211 252 / 0.1);
+    0 12px 40px rgb(217 119 87 / 0.11), 0 0 14px rgb(217 119 87 / 0.07);
+  --card-glow-sm: 0 0 0 1px rgb(217 119 87 / 0.1);
+  --card-sheen: rgb(217 119 87 / 0.1);
 
   /* Inverted again: dark mode's primary button is light-on-dark, so the sheen
      that sweeps across it must be dark. */
-  --btn-sheen: rgb(8 18 28 / 0.16);
-  --btn-wipe: rgb(125 211 252 / 0.1);
+  --btn-sheen: rgb(20 20 19 / 0.18);
+  --btn-wipe: rgb(217 119 87 / 0.1);
 
   /* ---- Editor windows ---- */
   /* Near-black with a few points of blue rather than the #000 these windows
      used to be, so they sit with the dark-mode wave instead of punching a hole
      through it. Kept opaque: the ribbons are dim enough here that letting them
      through would only muddy the code. */
-  --editor-bg: #08111a;
+  --editor-bg: #1b1a19;
   --editor-chrome: rgb(255 255 255 / 0.03);
-  --editor-border: #1e2b3a;
+  --editor-border: #4a4540;
   --editor-rule: rgb(255 255 255 / 0.07);
-  --editor-gutter: #3c4a5d;
-  --editor-label: #79839a;
-  --editor-shadow:
-    0 24px 60px rgb(0 0 0 / 0.5), 0 2px 8px rgb(0 0 0 / 0.35);
+  --editor-gutter: #5c5751;
+  --editor-label: #9b958c;
+  --editor-shadow: 0 24px 60px rgb(0 0 0 / 0.5), 0 2px 8px rgb(0 0 0 / 0.35);
 
   --code-comment: #6b7488;
   --code-keyword: #a78bfa;
-  --code-ident: #7dd3fc;
+  --code-ident: #d97757;
   --code-string: #34d399;
   --code-number: #fcd34d;
   --code-punct: #94a3b8;
-  --inline-code-bg: #07090e;
-  --inline-code-foreground: #7dd3fc;
+  --inline-code-bg: #111110;
+  --inline-code-foreground: #d97757;
 }
 
 @layer base {
@@ -365,7 +385,6 @@
   }
   html {
     @apply font-mono;
-    scroll-behavior: smooth;
     overflow-x: clip;
   }
   /* Editorial type pairing: Noto Serif for headings and prose, true monospace
@@ -398,12 +417,34 @@
   }
 }
 
-/* ── Khmer locale: JetBrains Mono / Noto Serif have no Khmer glyphs, so put
-   Kantumruy Pro first in every stack when the page language is Khmer.
-   Kept OUTSIDE @layer so it can override next/font's unlayered variables. ── */
+/* ── Khmer locale: put the unicode-ranged Khmer face first, then Ubuntu.
+   Fontsource's Khmer declaration is restricted to U+1780–17FF / U+19E0–19FF,
+   so mixed English text now falls through to the exact same Ubuntu face used
+   by /en instead of being claimed by Kantumruy's Latin glyphs. ── */
 html[lang="km"] {
-  --font-mono: var(--font-khmer), "JetBrains Mono", ui-monospace, monospace;
-  --font-serif: var(--font-khmer), ui-serif, serif;
+  --font-ui:
+    "Kantumruy Pro Khmer", var(--font-ubuntu), Ubuntu, ui-sans-serif, system-ui,
+    sans-serif;
+  --font-serif: var(--font-ui);
+}
+
+/* Bilingual surfaces (notably 404/error states) can contain Khmer while the
+   document itself is English. A semantic `lang="km"` boundary must therefore
+   select Kantumruy directly instead of relying only on html[lang="km"]. Code
+   keeps its dedicated JetBrains stack even when shown inside Khmer content. */
+html :lang(km):not(pre, code, kbd, samp) {
+  font-family:
+    "Kantumruy Pro Khmer", var(--font-ubuntu), Ubuntu, ui-sans-serif, system-ui,
+    sans-serif;
+  letter-spacing: normal;
+}
+
+/* Khmer glyphs are not case-based and should not inherit the wide tracking
+   used to give Latin uppercase eyebrows their editorial rhythm. `:lang()`
+   respects a closer `lang="en"`, so explicitly English UI can keep its normal
+   uppercase treatment inside the Khmer route. */
+html[lang="km"] :lang(km).uppercase {
+  letter-spacing: normal;
 }
 
 /* ── Khmer headings need a floor on line-height, or the glyphs get sliced.
@@ -424,11 +465,11 @@ html[lang="km"] {
    Khmer headline.
 
    1.65 is the 1.596 floor plus margin for strings not currently on the page
-   (blog headings, future copy). Latin-only headings in this locale just read a
-   little looser, which is the correct trade — Khmer is the reason this locale
-   exists. Unlayered so it beats Tailwind's `leading-*` utilities, which sit in
+   (blog headings, future copy). Explicitly language-labelled English headings
+   are excluded so their tighter Ubuntu display metrics remain intact.
+   Unlayered so it beats Tailwind's `leading-*` utilities, which sit in
    @layer utilities. ── */
-html[lang="km"] :is(h1, h2, h3, h4, h5, h6) {
+html[lang="km"] :is(h1, h2, h3, h4, h5, h6):lang(km) {
   line-height: 1.65;
 }
 
@@ -533,37 +574,108 @@ html[lang="km"] :is(h1, h2, h3, h4, h5, h6) {
 
 /* ── Cursor blink (typewriter in Hero, RB logo) ── */
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+/* ── Navigation progress signal ──────────────────────────────────────────────
+   Clip-driven instead of width-driven so scrolling never asks the page
+   to lay out the navigation again. The repeating blocks echo the Pixel B mark,
+   while the bright leading edge makes progress readable at a glance. */
+.nav-progress-signal {
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--primary-fill) 0 7px,
+    transparent 7px 10px
+  );
+  box-shadow: 6px 0 12px
+    color-mix(in oklab, var(--primary-fill) 65%, transparent);
+  will-change: clip-path;
+}
+
+/* The hero portrait gets a restrained scanner pass on hover. It is deliberately
+   interaction-led rather than perpetual, so the page stays calm while reading. */
+.portrait-scan {
+  position: absolute;
+  inset-inline: 0;
+  top: -18%;
+  height: 18%;
+  opacity: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    color-mix(in oklab, var(--primary-fill) 22%, transparent),
+    transparent
+  );
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .group:hover .portrait-scan {
+    animation: portrait-scan 1.05s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+
+@keyframes portrait-scan {
+  0% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  18% {
+    opacity: 1;
+  }
+  82% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(650%);
+  }
 }
 
 /* ── Marquee keyframes (referenced by inline styles in MarqueeTrack) ── */
 @keyframes marquee-rtl {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 @keyframes marquee-ltr {
-  from { transform: translateX(-50%); }
-  to   { transform: translateX(0); }
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
 }
 
 /* ── Glitch: RGB-split drop-shadow bursts on the hero name ── */
 @keyframes glitch {
-  0%, 74%, 80%, 100% {
+  0%,
+  74%,
+  80%,
+  100% {
     filter: none;
     transform: none;
   }
   75% {
-    filter: drop-shadow(-3px 0 #06d8f4) drop-shadow(3px 0 #b295ff);
+    filter: drop-shadow(-3px 0 #d97757) drop-shadow(3px 0 #e3dacc);
     transform: translateX(-2px);
   }
   76% {
-    filter: drop-shadow(3px 0 #06d8f4) drop-shadow(-3px 0 #b295ff);
+    filter: drop-shadow(3px 0 #d97757) drop-shadow(-3px 0 #e3dacc);
     transform: translateX(2px) skewX(-1deg);
   }
   77% {
-    filter: drop-shadow(-1px 0 #06d8f4);
+    filter: drop-shadow(-1px 0 #d97757);
     transform: translateX(-1px);
   }
   78% {
@@ -574,26 +686,31 @@ html[lang="km"] :is(h1, h2, h3, h4, h5, h6) {
     filter: none;
     transform: none;
   }
-  90%, 93%, 100% {
+  90%,
+  93%,
+  100% {
     filter: none;
     transform: none;
   }
   91% {
-    filter: drop-shadow(-2px 0 rgba(6,216,244,0.8)) drop-shadow(2px 0 rgba(178,149,255,0.6));
+    filter: drop-shadow(-2px 0 rgba(6, 216, 244, 0.8))
+      drop-shadow(2px 0 rgba(178, 149, 255, 0.6));
     transform: translateX(-1px) skewX(-0.5deg);
   }
   92% {
-    filter: drop-shadow(1px 0 rgba(178,149,255,0.8));
+    filter: drop-shadow(1px 0 rgba(178, 149, 255, 0.8));
     transform: translateX(1px);
   }
 }
 
 /* Typewriter caret for the About panel's animated code backdrop. */
 @keyframes type-caret {
-  0%, 45% {
+  0%,
+  45% {
     opacity: 1;
   }
-  50%, 95% {
+  50%,
+  95% {
     opacity: 0;
   }
 }
@@ -640,13 +757,22 @@ html[lang="km"] :is(h1, h2, h3, h4, h5, h6) {
 }
 
 @keyframes grid-drift {
-  from { transform: skewY(12deg) translateY(0); }
-  to   { transform: skewY(12deg) translateY(44px); }
+  from {
+    transform: skewY(12deg) translateY(0);
+  }
+  to {
+    transform: skewY(12deg) translateY(44px);
+  }
 }
 
 @keyframes grid-cell-breathe {
-  0%, 100% { opacity: 0.1; }
-  50%      { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0.1;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 /* Reduced motion holds the lattice still and every cell fully painted — which
@@ -664,17 +790,37 @@ html[lang="km"] :is(h1, h2, h3, h4, h5, h6) {
     animation: grid-cell-breathe 6s ease-in-out infinite;
   }
 
-  .grid-breathe > svg > rect:nth-child(4n + 1) { animation-duration: 4s; }
-  .grid-breathe > svg > rect:nth-child(4n + 2) { animation-duration: 5.5s; }
-  .grid-breathe > svg > rect:nth-child(4n + 3) { animation-duration: 7s; }
-  .grid-breathe > svg > rect:nth-child(4n)     { animation-duration: 9s; }
+  .grid-breathe > svg > rect:nth-child(4n + 1) {
+    animation-duration: 4s;
+  }
+  .grid-breathe > svg > rect:nth-child(4n + 2) {
+    animation-duration: 5.5s;
+  }
+  .grid-breathe > svg > rect:nth-child(4n + 3) {
+    animation-duration: 7s;
+  }
+  .grid-breathe > svg > rect:nth-child(4n) {
+    animation-duration: 9s;
+  }
 
-  .grid-breathe > svg > rect:nth-child(6n + 1) { animation-delay: 0s; }
-  .grid-breathe > svg > rect:nth-child(6n + 2) { animation-delay: -1.3s; }
-  .grid-breathe > svg > rect:nth-child(6n + 3) { animation-delay: -2.6s; }
-  .grid-breathe > svg > rect:nth-child(6n + 4) { animation-delay: -3.9s; }
-  .grid-breathe > svg > rect:nth-child(6n + 5) { animation-delay: -5.2s; }
-  .grid-breathe > svg > rect:nth-child(6n)     { animation-delay: -6.5s; }
+  .grid-breathe > svg > rect:nth-child(6n + 1) {
+    animation-delay: 0s;
+  }
+  .grid-breathe > svg > rect:nth-child(6n + 2) {
+    animation-delay: -1.3s;
+  }
+  .grid-breathe > svg > rect:nth-child(6n + 3) {
+    animation-delay: -2.6s;
+  }
+  .grid-breathe > svg > rect:nth-child(6n + 4) {
+    animation-delay: -3.9s;
+  }
+  .grid-breathe > svg > rect:nth-child(6n + 5) {
+    animation-delay: -5.2s;
+  }
+  .grid-breathe > svg > rect:nth-child(6n) {
+    animation-delay: -6.5s;
+  }
 }
 
 /* ── Hero name gradient — lives on the whole h1 (no-JS / reduced-motion
@@ -693,10 +839,10 @@ html[lang="km"] :is(h1, h2, h3, h4, h5, h6) {
 .hero-char {
   background-image: linear-gradient(
     125deg,
-    #16181d,
-    #454a57 38%,
-    #22252c 70%,
-    #5a6070
+    #141413,
+    #8f3024 38%,
+    #2a2927 70%,
+    #d97757
   );
   -webkit-background-clip: text;
   background-clip: text;
@@ -706,10 +852,10 @@ html[lang="km"] :is(h1, h2, h3, h4, h5, h6) {
 [data-theme="dark"] .hero-char {
   background-image: linear-gradient(
     125deg,
-    #ffffff,
-    #c8c8c8 38%,
-    #f0f0f0 70%,
-    #a8a8a8
+    #faf9f5,
+    #d97757 38%,
+    #f4e5dc 70%,
+    #bf4d43
   );
 }
 
@@ -817,12 +963,24 @@ html[lang="km"] :is(h1, h2, h3, h4, h5, h6) {
   color: var(--editor-label);
 }
 
-.tok-comment { color: var(--code-comment); }
-.tok-keyword { color: var(--code-keyword); }
-.tok-ident   { color: var(--code-ident); }
-.tok-string  { color: var(--code-string); }
-.tok-number  { color: var(--code-number); }
-.tok-punct   { color: var(--code-punct); }
+.tok-comment {
+  color: var(--code-comment);
+}
+.tok-keyword {
+  color: var(--code-keyword);
+}
+.tok-ident {
+  color: var(--code-ident);
+}
+.tok-string {
+  color: var(--code-string);
+}
+.tok-number {
+  color: var(--code-number);
+}
+.tok-punct {
+  color: var(--code-punct);
+}
 
 /* Dark technical media is theme-independent. Rebind the semantic palette at
    the panel boundary so ordinary utilities such as text-foreground,
@@ -1002,25 +1160,26 @@ html[lang="km"] :is(h1, h2, h3, h4, h5, h6) {
    proficiency dots, the hover glow. It resolves per theme from the inline
    `--brand-light` / `--brand-dark`. ── */
 .skill-badge {
-  --card-lift: -2px;
   --brand: var(--brand-light);
-  --card-glow:
-    0 8px 24px -10px color-mix(in oklab, var(--brand) 50%, transparent),
-    0 0 0 1px color-mix(in oklab, var(--brand) 35%, transparent);
-
   position: relative;
   isolation: isolate;
-  overflow: hidden;
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  gap: 0.625rem;
-  padding: 0.875rem 1.25rem;
-  border-radius: var(--radius-md);
-  border: 1px solid color-mix(in oklab, var(--border) 50%, transparent);
-  background-color: var(--card);
+  gap: 0.75rem;
+  min-height: 3.75rem;
+  padding: 0.625rem 1.1rem 0.625rem 0.625rem;
+  border-radius: 1rem;
+  border: 1px solid color-mix(in oklab, var(--border) 42%, transparent);
+  background: color-mix(in oklab, var(--card) 88%, transparent);
+  box-shadow: 0 6px 22px rgb(0 0 0 / 0.045);
   white-space: nowrap;
   user-select: none;
+  transition:
+    transform 280ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-color 280ms,
+    background-color 280ms,
+    box-shadow 280ms;
 }
 
 [data-theme="dark"] .skill-badge {
@@ -1054,64 +1213,65 @@ html[lang="km"] :is(h1, h2, h3, h4, h5, h6) {
   }
 }
 
-.skill-badge-body {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
+.skill-badge-icon-shell {
+  display: grid;
+  width: 2.45rem;
+  height: 2.45rem;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 0.72rem;
+  color: var(--brand);
+  background: color-mix(in oklab, var(--brand) 10%, var(--card));
+  transition:
+    transform 280ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    background-color 280ms;
 }
 
 .skill-badge-icon {
-  width: 1.25rem;
-  height: 1.25rem;
-  flex-shrink: 0;
-  color: var(--brand);
-  transition: transform 300ms;
+  width: 1.3rem;
+  height: 1.3rem;
 }
 
 .skill-badge-name {
-  font-size: 0.875rem;
+  font-size: 0.82rem;
   line-height: 1.25rem;
-  font-family: var(--font-mono);
-  color: var(--muted-foreground);
-  transition: color 300ms;
-}
-
-.skill-badge:hover .skill-badge-name {
+  font-family: var(--font-ui);
   color: var(--foreground);
+  transition: color 280ms;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .skill-badge:hover .skill-badge-icon {
-    transform: scale(1.25);
+/* Mobile marquee: preserve the original icon size while removing the label
+   width that makes each track feel cramped on a narrow viewport. The complete
+   skill list remains available to assistive technology through the section's
+   sr-only list. */
+@media (max-width: 639px) {
+  .skill-badge {
+    width: 3.75rem;
+    min-height: 3.75rem;
+    justify-content: center;
+    gap: 0;
+    padding: 0.625rem;
+  }
+
+  .skill-badge-name {
+    display: none;
   }
 }
 
-/* The three-dot proficiency meter, shared with the section's legend. Filled
-   dots take the current text colour so the badge can tint them with --brand
-   and the legend can tint them with --primary. */
-.prof-dots {
-  display: flex;
-  align-items: center;
-  gap: 0.125rem;
-}
+@media (prefers-reduced-motion: no-preference) {
+  .skill-badge:hover {
+    z-index: 2;
+    transform: translateY(-3px);
+    border-color: color-mix(in oklab, var(--brand) 42%, transparent);
+    background: color-mix(in oklab, var(--brand) 5%, var(--card));
+    box-shadow: 0 14px 30px -14px
+      color-mix(in oklab, var(--brand) 40%, transparent);
+  }
 
-.prof-dot {
-  width: 0.25rem;
-  height: 0.25rem;
-  border-radius: 9999px;
-  background-color: color-mix(in oklab, var(--muted-foreground) 25%, transparent);
-}
-
-.prof-dot[data-on] {
-  background-color: currentColor;
-}
-
-.skill-badge .prof-dots {
-  margin-left: 0.125rem;
-  flex-shrink: 0;
-  color: var(--brand);
+  .skill-badge:hover .skill-badge-icon-shell {
+    transform: rotate(-6deg) scale(1.08);
+    background: color-mix(in oklab, var(--brand) 16%, var(--card));
+  }
 }
 
 /* ── Buttons: the shared treatment for every clickable control ──────────────
@@ -1333,26 +1493,11 @@ html.theme-switching::view-transition-new(root) {
 /* ── Print ──────────────────────────────────────────────────────────────────
    Site-wide, not resume-only: any page should survive Cmd-P.
 
-   The load-bearing rule is the ScrollSmoother reset. #smooth-wrapper is
-   `position: fixed` with `overflow: hidden` and #smooth-content carries a
-   transform, so on paper the document is exactly one viewport tall and
-   everything below the fold is simply gone. Unpinning the wrapper is what
-   makes a multi-page print possible at all.
-
-   Everything else is ink economy: the ambient shader (and its CSS gradient
-   stand-in), the nav, the footer and anything marked data-print-hide carry
-   nothing onto paper, and the theme tokens are forced to black-on-white so a
+   Ink economy: the ambient background, the nav, the footer and anything
+   marked data-print-hide carry nothing onto paper, and the theme tokens are
+   forced to black-on-white so a
    reader printing from dark mode doesn't empty a cartridge. ── */
 @media print {
-  #smooth-wrapper {
-    position: static !important;
-    overflow: visible !important;
-    height: auto !important;
-  }
-  #smooth-content {
-    transform: none !important;
-  }
-
   nav,
   footer,
   [data-print-hide] {

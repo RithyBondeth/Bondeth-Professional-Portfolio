@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { gsap } from "./gsap";
+import { gsap } from "./gsap-scroll";
 
 /**
  * Drifts its children vertically as the section scrolls through the viewport,

@@ -1,169 +1,121 @@
 import { skillGroups } from "@/utils/constants/portfolio.constant";
-import {
-  ISkill,
-  type TSkillLevel,
-} from "@/utils/interfaces/portfolio";
+import type { ISkill } from "@/utils/interfaces/portfolio";
 import { getDictionary, type TLocale } from "@/utils/i18n";
 import { AnimateIn } from "@/components/utils/animations/animate-in";
 import { MarqueeTrack } from "@/components/utils/animations/marquee-track";
-import { ScrambleText } from "@/components/utils/animations/scramble-text";
 import { SplitReveal } from "@/components/utils/animations/split-reveal";
-import { VelocitySkew } from "@/components/utils/animations/velocity-skew";
-import { ProficiencyDots, SkillBadge } from "./skill-badge";
+import { SkillBadge } from "./skill-badge";
 import { SkillIconSprite } from "./skill-icon-sprite";
 
-/**
- * The marquee scrolls a track by exactly -50%, so the track is the caller's
- * `half` rendered twice and the wrap is seamless as long as ONE half is wider
- * than the viewport. Anything past that is markup nobody can ever see.
- *
- * This used to be a flat 8 copies per half — 16 badges per skill, 576 badges
- * on the page, and 1.5MB of HTML for a section that shows maybe a dozen pills
- * at a time. Sizing each row to its own content instead means a row of three
- * skills still repeats enough to fill the screen while a row of seven barely
- * repeats at all.
- */
-/**
- * Width one half must reach: a 4K viewport, so the wrap still has something to
- * wrap to on the widest screen anyone is likely to open this on. Falling short
- * is a visible bug — the track runs out and the row goes blank until the loop
- * comes back around — which is why this is generous and why {@link badgeWidth}
- * deliberately guesses low.
- */
 const MIN_HALF_PX = 4000;
-/** Even a very wide row repeats, so the loop reads as a cycle and not a jump. */
-const MIN_COPIES = 2;
 
-/**
- * Estimated rendered width of a badge, in px: fixed furniture (padding, icon,
- * dots, gaps) plus the name.
- *
- * Tuned to UNDER-estimate, and that direction is the whole point. Guessing
- * high divides MIN_HALF_PX by too large a row and emits too FEW copies, which
- * is the one failure that shows on screen; guessing low just costs a little
- * markup. Measured against the real render, this sits ~10% under across the
- * name lengths actually in use (Git → Tailwind CSS).
- */
-function badgeWidth(skill: ISkill) {
-  return 90 + skill.name.length * 6;
+function estimatedTileWidth(skill: ISkill) {
+  return 112 + skill.name.length * 7;
 }
 
-function copiesPerHalf(skills: ISkill[]) {
-  const rowPx = skills.reduce((sum, s) => sum + badgeWidth(s) + 12, 0);
-  return Math.max(MIN_COPIES, Math.ceil(MIN_HALF_PX / rowPx));
+function repeatedHalf(skills: ISkill[]) {
+  const rowWidth = skills.reduce(
+    (total, skill) => total + estimatedTileWidth(skill) + 14,
+    0,
+  );
+  const copies = Math.max(2, Math.ceil(MIN_HALF_PX / rowWidth));
+  return Array.from(
+    { length: copies * skills.length },
+    (_, index) => skills[index % skills.length],
+  );
 }
 
-export default function LandingSkills(props: { lang: TLocale }) {
-  /* ---------------------------------- Props --------------------------------- */
-  const { lang } = props;
+export default function LandingSkills({ lang }: { lang: TLocale }) {
   const dict = getDictionary(lang);
+  const fullStackCategories = ["Mobile", "Frontend", "Backend"];
+  const groupedSkills = [
+    {
+      category: "Full Stack",
+      skills: fullStackCategories.flatMap(
+        (category) =>
+          skillGroups.find((group) => group.category === category)?.skills ?? [],
+      ),
+    },
+    ...skillGroups.filter(
+      (group) => !fullStackCategories.includes(group.category),
+    ),
+  ];
+  const tracks = groupedSkills.map(({ category, skills }, index) => ({
+    label: category,
+    skills,
+    direction: index % 2 === 0 ? ("rtl" as const) : ("ltr" as const),
+    duration: 44 + index * 3,
+  }));
+  const uniqueSkills = skillGroups.flatMap((group) => group.skills);
 
-  /* ---------------------------------- Utils --------------------------------- */
-  const levelLabels: Record<TSkillLevel, string> = {
-    3: dict.skills.levels.expert,
-    2: dict.skills.levels.proficient,
-    1: dict.skills.levels.familiar,
-  };
-
-  /* -------------------------------- Render UI ------------------------------- */
   return (
-    <section
-      id="skills"
-      className="relative isolate py-16 sm:py-20 lg:py-24 overflow-hidden"
-    >
-      {/* Every icon's geometry, defined once. The badges below reference these
-          by id, so this has to be in the document before them. */}
-      <SkillIconSprite
-        icons={skillGroups.flatMap(({ skills }) => skills.map((s) => s.icon))}
-      />
+    <section id="skills" className="relative isolate overflow-hidden py-20 sm:py-24 lg:py-32">
+      <SkillIconSprite icons={uniqueSkills.map((skill) => skill.icon)} />
 
-      {/* Heading Section */}
-      <div className="max-w-6xl mx-auto px-6 mb-16">
-        <AnimateIn from="zoom-in">
-          <p className="text-primary font-mono text-xs tracking-[0.25em] uppercase mb-1">
-            <ScrambleText text="// skills.ts" />
+      <div className="mx-auto mb-12 grid max-w-6xl gap-6 px-6 sm:mb-16 lg:grid-cols-[1fr_.72fr] lg:items-end">
+        <div>
+          <AnimateIn from="zoom-in">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.22em] text-primary">
+              {lang === "km" ? "សមត្ថភាព" : "Capabilities"}
+            </p>
+          </AnimateIn>
+          <SplitReveal
+            as="h2"
+            type="lines"
+            className="max-w-2xl text-4xl font-bold tracking-[-0.035em] text-foreground sm:text-5xl lg:text-6xl"
+          >
+            {dict.skills.heading}
+          </SplitReveal>
+        </div>
+        <AnimateIn from="up" delay={0.12}>
+          <p className="max-w-lg text-sm leading-relaxed text-field-muted-foreground sm:text-base">
+            {lang === "km"
+              ? "ឧបករណ៍ដែលខ្ញុំប្រើដើម្បីបំលែងគំនិតទៅជាផលិតផលឌីជីថលដែលរលូន ឆ្លាតវៃ និងអាចទុកចិត្តបាន។"
+              : "A focused toolkit for turning ideas into digital products that feel polished, intelligent, and dependable."}
           </p>
-        </AnimateIn>
-        <SplitReveal
-          as="h2"
-          type="lines"
-          className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mt-3"
-        >
-          {dict.skills.heading}
-        </SplitReveal>
-
-        {/* Proficiency Legend Section */}
-        <AnimateIn from="zoom-in" delay={0.1}>
-          <ul className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-6">
-            {([3, 2, 1] as const).map((level) => (
-              <li
-                key={level}
-                className="flex items-center gap-1.5 text-[10px] font-mono text-muted-foreground uppercase tracking-wider"
-              >
-                <span className="text-primary">
-                  <ProficiencyDots level={level} />
-                </span>
-                {levelLabels[level]}
-              </li>
-            ))}
-          </ul>
         </AnimateIn>
       </div>
 
-      {/* Marquee Rows Section — rows lean with scroll velocity for inertia */}
-      <VelocitySkew className="space-y-4">
-        {skillGroups.map(({ category, skills }, i) => {
-          const direction = i % 2 === 0 ? "rtl" : "ltr";
-          const half: ISkill[] = Array.from(
-            { length: copiesPerHalf(skills) * skills.length },
-            (_, j) => skills[j % skills.length],
-          );
-          const track = [...half, ...half];
+      <ul className="sr-only">
+        {uniqueSkills.map((skill) => <li key={skill.name}>{skill.name}</li>)}
+      </ul>
 
-          return (
-            <AnimateIn
-              key={category}
-              from={direction === "rtl" ? "right" : "left"}
-              distance={80}
-              delay={i * 0.08}
-            >
-              <div className="relative">
-                {/* Category Label. It used to sit on a `from-background`
-                    gradient that doubled as the left fade — but the section is
-                    transparent now and the gradient-wave animates behind it, so
-                    painting --background over the row left an off-white wedge
-                    floating on the blue whenever the wave drifted underneath.
-                    The fade is a MASK on the track instead (below): it removes
-                    the badges rather than covering them, so it works over any
-                    background and costs no extra layer. */}
-                <div className="absolute inset-y-0 left-0 w-28 sm:w-52 z-10 pointer-events-none flex items-center pl-4 sm:pl-6">
-                  <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-[0.15em] sm:tracking-[0.2em] select-none">
-                    {category}
-                  </span>
+      <div className="relative mx-auto w-full px-3 sm:px-6">
+        <div className="relative overflow-hidden rounded-2xl border border-border/55 bg-card/50 py-4 shadow-[0_24px_80px_rgb(0_0_0/.07)] backdrop-blur-sm sm:py-6">
+          {tracks.map((track, index) => {
+            const half = repeatedHalf(track.skills);
+            const repeated = [...half, ...half];
+            return (
+              <AnimateIn
+                key={track.label}
+                from={track.direction === "rtl" ? "right" : "left"}
+                distance={70}
+                delay={index * 0.1}
+              >
+                <div className={`grid gap-3 px-3 py-3 sm:grid-cols-[10rem_1fr] sm:items-center sm:gap-0 sm:px-5 ${index > 0 ? "border-t border-border/35" : ""}`}>
+                  <div className="relative z-10 flex items-end justify-between px-2 sm:block sm:px-0 sm:pr-5">
+                    <p className="text-sm font-bold tracking-[-.01em] text-foreground">{track.label}</p>
+                  </div>
+                  <div aria-hidden="true" className="min-w-0 overflow-hidden rounded-lg">
+                    <MarqueeTrack
+                      direction={track.direction}
+                      duration={track.duration}
+                      className="py-1 [mask-image:linear-gradient(to_right,transparent,black_3rem,black_calc(100%_-_3rem),transparent)] sm:[mask-image:linear-gradient(to_right,transparent,black_5rem,black_calc(100%_-_5rem),transparent)]"
+                    >
+                      {repeated.map((skill, skillIndex) => (
+                        <SkillBadge key={`${skill.name}-${skillIndex}`} skill={skill} />
+                      ))}
+                    </MarqueeTrack>
+                  </div>
                 </div>
-
-                {/* The mask stops are the old fade widths: 7rem/13rem on the
-                    left to just clear the label, 3rem/6rem on the right. The
-                    desktop 13rem would swallow 55% of a 375px row, so phones
-                    get the narrower pair. */}
-                <MarqueeTrack
-                  direction={direction}
-                  duration={60}
-                  className="py-2 [mask-image:linear-gradient(to_right,transparent_0,black_7rem,black_calc(100%_-_3rem),transparent_100%)] sm:[mask-image:linear-gradient(to_right,transparent_0,black_13rem,black_calc(100%_-_6rem),transparent_100%)]"
-                >
-                  {track.map((skill, j) => (
-                    <SkillBadge
-                      key={j}
-                      skill={skill}
-                      levelLabel={levelLabels[skill.level]}
-                    />
-                  ))}
-                </MarqueeTrack>
-              </div>
-            </AnimateIn>
-          );
-        })}
-      </VelocitySkew>
+              </AnimateIn>
+            );
+          })}
+        </div>
+        <p className="mt-4 hidden text-center text-[10px] uppercase tracking-[.15em] text-muted-foreground sm:block">
+          {lang === "km" ? "ដាក់កណ្ដុរលើដើម្បីផ្អាក" : "Hover to pause · Explore at your pace"}
+        </p>
+      </div>
     </section>
   );
 }

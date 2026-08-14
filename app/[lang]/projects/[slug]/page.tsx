@@ -113,7 +113,7 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
           <div>
             <AnimateIn from="left" distance={40}>
               <div className="mb-5 flex flex-wrap items-center gap-3">
-                <span className="rounded border border-primary/20 bg-primary/5 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-primary">
+                <span className="rounded-lg border border-primary/20 bg-primary/5 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-primary">
                   {visibilityLabel}
                 </span>
                 <span className="font-mono text-xs text-muted-foreground">
@@ -153,7 +153,7 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
 
         {project.visibility === "limited" && (
           <AnimateIn from="up" delay={0.1}>
-            <aside className="mt-12 rounded border border-status-warning/25 bg-status-warning/5 p-5">
+            <aside className="mt-12 rounded-lg border border-status-warning/25 bg-status-warning/5 p-5">
               <p className="font-mono text-xs font-semibold uppercase tracking-wider text-status-warning">
                 {dict.projects.limitedNoticeTitle}
               </p>
@@ -166,7 +166,7 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
 
         <div className="mt-16 grid gap-6 md:grid-cols-2">
           <AnimateIn from="up">
-            <section className="h-full rounded border border-border/60 bg-card p-6">
+            <section className="h-full rounded-lg border border-border/60 bg-card p-6">
               <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
                 01 / {dict.projects.overview}
               </p>
@@ -182,7 +182,7 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
           </AnimateIn>
 
           <AnimateIn from="up" delay={0.08}>
-            <section className="h-full rounded border border-border/60 bg-card p-6">
+            <section className="h-full rounded-lg border border-border/60 bg-card p-6">
               <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
                 02 / {dict.projects.technologies}
               </p>
@@ -207,7 +207,7 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
 
         {project.links.length > 0 && (
           <AnimateIn from="up" delay={0.12}>
-            <section className="mt-6 rounded border border-border/60 bg-card p-6">
+            <section className="mt-6 rounded-lg border border-border/60 bg-card p-6">
               <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
                 03 / {dict.projects.publicResources}
               </p>
@@ -225,8 +225,8 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
                     // so it gets the filled treatment and the rest sit beside it.
                     className={
                       index === 0
-                        ? "btn-fx btn-fx-primary inline-flex items-center gap-2 rounded bg-primary-fill px-4 py-2.5 font-mono text-xs text-primary-foreground"
-                        : "btn-fx inline-flex items-center gap-2 rounded border border-border/60 bg-muted/40 px-4 py-2.5 font-mono text-xs text-muted-foreground hover:border-primary/30 hover:text-primary"
+                        ? "btn-fx btn-fx-primary inline-flex items-center gap-2 rounded-lg bg-primary-fill px-4 py-2.5 font-mono text-xs text-primary-foreground"
+                        : "btn-fx inline-flex items-center gap-2 rounded-lg border border-border/60 bg-muted/40 px-4 py-2.5 font-mono text-xs text-muted-foreground hover:border-primary/30 hover:text-primary"
                     }
                   >
                     {getLinkLabel(link.kind, dict)}
@@ -258,7 +258,7 @@ function ProjectPreview(props: {
   const { title, image, gradient } = props;
 
   return (
-    <div className="relative aspect-16/10 overflow-hidden rounded border border-border/60 bg-card shadow-2xl shadow-black/10">
+    <div className="relative aspect-16/10 overflow-hidden rounded-lg border border-border/60 bg-card shadow-2xl shadow-black/10">
       {image ? (
         <Image
           src={image}

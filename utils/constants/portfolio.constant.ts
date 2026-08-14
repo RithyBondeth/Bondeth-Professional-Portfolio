@@ -20,7 +20,7 @@ export const siteConfig: ISiteConfig = {
     "I build elegant web applications and intelligent AI systems — from pixel-perfect UIs to production-ready ML pipelines.",
   bio: [
     "I'm Rithy Bondeth, a full stack developer and AI engineer based in Phnom Penh, Cambodia. I'm passionate about building high-quality digital experiences across web and mobile platforms.",
-    "I specialize in modern JavaScript ecosystems (React, Next.js, Vue, NestJS) and Python-based AI/ML workflows, with experience shipping products from internship to freelance to full-time at Digital Economy Business Committee under Ministry of Economy and Finance of Cambodia.",
+    "I specialize in modern Typescript ecosystems (React, Next.js, Vue, Nuxt.js, Nest.js) and Python-based AI/ML workflows, with experience shipping products from internship to freelance to full-time at Digital Economy Business Committee under Ministry of Economy and Finance of Cambodia.",
     "I believe the best technology is invisible — it just works, and works beautifully.",
   ],
   email: "rithybondeth999@gmail.com",
@@ -46,7 +46,7 @@ export const videos: IVideo[] = [
       "A plain-language walkthrough of what actually happens inside a modern AI model — no maths background needed. Subtitled in Khmer.",
     descriptionKm:
       "ការពន្យល់ជាភាសាសាមញ្ញអំពីអ្វីដែលកើតឡើងនៅខាងក្នុងម៉ូដែល AI សម័យទំនើប ដោយមិនត្រូវការចំណេះដឹងគណិតវិទ្យា។ មានអក្សររត់ជាភាសាខ្មែរ។",
-    thumbnail: "/videos/how-ai-works.webp",
+    thumbnail: "/thumbnails/ai-how-it-works-portfolio-colors.png",
     languages: ["en", "km"],
     topics: ["AI", "Fundamentals", "Explainer"],
     relatedPost: "can-ai-replace-humans",
@@ -286,24 +286,24 @@ export const educations: IEducation[] = [
 
 /* ------------------------------- Organizations ------------------------------ */
 export const organizations: IOrganization[] = [
-  { name: "Mango-Byte Co., Ltd", logo: "/organizations/mango-byte-logo.png" },
+  { name: "Mango-Byte Co., Ltd", logo: "/organizations/display/mango-byte-logo.png" },
   {
     name: "Cambodia Academy of Digital Technology",
-    logo: "/organizations/cadt-logo.png",
+    logo: "/organizations/display/cadt-logo.png",
   },
-  { name: "Allweb Company Co., Ltd", logo: "/organizations/allweb-logo.png" },
+  { name: "Allweb Company Co., Ltd", logo: "/organizations/display/allweb-logo.png" },
   {
     name: "Pailin Province Hall",
-    logo: "/organizations/pailin-province-hall-logo.png",
+    logo: "/organizations/display/pailin-province-hall-logo.png",
   },
   { name: "Apsara Talent", logo: "/organizations/apsara-logo.svg" },
   {
     name: "Digital Economy and Business Committee",
-    logo: "/organizations/debc-logo.png",
+    logo: "/organizations/display/debc-logo.png",
   },
   {
     name: "Ministry of Economy and Finance",
-    logo: "/organizations/mef-logo.png",
+    logo: "/organizations/display/mef-logo.png",
   },
 ];
 

@@ -5,7 +5,7 @@ import { siteConfig } from "@/utils/constants/portfolio.constant";
 import { trackCvDownload } from "@/utils/functions/track-cv-download";
 
 /**
- * The two things a résumé page owes a visitor: the file, and a clean print.
+ * The two things a resume page owes a visitor: the file, and a clean print.
  *
  * Client-only because both need handlers — one to record the download, one to
  * call `window.print()`. Marked `data-print-hide`, since a toolbar that says
@@ -21,7 +21,7 @@ export function ResumeActions(props: { downloadLabel: string; printLabel: string
         target="_blank"
         rel="noopener noreferrer"
         onClick={() => trackCvDownload("resume-page")}
-        className="btn-fx btn-fx-primary inline-flex items-center gap-2 rounded bg-primary-fill px-5 py-2.5 font-mono text-sm text-primary-foreground"
+        className="btn-fx btn-fx-primary inline-flex items-center gap-2 rounded-lg bg-primary-fill px-5 py-2.5 font-mono text-sm text-primary-foreground"
       >
         <Download aria-hidden className="size-4" />
         {downloadLabel}
@@ -29,7 +29,7 @@ export function ResumeActions(props: { downloadLabel: string; printLabel: string
       <button
         type="button"
         onClick={() => window.print()}
-        className="btn-fx inline-flex items-center gap-2 rounded border border-border px-5 py-2.5 font-mono text-sm text-foreground"
+        className="btn-fx inline-flex items-center gap-2 rounded-lg border border-border px-5 py-2.5 font-mono text-sm text-foreground"
       >
         <Printer aria-hidden className="size-4" />
         {printLabel}

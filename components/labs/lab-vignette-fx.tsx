@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { gsap } from "@/components/utils/animations/gsap";
+import { gsap } from "@/components/utils/animations/gsap-scroll";
 
 /**
  * Scroll-enter motion for the static lab-card vignettes. Wrap a vignette

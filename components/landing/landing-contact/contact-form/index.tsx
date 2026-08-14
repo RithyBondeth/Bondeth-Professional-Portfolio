@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { track } from "@vercel/analytics";
 import { gsap } from "@/components/utils/animations/gsap";
 import { getDictionary, type TLocale } from "@/utils/i18n";
@@ -153,7 +154,7 @@ export default function ContactForm(props: { lang: TLocale }) {
     return (
       <div
         ref={successCardRef}
-        className="rounded border border-status-success/25 bg-status-success/5 p-8 text-center"
+        className="rounded-lg border border-status-success/25 bg-status-success/5 p-8 text-center"
       >
         <h3 className="text-status-success font-bold mb-2">{t.successTitle}</h3>
         <p className="text-muted-foreground text-sm">{t.successBody}</p>
@@ -197,7 +198,7 @@ export default function ContactForm(props: { lang: TLocale }) {
             maxLength={100}
             autoComplete="name"
             placeholder={t.namePlaceholder}
-            className="bg-background border border-border/60 rounded px-4 py-2.5 text-sm focus:outline-hidden focus:border-primary/50 transition-colors"
+            className="rounded-lg border border-border/60 bg-background px-4 py-2.5 text-sm transition-colors focus:border-primary/50 focus:outline-hidden"
           />
         </div>
         <div className="flex flex-col gap-1.5">
@@ -215,7 +216,7 @@ export default function ContactForm(props: { lang: TLocale }) {
             maxLength={254}
             autoComplete="email"
             placeholder={t.emailPlaceholder}
-            className="bg-background border border-border/60 rounded px-4 py-2.5 text-sm focus:outline-hidden focus:border-primary/50 transition-colors"
+            className="rounded-lg border border-border/60 bg-background px-4 py-2.5 text-sm transition-colors focus:border-primary/50 focus:outline-hidden"
           />
         </div>
       </div>
@@ -236,7 +237,7 @@ export default function ContactForm(props: { lang: TLocale }) {
             name="projectType"
             value={projectType}
             onChange={(event) => setProjectType(event.currentTarget.value)}
-            className={`peer w-full cursor-pointer appearance-none rounded border border-border/60 bg-background py-2.5 pl-4 pr-11 text-sm transition-colors focus:border-primary/50 focus:outline-hidden ${
+            className={`peer w-full cursor-pointer appearance-none rounded-lg border border-border/60 bg-background py-2.5 pl-4 pr-11 text-sm transition-colors focus:border-primary/50 focus:outline-hidden ${
               projectType ? "text-foreground" : "text-muted-foreground"
             }`}
           >
@@ -284,7 +285,7 @@ export default function ContactForm(props: { lang: TLocale }) {
           value={message}
           onChange={(event) => setMessage(event.currentTarget.value)}
           placeholder={t.messagePlaceholder}
-          className="bg-background border border-border/60 rounded px-4 py-2.5 text-sm focus:outline-hidden focus:border-primary/50 transition-colors resize-none"
+          className="resize-none rounded-lg border border-border/60 bg-background px-4 py-2.5 text-sm transition-colors focus:border-primary/50 focus:outline-hidden"
         />
         <p className="text-right font-mono text-[10px] text-muted-foreground">
           {message.length.toLocaleString()}/5,000 {t.characterCount}
@@ -302,11 +303,18 @@ export default function ContactForm(props: { lang: TLocale }) {
         </p>
       )}
 
+      <p className="text-center text-[10px] leading-5 text-muted-foreground">
+        {t.privacyNotice}{" "}
+        <Link href={`/${lang}/privacy`} className="underline decoration-border underline-offset-4 transition-colors hover:text-primary">
+          {t.privacyLink}
+        </Link>
+      </p>
+
       {/* Submit Button Section */}
       <button
         disabled={status === "loading"}
         type="submit"
-        className="btn-fx btn-fx-primary mt-2 flex items-center justify-center gap-2 w-full px-6 py-3 bg-primary-fill text-primary-foreground rounded font-mono text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+        className="btn-fx btn-fx-primary mt-2 flex w-full items-center justify-center gap-2 rounded-lg bg-primary-fill px-6 py-3 font-mono text-sm font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50"
       >
         <span className="text-primary-foreground/60">▸</span>
         {status === "loading" ? (

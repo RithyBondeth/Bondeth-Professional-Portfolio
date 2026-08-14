@@ -19,9 +19,9 @@ export default function ProjectsLoading() {
         <Skeleton className="mt-2 h-4 w-2/3 max-w-md" />
 
         {/* Filter bar */}
-        <div className="mt-10 flex w-fit max-w-full gap-1 rounded border border-border/40 bg-card/50 p-1">
+        <div className="mt-10 flex w-fit max-w-full gap-1 rounded-lg border border-border/40 bg-card/50 p-1">
           {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} className="h-8 w-24 rounded" />
+            <Skeleton key={i} className="h-8 w-24 rounded-lg" />
           ))}
         </div>
 
@@ -30,7 +30,7 @@ export default function ProjectsLoading() {
           {Array.from({ length: 6 }).map((_, i) => (
             <div
               key={i}
-              className="overflow-hidden rounded border border-border/60 bg-card"
+              className="overflow-hidden rounded-lg border border-border/60 bg-card"
             >
               <Skeleton className="aspect-16/10 w-full rounded-none" />
               <div className="p-5">
@@ -38,9 +38,9 @@ export default function ProjectsLoading() {
                 <Skeleton className="mt-3 h-4 w-full" />
                 <Skeleton className="mt-2 h-4 w-5/6" />
                 <div className="mt-4 flex flex-wrap gap-2">
-                  <Skeleton className="h-5 w-14 rounded" />
-                  <Skeleton className="h-5 w-16 rounded" />
-                  <Skeleton className="h-5 w-12 rounded" />
+                  <Skeleton className="h-5 w-14 rounded-lg" />
+                  <Skeleton className="h-5 w-16 rounded-lg" />
+                  <Skeleton className="h-5 w-12 rounded-lg" />
                 </div>
               </div>
             </div>

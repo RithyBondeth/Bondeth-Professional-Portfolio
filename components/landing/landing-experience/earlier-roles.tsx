@@ -34,7 +34,7 @@ export function EarlierRoles({
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
         aria-controls={panelId}
-        className="group flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 rounded border border-border/60 bg-background px-4 font-mono text-xs text-muted-foreground transition-colors hover:border-primary/30 hover:text-primary"
+        className="group flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-border/60 bg-background px-4 font-mono text-xs text-muted-foreground transition-colors hover:border-primary/30 hover:text-primary"
       >
         <span>{label}</span>
         <span
@@ -62,7 +62,7 @@ export function EarlierRoles({
             {experiences.map((exp) => (
               <article
                 key={`${exp.role}-${exp.company}`}
-                className="card-interactive rounded border border-border/60 bg-background p-5"
+                className="card-interactive rounded-lg border border-border/60 bg-background p-5"
               >
                 <div className="flex flex-col justify-between gap-1 sm:flex-row">
                   <div>

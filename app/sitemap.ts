@@ -48,6 +48,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     entries.push(
       {
+        url: `${siteConfig.url}/${locale}/privacy`,
+        lastModified: new Date("2026-08-14"),
+        changeFrequency: "yearly",
+        priority: 0.3,
+        alternates: { languages: languageAlternates("/privacy") },
+      },
+      {
+        url: `${siteConfig.url}/${locale}/terms`,
+        lastModified: new Date("2026-08-14"),
+        changeFrequency: "yearly",
+        priority: 0.3,
+        alternates: { languages: languageAlternates("/terms") },
+      },
+    );
+
+    entries.push(
+      {
         url: `${siteConfig.url}/${locale}/labs`,
         lastModified: new Date(),
         changeFrequency: "monthly",

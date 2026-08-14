@@ -1,29 +1,14 @@
 "use client";
 
 /**
- * Central GSAP setup — the single place plugins are registered and shared
- * eases are defined. Every animation component imports gsap/plugins from
- * here instead of "gsap" directly, so registration happens exactly once
- * and new plugins become available everywhere by adding them below.
+ * Lightweight shared GSAP setup. Route-specific plugins deliberately live in
+ * their own modules so importing a small animation does not ship the complete
+ * GSAP plugin suite on every page.
  */
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ScrollToPlugin } from "gsap/ScrollToPlugin";
-import { SplitText } from "gsap/SplitText";
-import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin";
-import { Flip } from "gsap/Flip";
 import { CustomEase } from "gsap/CustomEase";
-import { ScrollSmoother } from "gsap/ScrollSmoother";
 
-gsap.registerPlugin(
-  ScrollTrigger,
-  ScrollToPlugin,
-  SplitText,
-  ScrambleTextPlugin,
-  Flip,
-  CustomEase,
-  ScrollSmoother,
-);
+gsap.registerPlugin(CustomEase);
 
 /* ------------------------------- Custom eases ------------------------------ */
 /**
@@ -55,13 +40,4 @@ export function prefersReducedMotion(): boolean {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
-export {
-  gsap,
-  ScrollTrigger,
-  ScrollToPlugin,
-  SplitText,
-  ScrambleTextPlugin,
-  Flip,
-  CustomEase,
-  ScrollSmoother,
-};
+export { gsap, CustomEase };

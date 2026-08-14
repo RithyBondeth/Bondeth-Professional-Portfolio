@@ -390,7 +390,7 @@ export default function CommandPalette(props: {
             aria-label={cp.placeholder}
             className="flex-1 bg-transparent py-4 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
           />
-          <kbd className="hidden sm:block text-[10px] text-muted-foreground border border-border/60 rounded px-1.5 py-0.5">
+          <kbd className="hidden sm:block text-[10px] text-muted-foreground border border-border/60 rounded-lg px-1.5 py-0.5">
             ESC
           </kbd>
         </div>
@@ -456,15 +456,15 @@ export default function CommandPalette(props: {
         {/* Footer Hints */}
         <div className="flex items-center gap-4 px-4 py-2.5 border-t border-border/60 text-[10px] font-mono text-muted-foreground">
           <span className="flex items-center gap-1">
-            <kbd className="border border-border/60 rounded px-1">↑↓</kbd>
+            <kbd className="border border-border/60 rounded-lg px-1">↑↓</kbd>
             {cp.hintNavigate}
           </span>
           <span className="flex items-center gap-1">
-            <kbd className="border border-border/60 rounded px-1">↵</kbd>
+            <kbd className="border border-border/60 rounded-lg px-1">↵</kbd>
             {cp.hintSelect}
           </span>
           <span className="flex items-center gap-1">
-            <kbd className="border border-border/60 rounded px-1">esc</kbd>
+            <kbd className="border border-border/60 rounded-lg px-1">esc</kbd>
             {cp.hintClose}
           </span>
         </div>
