@@ -16,12 +16,16 @@ export default async function TagsPage({ params }: ITagsPageProps) {
   const tags = await getAllTags(lang);
 
   return (
-    <main id="main-content" tabIndex={-1} className="flex-1 pt-32 pb-16 sm:pb-24 px-6 font-sans">
+    <main
+      id="main-content"
+      tabIndex={-1}
+      className="flex-1 pt-32 pb-16 sm:pb-24 px-6 font-sans"
+    >
       <div className="max-w-4xl mx-auto">
         <AnimateIn>
           <Link
             href={`/${lang}/blog`}
-            className="text-primary font-mono text-xs hover:underline mb-1 inline-block uppercase tracking-[0.25em]"
+            className="mb-1 inline-flex min-h-10 items-center rounded-full border border-border/60 bg-card px-4 text-xs font-medium text-muted-foreground transition-colors hover:border-primary/30 hover:text-primary"
           >
             ← {dict.blog.backToAll}
           </Link>
@@ -46,20 +50,16 @@ export default async function TagsPage({ params }: ITagsPageProps) {
                 <Link
                   key={t.slug}
                   href={`/${lang}/blog/tags/${t.slug}`}
-                  className="rounded border border-primary/10 bg-primary/5 px-4 py-2 font-mono text-sm text-primary hover:border-primary/40 hover:bg-primary/10 transition-colors"
+                  className="rounded-full border border-primary/15 bg-primary/5 px-4 py-2 text-sm font-medium text-primary transition-colors hover:border-primary/40 hover:bg-primary/10"
                 >
                   #{t.tag}
-                  <span className="ml-2 text-muted-foreground">
-                    {t.count}
-                  </span>
+                  <span className="ml-2 text-muted-foreground">{t.count}</span>
                 </Link>
               ))}
             </div>
           ) : (
-            <div className="py-20 text-center border border-dashed border-border rounded">
-              <p className="text-muted-foreground font-mono text-sm">
-                {dict.blog.empty}
-              </p>
+            <div className="py-20 text-center border border-dashed border-border rounded-lg">
+              <p className="text-sm text-muted-foreground">{dict.blog.empty}</p>
             </div>
           )}
         </AnimateIn>

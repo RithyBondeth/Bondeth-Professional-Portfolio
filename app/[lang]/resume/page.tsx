@@ -19,7 +19,6 @@ export async function generateMetadata({
   const { lang } = await params;
   if (!hasLocale(lang)) return {};
   const dict = getDictionary(lang);
-  const site = getSiteConfig(lang);
 
   return {
     // The root layout's template already appends the site name.
@@ -37,7 +36,7 @@ export async function generateMetadata({
 }
 
 /**
- * The résumé as a page rather than only as a file.
+ * The resume as a page rather than only as a file.
  *
  * Everything here is read from the same localized accessors the landing
  * sections use, so this cannot drift from the site — but note it CAN drift
@@ -120,7 +119,7 @@ export default async function ResumePage({ params }: IResumePageProps) {
           <ResumeActions downloadLabel={r.downloadPdf} printLabel={r.print} />
         </div>
 
-        {/* Bio doubles as the résumé summary. */}
+        {/* Bio doubles as the resume summary. */}
         <section className="mt-12">
           {site.bio.map((paragraph, i) => (
             <p

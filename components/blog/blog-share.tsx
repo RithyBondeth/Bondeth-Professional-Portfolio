@@ -53,15 +53,15 @@ export function BlogShare({ title, excerpt, url, labels }: BlogShareProps) {
 
   return (
     <div className="mb-10">
-      <p className="text-primary font-mono text-xs tracking-[0.25em] uppercase mb-4">
-        <span className="text-muted-foreground">{"//"}</span> {labels.heading}
+      <p className="mb-4 text-sm font-semibold text-foreground">
+        {labels.heading}
       </p>
       <div className="flex flex-wrap items-center gap-2">
         {typeof navigator !== "undefined" && "share" in navigator && (
           <button
             type="button"
             onClick={handleNativeShare}
-            className="inline-flex items-center gap-2 rounded border border-border/50 bg-muted/30 px-3 py-2 font-mono text-[11px] text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
+            className="inline-flex min-h-10 items-center gap-2 rounded-full border border-border/50 bg-muted/30 px-4 text-xs font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
           >
             <Share2 className="size-3.5" />
             {labels.native}
@@ -70,14 +70,14 @@ export function BlogShare({ title, excerpt, url, labels }: BlogShareProps) {
         <button
           type="button"
           onClick={handleCopyLink}
-          className="inline-flex items-center gap-2 rounded border border-border/50 bg-muted/30 px-3 py-2 font-mono text-[11px] text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
+          className="inline-flex min-h-10 items-center gap-2 rounded-full border border-border/50 bg-muted/30 px-4 text-xs font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
         >
           <Link2 className="size-3.5" />
           {copied ? labels.copied : labels.copy}
         </button>
         <a
           href={emailHref}
-          className="inline-flex items-center gap-2 rounded border border-border/50 bg-muted/30 px-3 py-2 font-mono text-[11px] text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
+          className="inline-flex min-h-10 items-center gap-2 rounded-full border border-border/50 bg-muted/30 px-4 text-xs font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
         >
           <Mail className="size-3.5" />
           {labels.email}

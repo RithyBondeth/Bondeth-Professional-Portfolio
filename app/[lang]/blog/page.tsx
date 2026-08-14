@@ -5,7 +5,6 @@ import {
   getAllTags,
 } from "@/utils/functions/blog";
 import { AnimateIn } from "@/components/utils/animations/animate-in";
-import { ScrambleText } from "@/components/utils/animations/scramble-text";
 import { BlogExplorer } from "@/components/blog/blog-explorer";
 import { hasLocale, getDictionary } from "@/utils/i18n";
 
@@ -51,12 +50,15 @@ export default async function BlogPage({ params }: IBlogPageProps) {
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
-    <main id="main-content" tabIndex={-1} className="flex-1 pt-32 pb-16 sm:pb-24 px-6 font-sans">
+    <main
+      id="main-content"
+      tabIndex={-1}
+      className="flex-1 pt-32 pb-16 sm:pb-24 px-6 font-sans"
+    >
       <div className="max-w-4xl mx-auto">
-        {/* Heading Section */}
         <AnimateIn>
-          <p className="text-primary font-mono text-xs tracking-[0.25em] uppercase mb-1">
-            <ScrambleText text="$ ls content/blog" />
+          <p data-eyebrow className="text-sm font-semibold text-primary">
+            {lang === "km" ? "គំនិត និងការសរសេរ" : "Writing & ideas"}
           </p>
         </AnimateIn>
 
@@ -67,19 +69,9 @@ export default async function BlogPage({ params }: IBlogPageProps) {
         </AnimateIn>
 
         <AnimateIn delay={0.1}>
-          <p className="text-field-muted-foreground text-sm max-w-2xl mb-4 leading-relaxed">
+          <p className="text-field-muted-foreground text-sm max-w-2xl mb-12 leading-relaxed">
             {dict.blog.blurb}
           </p>
-        </AnimateIn>
-
-        {/* RSS Link Section */}
-        <AnimateIn delay={0.12}>
-          <a
-            href="/feed.xml"
-            className="inline-flex items-center gap-2 text-xs font-mono text-field-muted-foreground hover:text-primary transition-colors mb-12"
-          >
-            <span className="text-primary">⚡</span> {dict.blog.subscribeRss}
-          </a>
         </AnimateIn>
 
         {/* Search + Tags + Post List Section */}
@@ -95,10 +87,8 @@ export default async function BlogPage({ params }: IBlogPageProps) {
             />
           </AnimateIn>
         ) : (
-          <div className="py-20 text-center border border-dashed border-border rounded">
-            <p className="text-muted-foreground font-mono text-sm">
-              {dict.blog.empty}
-            </p>
+          <div className="py-20 text-center border border-dashed border-border rounded-lg">
+            <p className="text-sm text-muted-foreground">{dict.blog.empty}</p>
           </div>
         )}
       </div>

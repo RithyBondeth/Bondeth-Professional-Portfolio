@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { PixelBOg } from "@/components/brand/pixel-b-og";
 import { getPostBySlug } from "@/utils/functions/blog";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
 import { hasLocale } from "@/utils/i18n";
@@ -57,8 +58,8 @@ export default async function Image({
         flexDirection: "column",
         justifyContent: "center",
         padding: "80px",
-        background: "#07090e",
-        color: "#edf0f8",
+        background: "#141413",
+        color: "#faf9f5",
         fontFamily,
       }}
     >
@@ -66,13 +67,13 @@ export default async function Image({
         style={{
           display: "flex",
           alignItems: "center",
-          gap: "12px",
+          gap: "16px",
           fontSize: 26,
-          color: "#34d399",
+          color: "#d97757",
           marginBottom: 32,
         }}
       >
-        <span>&gt;</span>
+        <PixelBOg size={48} inverse />
         <span>{label}</span>
       </div>
       <div style={{ fontSize: 64, fontWeight: 700, lineHeight: 1.15 }}>
@@ -82,7 +83,7 @@ export default async function Image({
         <div
           style={{
             fontSize: 30,
-            color: "#979ba9",
+            color: "#b8b2a9",
             marginTop: 28,
             lineHeight: 1.4,
           }}
@@ -97,7 +98,7 @@ export default async function Image({
           left: 0,
           width: "100%",
           height: "8px",
-          background: "#34d399",
+          background: "#d97757",
         }}
       />
     </div>,

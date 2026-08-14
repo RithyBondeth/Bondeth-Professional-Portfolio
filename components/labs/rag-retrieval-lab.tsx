@@ -58,7 +58,7 @@ export function RagRetrievalLab(props: {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[0.72fr_1.28fr]">
-      <section className="rounded border border-border/60 bg-card p-5 sm:p-6">
+      <section className="rounded-lg border border-border/60 bg-card p-5 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
@@ -79,7 +79,7 @@ export function RagRetrievalLab(props: {
               key={preset.label}
               type="button"
               onClick={() => loadPreset(preset.value)}
-              className="min-h-11 rounded border border-border/60 bg-background px-3 font-mono text-xs text-muted-foreground transition-colors hover:border-primary/30 hover:text-primary"
+              className="min-h-11 rounded-lg border border-border/60 bg-background px-3 font-mono text-xs text-muted-foreground transition-colors hover:border-primary/30 hover:text-primary"
             >
               {preset.label}
             </button>
@@ -98,7 +98,7 @@ export function RagRetrievalLab(props: {
           onChange={(event) => setQuery(event.currentTarget.value)}
           maxLength={300}
           rows={5}
-          className="mt-2 w-full resize-y rounded border border-border/60 bg-background p-4 text-sm leading-relaxed text-foreground focus:border-primary/50 focus:outline-none focus:ring-1 focus:ring-primary/30"
+          className="mt-2 w-full resize-y rounded-lg border border-border/60 bg-background p-4 text-sm leading-relaxed text-foreground focus:border-primary/50 focus:outline-none focus:ring-1 focus:ring-primary/30"
         />
         <div className="mt-2 flex items-center justify-between gap-4">
           <p className="text-xs leading-relaxed text-muted-foreground">
@@ -123,7 +123,7 @@ export function RagRetrievalLab(props: {
           type="button"
           disabled={!query.trim() || status === "loading"}
           onClick={runRetrieval}
-          className="mt-6 flex min-h-12 w-full items-center justify-center gap-2 btn-fx btn-fx-primary rounded bg-primary-fill px-5 font-mono text-sm font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-6 flex min-h-12 w-full items-center justify-center gap-2 btn-fx btn-fx-primary rounded-lg bg-primary-fill px-5 font-mono text-sm font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50"
         >
           <span aria-hidden>⌕</span>
           {status === "loading" ? labels.searching : labels.search}
@@ -138,7 +138,7 @@ export function RagRetrievalLab(props: {
               {result.queryTerms.map((term) => (
                 <span
                   key={term}
-                  className="rounded border border-primary/15 bg-primary/5 px-2 py-1 font-mono text-[10px] text-primary"
+                  className="rounded-lg border border-primary/15 bg-primary/5 px-2 py-1 font-mono text-[10px] text-primary"
                 >
                   {term}
                 </span>
@@ -150,7 +150,7 @@ export function RagRetrievalLab(props: {
 
       <section
         aria-live="polite"
-        className="technical-palette rounded border border-border/60 bg-technical-surface p-5 sm:p-6"
+        className="technical-palette rounded-lg border border-border/60 bg-technical-surface p-5 sm:p-6"
       >
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
@@ -174,7 +174,7 @@ export function RagRetrievalLab(props: {
             {Array.from({ length: 3 }).map((_, i) => (
               <div
                 key={i}
-                className="rounded border border-border/50 bg-black/40 p-4"
+                className="rounded-lg border border-border/50 bg-black/40 p-4"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="w-full">
@@ -186,20 +186,20 @@ export function RagRetrievalLab(props: {
                 <Skeleton className="mt-3 h-3 w-full" />
                 <Skeleton className="mt-2 h-3 w-11/12" />
                 <div className="mt-3 flex gap-1.5">
-                  <Skeleton className="h-4 w-14 rounded" />
-                  <Skeleton className="h-4 w-16 rounded" />
+                  <Skeleton className="h-4 w-14 rounded-lg" />
+                  <Skeleton className="h-4 w-16 rounded-lg" />
                 </div>
               </div>
             ))}
           </div>
         ) : !result ? (
-          <div className="mt-5 flex min-h-80 items-center justify-center rounded border border-dashed border-border/50 bg-black/30 p-8 text-center">
+          <div className="mt-5 flex min-h-80 items-center justify-center rounded-lg border border-dashed border-border/50 bg-black/30 p-8 text-center">
             <p className="max-w-sm font-mono text-xs leading-relaxed text-muted-foreground">
               {labels.emptyResults}
             </p>
           </div>
         ) : result.chunks.length === 0 ? (
-          <div className="mt-5 rounded border border-status-warning/20 bg-status-warning/5 p-6 text-center">
+          <div className="mt-5 rounded-lg border border-status-warning/20 bg-status-warning/5 p-6 text-center">
             <p className="text-sm text-status-warning">{labels.noMatches}</p>
           </div>
         ) : (
@@ -207,7 +207,7 @@ export function RagRetrievalLab(props: {
             {result.chunks.map((chunk, index) => (
               <article
                 key={chunk.id}
-                className="rounded border border-border/50 bg-black/40 p-4"
+                className="rounded-lg border border-border/50 bg-black/40 p-4"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
@@ -237,7 +237,7 @@ export function RagRetrievalLab(props: {
                   {chunk.matchedTerms.map((term) => (
                     <span
                       key={term}
-                      className="rounded bg-primary/10 px-2 py-0.5 font-mono text-[10px] text-primary"
+                      className="rounded-lg bg-primary/10 px-2 py-0.5 font-mono text-[10px] text-primary"
                     >
                       {term}
                     </span>

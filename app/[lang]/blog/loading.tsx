@@ -20,7 +20,7 @@ export default function BlogLoading() {
         <Skeleton className="mt-6 h-3 w-32" />
 
         {/* Search bar */}
-        <Skeleton className="mt-12 h-11 w-full rounded" />
+        <Skeleton className="mt-12 h-11 w-full rounded-lg" />
 
         {/* Tag chips */}
         <div className="mt-4 flex flex-wrap gap-2">
@@ -33,13 +33,13 @@ export default function BlogLoading() {
         <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2">
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="group relative">
-              <Skeleton className="aspect-2/1 mb-4 w-full rounded" />
+              <Skeleton className="aspect-2/1 mb-4 w-full rounded-lg" />
               <Skeleton className="h-3 w-32" />
               <Skeleton className="mt-3 h-5 w-11/12" />
               <Skeleton className="mt-2 h-5 w-3/4" />
               <div className="mt-3 flex flex-wrap gap-2">
-                <Skeleton className="h-5 w-14 rounded" />
-                <Skeleton className="h-5 w-16 rounded" />
+                <Skeleton className="h-5 w-14 rounded-lg" />
+                <Skeleton className="h-5 w-16 rounded-lg" />
               </div>
             </div>
           ))}

@@ -19,8 +19,8 @@ export function LabDetailSkeleton({ label }: { label: string }) {
 
         {/* Badge row */}
         <div className="mt-5 flex gap-2">
-          <Skeleton className="h-6 w-28 rounded" />
-          <Skeleton className="h-6 w-20 rounded" />
+          <Skeleton className="h-6 w-28 rounded-lg" />
+          <Skeleton className="h-6 w-20 rounded-lg" />
         </div>
 
         {/* Title + intro */}
@@ -29,12 +29,12 @@ export function LabDetailSkeleton({ label }: { label: string }) {
         <Skeleton className="mt-2 h-4 w-3/4 max-w-xl" />
 
         {/* Interactive panel */}
-        <Skeleton className="mt-10 h-80 w-full rounded" />
+        <Skeleton className="mt-10 h-80 w-full rounded-lg" />
 
         {/* Steps grid */}
         <div className="mt-10 grid gap-5 sm:grid-cols-3">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="rounded border border-border/60 bg-card p-5">
+            <div key={i} className="rounded-lg border border-border/60 bg-card p-5">
               <Skeleton className="h-3 w-6" />
               <Skeleton className="mt-3 h-4 w-2/3" />
               <Skeleton className="mt-3 h-3 w-full" />

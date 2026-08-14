@@ -16,7 +16,7 @@ export default function BlogPostLoading() {
         <Skeleton className="mb-8 h-3 w-24" />
 
         {/* Cover */}
-        <Skeleton className="mb-8 aspect-2/1 w-full max-w-3xl rounded sm:aspect-5/2" />
+        <Skeleton className="mb-8 aspect-2/1 w-full max-w-3xl rounded-lg sm:aspect-5/2" />
 
         {/* Meta + title */}
         <div className="max-w-3xl">
@@ -39,7 +39,7 @@ export default function BlogPostLoading() {
                 style={{ width: `${90 - (i % 4) * 12}%` }}
               />
             ))}
-            <Skeleton className="mt-6 h-40 w-full rounded" />
+            <Skeleton className="mt-6 h-40 w-full rounded-lg" />
             {Array.from({ length: 5 }).map((_, i) => (
               <Skeleton
                 key={`b-${i}`}
