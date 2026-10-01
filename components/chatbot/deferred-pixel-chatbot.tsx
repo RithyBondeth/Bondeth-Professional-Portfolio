@@ -3,6 +3,7 @@
 import { useState } from "react";
 import dynamic from "next/dynamic";
 import { MascotBuddy } from "@/components/mascot/mascot-buddy";
+import type { IChatTour } from "@/utils/chatbot/types";
 import styles from "./pixel-chatbot.module.css";
 
 const PixelChatbot = dynamic(() => import("./pixel-chatbot"), {
@@ -26,11 +27,11 @@ const launcherCopy = {
  * assistant only after a visitor asks to open it. The companion mascot lives
  * here rather than behind that click, so it is alive from the first scroll.
  */
-export default function DeferredPixelChatbot({ lang }: { lang: string }) {
+export default function DeferredPixelChatbot({ lang, tours }: { lang: string; tours: IChatTour[] }) {
   const [requested, setRequested] = useState(false);
   const text = lang === "km" ? launcherCopy.km : launcherCopy.en;
 
-  if (requested) return <PixelChatbot lang={lang} initialOpen />;
+  if (requested) return <PixelChatbot lang={lang} tours={tours} initialOpen />;
 
   return (
     <aside className={styles.chatbot} aria-label={text.label}>

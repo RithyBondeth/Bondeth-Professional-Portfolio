@@ -17,6 +17,7 @@ import { siteConfig } from "@/utils/constants/portfolio.constant";
 import { locales, hasLocale, getDictionary } from "@/utils/i18n";
 import { getSiteConfig } from "@/utils/i18n/content";
 import { getAllPosts } from "@/utils/functions/blog";
+import { buildChatTours } from "@/utils/chatbot/tour";
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
@@ -107,6 +108,7 @@ export default async function RootLayout({
     title,
     tags,
   }));
+  const tours = await buildChatTours(lang);
 
   return (
     <html
@@ -149,7 +151,7 @@ export default async function RootLayout({
             <Footer lang={lang} />
           </SmoothScroll>
           <DeferredCommandPalette lang={lang} posts={palettePosts} />
-          <DeferredPixelChatbot lang={lang} />
+          <DeferredPixelChatbot lang={lang} tours={tours} />
         </ThemeProvider>
         <Analytics />
         <SpeedInsights />

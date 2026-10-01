@@ -1,5 +1,12 @@
 import { NextResponse } from "next/server";
 import { buildChatbotSystemPrompt } from "@/utils/chatbot/knowledge";
+import {
+  buildChatCatalog,
+  CHAT_TOOLS,
+  describeCatalogForPrompt,
+  executeChatTool,
+} from "@/utils/chatbot/tools";
+import type { TChatStreamEvent } from "@/utils/chatbot/types";
 import { getClientId, rateLimit } from "@/utils/functions/rate-limit";
 
 type ChatRole = "assistant" | "user";
@@ -9,27 +16,51 @@ type ChatMessage = {
   content: string;
 };
 
-type MistralContentChunk = {
+type GroqContentChunk = {
   text?: unknown;
   content?: unknown;
 };
 
-type MistralResponse = {
+type GroqToolCallDelta = {
+  id?: unknown;
+  index?: unknown;
+  function?: { name?: unknown; arguments?: unknown };
+};
+
+type GroqStreamChunk = {
   choices?: Array<{
-    message?: {
+    delta?: {
       content?: unknown;
+      tool_calls?: GroqToolCallDelta[];
     };
   }>;
 };
 
-const MISTRAL_CHAT_URL = "https://api.mistral.ai/v1/chat/completions";
-const DEFAULT_MODEL = "mistral-small-latest";
+type ToolCall = { id: string; name: string; arguments: string };
+
+type UpstreamMessage =
+  | { role: "system" | "user"; content: string }
+  | {
+      role: "assistant";
+      content: string;
+      tool_calls?: Array<{
+        id: string;
+        type: "function";
+        function: { name: string; arguments: string };
+      }>;
+    }
+  | { role: "tool"; tool_call_id: string; name: string; content: string };
+
+const GROQ_CHAT_URL = "https://api.groq.com/openai/v1/chat/completions";
+const DEFAULT_MODEL = "qwen/qwen3.8-27b";
 const MAX_MESSAGES = 12;
 const MAX_MESSAGE_LENGTH = 1_000;
 const MAX_TOTAL_LENGTH = 6_000;
 const RATE_LIMIT = 12;
 const RATE_WINDOW_MS = 60_000;
 const REQUEST_TIMEOUT_MS = 25_000;
+/** Round one may call tools; round two must answer in prose. */
+const MAX_ROUNDS = 2;
 const UPSTREAM_ATTEMPTS = 2;
 const RETRY_DELAY_MS = 450;
 const RETRYABLE_UPSTREAM_STATUSES = new Set([429, 500, 502, 503, 504]);
@@ -64,25 +95,94 @@ function parseMessages(value: unknown): ChatMessage[] | null {
   return messages.at(-1)?.role === "user" ? messages : null;
 }
 
-function extractAssistantText(payload: MistralResponse): string | null {
-  const content = payload.choices?.[0]?.message?.content;
+function contentToText(content: unknown): string {
+  if (typeof content === "string") return content;
+  if (!Array.isArray(content)) return "";
 
-  if (typeof content === "string") return content.trim() || null;
-  if (!Array.isArray(content)) return null;
-
-  const text = content
+  return content
     .map((chunk) => {
       if (typeof chunk === "string") return chunk;
       if (typeof chunk !== "object" || chunk === null) return "";
 
-      const typedChunk = chunk as MistralContentChunk;
+      const typedChunk = chunk as GroqContentChunk;
       if (typeof typedChunk.text === "string") return typedChunk.text;
       return typeof typedChunk.content === "string" ? typedChunk.content : "";
     })
-    .join("")
-    .trim();
+    .join("");
+}
 
-  return text || null;
+/** Yields each `data:` payload of a server-sent-event body as parsed JSON. */
+async function* readServerSentEvents(body: ReadableStream<Uint8Array>) {
+  const reader = body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  try {
+    for (;;) {
+      const { value, done } = await reader.read();
+      if (done) return;
+      buffer += decoder.decode(value, { stream: true });
+
+      let newline = buffer.indexOf("\n");
+      while (newline !== -1) {
+        const line = buffer.slice(0, newline).trim();
+        buffer = buffer.slice(newline + 1);
+        newline = buffer.indexOf("\n");
+
+        if (!line.startsWith("data:")) continue;
+        const data = line.slice(5).trim();
+        if (data === "[DONE]") return;
+
+        try {
+          yield JSON.parse(data) as GroqStreamChunk;
+        } catch {
+          // A malformed keep-alive or partial frame; the next one carries on.
+        }
+      }
+    }
+  } finally {
+    reader.releaseLock();
+  }
+}
+
+/**
+ * Relays one streamed completion: text deltas go straight to the visitor,
+ * tool-call fragments are stitched back together by index for the caller.
+ */
+async function relayCompletion(
+  response: Response,
+  send: (event: TChatStreamEvent) => void,
+) {
+  let text = "";
+  const calls = new Map<number, ToolCall>();
+
+  if (!response.body) return { text, toolCalls: [] };
+
+  for await (const chunk of readServerSentEvents(response.body)) {
+    const delta = chunk.choices?.[0]?.delta;
+    if (!delta) continue;
+
+    const piece = contentToText(delta.content);
+    if (piece) {
+      text += piece;
+      send({ type: "text", delta: piece });
+    }
+
+    delta.tool_calls?.forEach((fragment, position) => {
+      const index = typeof fragment.index === "number" ? fragment.index : position;
+      const call = calls.get(index) ?? { id: "", name: "", arguments: "" };
+      if (typeof fragment.id === "string" && fragment.id) call.id = fragment.id;
+      if (typeof fragment.function?.name === "string" && fragment.function.name) {
+        call.name = fragment.function.name;
+      }
+      const args = fragment.function?.arguments;
+      if (typeof args === "string") call.arguments += args;
+      else if (args && typeof args === "object") call.arguments = JSON.stringify(args);
+      calls.set(index, call);
+    });
+  }
+
+  return { text, toolCalls: [...calls.values()].filter((call) => call.id && call.name) };
 }
 
 function noStoreJson(body: Record<string, unknown>, status = 200) {
@@ -92,7 +192,7 @@ function noStoreJson(body: Record<string, unknown>, status = 200) {
   });
 }
 
-async function requestMistral(
+async function requestGroq(
   apiKey: string,
   body: string,
   signal: AbortSignal,
@@ -100,7 +200,7 @@ async function requestMistral(
   let response: Response | null = null;
 
   for (let attempt = 1; attempt <= UPSTREAM_ATTEMPTS; attempt += 1) {
-    response = await fetch(MISTRAL_CHAT_URL, {
+    response = await fetch(GROQ_CHAT_URL, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,
@@ -167,61 +267,44 @@ export async function POST(request: Request) {
   }
 
   const lang = "lang" in payload && payload.lang === "km" ? "km" : "en";
-  const apiKey = process.env.MISTRAL_API_KEY;
+  const apiKey = process.env.GROQ_API_KEY;
 
   if (!apiKey) {
-    console.error("MISTRAL_API_KEY is not set — portfolio chat cannot answer.");
+    console.error("GROQ_API_KEY is not set — portfolio chat cannot answer.");
     return noStoreJson({ error: "The AI assistant is not configured yet." }, 503);
   }
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
-  const requestBody = JSON.stringify({
-    model: process.env.MISTRAL_CHAT_MODEL ?? DEFAULT_MODEL,
-    messages: [
-      { role: "system", content: buildChatbotSystemPrompt(lang) },
-      ...messages,
-    ],
-    temperature: 0.25,
-    max_tokens: 450,
-  });
+  const catalog = await buildChatCatalog(lang);
+  const conversation: UpstreamMessage[] = [
+    {
+      role: "system",
+      content: `${buildChatbotSystemPrompt(lang)}\n\n${describeCatalogForPrompt(catalog)}`,
+    },
+    ...messages,
+  ];
+  const requestBody = (round: number) =>
+    JSON.stringify({
+      model: process.env.GROQ_CHAT_MODEL ?? DEFAULT_MODEL,
+      messages: conversation,
+      tools: CHAT_TOOLS,
+      tool_choice: round < MAX_ROUNDS ? "auto" : "none",
+      temperature: 0.25,
+      max_completion_tokens: 450,
+      stream: true,
+    });
 
+  // The first upstream call happens before the stream opens, so a refusal or
+  // an outage still reaches the client as a status code it can explain.
+  let firstResponse: Response | null;
   try {
-    const response = await requestMistral(apiKey, requestBody, controller.signal);
-
-    if (!response) throw new Error("Mistral did not return a response.");
-
-    if (!response.ok) {
-      console.error(`Mistral chat request failed with status ${response.status}.`);
-
-      if (response.status === 429) {
-        return noStoreJson(
-          { error: "The AI service is busy right now. Please try again shortly." },
-          503,
-        );
-      }
-
-      return noStoreJson(
-        { error: "Byte could not answer right now. Please try again." },
-        502,
-      );
-    }
-
-    const data = (await response.json()) as MistralResponse;
-    const message = extractAssistantText(data);
-
-    if (!message) {
-      console.error("Mistral chat response did not contain assistant text.");
-      return noStoreJson(
-        { error: "Byte returned an empty answer. Please try again." },
-        502,
-      );
-    }
-
-    return noStoreJson({ message });
+    firstResponse = await requestGroq(apiKey, requestBody(1), controller.signal);
+    if (!firstResponse) throw new Error("Groq did not return a response.");
   } catch (error) {
+    clearTimeout(timeout);
     const timedOut = error instanceof Error && error.name === "AbortError";
-    console.error(timedOut ? "Mistral chat request timed out." : "Mistral chat request failed.");
+    console.error(timedOut ? "Groq chat request timed out." : "Groq chat request failed.");
     return noStoreJson(
       {
         error: timedOut
@@ -230,7 +313,109 @@ export async function POST(request: Request) {
       },
       502,
     );
-  } finally {
-    clearTimeout(timeout);
   }
+
+  if (!firstResponse.ok) {
+    clearTimeout(timeout);
+    console.error(`Groq chat request failed with status ${firstResponse.status}.`);
+    await firstResponse.body?.cancel();
+
+    return noStoreJson(
+      {
+        error:
+          firstResponse.status === 429
+            ? "The AI service is busy right now. Please try again shortly."
+            : "Byte could not answer right now. Please try again.",
+      },
+      firstResponse.status === 429 ? 503 : 502,
+    );
+  }
+
+  const encoder = new TextEncoder();
+  const stream = new ReadableStream<Uint8Array>({
+    async start(stream) {
+      let closed = false;
+      const send = (event: TChatStreamEvent) => {
+        if (!closed) stream.enqueue(encoder.encode(`${JSON.stringify(event)}\n`));
+      };
+      let shownSomething = false;
+
+      try {
+        let response: Response = firstResponse;
+
+        for (let round = 1; round <= MAX_ROUNDS; round += 1) {
+          const { text, toolCalls } = await relayCompletion(response, send);
+          if (text.trim()) shownSomething = true;
+          if (toolCalls.length === 0 || round === MAX_ROUNDS) break;
+
+          conversation.push({
+            role: "assistant",
+            content: text,
+            tool_calls: toolCalls.map((call) => ({
+              id: call.id,
+              type: "function",
+              function: { name: call.name, arguments: call.arguments },
+            })),
+          });
+
+          for (const call of toolCalls) {
+            const outcome = executeChatTool(call.name, call.arguments, catalog, lang);
+            if (outcome.event) {
+              send(outcome.event);
+              shownSomething = true;
+            }
+            conversation.push({
+              role: "tool",
+              tool_call_id: call.id,
+              name: call.name,
+              content: outcome.result,
+            });
+          }
+
+          const next = await requestGroq(apiKey, requestBody(round + 1), controller.signal);
+          if (!next?.ok) {
+            console.error(`Groq follow-up request failed with status ${next?.status}.`);
+            await next?.body?.cancel();
+            // Cards may already be on screen; only complain if they are not.
+            if (!shownSomething) {
+              send({ type: "error", message: "Byte could not answer right now. Please try again." });
+            }
+            return;
+          }
+          response = next;
+        }
+
+        if (!shownSomething) {
+          console.error("Groq chat stream did not contain an answer.");
+          send({ type: "error", message: "Byte returned an empty answer. Please try again." });
+        }
+      } catch (error) {
+        const timedOut = error instanceof Error && error.name === "AbortError";
+        console.error(timedOut ? "Groq chat stream timed out." : "Groq chat stream failed.");
+        send({
+          type: "error",
+          message: timedOut
+            ? "Byte took too long to answer. Please try again."
+            : "Byte lost the connection. Please try again.",
+        });
+      } finally {
+        clearTimeout(timeout);
+        send({ type: "done" });
+        closed = true;
+        stream.close();
+      }
+    },
+    cancel() {
+      // The visitor closed the tab or sent nothing more: stop paying for tokens.
+      controller.abort();
+    },
+  });
+
+  return new Response(stream, {
+    headers: {
+      "Content-Type": "application/x-ndjson; charset=utf-8",
+      "Cache-Control": "no-store, no-transform",
+      "X-Accel-Buffering": "no",
+    },
+  });
 }

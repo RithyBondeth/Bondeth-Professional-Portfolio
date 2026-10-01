@@ -23,7 +23,7 @@ Personal portfolio and technical blog for **Rithy Bondeth**, a Full Stack Develo
 npm install
 
 # 2. Configure environment
-cp .env.example .env.local   # then fill in RESEND_API_KEY
+cp .env.example .env.local   # then fill in GROQ_API_KEY and RESEND_API_KEY
 
 # 3. Run the dev server (http://localhost:8888)
 npm run dev
@@ -40,10 +40,12 @@ npm run dev
 
 ## Environment Variables
 
-See [`.env.example`](.env.example). Only `RESEND_API_KEY` is required (for the contact form).
+See [`.env.example`](.env.example). Set `GROQ_API_KEY` for the chatbot and `RESEND_API_KEY` for the contact form. Credentials stay on the server.
 
 | Variable               | Required | Purpose                                                       |
 | ---------------------- | -------- | ------------------------------------------------------------- |
+| `GROQ_API_KEY`         | Yes      | Generates chatbot replies through Groq                        |
+| `GROQ_CHAT_MODEL`      | No       | Groq model override (defaults to `qwen/qwen3.8-27b`)    |
 | `RESEND_API_KEY`       | Yes      | Sends contact-form email via Resend                           |
 | `NEXT_PUBLIC_SITE_URL` | No       | Canonical URL for SEO / sitemap / OG (falls back to Vercel)   |
 | `CONTACT_FROM_EMAIL`   | No       | Verified sender address (requires a verified Resend domain)   |
