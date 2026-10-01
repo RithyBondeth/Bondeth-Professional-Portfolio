@@ -1,5 +1,8 @@
 "use client";
 
+import { MOTION } from "@/lib/motion-timing";
+import { useReducedMotion } from "@/components/utils/animations/use-motion";
+
 import { useEffect, useRef } from "react";
 import { gsap } from "@/components/utils/animations/gsap-scroll";
 
@@ -18,12 +21,13 @@ export function LabVignetteFx(props: {
   const { children, className } = props;
 
   /* ---------------------------------- Utils --------------------------------- */
+  const reduceMotion = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
 
   /* --------------------------------- Effects -------------------------------- */
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el || reduceMotion) return;
 
     const bars = el.querySelectorAll<HTMLElement>("[data-lab-bar]");
     const tiles = el.querySelectorAll<HTMLElement>("[data-lab-tile]");
@@ -39,9 +43,9 @@ export function LabVignetteFx(props: {
             { scaleX: 0, transformOrigin: "0% 50%" },
             {
               scaleX: 1,
-              duration: 0.9,
+              duration: MOTION.entrance / 1000,
               ease: "smooth",
-              stagger: 0.15,
+              stagger: MOTION.stagger / 1000,
               scrollTrigger: { trigger: el, start: "top 80%", once: true },
             },
           ),
@@ -51,13 +55,13 @@ export function LabVignetteFx(props: {
         tweens.push(
           gsap.fromTo(
             tiles,
-            { opacity: 0, scale: 0.82 },
+            { opacity: 0, scale: 0.96 },
             {
               opacity: 1,
               scale: 1,
-              duration: 0.55,
+              duration: MOTION.entrance / 1000,
               ease: "snap",
-              stagger: 0.12,
+              stagger: MOTION.stagger / 1000,
               scrollTrigger: { trigger: el, start: "top 80%", once: true },
             },
           ),
@@ -77,7 +81,7 @@ export function LabVignetteFx(props: {
     });
 
     return () => mm.revert();
-  }, []);
+  }, [reduceMotion]);
 
   /* -------------------------------- Render UI ------------------------------- */
   return (

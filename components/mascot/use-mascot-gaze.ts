@@ -1,5 +1,7 @@
 "use client";
 
+import { useReducedMotion } from "@/components/utils/animations/use-motion";
+
 import { useEffect, type RefObject } from "react";
 
 /**
@@ -14,11 +16,12 @@ export function useMascotGaze(
   ref: RefObject<Element | null>,
   { range = 1.4, enabled = true }: { range?: number; enabled?: boolean } = {},
 ) {
+  const reduceMotion = useReducedMotion();
   useEffect(() => {
     const el = ref.current as HTMLElement | SVGElement | null;
     if (!enabled || !el) return;
     if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (reduceMotion) return;
 
     let frame = 0;
     let pointerX = 0;
@@ -55,6 +58,7 @@ export function useMascotGaze(
       window.removeEventListener("pointermove", onPointerMove);
       document.documentElement.removeEventListener("pointerleave", onPointerLeave);
       if (frame) cancelAnimationFrame(frame);
+      onPointerLeave();
     };
-  }, [ref, range, enabled]);
+  }, [ref, range, enabled, reduceMotion]);
 }

@@ -139,9 +139,10 @@ export const en = {
     structuredOutputTitle: "Structured Output Playground",
     structuredOutputDescription:
       "Turn an unstructured project inquiry into predictable JSON, then inspect schema validation and missing fields.",
+    signatureDemo: "Signature demo",
     ragTitle: "RAG Retrieval Visualizer",
     ragDescription:
-      "Search a bilingual document set and inspect ranked chunks, matched terms, and the context selected for generation.",
+      "Tune a retrieval policy, inspect every source decision, and compare the cited context with a baseline.",
     evalTitle: "LLM Evaluation Playground",
     evalDescription:
       "Compare two candidate responses with deterministic tests and reveal quality regressions before deployment.",
@@ -232,7 +233,7 @@ export const en = {
         },
         {
           label: "សំណួរខ្មែរ",
-          value: "ការសិក្សា របស់ រិទ្ធី បណ្ឌេត",
+          value: "ការសិក្សា របស់ ហែម ឫទ្ធីបណ្ឌិត",
         },
       ],
       steps: [
@@ -325,7 +326,7 @@ export const en = {
           prompt:
             "Answer in Khmer: Where is Bondeth based and what is his profession?",
           candidateA:
-            "រិទ្ធី បណ្ឌេត មានមូលដ្ឋាននៅរាជធានីភ្នំពេញ និងជាវិស្វករសូហ្វវែរ។",
+            "ហែម ឫទ្ធីបណ្ឌិត មានមូលដ្ឋាននៅរាជធានីភ្នំពេញ និងជាវិស្វករសូហ្វវែរ។",
           candidateB: "Bondeth is a product designer based in Bangkok.",
         },
       ],

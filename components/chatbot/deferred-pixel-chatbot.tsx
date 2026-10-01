@@ -16,7 +16,7 @@ const launcherCopy = {
     bubble: "Ask me",
   },
   km: {
-    label: "ជជែកជាមួយជំនួយការ Pixel របស់ Bondeth",
+    label: "ជជែកជាមួយជំនួយការ Pixel របស់ ហែម ឫទ្ធីបណ្ឌិត",
     bubble: "សួរខ្ញុំ",
   },
 } as const;

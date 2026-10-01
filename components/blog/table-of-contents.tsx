@@ -1,5 +1,9 @@
 "use client";
 
+import { useReducedMotion } from "@/components/utils/animations/use-motion";
+import { isMotionReduced } from "@/lib/motion-preference";
+import { MOTION } from "@/lib/motion-timing";
+
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "@/components/utils/animations/gsap";
 import type { ITableOfContentsItem } from "@/utils/functions/blog";
@@ -85,6 +89,7 @@ export function TableOfContents({
 }: ITableOfContentsProps) {
   /* ---------------------------------- Utils --------------------------------- */
   // Scrollspy only drives the desktop rail — the mobile <details> stays plain.
+  const reduceMotion = useReducedMotion();
   const activeId = useActiveHeading(items, !mobile);
   const navRef = useRef<HTMLElement>(null);
   const markerRef = useRef<HTMLSpanElement>(null);
@@ -101,20 +106,21 @@ export function TableOfContents({
       `a[data-toc-id="${activeId}"]`,
     );
     if (!active) {
-      gsap.to(marker, { opacity: 0, duration: 0.2 });
-      return;
+      gsap.to(marker, { opacity: 0, duration: isMotionReduced() ? 0 : MOTION.feedback / 1000 });
+      return () => { gsap.killTweensOf(marker); };
     }
     const vars = {
       y: active.offsetTop,
       height: active.offsetHeight,
       opacity: 1,
     };
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (isMotionReduced()) {
       gsap.set(marker, vars);
     } else {
-      gsap.to(marker, { ...vars, duration: 0.4, ease: "smooth" });
+      gsap.to(marker, { ...vars, duration: MOTION.feedback / 1000, ease: "smooth" });
     }
-  }, [activeId, mobile]);
+    return () => { gsap.killTweensOf(marker); };
+  }, [activeId, mobile, reduceMotion]);
 
   if (items.length === 0) return null;
 

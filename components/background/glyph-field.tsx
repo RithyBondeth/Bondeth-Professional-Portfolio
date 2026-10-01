@@ -1,5 +1,7 @@
 "use client";
 
+import { useReducedMotion } from "@/components/utils/animations/use-motion";
+
 import { useEffect, useRef } from "react";
 
 /* --------------------------------- Glyphs ---------------------------------- */
@@ -88,6 +90,7 @@ function hash(value: number) {
  * pauses in background tabs. Reduced motion renders one still frame.
  */
 export function GlyphField() {
+  const reduceMotion = useReducedMotion();
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -96,7 +99,6 @@ export function GlyphField() {
     if (!canvas || !context) return;
 
     const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const frameInterval = 1000 / (finePointer ? 30 : 20);
 
     let theme = readTheme();
@@ -275,7 +277,7 @@ export function GlyphField() {
       window.removeEventListener("pointermove", onPointerMove);
       document.documentElement.removeEventListener("pointerleave", onPointerLeave);
     };
-  }, []);
+  }, [reduceMotion]);
 
   return <canvas ref={canvasRef} aria-hidden className="ambient-glyphs" />;
 }

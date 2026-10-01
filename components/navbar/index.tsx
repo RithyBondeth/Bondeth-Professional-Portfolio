@@ -1,5 +1,7 @@
 "use client";
 
+import { isMotionReduced, subscribeToMotionPreference } from "@/lib/motion-preference";
+import { MOTION } from "@/lib/motion-timing";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -198,7 +200,6 @@ export default function Navbar(props: { lang: TLocale }) {
       .filter((href) => href.startsWith("/#"))
       .map((href) => href.replace("/#", ""));
 
-    const reduceMq = window.matchMedia("(prefers-reduced-motion: reduce)");
 
     let frame = 0;
 
@@ -210,7 +211,10 @@ export default function Navbar(props: { lang: TLocale }) {
       // Hide the bar while scrolling down through the page, bring it back the
       // moment the user scrolls up — classic focus-on-content pattern.
       // Reduced motion keeps the bar permanently visible.
-      if (!reduceMq.matches) {
+      if (isMotionReduced()) {
+        hiddenRef.current = false;
+        setNavHidden(false);
+      } else {
         const goingDown = y > lastYRef.current + 6;
         const goingUp = y < lastYRef.current - 6;
         if (goingDown && y > 400 && !menuOpenRef.current && !hiddenRef.current) {
@@ -247,7 +251,9 @@ export default function Navbar(props: { lang: TLocale }) {
 
     window.addEventListener("scroll", onScroll, { passive: true });
     update();
+    const unsubscribe = subscribeToMotionPreference(onScroll);
     return () => {
+      unsubscribe();
       window.removeEventListener("scroll", onScroll);
       if (frame) cancelAnimationFrame(frame);
     };
@@ -273,10 +279,8 @@ export default function Navbar(props: { lang: TLocale }) {
         indicator.style.opacity = "0";
         return;
       }
-      const reduce = window.matchMedia(
-        "(prefers-reduced-motion: reduce)",
-      ).matches;
-      indicator.style.transitionDuration = animate && !reduce ? "450ms" : "0ms";
+      const reduce = isMotionReduced();
+      indicator.style.transitionDuration = animate && !reduce ? `${MOTION.feedback}ms` : "0ms";
       indicator.style.transform = `translateX(${active.offsetLeft + 10}px)`;
       indicator.style.width = `${Math.max(0, active.offsetWidth - 20)}px`;
       indicator.style.opacity = "1";
@@ -285,7 +289,11 @@ export default function Navbar(props: { lang: TLocale }) {
     place(true);
     const onResize = () => place(false);
     window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
+    const unsubscribe = subscribeToMotionPreference(onResize);
+    return () => {
+      unsubscribe();
+      window.removeEventListener("resize", onResize);
+    };
   }, [activeSection]);
 
   useEffect(() => {

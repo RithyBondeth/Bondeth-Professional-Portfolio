@@ -1,3 +1,5 @@
+import { ragExperienceCopy } from "@/components/labs/rag-experience-copy";
+import { retrievePortfolioContext } from "@/utils/functions/labs/rag-retrieval";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -38,6 +40,8 @@ export default async function RagRetrievalPage({
   if (!hasLocale(lang)) notFound();
   const { labs } = getDictionary(lang);
 
+  const copy = lang === "km" ? ragExperienceCopy.km : ragExperienceCopy.en;
+
   return (
     <main
       id="main-content"
@@ -56,7 +60,7 @@ export default async function RagRetrievalPage({
 
           <div className="mt-5 flex flex-wrap items-center gap-2">
             <span className="rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
-              {labs.experimental}
+              {labs.ragTitle}
             </span>
             <span className="rounded-full border border-status-success/25 bg-status-success/5 px-3 py-1 text-xs font-medium text-status-success">
               {labs.rag.localMode}
@@ -64,36 +68,15 @@ export default async function RagRetrievalPage({
           </div>
 
           <h1 className="mt-5 text-4xl font-bold text-foreground sm:text-5xl">
-            {labs.ragTitle}
+            {copy.heading}
           </h1>
           <p className="mt-4 max-w-3xl text-sm leading-relaxed text-field-muted-foreground">
-            {labs.rag.intro}
+            {copy.intro}
           </p>
         </AnimateIn>
 
         <AnimateIn from="up" delay={0.08} className="mt-10">
-          <RagRetrievalLab labels={labs.rag} />
-        </AnimateIn>
-
-        <AnimateIn from="up" delay={0.12}>
-          <section className="mt-10 grid gap-5 sm:grid-cols-3">
-            {labs.rag.steps.map((step, index) => (
-              <article
-                key={step.title}
-                className="rounded-lg border border-border/60 bg-card p-5"
-              >
-                <span className="text-xs font-semibold text-primary">
-                  0{index + 1}
-                </span>
-                <h2 className="mt-3 text-sm font-semibold text-foreground">
-                  {step.title}
-                </h2>
-                <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                  {step.description}
-                </p>
-              </article>
-            ))}
-          </section>
+          <RagRetrievalLab labels={labs.rag} lang={lang} initialResult={retrievePortfolioContext(labs.rag.presets[0].value)} />
         </AnimateIn>
 
         {/* Supersedes the old single "related reading" link — the cluster

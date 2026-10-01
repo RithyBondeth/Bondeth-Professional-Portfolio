@@ -6,7 +6,9 @@
     "dev": "NEXT_DIST_DIR=.next-dev next dev -p 8888",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:motion": "node --test tests/motion-preference.test.mjs",
+    "test:rag": "node --test tests/rag-retrieval.test.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",

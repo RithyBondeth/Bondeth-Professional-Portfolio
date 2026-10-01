@@ -1,5 +1,6 @@
 "use client";
 
+import { isMotionReduced } from "@/lib/motion-preference";
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 
@@ -11,7 +12,7 @@ import { usePathname } from "next/navigation";
 export function scrollToSection(id: string, animate = true) {
   const el = document.getElementById(id);
   if (!el) return false;
-  el.scrollIntoView({ behavior: animate ? "smooth" : "auto", block: "start" });
+  el.scrollIntoView({ behavior: animate && !isMotionReduced() ? "smooth" : "auto", block: "start" });
   return true;
 }
 

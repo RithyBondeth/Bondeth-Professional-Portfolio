@@ -33,7 +33,7 @@ export async function buildChatTours(lang: TLocale): Promise<IChatTour[]> {
       steps: [
         step("experience", km ? "ស្គាល់អ្នកអភិវឌ្ឍន៍" : "Meet the engineer",
           km
-            ? `Bondeth ជាអ្នកអភិវឌ្ឍន៍ Full Stack និងវិស្វករ AI នៅភ្នំពេញ។ មើលបទពិសោធន៍របស់គាត់ក្នុងការបង្កើតកម្មវិធី Web និង Mobile ហើយអាន [ប្រវត្តិរូបសង្ខេប](/${lang}/resume) សម្រាប់ព័ត៌មានបន្ថែម។`
+            ? `ហែម ឫទ្ធីបណ្ឌិត ជាអ្នកអភិវឌ្ឍន៍ Full Stack និងវិស្វករ AI នៅភ្នំពេញ។ មើលបទពិសោធន៍របស់គាត់ក្នុងការបង្កើតកម្មវិធី Web និង Mobile ហើយអាន [ប្រវត្តិរូបសង្ខេប](/${lang}/resume) សម្រាប់ព័ត៌មានបន្ថែម។`
             : `Bondeth is a full stack developer and AI engineer based in Phnom Penh. Start with his experience shipping web and mobile applications, or open his [résumé](/${lang}/resume) for a concise overview.`),
         step("projects", km ? "មើលស្នាដៃ" : "See the work",
           km
@@ -42,7 +42,7 @@ export async function buildChatTours(lang: TLocale): Promise<IChatTour[]> {
           [{ type: "project", slug: "apsara-talent" }, { type: "project", slug: "apsara-assistant" }]),
         step("contact", km ? "ចាប់ផ្តើមការសន្ទនា" : "Start a conversation",
           km
-            ? "មានតួនាទីការងារដែលសមស្រប? ផ្ញើព័ត៌មានអំពីក្រុម តួនាទី និងអ្វីដែលអ្នកចង់បង្កើតតាមផ្នែកទំនាក់ទំនង។ អ្នកក៏អាចសួរខ្ញុំអំពីជំនាញជាក់លាក់របស់ Bondeth បានដែរ។"
+            ? "មានតួនាទីការងារដែលសមស្រប? ផ្ញើព័ត៌មានអំពីក្រុម តួនាទី និងអ្វីដែលអ្នកចង់បង្កើតតាមផ្នែកទំនាក់ទំនង។ អ្នកក៏អាចសួរខ្ញុំអំពីជំនាញជាក់លាក់របស់ ហែម ឫទ្ធីបណ្ឌិត បានដែរ។"
             : "Have a role in mind? Use the contact section to share the team, role, and what you want to build. You can also ask me about a specific part of Bondeth’s experience."),
       ],
     },
@@ -53,7 +53,7 @@ export async function buildChatTours(lang: TLocale): Promise<IChatTour[]> {
       steps: [
         step("services", km ? "កំណត់អ្វីដែលអ្នកចង់បង្កើត" : "Find your starting point",
           km
-            ? "Bondeth ធ្វើការលើផលិតផល Web និង Mobile ការបញ្ចូល AI និងប្រព័ន្ធ Backend។ មើលសេវាកម្មដើម្បីរកអ្វីដែលសមនឹងគំនិតរបស់អ្នក។"
+            ? "ហែម ឫទ្ធីបណ្ឌិត ធ្វើការលើផលិតផល Web និង Mobile ការបញ្ចូល AI និងប្រព័ន្ធ Backend។ មើលសេវាកម្មដើម្បីរកអ្វីដែលសមនឹងគំនិតរបស់អ្នក។"
             : "Bondeth works on web and mobile products, AI integrations, and backend systems. The services section is a good place to match your idea with the kind of work he does."),
         step("projects", km ? "ស្វែងរកគម្រោងពាក់ព័ន្ធ" : "Explore relevant builds",
           km
@@ -73,7 +73,7 @@ export async function buildChatTours(lang: TLocale): Promise<IChatTour[]> {
       steps: [
         step("current-focus", km ? "មើលអ្វីដែលកំពុងសិក្សា" : "See the current focus",
           km
-            ? "Bondeth ផ្តោតលើប្រព័ន្ធ AI ដែលអាចទុកចិត្តបាន៖ Agentic workflows, RAG និងការវាយតម្លៃ LLM។ ចាប់ផ្តើមពីផ្នែកការងារបច្ចុប្បន្ន ដើម្បីដឹងពីអ្វីដែលគាត់កំពុងស្វែងយល់។"
+            ? "ហែម ឫទ្ធីបណ្ឌិត ផ្តោតលើប្រព័ន្ធ AI ដែលអាចទុកចិត្តបាន៖ Agentic workflows, RAG និងការវាយតម្លៃ LLM។ ចាប់ផ្តើមពីផ្នែកការងារបច្ចុប្បន្ន ដើម្បីដឹងពីអ្វីដែលគាត់កំពុងស្វែងយល់។"
             : "Bondeth’s current interests include reliable AI systems, agentic workflows, retrieval-augmented generation, and LLM evaluations. Start with the current-focus section for the context."),
         step("writing", km ? "សាកល្បងដោយខ្លួនឯង" : "Try it yourself",
           km
@@ -82,7 +82,7 @@ export async function buildChatTours(lang: TLocale): Promise<IChatTour[]> {
           [{ type: "lab", slug: "rag-retrieval" }, { type: "lab", slug: "llm-evals" }, { type: "lab", slug: "structured-output" }]),
         step("contact", km ? "ពិភាក្សាអំពី AI" : "Keep exploring together",
           km
-            ? "មានគំនិត AI ឬចង់សហការ? ទាក់ទង Bondeth ដោយពិពណ៌នាអំពីគំនិតរបស់អ្នក។ អ្នកក៏អាចសួរខ្ញុំពី RAG, Agents ឬការវាយតម្លៃ LLM ដើម្បីបន្តស្វែងយល់បាន។"
+            ? "មានគំនិត AI ឬចង់សហការ? ទាក់ទង ហែម ឫទ្ធីបណ្ឌិត ដោយពិពណ៌នាអំពីគំនិតរបស់អ្នក។ អ្នកក៏អាចសួរខ្ញុំពី RAG, Agents ឬការវាយតម្លៃ LLM ដើម្បីបន្តស្វែងយល់បាន។"
             : "Have an AI use case or a collaboration in mind? Reach out to Bondeth with a short description. Or ask me about RAG, agents, or evaluations to keep exploring here."),
       ],
     },

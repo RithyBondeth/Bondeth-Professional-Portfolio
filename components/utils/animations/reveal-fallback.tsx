@@ -1,5 +1,7 @@
 "use client";
 
+import { useReducedMotion } from "@/components/utils/animations/use-motion";
+
 import { useEffect } from "react";
 
 const TARGETS = ".reveal-on-view, .reveal-heading, .stagger-on-view > *";
@@ -29,18 +31,12 @@ function warnAboutTrappedReveals() {
 }
 
 /**
- * Scroll reveals for browsers without CSS view timelines (Firefox, older
- * Safari). Where `animation-timeline: view()` is supported this does nothing —
- * the CSS scrubs the motion itself.
- *
- * Otherwise it tags <html> with `reveal-js`, which hides every reveal target in
- * its starting pose, and flips each to `.is-revealed` as it enters the
- * viewport, letting CSS transitions play the same motion once. Targets already
- * on screen are revealed *before* the tag lands, so nothing visible blinks
- * out. A MutationObserver picks up content that streams in or arrives with a
- * client-side navigation.
+ * Time-based entrances share one rhythm across browsers. Observe each reveal
+ * once, show above-the-fold content immediately, and discover streamed content.
+ * Reduced motion removes the hiding class and disconnects both observers.
  */
 export function RevealFallback() {
+  const reduceMotion = useReducedMotion();
   useEffect(() => {
     if (process.env.NODE_ENV === "development") {
       const timer = window.setTimeout(warnAboutTrappedReveals, 1500);
@@ -49,8 +45,7 @@ export function RevealFallback() {
   }, []);
 
   useEffect(() => {
-    if (CSS.supports("animation-timeline: view()")) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (reduceMotion) return;
 
     const root = document.documentElement;
     const tracked = new WeakSet<Element>();
@@ -102,7 +97,7 @@ export function RevealFallback() {
       if (frame) cancelAnimationFrame(frame);
       root.classList.remove("reveal-js");
     };
-  }, []);
+  }, [reduceMotion]);
 
   return null;
 }

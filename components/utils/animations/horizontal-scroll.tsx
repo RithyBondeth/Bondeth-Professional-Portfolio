@@ -1,5 +1,7 @@
 "use client";
 
+import { useReducedMotion } from "@/components/utils/animations/use-motion";
+
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 
 /**
@@ -22,18 +24,19 @@ export function HorizontalScroll(props: {
   trackClassName?: string;
   className?: string;
 }) {
+  const reduceMotion = useReducedMotion();
   const { children, header, trackClassName, className } = props;
   const viewportRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const [travel, setTravel] = useState(0);
-  const pinned = travel > 0;
+  const pinned = travel > 0 && !reduceMotion;
 
   useEffect(() => {
     const viewport = viewportRef.current;
     const track = trackRef.current;
     if (!viewport || !track) return;
     if (!CSS.supports("animation-timeline: view()")) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (reduceMotion) return;
 
     const measure = () => {
       setTravel(Math.max(0, Math.ceil(track.scrollWidth - viewport.clientWidth)));
@@ -43,7 +46,7 @@ export function HorizontalScroll(props: {
     observer.observe(track);
     measure();
     return () => observer.disconnect();
-  }, []);
+  }, [reduceMotion]);
 
   return (
     <div

@@ -30,7 +30,7 @@ export const km: TDictionary = {
   about: {
     heading: "ចូលចិត្តបង្កើតអ្វីៗដែលមានតម្លៃ។",
     portraitAlt:
-      "រិទ្ធី បណ្ឌេត អ្នកអភិវឌ្ឍន៍ full-stack និងវិស្វករ AI ដាក់ដៃទល់ចង្កាកំពុងគិត អង្គុយនៅពីមុខអេក្រង់កូដ។",
+      "ហែម ឫទ្ធីបណ្ឌិត អ្នកអភិវឌ្ឍន៍ full-stack និងវិស្វករ AI ដាក់ដៃទល់ចង្កាកំពុងគិត អង្គុយនៅពីមុខអេក្រង់កូដ។",
     stats: {
       yearsExp: "ឆ្នាំបទពិសោធន៍",
       projects: "គម្រោងបានបញ្ចប់",
@@ -142,9 +142,10 @@ export const km: TDictionary = {
     structuredOutputTitle: "Structured Output Playground",
     structuredOutputDescription:
       "បម្លែងសំណើគម្រោងដែលមិនមានរចនាសម្ព័ន្ធទៅជា JSON ដែលអាចព្យាករបាន ហើយពិនិត្យ schema និងទិន្នន័យដែលខ្វះ។",
+    signatureDemo: "Demo ពិសេស",
     ragTitle: "RAG Retrieval Visualizer",
     ragDescription:
-      "ស្វែងរកក្នុងសំណុំឯកសារពីរភាសា និងពិនិត្យ chunk ដែលបានរៀបចំលំដាប់ ពាក្យដែលត្រូវគ្នា និង context ដែលបានជ្រើសរើស។",
+      "កែការកំណត់ retrieval ពិនិត្យការជ្រើសប្រភព និងប្រៀបធៀប context មានប្រភពជាមួយ baseline។",
     evalTitle: "LLM Evaluation Playground",
     evalDescription:
       "ប្រៀបធៀបចម្លើយពីរជាមួយតេស្តដែលមានលទ្ធផលថេរ និងស្វែងរក regression គុណភាពមុនពេលដាក់ប្រើប្រាស់។",
@@ -231,7 +232,7 @@ export const km: TDictionary = {
         },
         {
           label: "សំណួរខ្មែរ",
-          value: "ការសិក្សា របស់ រិទ្ធី បណ្ឌេត",
+          value: "ការសិក្សា របស់ ហែម ឫទ្ធីបណ្ឌិត",
         },
       ],
       steps: [
@@ -323,7 +324,7 @@ export const km: TDictionary = {
           prompt:
             "ឆ្លើយជាភាសាខ្មែរ៖ តើ Bondeth មានមូលដ្ឋាននៅទីណា និងមានវិជ្ជាជីវៈអ្វី?",
           candidateA:
-            "រិទ្ធី បណ្ឌេត មានមូលដ្ឋាននៅរាជធានីភ្នំពេញ និងជាវិស្វករសូហ្វវែរ។",
+            "ហែម ឫទ្ធីបណ្ឌិត មានមូលដ្ឋាននៅរាជធានីភ្នំពេញ និងជាវិស្វករសូហ្វវែរ។",
           candidateB: "Bondeth is a product designer based in Bangkok.",
         },
       ],
@@ -581,6 +582,6 @@ export const km: TDictionary = {
   meta: {
     blogTitle: "ប្លុក",
     blogDescription:
-      "ចំណេះដឹងបច្ចេកទេស ការស្រាវជ្រាវ AI និងគំនិតវិស្វកម្មសូហ្វវែរ ដោយ Rithy Bondeth។",
+      "ចំណេះដឹងបច្ចេកទេស ការស្រាវជ្រាវ AI និងគំនិតវិស្វកម្មសូហ្វវែរ ដោយ ហែម ឫទ្ធីបណ្ឌិត។",
   },
 };

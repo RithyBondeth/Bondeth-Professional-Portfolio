@@ -2,22 +2,15 @@
 
 /**
  * React hooks for hand-driven motion — animations built on requestAnimationFrame
- * rather than a GSAP timeline. GSAP-driven components should keep using
- * `gsap.matchMedia()` and the shared eases from ./gsap.
+ * rather than a GSAP timeline. Every client animation uses this preference
+ * hook so device preference changes share the same lifecycle.
  */
+import { isMotionReduced, subscribeToMotionPreference } from "@/lib/motion-preference";
 import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 
 /* ----------------------------- Reduced motion ------------------------------ */
-const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
-
-function subscribeToReducedMotion(onChange: () => void) {
-  const mql = window.matchMedia(REDUCED_MOTION_QUERY);
-  mql.addEventListener("change", onChange);
-  return () => mql.removeEventListener("change", onChange);
-}
-
 /**
- * Tracks the user's motion preference, updating if they change it mid-session.
+ * Tracks the device reduced-motion preference, including live changes.
  *
  * Reports false during SSR and on the first client render, so the markup the
  * server produced still matches at hydration; the real value lands immediately
@@ -25,8 +18,8 @@ function subscribeToReducedMotion(onChange: () => void) {
  */
 export function useReducedMotion(): boolean {
   return useSyncExternalStore(
-    subscribeToReducedMotion,
-    () => window.matchMedia(REDUCED_MOTION_QUERY).matches,
+    subscribeToMotionPreference,
+    isMotionReduced,
     () => false,
   );
 }

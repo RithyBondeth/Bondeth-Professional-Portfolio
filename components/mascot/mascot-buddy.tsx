@@ -1,5 +1,7 @@
 "use client";
 
+import { useReducedMotion } from "@/components/utils/animations/use-motion";
+import { MOTION } from "@/lib/motion-timing";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { RobotArt } from "./robot-art";
@@ -45,10 +47,10 @@ const copy = {
 } as const;
 
 /* -------------------------------- Timings ---------------------------------- */
-const BOOT_MS = 1_100;
+const BOOT_MS = MOTION.entrance;
 const SLEEP_AFTER_MS = 30_000;
-const QUIP_MS = 3_200;
-const QUIP_COOLDOWN_MS = 4_500;
+const QUIP_MS = 2_400;
+const QUIP_COOLDOWN_MS = 8_000;
 const WHEE_COOLDOWN_MS = 15_000;
 /** Scroll speed, in px per ms, that counts as a fling. */
 const FLING_SPEED = 4.5;
@@ -91,6 +93,7 @@ export function MascotBuddy({
   /** Section commentary. Off while the chat panel is open. */
   quips?: boolean;
 }) {
+  const reduceMotion = useReducedMotion();
   const text = lang === "km" ? copy.km : copy.en;
   const pathname = usePathname();
   const wrapRef = useRef<HTMLSpanElement>(null);
@@ -103,7 +106,7 @@ export function MascotBuddy({
   const lastQuipAt = useRef(0);
   const seenSections = useRef(new Set<string>());
 
-  useMascotGaze(wrapRef, { enabled: !asleep });
+  useMascotGaze(wrapRef, { enabled: !asleep && !reduceMotion });
 
   const flash = useCallback(
     (mood: TRobotMood, bubbleText: string | undefined, duration: number) => {
@@ -118,12 +121,14 @@ export function MascotBuddy({
 
   /* ---------------------------------- Boot --------------------------------- */
   useEffect(() => {
+    if (reduceMotion) return;
     const timer = window.setTimeout(() => setBooting(false), BOOT_MS);
     return () => window.clearTimeout(timer);
-  }, []);
+  }, [reduceMotion]);
 
   /* ----------------------------- Sleep and wake ----------------------------- */
   useEffect(() => {
+    if (reduceMotion) return;
     let timer = 0;
     let lastArmed = 0;
 
@@ -158,13 +163,13 @@ export function MascotBuddy({
       window.clearTimeout(timer);
       events.forEach((name) => window.removeEventListener(name, onActivity));
     };
-  }, [flash]);
+  }, [flash, reduceMotion]);
 
   /* ------------------------------ Scroll body ------------------------------- */
   useEffect(() => {
     const el = wrapRef.current;
     if (!el) return;
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion) return;
 
     let frame = 0;
     let settle = 0;
@@ -190,7 +195,7 @@ export function MascotBuddy({
       }
       if (Math.abs(velocity) > FLING_SPEED && now - lastWhee > WHEE_COOLDOWN_MS) {
         lastWhee = now;
-        flash("surprised", text.whee, 1_300);
+        flash("surprised", text.whee, MOTION.reaction);
       }
 
       window.clearTimeout(settle);
@@ -209,12 +214,14 @@ export function MascotBuddy({
       window.removeEventListener("scroll", onScroll);
       window.clearTimeout(settle);
       if (frame) cancelAnimationFrame(frame);
+      el.style.setProperty("--lean", "0");
+      el.querySelector("svg")?.removeAttribute("data-look");
     };
-  }, [flash, text.whee]);
+  }, [flash, text.whee, reduceMotion]);
 
   /* ---------------------------- Section commentary -------------------------- */
   useEffect(() => {
-    if (!quips) return;
+    if (!quips || reduceMotion) return;
     const sections = document.querySelectorAll<HTMLElement>("main section[id]");
     if (sections.length === 0) return;
 
@@ -239,12 +246,12 @@ export function MascotBuddy({
 
     sections.forEach((section) => observer.observe(section));
     return () => observer.disconnect();
-  }, [pathname, quips, flash, text]);
+  }, [pathname, quips, flash, text, reduceMotion]);
 
   /* -------------------------------- Render UI ------------------------------- */
   const mood: TRobotMood =
-    forcedMood ?? transient?.mood ?? (hovered ? "wave" : asleep ? "sleep" : "idle");
-  const bubbleText = transient?.text ?? (asleep || forcedMood ? undefined : bubble);
+    forcedMood ?? (reduceMotion ? "idle" : transient?.mood) ?? (hovered ? "wave" : asleep ? "sleep" : "idle");
+  const bubbleText = reduceMotion ? (forcedMood ? undefined : bubble) : transient?.text ?? (asleep || forcedMood ? undefined : bubble);
 
   return (
     <span
@@ -262,7 +269,7 @@ export function MascotBuddy({
           {bubbleText}
         </span>
       )}
-      <RobotArt mood={mood} float boot={booting} />
+      <RobotArt mood={mood} float={!reduceMotion} boot={booting && !reduceMotion} />
     </span>
   );
 }

@@ -1,5 +1,8 @@
 "use client";
 
+import { isMotionReduced } from "@/lib/motion-preference";
+import { MOTION } from "@/lib/motion-timing";
+
 import { useSyncExternalStore } from "react";
 import { flushSync } from "react-dom";
 import { NAV_ICON_BUTTON } from "@/lib/utils";
@@ -85,9 +88,7 @@ export default function ThemeToggle(props: { label: string }) {
   const toggleTheme = (e: React.MouseEvent<HTMLButtonElement>) => {
     const next = isDark ? "light" : "dark";
     const doc = document as TDocWithViewTransition;
-    const reduce = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
+    const reduce = isMotionReduced();
     if (!doc.startViewTransition || reduce) {
       setTheme(next);
       return;
@@ -122,8 +123,8 @@ export default function ThemeToggle(props: { label: string }) {
             ],
           },
           {
-            duration: 500,
-            easing: "cubic-bezier(0.625, 0.05, 0, 1)",
+            duration: MOTION.entrance,
+            easing: MOTION.ease,
             pseudoElement: "::view-transition-new(root)",
           },
         );

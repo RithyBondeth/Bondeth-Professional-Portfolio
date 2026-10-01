@@ -99,7 +99,7 @@ export default async function LandingWriting(props: { lang: TLocale }) {
 
                 <div className="flex flex-1 flex-col p-5">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-primary/80">
-                    {labs.experimental} 0{index + 1} · {labs.costFree}
+                    {lab.featured ?? `${labs.experimental} 0${index + 1}`} · {labs.costFree}
                   </p>
                   <h4 className="mt-2 text-lg font-semibold text-foreground">{lab.title}</h4>
                   <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">

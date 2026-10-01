@@ -1,5 +1,7 @@
 "use client";
 
+import { useReducedMotion } from "@/components/utils/animations/use-motion";
+
 import {
   geoDistance,
   geoGraticule10,
@@ -70,6 +72,7 @@ export function WireframeDottedGlobe({
   label,
   description,
 }: WireframeDottedGlobeProps) {
+  const reduceMotion = useReducedMotion();
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -77,7 +80,6 @@ export function WireframeDottedGlobe({
     const context = canvas?.getContext("2d");
     if (!canvas || !context) return;
 
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const rotation = [...HOME_ROTATION] as [number, number, number];
     // Start facing Phnom Penh, so the very first frame — and the static frame
     // under reduced motion — is already home rather than at 0°, 0°.
@@ -281,7 +283,7 @@ export function WireframeDottedGlobe({
       const delta = Math.min(32, now - previousTime);
       previousTime = now;
 
-      if (dragging || reduceMotion.matches || now < resumeAt) return;
+      if (dragging || reduceMotion || now < resumeAt) return;
 
       const elapsed = now - startedAt;
       const drift = (elapsed / 18000) * Math.PI * 2;
@@ -295,7 +297,7 @@ export function WireframeDottedGlobe({
     };
 
     const intersectionObserver = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting && !frame) {
+      if (entry.isIntersecting && !frame && !reduceMotion) {
         previousTime = performance.now();
         frame = requestAnimationFrame(tick);
       } else if (!entry.isIntersecting && frame) {
@@ -373,7 +375,7 @@ export function WireframeDottedGlobe({
       canvas.removeEventListener("pointercancel", onPointerUp);
       canvas.removeEventListener("keydown", onKeyDown);
     };
-  }, []);
+  }, [reduceMotion]);
 
   return (
     <div className={cn("relative aspect-square w-full", className)}>

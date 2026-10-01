@@ -1,5 +1,7 @@
 "use client";
 
+import { isMotionReduced } from "@/lib/motion-preference";
+
 import { useEffect, useRef, useState } from "react";
 import { ArrowUp } from "lucide-react";
 
@@ -38,9 +40,7 @@ export function ReadingProgress({ backToTopLabel }: { backToTopLabel: string }) 
   }, []);
 
   function scrollToTop() {
-    const reduceMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
+    const reduceMotion = isMotionReduced();
     window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
   }
 

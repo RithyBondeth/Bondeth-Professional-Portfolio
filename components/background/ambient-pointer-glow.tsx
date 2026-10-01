@@ -1,5 +1,7 @@
 "use client";
 
+import { useReducedMotion } from "@/components/utils/animations/use-motion";
+
 import { useEffect } from "react";
 
 const EASE = 0.09;
@@ -14,11 +16,12 @@ const SETTLE_PX = 0.4;
  * tap reads as a glitch rather than light.
  */
 export function AmbientPointerGlow() {
+  const reduceMotion = useReducedMotion();
   useEffect(() => {
     const glow = document.getElementById("ambient-glow");
     if (!glow) return;
     if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (reduceMotion) return;
 
     const half = glow.offsetWidth / 2;
     let targetX = window.innerWidth / 2;
@@ -54,8 +57,10 @@ export function AmbientPointerGlow() {
       window.removeEventListener("pointermove", onPointerMove);
       document.documentElement.removeEventListener("pointerleave", onLeave);
       if (frame) cancelAnimationFrame(frame);
+      delete glow.dataset.active;
+      glow.style.removeProperty("transform");
     };
-  }, []);
+  }, [reduceMotion]);
 
   return null;
 }

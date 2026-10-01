@@ -18,7 +18,7 @@
   transform-box: view-box;
   transform-origin: 17px 38px;
   rotate: calc(var(--lean, 0) * 1deg);
-  transition: rotate 520ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: rotate var(--motion-entrance) cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .bob {
@@ -38,8 +38,8 @@
     calc(var(--gaze-y, 0) * 1px)
   );
   transition:
-    transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
-    translate 260ms cubic-bezier(0.22, 1, 0.36, 1);
+    transform var(--motion-feedback) cubic-bezier(0.22, 1, 0.36, 1),
+    translate var(--motion-feedback) cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .robot[data-look="down"] .gaze {
@@ -146,23 +146,23 @@
 
   .robot[data-mood="wave"] .armRight {
     animation:
-      mascot-arm-raise 360ms cubic-bezier(0.22, 1, 0.36, 1) both,
-      mascot-wave 1s ease-in-out 360ms infinite;
+      mascot-arm-raise var(--motion-feedback) cubic-bezier(0.22, 1, 0.36, 1) both,
+      mascot-wave 1s ease-in-out var(--motion-feedback) infinite;
   }
 
   .robot[data-mood="happy"] .bob,
   .robot[data-mood="wink"] .bob {
-    animation: mascot-hop 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: mascot-hop var(--motion-entrance) cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
   .robot[data-mood="surprised"] .bob {
-    animation: mascot-jump 480ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: mascot-jump var(--motion-entrance) cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
   /* ── Power-on: the eyes and antenna flicker to life once. ── */
   .robot[data-boot] .eyes,
   .robot[data-boot] .antennaTip {
-    animation: mascot-boot 1s steps(1, end) both;
+    animation: mascot-boot var(--motion-entrance) steps(1, end) both;
   }
 }
 
@@ -408,7 +408,7 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .loader {
-    animation: loader-in 420ms cubic-bezier(0.22, 1, 0.36, 1) 180ms both;
+    animation: loader-in var(--motion-entrance) cubic-bezier(0.22, 1, 0.36, 1) var(--motion-feedback) both;
   }
 
   .loaderVerb,
