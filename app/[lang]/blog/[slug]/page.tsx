@@ -270,11 +270,13 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
               />
             </AnimateIn>
 
-            {/* Same topic, other formats */}
+            {/* Same topic, other formats. An article with no note pointing at
+                it can still name its own lab. */}
             <TopicCluster
               lang={lang}
               current={post.format === "note" ? "note" : "post"}
               hubSlug={hub?.slug}
+              relatedLabPath={post.relatedLab}
             />
 
             {/* Post Footer Section */}

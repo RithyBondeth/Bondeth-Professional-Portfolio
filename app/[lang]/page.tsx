@@ -8,6 +8,7 @@ import LandingExperience from "@/components/landing/landing-experience";
 import LandingEducation from "@/components/landing/landing-education";
 import LandingServices from "@/components/landing/landing-services";
 import LandingProjects from "@/components/landing/landing-projects";
+import LandingWriting from "@/components/landing/landing-writing";
 import LandingMedia from "@/components/landing/landing-media";
 import LandingRecommendations from "@/components/landing/landing-recommendations";
 import LandingContact from "@/components/landing/landing-contact";
@@ -91,6 +92,7 @@ export default async function IndexPage({ params }: IHomePageProps) {
       <LandingEducation lang={lang} />
       <LandingServices lang={lang} />
       <LandingProjects lang={lang} />
+      <LandingWriting lang={lang} />
       <LandingMedia lang={lang} />
       <LandingRecommendations lang={lang} />
       <LandingContact lang={lang} />
