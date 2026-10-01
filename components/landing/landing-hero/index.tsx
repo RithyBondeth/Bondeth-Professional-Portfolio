@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowDown, ArrowUpRight, FileText, Mail } from "lucide-react";
 import { Magnetic } from "@/components/utils/animations/magnetic";
 import { scrollToSection } from "@/components/utils/animations/smooth-scroll";
 import { TiltCard } from "@/components/utils/animations/tilt-card";
-import { PixelRobot } from "@/components/chatbot/pixel-robot";
 import { getDictionary, type TLocale } from "@/utils/i18n";
 import { getSiteConfig } from "@/utils/i18n/content";
 
@@ -60,6 +59,49 @@ function useRoleTypewriter(firstRole: string, secondRole: string) {
   return text;
 }
 
+/* ----------------------------- Portrait backdrop ---------------------------- */
+/**
+ * Kinetic type behind the cutout portrait. Rows drift in alternating
+ * directions; the coral row is drawn twice — solid behind the portrait and as
+ * an outline in front of it — so the type reads as wrapping around him rather
+ * than sitting flat behind a sticker.
+ *
+ * Both layers render every row so their geometry is identical; the front layer
+ * hides all but the coral row. Decorative, English in every locale.
+ */
+const PORTRAIT_ROWS = [
+  { text: "Full Stack", tone: "outline", speed: 46 },
+  { text: "Bondeth", tone: "ghost", speed: 54 },
+  { text: "AI Engineer", tone: "outline-accent", speed: 40 },
+  { text: "Bondeth", tone: "accent", speed: 34 },
+  { text: "Web · Mobile · AI", tone: "outline", speed: 50 },
+  { text: "Build · Ship", tone: "ghost", speed: 58 },
+] as const;
+
+function PortraitType({ layer }: { layer: "back" | "front" }) {
+  return (
+    <div aria-hidden lang="en" className="portrait-type" data-layer={layer}>
+      {PORTRAIT_ROWS.map(({ text, tone, speed }, index) => (
+        <div
+          key={`${text}-${index}`}
+          className="portrait-row"
+          data-tone={tone}
+          data-dir={index % 2 === 0 ? "left" : "right"}
+          style={{ "--speed": `${speed}s`, "--row": index } as CSSProperties}
+        >
+          <div className="portrait-track">
+            {Array.from({ length: 6 }, (_, copy) => (
+              <span key={copy} className="portrait-word">
+                {text}
+              </span>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function LandingHero({ lang }: { lang: TLocale }) {
   const dict = getDictionary(lang);
   const localized = getSiteConfig(lang);
@@ -95,14 +137,8 @@ export default function LandingHero({ lang }: { lang: TLocale }) {
             lang="en"
             className="mb-7 text-5xl font-semibold leading-[.95] tracking-[-.055em] sm:text-7xl xl:text-8xl"
           >
-            <span className="flex items-center justify-center gap-3 sm:gap-4 lg:justify-start">
-              <span className="block overflow-hidden">
-                <span className="hero-title-line block">{localized.name}</span>
-              </span>
-              <PixelRobot
-                className="hero-robot pointer-events-none shrink-0"
-                greeting={lang === "km" ? "សួស្តី!" : "HELLO!"}
-              />
+            <span className="block overflow-hidden pb-[.04em]">
+              <span className="hero-title-line block">{localized.name}</span>
             </span>
             <span className="sr-only">
               {dict.hero.titles[0]} · {dict.hero.titles[1]}
@@ -111,7 +147,10 @@ export default function LandingHero({ lang }: { lang: TLocale }) {
               aria-hidden
               className="block min-h-[1.9em] overflow-hidden pb-2"
             >
-              <span className="hero-title-line block font-semibold not-italic text-primary">
+              <span
+                className="hero-title-line block font-semibold not-italic text-primary"
+                style={{ "--hero-delay": ".24s" } as CSSProperties}
+              >
                 {typedRole}
                 <span className="ml-[.08em] inline-block h-[.78em] w-[.055em] bg-primary align-baseline motion-safe:animate-[blink_1s_step-end_infinite]" />
               </span>
@@ -188,16 +227,19 @@ export default function LandingHero({ lang }: { lang: TLocale }) {
             className="hero-portrait-detail absolute inset-x-[3%] bottom-[1%] top-[5%] translate-x-3 translate-y-3 rounded-2xl bg-primary/7"
           />
 
-          <div className="relative mx-auto h-[94%] w-[88%] overflow-hidden rounded-2xl border border-border/60 bg-card shadow-[0_28px_75px_rgb(0_0_0/.14)]">
+          <div className="portrait-frame relative isolate mx-auto h-[94%] w-[88%] overflow-hidden rounded-2xl border border-border/60 bg-card shadow-[0_28px_75px_rgb(0_0_0/.14)]">
+            <span aria-hidden className="portrait-stage" />
+            <PortraitType layer="back" />
             <Image
               src="/bondeth.webp"
               alt={lang === "km" ? "រិទ្ធី បណ្ឌេត" : "Rithy Bondeth"}
               fill
               priority
               sizes="(max-width:1024px) 80vw, 40vw"
-              className="object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.025] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+              className="z-10 object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.025] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
             />
-            <span aria-hidden className="portrait-scan" />
+            <PortraitType layer="front" />
+            <span aria-hidden className="portrait-scan z-30" />
           </div>
 
           <div className="hero-portrait-detail absolute bottom-[2%] right-0 rounded-full border border-border/60 bg-background/92 px-4 py-2.5 shadow-[0_12px_30px_rgb(0_0_0/.12)] backdrop-blur-xl sm:px-5">

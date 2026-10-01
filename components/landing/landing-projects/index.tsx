@@ -61,27 +61,36 @@ export default function LandingProjects(props: { lang: TLocale }) {
   );
 
   return (
-    /* The pinned panel owns the vertical rhythm — the sideways journey through
-       the featured work IS the section. Reduced motion / no-JS falls back to a
-       native swipe strip via HorizontalScroll itself. */
+    /* Scrolling down pins this section and carries the featured work
+       sideways; when the row runs out, the page scrolls on. Without scroll
+       timelines, or under reduced motion, HorizontalScroll falls back to a
+       native swipe strip. The cards deal in from the right as it arrives,
+       on a short span: their entrance is tied to their vertical position,
+       which freezes once the stage pins, so it must finish before then. */
     <section id="projects" className="relative isolate">
       {/* Icon geometry for the featured cards' tech badges. */}
       <SkillIconSprite
         icons={featured.flatMap((project) => techIconKeys(project.tags))}
       />
       <HorizontalScroll header={header} trackClassName="items-stretch py-2">
-        {featured.map((project) => (
-          <div
+        {featured.map((project, index) => (
+          <AnimateIn
             key={project.slug}
+            from="right"
+            delay={index * 0.04}
+            span={28}
             className="w-[min(84vw,420px)] shrink-0 snap-start"
           >
             <ProjectCard project={project} dict={dict} lang={lang} />
-          </div>
+          </AnimateIn>
         ))}
 
         {/* The strip ends with a destination, not a dead stop. */}
-        <div
+        <AnimateIn
           key="view-all"
+          from="right"
+          delay={featured.length * 0.04}
+          span={28}
           className="flex w-[min(70vw,340px)] shrink-0 snap-start"
         >
           <Link
@@ -98,7 +107,7 @@ export default function LandingProjects(props: { lang: TLocale }) {
               {lang === "km" ? "រុករកស្នាដៃទាំងអស់" : "Explore the full collection"}
             </span>
           </Link>
-        </div>
+        </AnimateIn>
       </HorizontalScroll>
     </section>
   );

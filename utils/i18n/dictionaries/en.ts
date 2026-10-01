@@ -381,6 +381,18 @@ export const en = {
     readPost: "Read the written version",
     languageBadge: { en: "English", km: "Khmer" },
   },
+  writing: {
+    eyebrow: "Labs & writing",
+    heading: "Ideas you can read — and run",
+    blurb:
+      "Interactive experiments that show how practical AI patterns behave, each paired with the write-up that explains it.",
+    labsLabel: "Try it live",
+    tryLab: "Try the lab",
+    readWriteUp: "Read the write-up",
+    allLabs: "Browse all labs",
+    postsLabel: "Latest writing",
+    allPosts: "Read the blog",
+  },
   recommendations: {
     heading: "Recommendations & professional references",
     blurb:

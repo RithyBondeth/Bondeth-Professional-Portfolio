@@ -1,3 +1,4 @@
+import { MascotLoader } from "@/components/mascot/mascot-loader";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
@@ -13,6 +14,7 @@ export function LabDetailSkeleton({ label }: { label: string }) {
       aria-label={label}
       className="flex-1 px-6 pb-16 sm:pb-24 pt-32 font-sans"
     >
+      <MascotLoader label={label} />
       <div className="mx-auto max-w-6xl">
         {/* Back link */}
         <Skeleton className="h-4 w-28" />

@@ -1,3 +1,4 @@
+import { MascotLoader } from "@/components/mascot/mascot-loader";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
@@ -11,6 +12,7 @@ export default function ProjectLoading() {
       aria-label="Loading project"
       className="flex-1 bg-background px-6 pb-16 sm:pb-24 pt-32 font-sans"
     >
+      <MascotLoader label="Loading project" />
       <div className="mx-auto max-w-5xl">
         {/* Back link */}
         <Skeleton className="mb-8 h-3 w-28" />

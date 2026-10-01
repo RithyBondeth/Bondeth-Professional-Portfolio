@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { PixelBOg } from "@/components/brand/pixel-b-og";
+import { RobotOg } from "@/components/brand/robot-og";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
 
 export const alt = `${siteConfig.name} — ${siteConfig.title}`;
@@ -35,7 +35,7 @@ export default function Image() {
             marginBottom: 24,
           }}
         >
-          <PixelBOg size={58} inverse />
+          <RobotOg size={58} inverse />
           <span>{siteConfig.url.replace("https://", "")}</span>
         </div>
         <div style={{ fontSize: 84, fontWeight: 700, lineHeight: 1.1 }}>

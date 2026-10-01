@@ -11,7 +11,8 @@ import Link from "next/link";
 import { ArrowUp, Minus } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { PixelRobot, PixelRobotHead } from "./pixel-robot";
+import { MascotBuddy } from "@/components/mascot/mascot-buddy";
+import { RobotArt } from "@/components/mascot/robot-art";
 import styles from "./pixel-chatbot.module.css";
 
 type Message = {
@@ -152,6 +153,11 @@ export default function PixelChatbot({
   const dragState = useRef<DragState | null>(null);
   const suppressClick = useRef(false);
   const sendInFlight = useRef(false);
+  // Byte brightens for a moment in the header when an answer lands.
+  const [celebrating, setCelebrating] = useState(false);
+  const celebrateTimer = useRef<number | undefined>(undefined);
+
+  useEffect(() => () => window.clearTimeout(celebrateTimer.current), []);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -362,6 +368,9 @@ export default function PixelChatbot({
       }
 
       const answer = data.message.trim();
+      setCelebrating(true);
+      window.clearTimeout(celebrateTimer.current);
+      celebrateTimer.current = window.setTimeout(() => setCelebrating(false), 1_600);
       setMessages((current) => [
         ...current,
         {
@@ -428,7 +437,11 @@ export default function PixelChatbot({
       >
         <header className={styles.header}>
           <span className={styles.avatar}>
-            <PixelRobot small />
+            <RobotArt
+              mood={isSending ? "think" : celebrating ? "happy" : "idle"}
+              float
+              className={styles.avatarRobot}
+            />
           </span>
           <span className={styles.headerCopy}>
             <span className={styles.eyebrow}>{text.eyebrow}</span>
@@ -457,7 +470,7 @@ export default function PixelChatbot({
             >
               {message.role === "assistant" && (
                 <span className={styles.botAvatar}>
-                  <PixelRobotHead />
+                  <RobotArt variant="head" className={styles.headIcon} />
                 </span>
               )}
               {message.role === "assistant" ? (
@@ -490,7 +503,7 @@ export default function PixelChatbot({
                   disabled={isSending}
                   onClick={() => void sendMessage(suggestion)}
                 >
-                  <PixelRobotHead small />
+                  <RobotArt variant="head" className={styles.headIconSmall} />
                   {suggestion}
                 </button>
               ))}
@@ -500,7 +513,7 @@ export default function PixelChatbot({
           {isSending && (
             <div className={styles.messageRow} aria-label={text.thinking}>
               <span className={styles.botAvatar}>
-                <PixelRobotHead />
+                <RobotArt variant="head" mood="think" className={styles.headIcon} />
               </span>
               <span className={styles.typingIndicator} aria-hidden="true">
                 <i />
@@ -558,9 +571,15 @@ export default function PixelChatbot({
         onPointerUp={handlePointerEnd}
         onPointerCancel={handlePointerEnd}
       >
-        <span className={styles.speechBubble}>{text.bubble}</span>
         <span className={styles.launcherGlow} />
-        <PixelRobot />
+        <MascotBuddy
+          lang={lang}
+          bubble={text.bubble}
+          bubbleClassName={styles.speechBubble}
+          className={styles.buddy}
+          mood={isSending ? "think" : undefined}
+          quips={!isOpen}
+        />
         <span className={styles.launcherStatus} aria-hidden="true" />
       </button>
     </aside>

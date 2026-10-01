@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { ArrowLeft, Compass } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import { RobotArt } from "@/components/mascot/robot-art";
 
 export const metadata: Metadata = {
   title: "404 — Page Not Found",
@@ -25,9 +26,7 @@ export default function NotFound() {
         />
 
         <div className="relative">
-          <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-primary/10 text-primary">
-            <Compass aria-hidden className="size-6" />
-          </span>
+          <RobotArt mood="surprised" float className="mx-auto h-24 w-auto" />
           <p className="mt-6 text-sm font-semibold text-primary">
             A different path · <span lang="km">ផ្លូវផ្សេង</span>
           </p>

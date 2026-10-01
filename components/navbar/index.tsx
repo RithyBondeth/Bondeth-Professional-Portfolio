@@ -143,7 +143,6 @@ export default function Navbar(props: { lang: TLocale }) {
 
   /* ---------------------------------- Utils --------------------------------- */
   const pathname = usePathname();
-  const progressRef = useRef<HTMLDivElement>(null);
   const linksRef = useRef<HTMLUListElement>(null);
   const indicatorRef = useRef<HTMLSpanElement>(null);
   const exploreRef = useRef<HTMLLIElement>(null);
@@ -207,17 +206,6 @@ export default function Navbar(props: { lang: TLocale }) {
       frame = 0;
       const y = window.scrollY;
       setScrolled(y > 20);
-
-      const scrollHeight =
-        document.documentElement.scrollHeight - window.innerHeight;
-      const progress = scrollHeight > 0 ? Math.min(y / scrollHeight, 1) : 0;
-      // Progress changes on every scroll frame. Keeping it out of React state
-      // avoids re-rendering the entire navigation tree while the page is in
-      // motion; a compositor-only clip is enough to reveal the signal while
-      // preserving the width of its individual pixel blocks.
-      if (progressRef.current) {
-        progressRef.current.style.clipPath = `inset(0 ${(1 - progress) * 100}% 0 0)`;
-      }
 
       // Hide the bar while scrolling down through the page, bring it back the
       // moment the user scrolls up — classic focus-on-content pattern.
@@ -325,31 +313,6 @@ export default function Navbar(props: { lang: TLocale }) {
           : "border-border/45 bg-background/72 shadow-lg shadow-black/6"
       }`}
     >
-      {/* Top Scrim Section — the nav is transparent at scroll-top, which was
-          fine over a pale sky ramp but not over this background: the ribbon
-          field runs all the way to iris, and mono labels at 11-12px simply
-          disappeared whenever a dark band drifted under the bar.
-
-          A scrim rather than a permanent solid bar, so the hero still opens
-          without a hard chrome edge across it. It is taller than the bar and
-          fades out below it, which keeps ~90% background behind the type and
-          nothing at all by the time it reaches the page. It fades away entirely
-          once `scrolled` swaps in the real bar, so the two never stack.
-
-          `-z-10` keeps it behind the nav's own content — inside the nav's
-          stacking context, so it still paints above the page. */}
-      <div
-        aria-hidden
-        className="hidden"
-      />
-
-      {/* Scroll Progress Bar Section */}
-      <div
-        ref={progressRef}
-        aria-hidden
-        className="nav-progress-signal pointer-events-none absolute inset-x-0 bottom-0 h-[2px]"
-        style={{ clipPath: "inset(0 100% 0 0)" }}
-      />
       <div className="mx-auto flex items-center justify-between px-4 py-2.5 sm:px-5">
         {/* Brand Section */}
         <Link

@@ -51,7 +51,7 @@ export default function LandingSkills({ lang }: { lang: TLocale }) {
   const uniqueSkills = skillGroups.flatMap((group) => group.skills);
 
   return (
-    <section id="skills" className="relative isolate overflow-hidden py-20 sm:py-24 lg:py-32">
+    <section id="skills" className="relative isolate overflow-clip py-20 sm:py-24 lg:py-32">
       <SkillIconSprite icons={uniqueSkills.map((skill) => skill.icon)} />
 
       <div className="mx-auto mb-12 grid max-w-6xl gap-6 px-6 sm:mb-16 lg:grid-cols-[1fr_.72fr] lg:items-end">
@@ -83,7 +83,7 @@ export default function LandingSkills({ lang }: { lang: TLocale }) {
       </ul>
 
       <div className="relative mx-auto w-full px-3 sm:px-6">
-        <div className="relative overflow-hidden rounded-2xl border border-border/55 bg-card/50 py-4 shadow-[0_24px_80px_rgb(0_0_0/.07)] backdrop-blur-sm sm:py-6">
+        <div className="relative overflow-clip rounded-2xl border border-border/55 bg-card/50 py-4 shadow-[0_24px_80px_rgb(0_0_0/.07)] backdrop-blur-sm sm:py-6">
           {tracks.map((track, index) => {
             const half = repeatedHalf(track.skills);
             const repeated = [...half, ...half];

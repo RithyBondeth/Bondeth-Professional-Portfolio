@@ -11,6 +11,8 @@ import DeferredCommandPalette from "@/components/command-palette/deferred-comman
 import DeferredPixelChatbot from "@/components/chatbot/deferred-pixel-chatbot";
 import { ThemeProvider, ThemeScript } from "@/components/utils/theme/theme-provider";
 import { SmoothScroll } from "@/components/utils/animations/smooth-scroll";
+import { RevealFallback } from "@/components/utils/animations/reveal-fallback";
+import { AmbientBackground } from "@/components/background/ambient-background";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
 import { locales, hasLocale, getDictionary } from "@/utils/i18n";
 import { getSiteConfig } from "@/utils/i18n/content";
@@ -131,6 +133,8 @@ export default async function RootLayout({
 
               It is a sibling of the scroll content so its fixed positioning
               remains independent of every page section. */}
+          <AmbientBackground />
+          <RevealFallback />
           <a
             href="#main-content"
             className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-100 focus:rounded-lg focus:bg-primary-fill focus:px-4 focus:py-2 focus:font-mono focus:text-sm focus:text-primary-foreground focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring"

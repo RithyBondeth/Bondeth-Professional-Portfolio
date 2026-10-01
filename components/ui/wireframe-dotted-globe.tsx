@@ -1,25 +1,23 @@
 "use client";
 
 import {
-  geoContains,
   geoDistance,
   geoGraticule10,
   geoOrthographic,
   geoPath,
-  timer,
   type GeoPermissibleObjects,
-} from "d3";
+} from "d3-geo";
 import type { FeatureCollection, Geometry } from "geojson";
 import { useEffect, useRef } from "react";
 
 import { cn } from "@/lib/utils";
+import { decodeLandDots } from "./globe-land-dots";
 
 const LAND_DATA_URL = "/data/ne_110m_land.json";
 const PHNOM_PENH: [number, number] = [104.9282, 11.5564];
 const HOME_ROTATION: [number, number, number] = [-104.9282, -11.5564, 0];
 const PORTRAIT_URL = "/bondeth-profile.webp";
 const LOGO_URL = "/icon.svg";
-const DOT_STEP = 2;
 
 type Point = [number, number];
 
@@ -34,19 +32,14 @@ function loadLand() {
   return landRequest;
 }
 
-function createLandDots(land: FeatureCollection<Geometry>) {
-  if (cachedDots) return cachedDots;
-
-  const dots: Point[] = [];
-  for (let latitude = -84; latitude <= 84; latitude += DOT_STEP) {
-    for (let longitude = -180; longitude < 180; longitude += DOT_STEP) {
-      const point: Point = [longitude, latitude];
-      if (geoContains(land, point)) dots.push(point);
-    }
-  }
-
-  cachedDots = dots;
-  return dots;
+/**
+ * The land lattice is precomputed (scripts/generate-globe-dots.mjs). Testing
+ * 15,300 grid points with geoContains at runtime cost ~6.5s of main-thread
+ * work per visit; decoding the baked bitmask takes well under a millisecond.
+ */
+function getLandDots() {
+  cachedDots ??= decodeLandDots();
+  return cachedDots;
 }
 
 interface WireframeDottedGlobeProps {
@@ -85,19 +78,24 @@ export function WireframeDottedGlobe({
     if (!canvas || !context) return;
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const projection = geoOrthographic().clipAngle(90).precision(0.5);
+    const rotation = [...HOME_ROTATION] as [number, number, number];
+    // Start facing Phnom Penh, so the very first frame — and the static frame
+    // under reduced motion — is already home rather than at 0°, 0°.
+    const projection = geoOrthographic()
+      .clipAngle(90)
+      .precision(0.5)
+      .rotate(rotation);
     const path = geoPath(projection, context);
     const graticule = geoGraticule10();
-    const rotation = [...HOME_ROTATION] as [number, number, number];
 
+    // Dots are available synchronously, so the globe draws on its first frame;
+    // the coastline outlines join in once the land file has loaded.
     let land: FeatureCollection<Geometry> | undefined;
-    let dots: Point[] = [];
+    const dots = getLandDots();
     let size = 0;
     let radius = 0;
-    let visible = true;
     let dragging = false;
     let resumeAt = 0;
-    let previousElapsed = 0;
     let pointerStart: Point = [0, 0];
     let rotationStart: Point = [rotation[0], rotation[1]];
     let portraitReady = false;
@@ -134,116 +132,119 @@ export function WireframeDottedGlobe({
       context.lineWidth = Math.max(1, size / 360);
       context.stroke();
 
-      if (land) {
-        context.beginPath();
-        path(graticule);
-        context.strokeStyle = `rgba(${ink}, 0.13)`;
-        context.lineWidth = Math.max(0.65, size / 720);
-        context.stroke();
+      context.beginPath();
+      path(graticule);
+      context.strokeStyle = `rgba(${ink}, 0.13)`;
+      context.lineWidth = Math.max(0.65, size / 720);
+      context.stroke();
 
+      if (land) {
         context.beginPath();
         path(land as GeoPermissibleObjects);
         context.strokeStyle = `rgba(${ink}, 0.42)`;
         context.lineWidth = Math.max(0.8, size / 580);
         context.stroke();
+      }
 
-        const center = projection.invert?.([size / 2, size / 2]);
-        const dotRadius = Math.max(0.85, size / 360);
+      const center = projection.invert?.([size / 2, size / 2]);
+      const dotRadius = Math.max(0.85, size / 360);
 
-        context.fillStyle = `rgba(${ink}, 0.58)`;
-        for (const dot of dots) {
-          if (!center || geoDistance(center, dot) > Math.PI / 2) continue;
-          const projected = projection(dot);
-          if (!projected) continue;
+      // All visible dots go into ONE path and one fill() — filling ~2,500
+      // separate paths per frame was the render loop's biggest cost.
+      context.beginPath();
+      for (const dot of dots) {
+        if (!center || geoDistance(center, dot) > Math.PI / 2) continue;
+        const projected = projection(dot);
+        if (!projected) continue;
+        context.moveTo(projected[0] + dotRadius, projected[1]);
+        context.arc(projected[0], projected[1], dotRadius, 0, Math.PI * 2);
+      }
+      context.fillStyle = `rgba(${ink}, 0.58)`;
+      context.fill();
+
+      if (center && geoDistance(center, PHNOM_PENH) <= Math.PI / 2) {
+        const pin = projection(PHNOM_PENH);
+        if (pin) {
+          const avatarRadius = Math.max(21, size / 17);
+          const avatarX = Math.min(
+            size - avatarRadius - 8,
+            pin[0] + size * 0.085,
+          );
+          const avatarY = Math.max(
+            avatarRadius + 8,
+            pin[1] - size * 0.1,
+          );
+
           context.beginPath();
-          context.arc(projected[0], projected[1], dotRadius, 0, Math.PI * 2);
+          context.moveTo(pin[0], pin[1]);
+          context.lineTo(
+            avatarX - avatarRadius * 0.65,
+            avatarY + avatarRadius * 0.65,
+          );
+          context.strokeStyle = `rgba(${ink}, 0.55)`;
+          context.lineWidth = Math.max(1, size / 360);
+          context.stroke();
+
+          context.beginPath();
+          context.arc(pin[0], pin[1], Math.max(3.5, size / 105), 0, Math.PI * 2);
+          context.fillStyle = "#d97757";
           context.fill();
-        }
+          context.strokeStyle = isDark ? "#141413" : "#faf9f5";
+          context.lineWidth = Math.max(1.5, size / 280);
+          context.stroke();
 
-        if (center && geoDistance(center, PHNOM_PENH) <= Math.PI / 2) {
-          const pin = projection(PHNOM_PENH);
-          if (pin) {
-            const avatarRadius = Math.max(21, size / 17);
-            const avatarX = Math.min(
-              size - avatarRadius - 8,
-              pin[0] + size * 0.085,
-            );
-            const avatarY = Math.max(
-              avatarRadius + 8,
-              pin[1] - size * 0.1,
-            );
-
+          if (portraitReady) {
+            context.save();
+            context.shadowColor = "rgba(217, 119, 87, 0.2)";
+            context.shadowBlur = Math.max(8, size / 38);
             context.beginPath();
-            context.moveTo(pin[0], pin[1]);
-            context.lineTo(
-              avatarX - avatarRadius * 0.65,
-              avatarY + avatarRadius * 0.65,
-            );
-            context.strokeStyle = `rgba(${ink}, 0.55)`;
-            context.lineWidth = Math.max(1, size / 360);
-            context.stroke();
-
-            context.beginPath();
-            context.arc(pin[0], pin[1], Math.max(3.5, size / 105), 0, Math.PI * 2);
-            context.fillStyle = "#d97757";
+            context.arc(avatarX, avatarY, avatarRadius + 3, 0, Math.PI * 2);
+            context.fillStyle = isDark ? "#1f1f1e" : "#f6f6f4";
             context.fill();
-            context.strokeStyle = isDark ? "#141413" : "#faf9f5";
-            context.lineWidth = Math.max(1.5, size / 280);
+            context.restore();
+
+            context.save();
+            context.beginPath();
+            context.arc(avatarX, avatarY, avatarRadius, 0, Math.PI * 2);
+            context.clip();
+
+            const sourceSize = Math.min(portrait.naturalWidth, portrait.naturalHeight);
+            const sourceX = (portrait.naturalWidth - sourceSize) / 2;
+            const sourceY = Math.max(0, (portrait.naturalHeight - sourceSize) * 0.12);
+            context.drawImage(
+              portrait,
+              sourceX,
+              sourceY,
+              sourceSize,
+              sourceSize,
+              avatarX - avatarRadius,
+              avatarY - avatarRadius,
+              avatarRadius * 2,
+              avatarRadius * 2,
+            );
+            context.restore();
+
+            context.beginPath();
+            context.arc(avatarX, avatarY, avatarRadius + 1.5, 0, Math.PI * 2);
+            context.strokeStyle = isDark ? "rgba(255,255,255,0.9)" : "#ffffff";
+            context.lineWidth = Math.max(2, size / 220);
             context.stroke();
 
-            if (portraitReady) {
-              context.save();
-              context.shadowColor = "rgba(217, 119, 87, 0.2)";
-              context.shadowBlur = Math.max(8, size / 38);
+            if (logoReady) {
+              const badgeSize = avatarRadius * 0.78;
+              const badgeX = avatarX + avatarRadius * 0.58;
+              const badgeY = avatarY + avatarRadius * 0.58;
               context.beginPath();
-              context.arc(avatarX, avatarY, avatarRadius + 3, 0, Math.PI * 2);
-              context.fillStyle = isDark ? "#1f1f1e" : "#f6f6f4";
+              context.arc(badgeX, badgeY, badgeSize * 0.6, 0, Math.PI * 2);
+              context.fillStyle = isDark ? "#17191f" : "#ffffff";
               context.fill();
-              context.restore();
-
-              context.save();
-              context.beginPath();
-              context.arc(avatarX, avatarY, avatarRadius, 0, Math.PI * 2);
-              context.clip();
-
-              const sourceSize = Math.min(portrait.naturalWidth, portrait.naturalHeight);
-              const sourceX = (portrait.naturalWidth - sourceSize) / 2;
-              const sourceY = Math.max(0, (portrait.naturalHeight - sourceSize) * 0.12);
               context.drawImage(
-                portrait,
-                sourceX,
-                sourceY,
-                sourceSize,
-                sourceSize,
-                avatarX - avatarRadius,
-                avatarY - avatarRadius,
-                avatarRadius * 2,
-                avatarRadius * 2,
+                logo,
+                badgeX - badgeSize / 2,
+                badgeY - badgeSize / 2,
+                badgeSize,
+                badgeSize,
               );
-              context.restore();
-
-              context.beginPath();
-              context.arc(avatarX, avatarY, avatarRadius + 1.5, 0, Math.PI * 2);
-              context.strokeStyle = isDark ? "rgba(255,255,255,0.9)" : "#ffffff";
-              context.lineWidth = Math.max(2, size / 220);
-              context.stroke();
-
-              if (logoReady) {
-                const badgeSize = avatarRadius * 0.78;
-                const badgeX = avatarX + avatarRadius * 0.58;
-                const badgeY = avatarY + avatarRadius * 0.58;
-                context.beginPath();
-                context.arc(badgeX, badgeY, badgeSize * 0.6, 0, Math.PI * 2);
-                context.fillStyle = isDark ? "#17191f" : "#ffffff";
-                context.fill();
-                context.drawImage(
-                  logo,
-                  badgeX - badgeSize / 2,
-                  badgeY - badgeSize / 2,
-                  badgeSize,
-                  badgeSize,
-                );
-              }
             }
           }
         }
@@ -269,26 +270,20 @@ export function WireframeDottedGlobe({
     const resizeObserver = new ResizeObserver(resize);
     resizeObserver.observe(canvas);
 
-    const intersectionObserver = new IntersectionObserver(([entry]) => {
-      visible = entry.isIntersecting;
-    });
-    intersectionObserver.observe(canvas);
+    // Idle drift. The loop only runs while the globe is on screen (and rAF
+    // already pauses in background tabs), so an off-screen globe costs nothing.
+    const startedAt = performance.now();
+    let previousTime = startedAt;
+    let frame = 0;
 
-    const rotationTimer = timer((elapsed) => {
-      const delta = Math.min(32, elapsed - previousElapsed);
-      previousElapsed = elapsed;
+    const tick = (now: number) => {
+      frame = requestAnimationFrame(tick);
+      const delta = Math.min(32, now - previousTime);
+      previousTime = now;
 
-      if (
-        !land ||
-        !visible ||
-        document.hidden ||
-        dragging ||
-        reduceMotion.matches ||
-        performance.now() < resumeAt
-      ) {
-        return;
-      }
+      if (dragging || reduceMotion.matches || now < resumeAt) return;
 
+      const elapsed = now - startedAt;
       const drift = (elapsed / 18000) * Math.PI * 2;
       const targetLongitude = HOME_ROTATION[0] + Math.sin(drift) * 22;
       const targetLatitude = HOME_ROTATION[1] + Math.cos(drift) * 3;
@@ -297,7 +292,18 @@ export function WireframeDottedGlobe({
       rotation[1] += (targetLatitude - rotation[1]) * easeBack;
       projection.rotate(rotation);
       render();
+    };
+
+    const intersectionObserver = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && !frame) {
+        previousTime = performance.now();
+        frame = requestAnimationFrame(tick);
+      } else if (!entry.isIntersecting && frame) {
+        cancelAnimationFrame(frame);
+        frame = 0;
+      }
     });
+    intersectionObserver.observe(canvas);
 
     const onPointerDown = (event: PointerEvent) => {
       dragging = true;
@@ -353,13 +359,12 @@ export function WireframeDottedGlobe({
     loadLand()
       .then((data) => {
         land = data;
-        dots = createLandDots(data);
-        resize();
+        render();
       })
       .catch(() => undefined);
 
     return () => {
-      rotationTimer.stop();
+      cancelAnimationFrame(frame);
       resizeObserver.disconnect();
       intersectionObserver.disconnect();
       canvas.removeEventListener("pointerdown", onPointerDown);

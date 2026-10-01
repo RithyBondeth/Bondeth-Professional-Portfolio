@@ -1,7 +1,8 @@
-<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="32" height="32" rx="7" fill="#FAF9F5"/>
-  <g transform="translate(7 3.7) scale(.09)">
-    <path fill="#141413" fill-rule="evenodd" d="M0 0H144V18H176V44H200V108H176V134H144V144H176V166H200V230H176V256H144V274H0V0ZM44 42V108H132V92H156V58H132V42H44ZM44 166V232H132V216H156V182H132V166H44ZM176 24H200V44H176V24Z"/>
-    <rect x="176" width="24" height="24" fill="#D97757"/>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" shape-rendering="crispEdges">
+<style>
+  .bg{fill:#FAF9F5}.ink{fill:#141413}.face{fill:#FAF9F5}.shade{fill:#F0EEE6}.accent{fill:#D97757}.light{fill:#34D399}
+  @media (prefers-color-scheme: dark){.bg{fill:#141413}.ink{fill:#FAF9F5}.face{fill:#1F1F1E}.shade{fill:#2D2D2B}}
+</style>
+<rect class="bg" width="32" height="32" rx="7"/>
+<g transform="translate(2.560 5.722) scale(0.7906)"><rect class="ink" x="1" y="12" width="4" height="8"/><rect class="accent" x="2" y="13" width="2" height="6"/><rect class="ink" x="29" y="12" width="4" height="8"/><rect class="accent" x="30" y="13" width="2" height="6"/><rect class="ink" x="16" y="3" width="2" height="4"/><rect class="accent" x="14" y="0" width="6" height="3"/><rect class="ink" x="4" y="7" width="26" height="18"/><rect class="face" x="6" y="9" width="22" height="14"/><rect class="shade" x="6" y="21" width="22" height="2"/><rect class="shade" x="26" y="9" width="2" height="12"/><rect class="ink" x="10" y="12" width="4" height="4"/><rect class="face" x="11" y="13" width="1" height="1"/><rect class="ink" x="20" y="12" width="4" height="4"/><rect class="face" x="21" y="13" width="1" height="1"/><rect class="accent" x="12" y="18" width="2" height="2"/><rect class="accent" x="16" y="18" width="2" height="2"/><rect class="accent" x="20" y="18" width="2" height="2"/></g>
 </svg>

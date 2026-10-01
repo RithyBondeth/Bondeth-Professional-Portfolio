@@ -583,51 +583,213 @@ html[lang="km"] :is(h1, h2, h3, h4, h5, h6):lang(km) {
   }
 }
 
-/* ── Progressive, zero-JS section reveals ───────────────────────────────────
-   View-timeline capable browsers animate content as it approaches. Browsers
-   without the feature render everything normally, so readability and clicks
-   never wait for JavaScript hydration. */
+/* ── Scroll-driven reveals (AnimateIn, StaggerIn, SplitReveal) ───────────────
+   Motion is scrubbed by the scroll position itself via CSS view timelines, so
+   it is perfectly smooth, reverses when scrolling back up, and costs no
+   JavaScript. Browsers without view timelines get RevealFallback's
+   IntersectionObserver version of the same states; reduced motion gets none.
+
+   Every reveal is one transform built from `--rv-*` inputs:
+     --rv-x / --rv-y   travel             --rv-rx / --rv-ry  3D tilt
+     --rv-r            spin               --rv-s             starting scale
+     --rv-blur         starting blur      --rv-d             base distance
+   `data-reveal-from` presets fill them in; AnimateIn props override them
+   inline. Reveals animate `transform`, while card hovers use the separate
+   `translate` longhand, so the two compose instead of fighting.
+
+   ⚠ Never wrap a reveal in `overflow: hidden` (or auto/scroll) — use
+   `overflow-clip` instead. `view()` binds to the NEAREST scroll container,
+   and `overflow: hidden` creates one even though it never scrolls: the
+   timeline then measures against a box that never moves, sits permanently
+   at "finished", and the block silently never animates. `overflow: clip`
+   clips identically without creating a scroll container. RevealFallback
+   warns about offenders in development. */
+
+/* Reset per reveal so a nested reveal never inherits its parent's preset. */
+.reveal-on-view,
+.stagger-on-view,
+.reveal-heading {
+  --rv-d: 80px;
+  --rv-enter: reveal-on-view;
+  --rv-x: 0px;
+  --rv-y: 0px;
+  --rv-rx: 0deg;
+  --rv-ry: 0deg;
+  --rv-r: 0deg;
+  --rv-s: 1;
+  --rv-blur: 0px;
+}
+
+.reveal-heading {
+  --rv-enter: reveal-heading;
+  --rv-offset: 6%;
+}
+
+[data-reveal-from="wipe"] {
+  --rv-enter: reveal-wipe;
+}
+
+[data-reveal-from="up"] {
+  --rv-y: var(--rv-d);
+}
+[data-reveal-from="down"] {
+  --rv-y: calc(var(--rv-d) * -1);
+}
+[data-reveal-from="left"] {
+  --rv-x: calc(var(--rv-d) * -1.5);
+}
+[data-reveal-from="right"] {
+  --rv-x: calc(var(--rv-d) * 1.5);
+}
+[data-reveal-from="zoom-in"] {
+  --rv-s: 0.84;
+}
+[data-reveal-from="zoom-out"] {
+  --rv-s: 1.16;
+}
+[data-reveal-from="rise"] {
+  --rv-y: calc(var(--rv-d) * 1.4);
+  --rv-s: 0.92;
+}
+[data-reveal-from="tilt"] {
+  --rv-y: var(--rv-d);
+  --rv-rx: 26deg;
+  --rv-s: 0.96;
+}
+[data-reveal-from="flip-left"] {
+  --rv-x: calc(var(--rv-d) * -0.9);
+  --rv-ry: -30deg;
+}
+[data-reveal-from="flip-right"] {
+  --rv-x: calc(var(--rv-d) * 0.9);
+  --rv-ry: 30deg;
+}
+[data-reveal-from="swing"] {
+  --rv-y: var(--rv-d);
+  --rv-x: calc(var(--rv-d) * -0.4);
+  --rv-r: -5deg;
+}
+[data-reveal-from="blur"] {
+  --rv-blur: 14px;
+  --rv-s: 1.05;
+}
+
+/* ── StaggerIn patterns: each child gets its own direction ── */
+.stagger-on-view[data-pattern="alternate"] > :nth-child(odd) {
+  --rv-x: calc(var(--rv-d) * -1.5);
+  --rv-y: 0px;
+}
+.stagger-on-view[data-pattern="alternate"] > :nth-child(even) {
+  --rv-x: calc(var(--rv-d) * 1.5);
+  --rv-y: 0px;
+}
+
+.stagger-on-view[data-pattern="fan"] > * {
+  --rv-y: calc(var(--rv-d) * 1.2);
+  transform-origin: 50% 100%;
+}
+.stagger-on-view[data-pattern="fan"] > :nth-child(3n + 1) {
+  --rv-x: calc(var(--rv-d) * -0.6);
+  --rv-r: -7deg;
+}
+.stagger-on-view[data-pattern="fan"] > :nth-child(3n) {
+  --rv-x: calc(var(--rv-d) * 0.6);
+  --rv-r: 7deg;
+}
+
+.stagger-on-view[data-pattern="flip"] > :nth-child(odd) {
+  --rv-ry: -34deg;
+  --rv-x: calc(var(--rv-d) * -0.6);
+}
+.stagger-on-view[data-pattern="flip"] > :nth-child(even) {
+  --rv-ry: 34deg;
+  --rv-x: calc(var(--rv-d) * 0.6);
+}
+
+.stagger-on-view[data-pattern="cascade"] > * {
+  --rv-s: 0.84;
+  --rv-y: calc(var(--rv-d) * 0.7);
+}
+
+/* Position within the row, so the stagger restarts on every new row rather
+   than compounding down a long grid. */
+.stagger-on-view > :nth-child(3n + 2) {
+  --rv-i: 1;
+}
+.stagger-on-view > :nth-child(3n) {
+  --rv-i: 2;
+}
+.stagger-on-view[data-cycle="2"] > :nth-child(odd) {
+  --rv-i: 0;
+}
+.stagger-on-view[data-cycle="2"] > :nth-child(even) {
+  --rv-i: 1;
+}
+.stagger-on-view[data-cycle="4"] > :nth-child(4n + 1) {
+  --rv-i: 0;
+}
+.stagger-on-view[data-cycle="4"] > :nth-child(4n + 2) {
+  --rv-i: 1;
+}
+.stagger-on-view[data-cycle="4"] > :nth-child(4n + 3) {
+  --rv-i: 2;
+}
+.stagger-on-view[data-cycle="4"] > :nth-child(4n) {
+  --rv-i: 3;
+}
+
 @keyframes reveal-on-view {
   from {
     opacity: 0;
-    filter: blur(var(--reveal-blur, 0));
-    transform: translate(var(--reveal-x, 0), var(--reveal-y, 24px))
-      rotate(var(--reveal-rotate, 0deg)) scale(var(--reveal-scale, 1));
+    filter: blur(var(--rv-blur));
+    transform: perspective(1100px)
+      translate3d(var(--rv-x), var(--rv-y), 0)
+      rotateX(var(--rv-rx)) rotateY(var(--rv-ry)) rotate(var(--rv-r))
+      scale(var(--rv-s));
   }
   to {
     opacity: 1;
-    filter: blur(0);
-    transform: translate(0, 0) rotate(0) scale(1);
+    filter: none;
+    transform: none;
   }
 }
 
-[data-reveal-from="left"] {
-  --reveal-x: -36px;
-  --reveal-y: 0;
+@keyframes reveal-wipe {
+  from {
+    opacity: 0.3;
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(-30% -30% -30% -30%);
+  }
 }
 
-[data-reveal-from="right"] {
-  --reveal-x: 36px;
-  --reveal-y: 0;
+/* Headings rise out of a mask: the text slides up while its clip opens. */
+@keyframes reveal-heading {
+  from {
+    opacity: 0;
+    clip-path: inset(100% -10% -30% -10%);
+    transform: translate3d(0, 0.55em, 0) rotate(1.5deg);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(-30% -10% -30% -10%);
+    transform: none;
+  }
 }
 
-[data-reveal-from="down"] {
-  --reveal-y: -30px;
-}
-
-[data-reveal-from="zoom-in"] {
-  --reveal-y: 0;
-  --reveal-scale: 0.9;
-}
-
-[data-reveal-from="zoom-out"] {
-  --reveal-y: 0;
-  --reveal-scale: 1.08;
-}
-
-[data-reveal-from="none"] {
-  --reveal-x: 0;
-  --reveal-y: 0;
+/* Leaving through the top: recede — fade, shrink and tip away. */
+@keyframes depart-on-view {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: perspective(1100px) translate3d(0, -64px, 0) rotateX(-18deg)
+      scale(0.86);
+  }
 }
 
 @keyframes contact-success-pop {
@@ -647,32 +809,113 @@ html[lang="km"] :is(h1, h2, h3, h4, h5, h6):lang(km) {
 
 @media (prefers-reduced-motion: no-preference) {
   @supports (animation-timeline: view()) {
+    /* The entrance spans the block's first ~40% of travel through the
+       viewport rather than a quick pop, so motion is felt across the scroll. */
     .reveal-on-view,
     .reveal-heading,
     .stagger-on-view > * {
-      animation-name: reveal-on-view;
+      --rv-start: calc(var(--rv-offset, 0%) + var(--rv-i, 0) * var(--rv-step, 4%));
+      animation-name: var(--rv-enter);
       animation-fill-mode: both;
-      animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+      /* Scrubbed by scroll, so the curve maps to distance, not time. A strong
+         ease-out front-loads the change into the first few pixels at the
+         bottom edge; ease-out-cubic spreads it across the scroll. */
+      animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1);
       animation-timeline: view();
-      animation-range: entry 0% cover 28%;
+      animation-range: entry var(--rv-start) cover calc(var(--rv-span, 42%) + var(--rv-start));
     }
 
-    .stagger-on-view > :nth-child(2n) {
-      animation-range: entry 4% cover 31%;
-    }
+    /* Scroll story: on the homepage (main[data-scroll-story]) every block
+       also recedes as it leaves through the top, so each one is in motion for
+       its whole passage. Elsewhere — long-form blog posts above all — exits
+       stay opt-in via `depart`, since fading text you are reading is hostile.
 
-    .stagger-on-view > :nth-child(3n) {
-      animation-range: entry 7% cover 34%;
+       Depart only runs once the block is on its way out and fills nothing
+       outside that range, so the entrance's resting state shows in between. */
+    [data-scroll-story] :is(.reveal-on-view, .reveal-heading):not([data-depart="off"]),
+    [data-scroll-story] .stagger-on-view:not([data-depart="off"]) > *,
+    .reveal-on-view[data-depart="on"],
+    .stagger-on-view[data-depart="on"] > * {
+      animation-name: var(--rv-enter), depart-on-view;
+      animation-fill-mode: both, none;
+      animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1), linear;
+      animation-timeline: view(), view();
+      animation-range:
+        entry var(--rv-start) cover calc(var(--rv-span, 42%) + var(--rv-start)),
+        exit 20% exit 100%;
     }
+  }
+
+  /* RevealFallback: the same starting states, eased in by transitions when an
+     IntersectionObserver flags the element. Only active when the script has
+     confirmed view timelines are unsupported and tagged <html>. */
+  html.reveal-js :is(.reveal-on-view, .reveal-heading, .stagger-on-view > *) {
+    transition:
+      opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 1.1s cubic-bezier(0.22, 1, 0.36, 1),
+      filter 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: calc(var(--rv-i, 0) * 90ms);
+  }
+
+  html.reveal-js
+    :is(.reveal-on-view, .reveal-heading, .stagger-on-view > *):not(.is-revealed) {
+    opacity: 0;
+    filter: blur(var(--rv-blur));
+    transform: perspective(1100px)
+      translate3d(var(--rv-x), var(--rv-y), 0)
+      rotateX(var(--rv-rx)) rotateY(var(--rv-ry)) rotate(var(--rv-r))
+      scale(var(--rv-s));
+  }
+
+  html.reveal-js .reveal-heading:not(.is-revealed) {
+    transform: translate3d(0, 0.55em, 0);
   }
 }
 
 /* Skip layout and paint for distant homepage sections until they approach the
    viewport. The remembered intrinsic size keeps anchor scrolling stable. */
-main > section:not(:first-of-type) {
+main > section:not(:first-of-type, #projects) {
   content-visibility: auto;
   contain-intrinsic-size: auto 820px;
 }
+
+/* ── Pinned horizontal showcase (HorizontalScroll) ──────────────────────────
+   #projects is excluded from content-visibility above: HorizontalScroll
+   measures its track to size the pin, and a skipped subtree measures as zero,
+   which would make the section grow just as the visitor arrives at it.
+
+   The section is one viewport tall plus the track's overflow (--travel). Its
+   stage sticks to the top for exactly that extra distance, and the track's
+   translate is scrubbed against the section's own view timeline over the
+   `contain` range — the stretch during which the section covers the screen,
+   which is exactly when the stage is pinned. */
+.hscroll[data-pinned] {
+  height: calc(100svh + var(--travel));
+  view-timeline: --hscroll block;
+}
+
+.hscroll[data-pinned] .hscroll-stage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  min-height: 0;
+}
+
+.hscroll[data-pinned] .hscroll-track {
+  animation-name: hscroll-travel;
+  animation-timing-function: linear;
+  animation-fill-mode: both;
+  animation-timeline: --hscroll;
+  animation-range: contain 0% contain 100%;
+  will-change: transform;
+}
+
+@keyframes hscroll-travel {
+  to {
+    transform: translate3d(calc(var(--travel) * -1), 0, 0);
+  }
+}
+
 
 .magnetic-lite,
 .tilt-card-lite {
@@ -708,21 +951,6 @@ main > section:not(:first-of-type) {
     content-visibility: visible;
     contain-intrinsic-size: none;
   }
-}
-
-/* ── Navigation progress signal ──────────────────────────────────────────────
-   Clip-driven instead of width-driven so scrolling never asks the page
-   to lay out the navigation again. The repeating blocks echo the Pixel B mark,
-   while the bright leading edge makes progress readable at a glance. */
-.nav-progress-signal {
-  background-image: repeating-linear-gradient(
-    90deg,
-    var(--primary-fill) 0 7px,
-    transparent 7px 10px
-  );
-  box-shadow: 6px 0 12px
-    color-mix(in oklab, var(--primary-fill) 65%, transparent);
-  will-change: clip-path;
 }
 
 /* The hero portrait gets a restrained scanner pass on hover. It is deliberately
@@ -762,6 +990,488 @@ main > section:not(:first-of-type) {
   100% {
     opacity: 0;
     transform: translateY(650%);
+  }
+}
+
+/* ── Ambient background (components/background/ambient-background.tsx) ───────
+   Fixed behind everything at z-index -1. <body> is `isolate`, so this paints
+   above the body's own background but below all page content. Sections carry
+   no background of their own, which is what lets it show through. */
+:root {
+  --ambient-coral: rgb(217 119 87 / 0.2);
+  --ambient-apricot: rgb(242 176 118 / 0.24);
+  --ambient-lilac: rgb(168 148 232 / 0.15);
+  --ambient-sky: rgb(118 170 222 / 0.13);
+  --ambient-glow: rgb(217 119 87 / 0.14);
+  --ambient-noise: 0.05;
+}
+
+[data-theme="dark"] {
+  --ambient-coral: rgb(217 119 87 / 0.15);
+  --ambient-apricot: rgb(196 112 54 / 0.1);
+  --ambient-lilac: rgb(118 96 226 / 0.13);
+  --ambient-sky: rgb(58 108 182 / 0.11);
+  --ambient-glow: rgb(217 119 87 / 0.1);
+  --ambient-noise: 0.07;
+}
+
+.ambient {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+}
+
+.ambient-aurora {
+  position: absolute;
+  inset: -15vh -10vw;
+  transform-origin: 50% 40%;
+}
+
+.ambient-blob {
+  position: absolute;
+  width: var(--size);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at center,
+    var(--blob-color) 0%,
+    color-mix(in oklab, var(--blob-color) 45%, transparent) 38%,
+    transparent 68%
+  );
+}
+
+.ambient-blob[data-blob="1"] {
+  --size: 64vmax;
+  --blob-color: var(--ambient-coral);
+  top: -16vmax;
+  left: -14vmax;
+}
+
+.ambient-blob[data-blob="2"] {
+  --size: 54vmax;
+  --blob-color: var(--ambient-apricot);
+  top: 12vh;
+  right: -18vmax;
+}
+
+.ambient-blob[data-blob="3"] {
+  --size: 50vmax;
+  --blob-color: var(--ambient-lilac);
+  bottom: -18vmax;
+  left: 14vw;
+}
+
+.ambient-blob[data-blob="4"] {
+  --size: 38vmax;
+  --blob-color: var(--ambient-sky);
+  top: 38vh;
+  left: 46vw;
+}
+
+.ambient-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 560px;
+  height: 560px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--ambient-glow), transparent 66%);
+  opacity: 0;
+  transition: opacity 700ms ease;
+  will-change: transform;
+}
+
+.ambient-glow[data-active] {
+  opacity: 1;
+}
+
+.ambient-glyphs {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.ambient-noise {
+  position: absolute;
+  inset: 0;
+  opacity: var(--ambient-noise);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ambient-blob {
+    will-change: transform;
+  }
+
+  .ambient-blob[data-blob="1"] {
+    animation: ambient-drift-a 46s ease-in-out infinite alternate;
+  }
+  .ambient-blob[data-blob="2"] {
+    animation: ambient-drift-b 58s ease-in-out infinite alternate;
+  }
+  .ambient-blob[data-blob="3"] {
+    animation: ambient-drift-c 64s ease-in-out infinite alternate;
+  }
+  .ambient-blob[data-blob="4"] {
+    animation: ambient-drift-d 52s ease-in-out infinite alternate;
+  }
+
+  /* Scroll-linked depth: the light swings as the page scrolls. (The glyph
+     field does its own parallax in glyph-field.tsx.) */
+  @supports (animation-timeline: scroll()) {
+    .ambient-aurora {
+      animation: ambient-aurora-scroll linear both;
+      animation-timeline: scroll(root);
+    }
+  }
+}
+
+@keyframes ambient-drift-a {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  35% {
+    transform: translate3d(9vw, 7vh, 0) scale(1.12);
+  }
+  70% {
+    transform: translate3d(-3vw, 14vh, 0) scale(0.94);
+  }
+  100% {
+    transform: translate3d(7vw, -3vh, 0) scale(1.06);
+  }
+}
+
+@keyframes ambient-drift-b {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1.05);
+  }
+  40% {
+    transform: translate3d(-10vw, 10vh, 0) scale(0.92);
+  }
+  75% {
+    transform: translate3d(-4vw, -8vh, 0) scale(1.14);
+  }
+  100% {
+    transform: translate3d(-12vw, 4vh, 0) scale(1);
+  }
+}
+
+@keyframes ambient-drift-c {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  45% {
+    transform: translate3d(14vw, -10vh, 0) scale(1.1);
+  }
+  100% {
+    transform: translate3d(-8vw, -4vh, 0) scale(0.95);
+  }
+}
+
+@keyframes ambient-drift-d {
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.9);
+  }
+  50% {
+    transform: translate3d(-16vw, 8vh, 0) scale(1.15);
+  }
+  100% {
+    transform: translate3d(10vw, -10vh, 0) scale(1);
+  }
+}
+
+@keyframes ambient-aurora-scroll {
+  from {
+    rotate: 0deg;
+    translate: 0 0;
+  }
+  to {
+    rotate: 14deg;
+    translate: 0 -8vh;
+  }
+}
+
+/* ── Hero portrait: kinetic type behind (and around) the cutout ──────────────
+   The frame is a size container so the type scales with the card, not the
+   viewport: six rows at ~17cqh exactly fill its height at every breakpoint. */
+.portrait-frame {
+  container-type: size;
+}
+
+.portrait-stage {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      62% 46% at 50% 30%,
+      color-mix(in oklab, var(--brand-pixel) 24%, transparent),
+      transparent 72%
+    ),
+    linear-gradient(
+      180deg,
+      var(--card) 0%,
+      color-mix(in oklab, var(--secondary) 80%, var(--brand-pixel)) 100%
+    );
+}
+
+.portrait-type {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-block: 1.5cqh;
+  font-family: var(--font-ui);
+  font-size: 16.4cqh;
+  font-weight: 700;
+  line-height: 0.92;
+  letter-spacing: -0.045em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+
+.portrait-type[data-layer="back"] {
+  z-index: 0;
+}
+
+.portrait-type[data-layer="front"] {
+  z-index: 20;
+}
+
+/* Only the coral row crosses in front of the portrait. */
+.portrait-type[data-layer="front"] .portrait-row:not([data-tone="accent"]) {
+  visibility: hidden;
+}
+
+.portrait-row {
+  display: flex;
+  overflow: hidden;
+}
+
+.portrait-track {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.portrait-word {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* A brand pixel between repeats instead of a typographic bullet. */
+.portrait-word::after {
+  content: "";
+  display: inline-block;
+  width: 0.14em;
+  height: 0.14em;
+  margin-inline: 0.28em;
+  background: currentColor;
+}
+
+.portrait-row[data-tone="ghost"] {
+  color: color-mix(in oklab, var(--foreground) 7%, transparent);
+}
+
+.portrait-row[data-tone="outline"] {
+  color: transparent;
+  -webkit-text-stroke: 1.25px color-mix(in oklab, var(--foreground) 20%, transparent);
+}
+
+.portrait-row[data-tone="outline"] .portrait-word::after {
+  background: color-mix(in oklab, var(--foreground) 20%, transparent);
+}
+
+.portrait-row[data-tone="outline-accent"] {
+  color: transparent;
+  -webkit-text-stroke: 1.25px color-mix(in oklab, var(--brand-pixel) 60%, transparent);
+}
+
+.portrait-row[data-tone="outline-accent"] .portrait-word::after {
+  background: color-mix(in oklab, var(--brand-pixel) 60%, transparent);
+}
+
+.portrait-row[data-tone="accent"] {
+  color: var(--brand-pixel);
+}
+
+.portrait-type[data-layer="front"] .portrait-row[data-tone="accent"] {
+  color: transparent;
+  -webkit-text-stroke: 1.5px color-mix(in oklab, var(--brand-pixel) 92%, white);
+}
+
+.portrait-type[data-layer="front"] .portrait-row[data-tone="accent"] .portrait-word::after {
+  background: transparent;
+}
+
+/* Static offset so reduced motion still shows a composed, off-centre wall of
+   type rather than every row starting flush left. */
+.portrait-track {
+  translate: calc(var(--row, 0) * -9%) 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .portrait-track {
+    translate: none;
+    animation: portrait-marquee var(--speed, 40s) linear infinite;
+    will-change: transform;
+  }
+
+  .portrait-row[data-dir="right"] .portrait-track {
+    animation-direction: reverse;
+  }
+}
+
+/* Six identical copies, so shifting by exactly half lands on copy four — the
+   same glyphs in the same place — and the loop has no seam. */
+@keyframes portrait-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+/* ── Hero entrance ───────────────────────────────────────────────────────────
+   One choreographed pass on load: kicker, name rising out of its mask, role,
+   copy, actions, proof points, then the portrait settling while its type rows
+   slide in from alternating sides. Individual transform properties throughout,
+   because the elements underneath already own `transform` (Magnetic, the tilt
+   card) or `translate` (Tailwind translate utilities). The portrait image is
+   never faded, so it still counts as painted for LCP. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-kicker {
+    animation: hero-fade-down 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
+  }
+
+  .hero-title-line {
+    animation: hero-rise 1.05s cubic-bezier(0.16, 1, 0.3, 1)
+      var(--hero-delay, 0.12s) both;
+  }
+
+  .hero-copy {
+    animation: hero-fade-up 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.42s both;
+  }
+
+  .hero-action {
+    animation: hero-pop 0.8s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+    animation-delay: 0.55s;
+  }
+  .hero-action:nth-child(2) {
+    animation-delay: 0.63s;
+  }
+  .hero-action:nth-child(3) {
+    animation-delay: 0.71s;
+  }
+
+  .hero-proof {
+    animation: hero-fade-up 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: 0.8s;
+  }
+  .hero-proof:nth-child(2) {
+    animation-delay: 0.88s;
+  }
+  .hero-proof:nth-child(3) {
+    animation-delay: 0.96s;
+  }
+
+  .hero-portrait {
+    animation: hero-portrait-in 1.3s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+  }
+
+  .hero-portrait-detail {
+    animation: hero-fade 0.9s ease-out 0.9s both;
+  }
+
+  .portrait-row {
+    animation: hero-row-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: calc(0.3s + var(--row, 0) * 0.07s);
+  }
+  .portrait-row[data-dir="right"] {
+    --row-from: 30%;
+  }
+
+  .hero-scroll {
+    animation: hero-fade 1s ease-out 1.3s both;
+  }
+
+  .hero-scroll > span {
+    transform-origin: top;
+    animation: hero-scroll-cue 2.2s cubic-bezier(0.65, 0, 0.35, 1) 2s infinite;
+  }
+}
+
+@keyframes hero-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes hero-fade-down {
+  from {
+    opacity: 0;
+    translate: 0 -12px;
+  }
+}
+
+@keyframes hero-fade-up {
+  from {
+    opacity: 0;
+    translate: 0 18px;
+    filter: blur(6px);
+  }
+  to {
+    filter: none;
+  }
+}
+
+@keyframes hero-rise {
+  from {
+    translate: 0 108%;
+    rotate: 3deg;
+  }
+}
+
+@keyframes hero-pop {
+  from {
+    opacity: 0;
+    translate: 0 14px;
+    scale: 0.94;
+  }
+}
+
+@keyframes hero-portrait-in {
+  from {
+    translate: 0 48px;
+    scale: 0.92;
+    rotate: -2deg;
+  }
+}
+
+@keyframes hero-row-in {
+  from {
+    opacity: 0;
+    translate: var(--row-from, -30%) 0;
+  }
+}
+
+@keyframes hero-scroll-cue {
+  0% {
+    scale: 1 0;
+    opacity: 1;
+  }
+  55% {
+    scale: 1 1;
+    opacity: 1;
+  }
+  100% {
+    scale: 1 1;
+    opacity: 0;
   }
 }
 

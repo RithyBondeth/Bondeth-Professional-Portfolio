@@ -12,7 +12,7 @@ export default function LandingServices(props: { lang: TLocale }) {
   const { services } = getDictionary(lang);
 
   return (
-    <section id="services" className="relative isolate overflow-hidden px-6 py-16 sm:py-20 lg:py-24">
+    <section id="services" className="relative isolate overflow-clip px-6 py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-6xl">
         <AnimateIn from="left">
           <p className="font-mono text-xs uppercase tracking-[0.25em] text-primary">
@@ -52,7 +52,10 @@ export default function LandingServices(props: { lang: TLocale }) {
         <StaggerIn
           className="mt-12 grid gap-4 sm:grid-cols-2"
           from="zoom-in"
+          pattern="alternate"
+          cycle={2}
           stagger={0.1}
+          depart
           staggerFrom="center"
         >
           {services.items.map((service, index) => {
