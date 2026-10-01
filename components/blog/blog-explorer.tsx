@@ -1,5 +1,9 @@
 "use client";
 
+import { useReducedMotion } from "@/components/utils/animations/use-motion";
+import { isMotionReduced } from "@/lib/motion-preference";
+import { MOTION } from "@/lib/motion-timing";
+
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { gsap } from "@/components/utils/animations/gsap";
@@ -39,6 +43,7 @@ export function BlogExplorer({
   /* ---------------------------------- Utils --------------------------------- */
   const normalized = query.trim().toLowerCase();
 
+  const reduceMotion = useReducedMotion();
   const gridRef = useRef<HTMLDivElement>(null);
   // Layout snapshot taken just before a filter/search state change; consumed
   // by the layout effect after React re-renders the list.
@@ -47,7 +52,7 @@ export function BlogExplorer({
   const captureFlip = () => {
     if (
       gridRef.current &&
-      window.matchMedia("(prefers-reduced-motion: no-preference)").matches
+      !isMotionReduced()
     ) {
       flipState.current = Flip.getState(gridRef.current.children);
     }
@@ -97,21 +102,25 @@ export function BlogExplorer({
   useLayoutEffect(() => {
     const state = flipState.current;
     flipState.current = null;
-    if (!state || !gridRef.current) return;
-    Flip.from(state, {
-      targets: gridRef.current.children,
-      duration: 0.55,
-      ease: "smooth",
-      stagger: 0.02,
-      absolute: true,
-      onEnter: (els) =>
-        gsap.fromTo(
-          els,
-          { opacity: 0, y: 16 },
-          { opacity: 1, y: 0, duration: 0.4, ease: "smooth" },
-        ),
+    if (!state || !gridRef.current || reduceMotion) return;
+    const grid = gridRef.current;
+    const context = gsap.context(() => {
+      Flip.from(state, {
+        targets: grid.children,
+        duration: MOTION.entrance / 1000,
+        ease: "smooth",
+        stagger: MOTION.stagger / 1000,
+        absolute: true,
+        onEnter: (els) =>
+          gsap.fromTo(
+            els,
+            { opacity: 0, y: 16 },
+            { opacity: 1, y: 0, duration: MOTION.entrance / 1000, ease: "smooth" },
+          ),
+      });
     });
-  }, [visibleKey]);
+    return () => context.revert();
+  }, [visibleKey, reduceMotion]);
 
   /* -------------------------------- Render UI ------------------------------- */
   return (

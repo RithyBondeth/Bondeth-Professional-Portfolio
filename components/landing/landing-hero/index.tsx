@@ -1,5 +1,6 @@
 "use client";
 
+import { useReducedMotion } from "@/components/utils/animations/use-motion";
 import { useEffect, useState, type CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,32 +12,26 @@ import { getDictionary, type TLocale } from "@/utils/i18n";
 import { getSiteConfig } from "@/utils/i18n/content";
 
 function useRoleTypewriter(firstRole: string, secondRole: string) {
+  const reducedMotion = useReducedMotion();
   const [text, setText] = useState("");
   const [roleIndex, setRoleIndex] = useState(0);
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
+    if (reducedMotion) return;
     const roles = [firstRole, secondRole];
     const currentRole = roles[roleIndex];
-    const reducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-
     const delay = reducedMotion
       ? 0
       : deleting
         ? 42
         : text === currentRole
-          ? 1800
+          ? 2400
           : text.length === 0
-            ? 450
+            ? 480
             : 78;
 
     const timeout = window.setTimeout(() => {
-      if (reducedMotion) {
-        setText(firstRole);
-        return;
-      }
       if (!deleting && text === currentRole) {
         setDeleting(true);
         return;
@@ -54,9 +49,9 @@ function useRoleTypewriter(firstRole: string, secondRole: string) {
     }, delay);
 
     return () => window.clearTimeout(timeout);
-  }, [deleting, firstRole, roleIndex, secondRole, text]);
+  }, [deleting, firstRole, roleIndex, secondRole, text, reducedMotion]);
 
-  return text;
+  return reducedMotion ? firstRole : text;
 }
 
 /* ----------------------------- Portrait backdrop ---------------------------- */
@@ -149,7 +144,7 @@ export default function LandingHero({ lang }: { lang: TLocale }) {
             >
               <span
                 className="hero-title-line block font-semibold not-italic text-primary"
-                style={{ "--hero-delay": ".24s" } as CSSProperties}
+                style={{ "--hero-delay": "120ms" } as CSSProperties}
               >
                 {typedRole}
                 <span className="ml-[.08em] inline-block h-[.78em] w-[.055em] bg-primary align-baseline motion-safe:animate-[blink_1s_step-end_infinite]" />
@@ -232,7 +227,7 @@ export default function LandingHero({ lang }: { lang: TLocale }) {
             <PortraitType layer="back" />
             <Image
               src="/bondeth.webp"
-              alt={lang === "km" ? "រិទ្ធី បណ្ឌេត" : "Rithy Bondeth"}
+              alt={lang === "km" ? "ហែម ឫទ្ធីបណ្ឌិត" : "Rithy Bondeth"}
               fill
               priority
               sizes="(max-width:1024px) 80vw, 40vw"

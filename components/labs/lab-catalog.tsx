@@ -6,6 +6,7 @@ export interface ILabEntry {
    *  a post's `relatedLab` front matter uses to point at this lab. */
   path: string;
   title: string;
+  featured?: string;
   description: string;
   icon: LucideIcon;
   /** Small illustration of what the lab shows, for its card. */
@@ -44,6 +45,7 @@ export function getLabCatalog(labs: TDictionary["labs"]): ILabEntry[] {
     },
     {
       path: "/labs/rag-retrieval",
+      featured: labs.signatureDemo,
       title: labs.ragTitle,
       description: labs.ragDescription,
       icon: Search,

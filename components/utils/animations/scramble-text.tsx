@@ -1,5 +1,7 @@
 "use client";
 
+import { useReducedMotion } from "@/components/utils/animations/use-motion";
+
 import { useEffect, useRef } from "react";
 import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin";
 import { gsap } from "./gsap-scroll";
@@ -35,7 +37,7 @@ export function ScrambleText(props: IScrambleTextProps) {
     text,
     className,
     as: Tag = "span",
-    duration = 1,
+    duration = 0.48,
     delay = 0,
     chars = SCRAMBLE_CHARS,
     start = "top 90%",
@@ -43,12 +45,13 @@ export function ScrambleText(props: IScrambleTextProps) {
   } = props;
 
   /* ---------------------------------- Utils --------------------------------- */
+  const reduceMotion = useReducedMotion();
   const ref = useRef<HTMLElement | null>(null);
 
   /* --------------------------------- Effects -------------------------------- */
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el || reduceMotion) return;
 
     const mm = gsap.matchMedia();
     mm.add("(prefers-reduced-motion: no-preference)", () => {
@@ -78,7 +81,7 @@ export function ScrambleText(props: IScrambleTextProps) {
     });
 
     return () => mm.revert();
-  }, [text, duration, delay, chars, start, replay]);
+  }, [text, duration, delay, chars, start, replay, reduceMotion]);
 
   /* -------------------------------- Render UI ------------------------------- */
   return (

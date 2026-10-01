@@ -1,5 +1,9 @@
 "use client";
 
+import { useReducedMotion } from "@/components/utils/animations/use-motion";
+import { isMotionReduced } from "@/lib/motion-preference";
+import { MOTION } from "@/lib/motion-timing";
+
 import type {
   CSSProperties,
   FormEvent,
@@ -88,16 +92,16 @@ const copy = {
     privacy: "PRIVACY",
   },
   km: {
-    launcher: "ជជែកជាមួយជំនួយការ Pixel របស់ Bondeth",
+    launcher: "ជជែកជាមួយជំនួយការ Pixel របស់ ហែម ឫទ្ធីបណ្ឌិត",
     dragHint: "អូសដើម្បីប្តូរទីតាំង។ ចុចដើម្បីបើកការជជែក។",
     bubble: "សួរខ្ញុំ",
     eyebrow: "AI PORTFOLIO ASSISTANT",
     title: "សួរ Byte",
-    status: "Bondeth · បច្ចេកវិទ្យា · អាជីវកម្មឌីជីថល",
+    status: "ហែម ឫទ្ធីបណ្ឌិត · បច្ចេកវិទ្យា · អាជីវកម្មឌីជីថល",
     greeting:
-      "សួស្តី! ខ្ញុំឈ្មោះ Byte។ សួរខ្ញុំអំពី Bondeth បច្ចេកវិទ្យា ឬរបៀបដែល Software និង AI អាចជួយអាជីវកម្ម។",
+      "សួស្តី! ខ្ញុំឈ្មោះ Byte។ សួរខ្ញុំអំពី ហែម ឫទ្ធីបណ្ឌិត បច្ចេកវិទ្យា ឬរបៀបដែល Software និង AI អាចជួយអាជីវកម្ម។",
     suggestions: [
-      "Bondeth បង្កើតអ្វីខ្លះ?",
+      "ហែម ឫទ្ធីបណ្ឌិត បង្កើតអ្វីខ្លះ?",
       "តើ AI អាចជួយអាជីវកម្មខ្ញុំដូចម្តេច?",
       "តើគម្រោងខ្ញុំគួរប្រើបច្ចេកវិទ្យាអ្វី?",
     ],
@@ -232,6 +236,7 @@ export default function PixelChatbot({
   const sendInFlight = useRef(false);
   // Byte's face follows the request: thinking until the first token, talking
   // while it streams, a beat of delight when he pulls up cards, then idle.
+  const reduceMotion = useReducedMotion();
   const [reaction, setReaction] = useState<TRobotMood | null>(null);
   const [isStreaming, setIsStreaming] = useState(false);
   const reactionTimer = useRef<number | undefined>(undefined);
@@ -245,13 +250,14 @@ export default function PixelChatbot({
     [],
   );
 
-  const react = (mood: TRobotMood, duration = 1_600) => {
+  const react = (mood: TRobotMood, duration = MOTION.reaction) => {
+    if (isMotionReduced()) return;
     setReaction(mood);
     window.clearTimeout(reactionTimer.current);
     reactionTimer.current = window.setTimeout(() => setReaction(null), duration);
   };
   const headerMood: TRobotMood =
-    reaction ?? (isStreaming ? "load" : isSending ? "think" : "idle");
+    (reduceMotion ? null : reaction) ?? (isStreaming ? "load" : isSending ? "think" : "idle");
 
   useEffect(() => {
     if (!isOpen) return;
@@ -569,7 +575,7 @@ export default function PixelChatbot({
     if (!target) return false;
 
     if (fromClick && panelCoversPage) setIsOpen(false);
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduceMotion = isMotionReduced();
     target.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
     window.history.replaceState(null, "", `#${section}`);
     return true;

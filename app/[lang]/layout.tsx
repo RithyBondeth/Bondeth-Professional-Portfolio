@@ -1,3 +1,5 @@
+import { MotionScript } from "@/components/utils/animations/motion-script";
+import { MOTION_CSS_VARS } from "@/lib/motion-timing";
 import type { Metadata } from "next";
 import { JetBrains_Mono, Ubuntu } from "next/font/google";
 import { notFound } from "next/navigation";
@@ -112,6 +114,7 @@ export default async function RootLayout({
 
   return (
     <html
+      style={MOTION_CSS_VARS}
       lang={lang}
       // next-themes mutates the class on <html> before hydration
       suppressHydrationWarning
@@ -126,6 +129,7 @@ export default async function RootLayout({
       <body className="isolate min-h-full flex flex-col">
         {/* Injected once per document before hydration to avoid a theme flash. */}
         <ThemeScript />
+        <MotionScript />
         <ThemeProvider>
           {/* The site's ambient background, mounted ONCE and fixed to the
               viewport. It sits here rather than inside each section on purpose:

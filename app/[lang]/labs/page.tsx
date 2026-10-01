@@ -79,7 +79,7 @@ export default async function LabsPage({ params }: ILabsPageProps) {
                   <div className="flex flex-1 flex-col p-6">
                     <div className="flex flex-wrap items-center gap-2 text-xs font-medium">
                       <span className="rounded-full bg-primary/10 px-3 py-1 text-primary">
-                        {labs.experimental}
+                        {lab.featured ?? labs.experimental}
                       </span>
                       <span className="rounded-full bg-status-success/10 px-3 py-1 text-status-success">
                         {labs.costFree}

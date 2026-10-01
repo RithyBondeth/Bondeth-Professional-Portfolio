@@ -1,5 +1,9 @@
 "use client";
 
+import { useReducedMotion } from "@/components/utils/animations/use-motion";
+import { isMotionReduced } from "@/lib/motion-preference";
+import { MOTION } from "@/lib/motion-timing";
+
 import { useLayoutEffect, useRef, useState } from "react";
 import { gsap } from "@/components/utils/animations/gsap";
 import { Flip } from "@/components/utils/animations/gsap-flip";
@@ -50,6 +54,7 @@ export function ProjectExplorer(props: {
   const practice = projects.filter((p) => matches(p) && isPractice(p));
 
   /* ---------------------------------- Utils --------------------------------- */
+  const reduceMotion = useReducedMotion();
   const gridRef = useRef<HTMLDivElement>(null);
   const barRef = useRef<HTMLDivElement>(null);
   const thumbRef = useRef<HTMLSpanElement>(null);
@@ -59,7 +64,7 @@ export function ProjectExplorer(props: {
 
   const motionOK = () =>
     typeof window !== "undefined" &&
-    window.matchMedia("(prefers-reduced-motion: no-preference)").matches;
+    !isMotionReduced();
 
   const applyFilter = (category: TFilter) => {
     if (category === filter) return;
@@ -76,21 +81,25 @@ export function ProjectExplorer(props: {
   useLayoutEffect(() => {
     const state = flipState.current;
     flipState.current = null;
-    if (!state || !gridRef.current) return;
-    Flip.from(state, {
-      targets: gridRef.current.children,
-      duration: 0.6,
-      ease: "smooth",
-      stagger: 0.02,
-      absolute: true,
-      onEnter: (els) =>
-        gsap.fromTo(
-          els,
-          { opacity: 0, scale: 0.94 },
-          { opacity: 1, scale: 1, duration: 0.45, ease: "smooth" },
-        ),
+    if (!state || !gridRef.current || reduceMotion) return;
+    const grid = gridRef.current;
+    const context = gsap.context(() => {
+      Flip.from(state, {
+        targets: grid.children,
+        duration: MOTION.entrance / 1000,
+        ease: "smooth",
+        stagger: MOTION.stagger / 1000,
+        absolute: true,
+        onEnter: (els) =>
+          gsap.fromTo(
+            els,
+            { opacity: 0, scale: 0.94 },
+            { opacity: 1, scale: 1, duration: MOTION.feedback / 1000, ease: "smooth" },
+          ),
+      });
     });
-  }, [filter, domain]);
+    return () => context.revert();
+  }, [filter, domain, reduceMotion]);
 
   // Sliding thumb under the active filter — jumps instantly under reduced
   // motion, glides otherwise. Re-measured on resize.
@@ -106,7 +115,7 @@ export function ProjectExplorer(props: {
       if (!active) return;
       const vars = { x: active.offsetLeft, width: active.offsetWidth };
       if (animate && motionOK()) {
-        gsap.to(thumb, { ...vars, duration: 0.45, ease: "smooth" });
+        gsap.to(thumb, { ...vars, duration: MOTION.feedback / 1000, ease: "smooth" });
       } else {
         gsap.set(thumb, vars);
       }
@@ -115,8 +124,8 @@ export function ProjectExplorer(props: {
     place(true);
     const onResize = () => place(false);
     window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, [filter]);
+    return () => { gsap.killTweensOf(thumb); window.removeEventListener("resize", onResize); };
+  }, [filter, reduceMotion]);
 
   /* -------------------------------- Render UI ------------------------------- */
   return (

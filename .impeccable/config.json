@@ -11,12 +11,6 @@
         ],
         "createdAt": "2026-10-01T03:35:30.524Z",
         "reason": "Agent: line 702 styles semantic Markdown blockquotes, not decorative cards; git blame dates it to de1ae794 before the homepage redesign."
-      },
-      {
-        "rule": "bounce-easing",
-        "value": "cubic-bezier(0.34, 1.56, 0.64, 1)",
-        "createdAt": "2026-10-01T08:57:17.738Z",
-        "reason": "Agent reviewed: existing Byte speech bubble deliberately pops on each mascot quip, documented beside the animation; playful mascot motion is intentional and reduced-motion disables it."
       }
     ]
   }

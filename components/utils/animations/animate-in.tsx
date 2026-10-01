@@ -53,14 +53,14 @@ interface IRevealCommon {
   depart?: boolean;
   /**
    * How much of the block's passage the entrance takes, as a percentage of the
-   * view timeline's `cover` range (default 42). Shorten it for blocks that must
+   * view timeline's `cover` range (default 28). Shorten it for blocks that must
    * be fully settled early — e.g. inside a section that pins.
    */
   span?: number;
   /** Legacy alias for `distance`. */
   y?: number;
-  // Accepted for call-site compatibility with the earlier GSAP API; scroll
-  // timelines derive timing from scroll position instead.
+  // Accepted for call-site compatibility. Entrances use the shared motion
+  // rhythm; scroll-span settings remain for the no-JavaScript CSS fallback.
   duration?: number;
   ease?: string;
   scrub?: boolean;
