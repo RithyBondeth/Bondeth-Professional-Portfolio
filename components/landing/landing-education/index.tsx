@@ -31,7 +31,7 @@ export default function LandingEducation(props: { lang: TLocale }) {
         {/* Degree Cards Section */}
         <StaggerIn
           className="space-y-5"
-          from="right"
+          from="flip-right"
           distance={60}
           blur={4}
           stagger={0.12}

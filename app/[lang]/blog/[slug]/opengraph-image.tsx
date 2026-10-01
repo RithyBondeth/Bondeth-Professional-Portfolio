@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { PixelBOg } from "@/components/brand/pixel-b-og";
+import { RobotOg } from "@/components/brand/robot-og";
 import { getPostBySlug } from "@/utils/functions/blog";
 import { siteConfig } from "@/utils/constants/portfolio.constant";
 import { hasLocale } from "@/utils/i18n";
@@ -73,7 +73,7 @@ export default async function Image({
           marginBottom: 32,
         }}
       >
-        <PixelBOg size={48} inverse />
+        <RobotOg size={48} inverse />
         <span>{label}</span>
       </div>
       <div style={{ fontSize: 64, fontWeight: 700, lineHeight: 1.15 }}>

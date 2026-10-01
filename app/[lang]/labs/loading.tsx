@@ -1,3 +1,4 @@
+import { MascotLoader } from "@/components/mascot/mascot-loader";
 import { Skeleton } from "@/components/ui/skeleton";
 
 /**
@@ -11,6 +12,7 @@ export default function LabsLoading() {
       aria-label="Loading labs"
       className="flex-1 px-6 pb-16 sm:pb-24 pt-32 font-sans"
     >
+      <MascotLoader label="Loading labs" />
       <div className="mx-auto max-w-5xl">
         {/* Heading block */}
         <Skeleton className="h-3 w-24" />

@@ -1,0 +1,449 @@
+/* Byte — the pixel mascot.
+
+   Every moving part animates an individual transform property (`translate`,
+   `rotate`, `scale`) or opacity, never `transform` itself, so independent
+   behaviours compose instead of overwriting each other: the cursor gaze owns
+   `.gaze`'s `transform`, the scroll glance owns its `translate`; the blink owns
+   `.eyes`'s `scale`, the loading scan its `translate`; the scroll lean owns
+   `.lean`'s `rotate`, the mood hops `.bob`'s `translate`. */
+
+.robot {
+  display: block;
+  overflow: visible;
+  image-rendering: pixelated;
+}
+
+/* ── Scroll lean (set from JS as a unitless --lean, in degrees) ── */
+.lean {
+  transform-box: view-box;
+  transform-origin: 17px 38px;
+  rotate: calc(var(--lean, 0) * 1deg);
+  transition: rotate 520ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.bob {
+  transform-box: view-box;
+  transform-origin: 17px 38px;
+}
+
+.robot[data-variant="head"] :is(.lean, .bob) {
+  transform-origin: 17px 26px;
+}
+
+/* ── Gaze: eyes drift toward the cursor (unitless --gaze-x / --gaze-y in grid
+   units) and glance along the scroll direction via [data-look]. ── */
+.gaze {
+  transform: translate(
+    calc(var(--gaze-x, 0) * 1px),
+    calc(var(--gaze-y, 0) * 1px)
+  );
+  transition:
+    transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+    translate 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.robot[data-look="down"] .gaze {
+  translate: 0 1.2px;
+}
+
+.robot[data-look="up"] .gaze {
+  translate: 0 -1.2px;
+}
+
+.eyes {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.cheeks {
+  opacity: 0.55;
+}
+
+.antennaTip,
+.mouthPixel,
+.thinkDots rect,
+.zee {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.armLeft,
+.armRight {
+  transform-box: fill-box;
+  transform-origin: 50% 8%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .robot[data-float] .bob {
+    animation: mascot-float 3.6s ease-in-out infinite;
+  }
+
+  .eyes {
+    animation: mascot-blink 5.4s ease-in-out infinite;
+  }
+
+  /* Closed or arched eyes have nothing to blink. */
+  .robot:is(
+      [data-mood="happy"],
+      [data-mood="wave"],
+      [data-mood="sleep"],
+      [data-mood="wink"]
+    )
+    .eyes {
+    animation: none;
+  }
+
+  .antennaTip {
+    animation: mascot-antenna 2.8s ease-in-out infinite;
+  }
+
+  /* ── Moods ── */
+  .robot[data-mood="load"] .antennaTip {
+    animation-duration: 0.7s;
+  }
+
+  .robot[data-mood="load"] .eyes {
+    animation:
+      mascot-blink 5.4s ease-in-out infinite,
+      mascot-scan 1.6s ease-in-out infinite;
+  }
+
+  .robot[data-mood="load"] .mouthPixel {
+    animation: mascot-dash 1.05s ease-in-out infinite;
+    animation-delay: calc(var(--i, 0) * 150ms);
+  }
+
+  .robot[data-mood="think"] .antennaTip {
+    animation-duration: 1.2s;
+  }
+
+  .thinkDots rect {
+    animation: mascot-think 1.2s ease-in-out infinite;
+  }
+  .thinkDots rect:nth-child(2) {
+    animation-delay: 160ms;
+  }
+  .thinkDots rect:nth-child(3) {
+    animation-delay: 320ms;
+  }
+
+  .robot[data-mood="sleep"] .antennaTip {
+    animation: none;
+    opacity: 0.35;
+  }
+
+  .robot[data-mood="sleep"] .bob {
+    animation: mascot-breathe 3.8s ease-in-out infinite;
+  }
+
+  .zee {
+    opacity: 0;
+    animation: mascot-zee 2.6s ease-out infinite;
+  }
+  .zee:nth-child(2) {
+    animation-delay: 1.3s;
+  }
+
+  .robot[data-mood="wave"] .armRight {
+    animation:
+      mascot-arm-raise 360ms cubic-bezier(0.22, 1, 0.36, 1) both,
+      mascot-wave 1s ease-in-out 360ms infinite;
+  }
+
+  .robot[data-mood="happy"] .bob,
+  .robot[data-mood="wink"] .bob {
+    animation: mascot-hop 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .robot[data-mood="surprised"] .bob {
+    animation: mascot-jump 480ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  /* ── Power-on: the eyes and antenna flicker to life once. ── */
+  .robot[data-boot] .eyes,
+  .robot[data-boot] .antennaTip {
+    animation: mascot-boot 1s steps(1, end) both;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lean,
+  .gaze {
+    transition: none;
+  }
+
+  .robot[data-mood="sleep"] .antennaTip {
+    opacity: 0.35;
+  }
+
+  /* The Zs are the only cue that he is asleep, so hold them visible. */
+  .zee:nth-child(2) {
+    translate: 0 -1px;
+  }
+
+  .robot[data-mood="wave"] .armRight {
+    rotate: -140deg;
+  }
+}
+
+@keyframes mascot-float {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -1.2px;
+  }
+}
+
+@keyframes mascot-breathe {
+  0%,
+  100% {
+    translate: 0 0.6px;
+  }
+  50% {
+    translate: 0 -0.4px;
+  }
+}
+
+@keyframes mascot-blink {
+  0%,
+  44%,
+  50%,
+  88%,
+  92%,
+  100% {
+    scale: 1 1;
+  }
+  47% {
+    scale: 1 0.1;
+  }
+  90% {
+    scale: 1 0.1;
+  }
+}
+
+@keyframes mascot-antenna {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@keyframes mascot-scan {
+  0%,
+  100% {
+    translate: -1.5px 0;
+  }
+  50% {
+    translate: 1.5px 0;
+  }
+}
+
+@keyframes mascot-dash {
+  0%,
+  100% {
+    opacity: 0.25;
+    translate: 0 0;
+  }
+  40% {
+    opacity: 1;
+    translate: 0 -0.6px;
+  }
+}
+
+@keyframes mascot-think {
+  0%,
+  100% {
+    opacity: 0.3;
+    translate: 0 0;
+  }
+  50% {
+    opacity: 1;
+    translate: 0 -0.8px;
+  }
+}
+
+@keyframes mascot-zee {
+  0% {
+    opacity: 0;
+    translate: 0 1px;
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    translate: 2px -5px;
+  }
+}
+
+@keyframes mascot-arm-raise {
+  from {
+    rotate: 0deg;
+  }
+  to {
+    rotate: -148deg;
+  }
+}
+
+@keyframes mascot-wave {
+  0%,
+  100% {
+    rotate: -148deg;
+  }
+  50% {
+    rotate: -118deg;
+  }
+}
+
+@keyframes mascot-hop {
+  0% {
+    translate: 0 0;
+  }
+  40% {
+    translate: 0 -2px;
+  }
+  100% {
+    translate: 0 0;
+  }
+}
+
+@keyframes mascot-jump {
+  0% {
+    translate: 0 0;
+    scale: 1 1;
+  }
+  30% {
+    translate: 0 -3px;
+    scale: 0.98 1.03;
+  }
+  65% {
+    translate: 0 0.4px;
+    scale: 1.02 0.98;
+  }
+  100% {
+    translate: 0 0;
+    scale: 1 1;
+  }
+}
+
+@keyframes mascot-boot {
+  0%,
+  22%,
+  40% {
+    opacity: 0;
+  }
+  12%,
+  30%,
+  55%,
+  100% {
+    opacity: 1;
+  }
+}
+
+/* ── Loading pill (MascotLoader) ── */
+.loader {
+  position: fixed;
+  bottom: clamp(1.25rem, 4vh, 2rem);
+  left: 50%;
+  z-index: 55;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  translate: -50% 0;
+  border: 1px solid color-mix(in oklab, var(--border) 70%, transparent);
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--background) 86%, transparent);
+  padding: 7px 16px 7px 9px;
+  box-shadow:
+    0 18px 40px rgb(0 0 0 / 0.12),
+    0 2px 8px rgb(0 0 0 / 0.06);
+  backdrop-filter: blur(14px) saturate(1.1);
+  color: var(--foreground);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.loaderRobot {
+  width: 30px;
+  height: auto;
+}
+
+.loaderVerbs {
+  display: grid;
+  min-width: 9.5em;
+  height: 1.3em;
+  overflow: hidden;
+}
+
+.loaderSet,
+.loaderVerb {
+  grid-area: 1 / 1;
+}
+
+.loaderSet {
+  display: grid;
+}
+
+:global(html[lang="km"]) .loaderSet[lang="en"],
+:global(html:not([lang="km"])) .loaderSet[lang="km"] {
+  display: none;
+}
+
+.loaderVerb {
+  line-height: 1.3em;
+  white-space: nowrap;
+  opacity: 0;
+}
+
+.loaderVerb:first-child {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .loader {
+    animation: loader-in 420ms cubic-bezier(0.22, 1, 0.36, 1) 180ms both;
+  }
+
+  .loaderVerb,
+  .loaderVerb:first-child {
+    animation: loader-verb 7.5s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    animation-delay: calc(var(--i, 0) * 1.5s);
+  }
+}
+
+@keyframes loader-in {
+  from {
+    opacity: 0;
+    translate: -50% 14px;
+    scale: 0.94;
+  }
+  to {
+    opacity: 1;
+    translate: -50% 0;
+    scale: 1;
+  }
+}
+
+@keyframes loader-verb {
+  0% {
+    opacity: 0;
+    translate: 0 0.9em;
+  }
+  4%,
+  17% {
+    opacity: 1;
+    translate: 0 0;
+  }
+  21%,
+  100% {
+    opacity: 0;
+    translate: 0 -0.9em;
+  }
+}

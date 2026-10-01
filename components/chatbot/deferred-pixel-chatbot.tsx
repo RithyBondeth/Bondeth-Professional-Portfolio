@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import dynamic from "next/dynamic";
-import { PixelRobot } from "./pixel-robot";
+import { MascotBuddy } from "@/components/mascot/mascot-buddy";
 import styles from "./pixel-chatbot.module.css";
 
 const PixelChatbot = dynamic(() => import("./pixel-chatbot"), {
@@ -23,7 +23,8 @@ const launcherCopy = {
 /**
  * Keeps the Markdown renderer and chat request code out of the initial bundle.
  * The lightweight launcher remains immediately interactive and loads the full
- * assistant only after a visitor asks to open it.
+ * assistant only after a visitor asks to open it. The companion mascot lives
+ * here rather than behind that click, so it is alive from the first scroll.
  */
 export default function DeferredPixelChatbot({ lang }: { lang: string }) {
   const [requested, setRequested] = useState(false);
@@ -40,9 +41,13 @@ export default function DeferredPixelChatbot({ lang }: { lang: string }) {
         aria-expanded="false"
         onClick={() => setRequested(true)}
       >
-        <span className={styles.speechBubble}>{text.bubble}</span>
         <span className={styles.launcherGlow} />
-        <PixelRobot />
+        <MascotBuddy
+          lang={lang}
+          bubble={text.bubble}
+          bubbleClassName={styles.speechBubble}
+          className={styles.buddy}
+        />
         <span className={styles.launcherStatus} aria-hidden="true" />
       </button>
     </aside>

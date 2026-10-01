@@ -1,28 +1,11 @@
+"use client";
+
+import { useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import { RobotArt } from "@/components/mascot/robot-art";
+import { useMascotGaze } from "@/components/mascot/use-mascot-gaze";
 
 /* ---------------------------------- Logo ----------------------------------- */
-const PIXEL_B_PATH =
-  "M0 0H144V18H176V44H200V108H176V134H144V144H176V166H200V230H176V256H144V274H0V0ZM44 42V108H132V92H156V58H132V42H44ZM44 166V232H132V216H156V182H132V166H44ZM176 24H200V44H176V24Z";
-
-export function LogoMark({ className }: { className?: string }) {
-  return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 200 274"
-      className={cn("h-8 w-auto shrink-0", className)}
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d={PIXEL_B_PATH}
-        fill="currentColor"
-        fillRule="evenodd"
-        className="text-foreground"
-      />
-      <rect x="176" width="24" height="24" className="fill-brand-pixel" />
-    </svg>
-  );
-}
-
 function PixelTrail() {
   return (
     <span aria-hidden="true" className="mt-0.5 flex h-1 items-center gap-1">
@@ -34,16 +17,33 @@ function PixelTrail() {
   );
 }
 
+/**
+ * The brand mark is Byte's head. It watches the cursor and winks when you
+ * point at it — small enough to stay a logo, alive enough to introduce the
+ * mascot before the visitor ever opens the chat.
+ */
 export function Logo({ className }: { className?: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const [hovered, setHovered] = useState(false);
+  useMascotGaze(ref, { range: 1.2 });
+
   return (
     <span
       aria-hidden="true"
+      onPointerEnter={() => setHovered(true)}
+      onPointerLeave={() => setHovered(false)}
       className={cn(
-        "inline-flex items-center gap-1.5 whitespace-nowrap select-none",
+        "inline-flex items-center gap-2 whitespace-nowrap select-none",
         className,
       )}
     >
-      <LogoMark />
+      <span ref={ref} className="inline-flex h-7 shrink-0">
+        <RobotArt
+          variant="head"
+          mood={hovered ? "wink" : "idle"}
+          className="h-full w-auto"
+        />
+      </span>
       <span className="flex flex-col leading-none">
         <span className="font-sans text-base font-bold tracking-[-0.045em] text-foreground">
           Bondeth

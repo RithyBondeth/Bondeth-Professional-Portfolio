@@ -72,7 +72,9 @@ export default async function IndexPage({ params }: IHomePageProps) {
 
   /* -------------------------------- Render UI ------------------------------- */
   return (
-    <main id="main-content" tabIndex={-1}>
+    // data-scroll-story: every reveal on this page also animates out as it
+    // leaves the viewport (see the scroll-driven reveals in globals.css).
+    <main id="main-content" tabIndex={-1} data-scroll-story>
       {/* Structured Data (JSON-LD) */}
       <script
         type="application/ld+json"

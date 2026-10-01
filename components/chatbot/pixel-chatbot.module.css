@@ -77,223 +77,51 @@
   background: color-mix(in srgb, var(--background) 94%, transparent);
   color: var(--foreground);
   font-family: var(--font-ui);
-  font-size: 8px;
+  font-size: 9px;
   font-weight: 700;
   line-height: 1;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
   box-shadow: 0 8px 20px rgb(0 0 0 / 0.1);
   backdrop-filter: blur(10px);
-  animation: bubbleBob 3.2s ease-in-out infinite;
+  transform-origin: 85% 100%;
+  /* The bubble remounts for every new line Byte says, so the pop replays per
+     quip; the bob is a `transform`, the pop a `scale`, so they compose. */
+  animation:
+    bubblePop 420ms cubic-bezier(0.34, 1.56, 0.64, 1) both,
+    bubbleBob 3.2s ease-in-out 420ms infinite;
 }
 
-.speechBubble::after {
-  display: none;
-}
-
-.robot {
-  position: relative;
-  display: block;
-  width: 66px;
-  height: 76px;
-  image-rendering: pixelated;
-  animation: robotFloat 3.4s ease-in-out infinite;
-}
-
-.robotSmall {
-  transform: scale(0.5);
-  transform-origin: center;
-  animation: none;
-}
-
-.antenna {
-  position: absolute;
-  top: 2px;
-  left: 31px;
-  width: 4px;
-  height: 12px;
-  background: var(--foreground);
-}
-
-.antennaTip {
-  position: absolute;
-  top: 0;
-  left: 28px;
-  width: 10px;
-  height: 7px;
-  background: var(--brand-pixel);
-  box-shadow: 2px 2px 0 var(--foreground);
-}
-
-.robotHead {
-  position: absolute;
-  top: 13px;
-  left: 8px;
-  z-index: 2;
-  width: 50px;
-  height: 36px;
-  border: 4px solid var(--foreground);
-  background: var(--card);
-  box-shadow: inset -5px -5px 0 var(--secondary), 2px 3px 0 rgb(20 20 19 / 0.12);
-}
-
-.earLeft,
-.earRight {
-  position: absolute;
-  top: 24px;
-  width: 8px;
-  height: 17px;
-  border: 3px solid var(--foreground);
-  background: var(--brand-pixel);
-}
-
-.earLeft {
-  left: 2px;
-}
-
-.earRight {
-  right: 2px;
-}
-
-.eyeLeft,
-.eyeRight {
-  position: absolute;
-  top: 9px;
-  width: 8px;
-  height: 8px;
-  background: var(--foreground);
-  animation: blink 4.8s steps(1, end) infinite;
-}
-
-.eyeLeft {
-  left: 9px;
-}
-
-.eyeRight {
-  right: 9px;
-}
-
-.mouth {
-  position: absolute;
-  right: 0;
-  bottom: 6px;
-  left: 0;
-  display: flex;
-  justify-content: center;
-  gap: 3px;
-}
-
-.mouth span {
-  width: 4px;
-  height: 3px;
-  background: var(--brand-pixel);
-}
-
-.robotBody {
-  position: absolute;
-  top: 48px;
-  left: 15px;
-  z-index: 1;
-  width: 36px;
-  height: 25px;
-  border: 4px solid var(--foreground);
-  background: var(--brand-pixel);
-  box-shadow: 2px 3px 0 rgb(20 20 19 / 0.12);
-}
-
-.bodyLight {
-  position: absolute;
-  top: 5px;
-  left: 5px;
-  width: 5px;
-  height: 5px;
-  background: var(--status-success-surface);
-  box-shadow: 0 0 0 2px rgb(20 20 19 / 0.22);
-}
-
-.bodyMark {
-  position: absolute;
-  right: 5px;
-  bottom: 2px;
-  color: var(--foreground);
-  font-size: 12px;
-  font-weight: 900;
-  line-height: 1;
-}
-
-.armLeft,
-.armRight {
-  position: absolute;
-  top: 53px;
-  width: 9px;
-  height: 15px;
-  border: 3px solid var(--foreground);
-  background: var(--card);
-}
-
-.armLeft {
-  left: 8px;
-  transform: rotate(8deg);
-}
-
-.armRight {
-  right: 8px;
-  transform: rotate(-8deg);
-}
-
-.robotGreeting .armRight {
-  top: 39px;
-  right: 3px;
-  z-index: 3;
-  height: 18px;
-  transform: rotate(28deg);
-  transform-origin: 50% 100%;
-  animation: robotWave 3.6s steps(2, end) infinite;
-}
-
-.robotGreeting .armRight::before {
-  position: absolute;
-  top: -9px;
-  left: -3px;
-  width: 9px;
-  height: 9px;
-  border: 3px solid var(--foreground);
-  background: var(--card);
-  content: "";
-}
-
-.robotHello {
-  position: absolute;
-  top: -26px;
-  left: 8px;
-  z-index: 5;
-  padding: 4px 6px;
-  border: 2px solid var(--foreground);
-  background: var(--background);
-  box-shadow: 3px 3px 0 var(--border);
-  color: var(--foreground);
-  font-family: var(--font-ui);
-  font-size: 8px;
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: 0.06em;
-  white-space: nowrap;
-}
-
-.robotHello::after {
-  position: absolute;
-  bottom: -5px;
-  left: 30px;
-  width: 5px;
-  height: 5px;
-  border-right: 2px solid var(--foreground);
-  border-bottom: 2px solid var(--foreground);
-  background: var(--background);
-  content: "";
-}
-
-:global(html[lang="km"]) .speechBubble,
-:global(html[lang="km"]) .robotHello {
+:global(html[lang="km"]) .speechBubble {
   letter-spacing: normal;
+}
+
+/* The companion robot inside the launcher. */
+.buddy {
+  display: block;
+  width: 64px;
+}
+
+.buddy svg {
+  width: 100%;
+  height: auto;
+}
+
+/* Byte in the panel header, and as the per-message avatar. */
+.avatarRobot {
+  width: 34px;
+  height: auto;
+}
+
+.headIcon {
+  width: 24px;
+  height: auto;
+}
+
+.headIconSmall {
+  width: 16px;
+  height: auto;
+  flex: 0 0 16px;
 }
 
 .panel {
@@ -339,109 +167,6 @@
 
 .panelDockLeft.panelDockTop {
   transform-origin: left top;
-}
-
-.robotHeadFrame {
-  display: grid;
-  width: 26px;
-  height: 26px;
-  flex: 0 0 26px;
-  place-items: center;
-}
-
-.robotHeadFrameSmall {
-  width: 17px;
-  height: 17px;
-  flex-basis: 17px;
-}
-
-.robotHeadIcon {
-  position: relative;
-  display: block;
-  width: 24px;
-  height: 24px;
-  image-rendering: pixelated;
-}
-
-.robotHeadFrameSmall .robotHeadIcon {
-  transform: scale(0.68);
-}
-
-.headAntenna {
-  position: absolute;
-  top: 0;
-  left: 11px;
-  width: 2px;
-  height: 5px;
-  background: var(--foreground);
-}
-
-.headAntennaTip {
-  position: absolute;
-  top: 0;
-  left: 9px;
-  width: 6px;
-  height: 3px;
-  background: var(--brand-pixel);
-}
-
-.headEarLeft,
-.headEarRight {
-  position: absolute;
-  top: 9px;
-  width: 3px;
-  height: 8px;
-  border: 1px solid var(--foreground);
-  background: var(--brand-pixel);
-}
-
-.headEarLeft {
-  left: 0;
-}
-
-.headEarRight {
-  right: 0;
-}
-
-.headFace {
-  position: absolute;
-  top: 4px;
-  left: 2px;
-  width: 20px;
-  height: 17px;
-  border: 2px solid var(--foreground);
-  background: var(--card);
-  box-shadow: inset -2px -2px 0 var(--secondary), 1px 2px 0 rgb(0 0 0 / 0.1);
-}
-
-.headEyeLeft,
-.headEyeRight {
-  position: absolute;
-  top: 5px;
-  width: 3px;
-  height: 3px;
-  background: var(--foreground);
-}
-
-.headEyeLeft {
-  left: 4px;
-}
-
-.headEyeRight {
-  right: 4px;
-}
-
-.headMouth {
-  position: absolute;
-  right: 5px;
-  bottom: 3px;
-  left: 5px;
-  height: 2px;
-  background: repeating-linear-gradient(
-    90deg,
-    var(--brand-pixel) 0 3px,
-    transparent 3px 5px
-  );
 }
 
 .header {
@@ -898,28 +623,6 @@
   color: var(--primary);
 }
 
-@keyframes robotFloat {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-5px);
-  }
-}
-
-@keyframes robotWave {
-  0%, 10%, 20% {
-    transform: rotate(22deg);
-  }
-  5%, 15% {
-    transform: rotate(42deg);
-  }
-  25%, 100% {
-    transform: rotate(28deg);
-  }
-}
-
 @keyframes bubbleBob {
   0%,
   100% {
@@ -927,6 +630,17 @@
   }
   50% {
     transform: translateY(-2px);
+  }
+}
+
+@keyframes bubblePop {
+  from {
+    opacity: 0;
+    scale: 0.6;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
   }
 }
 
@@ -939,18 +653,6 @@
   50% {
     opacity: 0.3;
     transform: scaleX(1.08);
-  }
-}
-
-@keyframes blink {
-  0%,
-  46%,
-  50%,
-  100% {
-    transform: scaleY(1);
-  }
-  48% {
-    transform: scaleY(0.2);
   }
 }
 
@@ -1008,12 +710,8 @@
     transition-duration: 0.01ms;
   }
 
-  .robot,
   .speechBubble,
-  .launcherGlow,
-  .eyeLeft,
-  .eyeRight,
-  .robotGreeting .armRight {
+  .launcherGlow {
     animation: none;
   }
 

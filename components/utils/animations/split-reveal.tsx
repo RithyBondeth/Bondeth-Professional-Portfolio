@@ -15,8 +15,9 @@ interface ISplitRevealProps {
 }
 
 /**
- * A server-rendered heading reveal. CSS view timelines provide motion where
- * supported; every other browser receives the readable heading immediately.
+ * A server-rendered heading reveal: the heading rises out of a mask as it
+ * scrolls in. CSS view timelines scrub it where supported, RevealFallback
+ * covers the rest, and reduced motion receives the readable heading at once.
  */
 export function SplitReveal({
   children,

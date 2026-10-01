@@ -45,7 +45,7 @@ export default function LandingMedia(props: { lang: TLocale }) {
   return (
     <section
       id="media"
-      className="relative isolate overflow-hidden px-6 py-16 sm:py-20 lg:py-24"
+      className="relative isolate overflow-clip px-6 py-16 sm:py-20 lg:py-24"
     >
       <script
         type="application/ld+json"
@@ -78,7 +78,7 @@ export default function LandingMedia(props: { lang: TLocale }) {
 
         {/* Featured Video */}
         <div className="mt-10 grid gap-8 lg:grid-cols-[1.3fr_1fr] lg:items-center">
-          <AnimateIn from="up" distance={30}>
+          <AnimateIn from="rise" distance={40}>
             <VideoFacade
               video={featured}
               title={title}
@@ -156,6 +156,7 @@ export default function LandingMedia(props: { lang: TLocale }) {
           <StaggerIn
             className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
             from="up"
+            pattern="flip"
             stagger={0.1}
           >
             {rest.map((video) => {

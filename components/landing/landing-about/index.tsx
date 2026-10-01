@@ -20,9 +20,9 @@ export default function LandingAbout({ lang }: { lang: TLocale }) {
       ] as const;
 
   return (
-    <section id="about" className="relative overflow-hidden px-6 py-20 sm:py-24 lg:py-28">
+    <section id="about" className="relative overflow-clip px-6 py-20 sm:py-24 lg:py-28">
       <div className="mx-auto max-w-6xl">
-        <AnimateIn from="up">
+        <AnimateIn from="left">
           <p className="mb-3 text-xs font-semibold uppercase tracking-[.2em] text-primary">
             {lang === "km" ? "អំពីការងាររបស់ខ្ញុំ" : "About my work"}
           </p>
@@ -32,10 +32,10 @@ export default function LandingAbout({ lang }: { lang: TLocale }) {
             {dict.about.heading}
           </SplitReveal>
           <div>
-            <StaggerIn from="up" distance={24} stagger={.1} className="space-y-5 text-base leading-relaxed text-field-muted-foreground sm:text-lg">
+            <StaggerIn from="right" distance={36} stagger={.1} className="space-y-5 text-base leading-relaxed text-field-muted-foreground sm:text-lg">
               {localized.bio.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
             </StaggerIn>
-            <AnimateIn from="up" delay={.18}>
+            <AnimateIn from="zoom-in" delay={.18}>
               <a
                 href="#contact"
                 className="btn-fx btn-fx-outline mt-8 inline-flex min-h-11 items-center gap-2 rounded-full border border-primary/30 bg-background/55 px-5 text-sm font-semibold text-primary backdrop-blur-sm hover:border-primary/60"
@@ -48,9 +48,10 @@ export default function LandingAbout({ lang }: { lang: TLocale }) {
         </div>
 
         <StaggerIn
-          from="up"
-          distance={30}
+          from="tilt"
+          distance={60}
           stagger={.12}
+          depart
           className="mt-14 grid gap-3 sm:grid-cols-3 lg:mt-16"
         >
           {principles.map(([Icon, title, description], index) => (

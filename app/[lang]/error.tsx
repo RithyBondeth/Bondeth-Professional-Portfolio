@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ArrowLeft, RefreshCw } from "lucide-react";
-import { PixelRobot } from "@/components/chatbot/pixel-robot";
+import { RobotArt } from "@/components/mascot/robot-art";
 
 export default function SegmentError({
   error,
@@ -32,7 +32,7 @@ export default function SegmentError({
             className="mx-auto flex h-20 items-center justify-center"
             aria-hidden
           >
-            <PixelRobot className="scale-90" />
+            <RobotArt mood="surprised" float className="h-20 w-auto" />
           </div>
           <p className="mt-6 text-sm font-semibold text-primary">
             A small interruption · <span lang="km">មានការរអាក់រអួលបន្តិច</span>

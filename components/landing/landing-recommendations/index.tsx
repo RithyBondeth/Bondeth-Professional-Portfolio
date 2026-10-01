@@ -11,7 +11,7 @@ export default function LandingRecommendations(props: { lang: TLocale }) {
   const { recommendations } = getDictionary(lang);
 
   return (
-    <section id="recommendations" className="relative isolate overflow-hidden px-6 py-16 sm:py-20 lg:py-24">
+    <section id="recommendations" className="relative isolate overflow-clip px-6 py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-6xl">
         <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
           <div>
@@ -34,7 +34,7 @@ export default function LandingRecommendations(props: { lang: TLocale }) {
             </AnimateIn>
           </div>
 
-          <AnimateIn from="right" distance={30} delay={0.1}>
+          <AnimateIn from="flip-right" distance={40} delay={0.1}>
             <aside className="rounded-lg border border-primary/20 bg-primary/5 p-5 sm:p-6">
               <div className="flex gap-4">
                 <ShieldCheck
@@ -57,7 +57,9 @@ export default function LandingRecommendations(props: { lang: TLocale }) {
         <StaggerIn
           className="mt-10 grid gap-4 md:grid-cols-3"
           from="up"
+          pattern="fan"
           stagger={0.1}
+          depart
         >
           {recommendations.items.map((item) => (
             <article

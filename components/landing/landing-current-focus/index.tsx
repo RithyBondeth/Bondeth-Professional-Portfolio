@@ -11,7 +11,7 @@ export default function LandingCurrentFocus(props: { lang: TLocale }) {
   return (
     <section
       id="current-focus"
-      className="relative isolate overflow-hidden px-6 py-14 sm:py-16 lg:py-20"
+      className="relative isolate overflow-clip px-6 py-14 sm:py-16 lg:py-20"
     >
       <div
         aria-hidden
@@ -61,7 +61,7 @@ export default function LandingCurrentFocus(props: { lang: TLocale }) {
             </AnimateIn>
           </div>
 
-          <AnimateIn from="right" delay={0.15} distance={40}>
+          <AnimateIn from="zoom-out" delay={0.1}>
             <DeferredGlobe
               label={currentFocus.globe.pinLabel}
               description={currentFocus.globe.a11yLabel}
@@ -73,7 +73,10 @@ export default function LandingCurrentFocus(props: { lang: TLocale }) {
         <StaggerIn
           className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 lg:mt-10 xl:grid-cols-4"
           from="up"
+          pattern="cascade"
+          cycle={4}
           stagger={0.1}
+          depart
           delay={0.1}
         >
           {currentFocus.items.map((item, index) => (
