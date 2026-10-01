@@ -290,6 +290,7 @@
 .messages {
   display: flex;
   flex: 1;
+  min-height: 0;
   flex-direction: column;
   gap: 14px;
   overflow-y: auto;
@@ -300,6 +301,193 @@
     transparent 32%
   );
   scrollbar-width: thin;
+}
+
+.tourToolbar {
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+  padding: 5px 16px;
+}
+
+.tourToolbar button {
+  display: flex;
+  width: 100%;
+  min-height: 32px;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 0;
+  color: var(--primary);
+  font: 600 12px var(--font-ui);
+  text-align: start;
+  cursor: pointer;
+}
+
+.tourToolbar button svg:last-child {
+  margin-inline-start: auto;
+}
+
+.tourToolbar svg,
+.tourChoices svg,
+.tourControls svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.tourPicker {
+  padding: 2px 0;
+}
+
+.tourPicker h2,
+.tourStopTitle {
+  color: var(--foreground);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.tourPicker > p {
+  margin: 5px 0 12px;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.tourChoices {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.tourChoices button {
+  display: flex;
+  width: 100%;
+  min-height: 64px;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background: var(--card);
+  color: var(--foreground);
+  text-align: start;
+  font-family: var(--font-ui);
+  cursor: pointer;
+  transition: border-color 160ms ease, background-color 160ms ease;
+}
+
+.tourChoices button > span {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  gap: 3px;
+}
+
+.tourChoices strong {
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.tourChoices button > span > span {
+  color: var(--muted-foreground);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.tourChoices button > svg:first-child {
+  color: var(--primary);
+}
+
+.tourChoices button:hover {
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 5%, var(--card));
+}
+
+.tourControls {
+  flex-shrink: 0;
+  margin: 0 12px 8px;
+  padding: 9px 10px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+}
+
+.tourProgress,
+.tourActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tourProgress {
+  justify-content: space-between;
+  margin-bottom: 5px;
+  color: var(--muted-foreground);
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.tourProgress button {
+  display: grid;
+  min-width: 28px;
+  min-height: 28px;
+  place-items: center;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--muted-foreground);
+  cursor: pointer;
+}
+
+.tourTextButton {
+  min-height: 32px;
+  padding: 4px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--muted-foreground);
+  font: 500 11px var(--font-ui);
+  cursor: pointer;
+}
+
+.tourTextButton:hover,
+.tourProgress button:hover {
+  color: var(--primary);
+}
+
+.tourNext {
+  display: flex;
+  flex: 1;
+  min-height: 36px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid color-mix(in srgb, var(--primary) 35%, var(--border));
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--primary) 8%, var(--card));
+  padding: 7px 9px;
+  color: var(--primary);
+  font: 600 11px var(--font-ui);
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.tourNext:hover {
+  background: color-mix(in srgb, var(--primary) 14%, var(--card));
+}
+
+.tourToolbar button:focus-visible,
+.tourPicker button:focus-visible,
+.tourControls button:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.tourToolbar button:disabled,
+.tourChoices button:disabled {
+  opacity: 0.58;
+  cursor: wait;
 }
 
 .messageRow {
@@ -706,6 +894,7 @@
   .launcher,
   .panel,
   .suggestions button,
+  .tourChoices button,
   .composer button {
     transition-duration: 0.01ms;
   }
@@ -718,5 +907,151 @@
   .typingIndicator i {
     animation: none;
     opacity: 0.72;
+  }
+}
+
+/* ------------------------------ Tool results ------------------------------ */
+/* An assistant turn is a column: the streamed reply, then any cards or
+   section jump Byte pulled up with a tool call. */
+.botStack {
+  display: flex;
+  min-width: 0;
+  max-width: 82%;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.botStack .botMessage {
+  max-width: 100%;
+}
+
+.cards {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card {
+  position: relative;
+  display: grid;
+  gap: 3px;
+  padding: 10px 30px 10px 12px;
+  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--background) 92%, transparent);
+  color: var(--card-foreground);
+  text-decoration: none;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    transform 160ms ease;
+  animation: cardIn 260ms ease-out both;
+}
+
+.cards li:nth-child(2) .card {
+  animation-delay: 60ms;
+}
+
+.cards li:nth-child(3) .card {
+  animation-delay: 120ms;
+}
+
+.card:hover {
+  border-color: color-mix(in srgb, var(--primary) 45%, transparent);
+  background: color-mix(in srgb, var(--brand-pixel) 6%, var(--background));
+}
+
+.card:focus-visible,
+.sectionJump:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.cardKind {
+  color: var(--primary);
+  font-family: var(--font-code);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.cardKind span {
+  color: var(--muted-foreground);
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+
+.cardTitle {
+  color: var(--foreground);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.cardDescription {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--muted-foreground);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  line-height: 1.45;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.cardArrow {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  width: 14px;
+  color: var(--primary);
+  transform: translateY(-50%);
+  transition: transform 160ms ease;
+}
+
+.card:hover .cardArrow {
+  transform: translate(3px, -50%);
+}
+
+.sectionJump {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid color-mix(in srgb, var(--primary) 35%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--brand-pixel) 8%, var(--background));
+  color: var(--primary);
+  font-family: var(--font-code);
+  font-size: 11px;
+  text-decoration: none;
+  animation: cardIn 260ms ease-out both;
+}
+
+.sectionJump svg {
+  width: 13px;
+}
+
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .sectionJump {
+    animation: none;
+  }
+
+  .card,
+  .cardArrow {
+    transition: none;
   }
 }

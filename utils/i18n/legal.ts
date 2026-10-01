@@ -42,7 +42,7 @@ const en: ILegalDocuments = {
     intro:
       "This policy explains what information this portfolio handles, why it is used, and which service providers help operate the website. It is written for visitors, prospective clients, collaborators, and chatbot users.",
     effectiveLabel: "Effective",
-    effectiveDate: "August 14, 2026",
+    effectiveDate: "October 1, 2026",
     contentsLabel: "On this page",
     resourcesLabel: "Provider policies",
     contactLabel: "Privacy questions",
@@ -78,9 +78,9 @@ const en: ILegalDocuments = {
         id: "chatbot",
         title: "4. AI chatbot",
         paragraphs: [
-          "When you send a message to Byte, the message and limited recent conversation history are transmitted to Mistral AI to generate a response. The portfolio does not intentionally save a separate, permanent chat history database.",
+          "When you send a message to Byte, the message and limited recent conversation history are transmitted to Groq to generate a response. The portfolio does not intentionally save a separate, permanent chat history database.",
           "AI responses can be inaccurate. Do not submit passwords, payment information, confidential business material, health information, government identifiers, or other sensitive personal data.",
-          "Mistral states that data submitted under a free API plan may be used for model training unless the account has opted out. Paid Scale-plan API input and output are not used for model training under Mistral's published controls. Mistral may still process data for service delivery, safety, abuse prevention, and legal compliance under its terms.",
+          "Groq states that inference inputs and outputs are not retained by default. They may be temporarily logged for troubleshooting or abuse monitoring, subject to Groq's data controls and legal requirements. Usage metadata is collected separately.",
         ],
       },
       {
@@ -102,7 +102,7 @@ const en: ILegalDocuments = {
         id: "providers",
         title: "7. Service providers and disclosure",
         paragraphs: [
-          "Information is shared only as needed with infrastructure and service providers that operate the website: Vercel for hosting, analytics, and performance monitoring; Mistral AI for chatbot responses; and Resend for contact-form email delivery. Information may also be disclosed when reasonably necessary to comply with law, enforce rights, investigate abuse, or protect safety.",
+          "Information is shared only as needed with infrastructure and service providers that operate the website: Vercel for hosting, analytics, and performance monitoring; Groq for chatbot responses; and Resend for contact-form email delivery. Information may also be disclosed when reasonably necessary to comply with law, enforce rights, investigate abuse, or protect safety.",
           "Personal information is not sold, and it is not used for third-party advertising by this portfolio.",
         ],
       },
@@ -150,10 +150,10 @@ const en: ILegalDocuments = {
       },
     ],
     resources: [
-      { label: "Mistral AI privacy policy", href: "https://legal.mistral.ai/terms/privacy-policy" },
+      { label: "Groq privacy policy", href: "https://groq.com/privacy-policy" },
       {
-        label: "Mistral AI data-training controls",
-        href: "https://help.mistral.ai/en/articles/347617-do-you-use-my-user-data-to-train-your-artificial-intelligence-models",
+        label: "Groq data controls",
+        href: "https://console.groq.com/docs/your-data",
       },
       { label: "Resend privacy policy", href: "https://resend.com/legal/privacy-policy" },
       {
@@ -171,7 +171,7 @@ const en: ILegalDocuments = {
     intro:
       "These terms set expectations for using this portfolio, its public content, contact form, and AI assistant. By continuing to use the website, you agree to use it responsibly and in accordance with these terms.",
     effectiveLabel: "Effective",
-    effectiveDate: "August 14, 2026",
+    effectiveDate: "October 1, 2026",
     contentsLabel: "On this page",
     resourcesLabel: "Related policies",
     contactLabel: "Questions about these terms",
@@ -198,7 +198,7 @@ const en: ILegalDocuments = {
         id: "ai",
         title: "3. AI-generated responses",
         paragraphs: [
-          "Byte is an AI assistant powered by Mistral AI. Its responses are automatically generated and may be incomplete, outdated, biased, or incorrect. Responses do not represent a binding statement, offer, guarantee, or commitment by Rithy Bondeth.",
+          "Byte is an AI assistant powered by Groq. Its responses are automatically generated and may be incomplete, outdated, biased, or incorrect. Responses do not represent a binding statement, offer, guarantee, or commitment by Rithy Bondeth.",
           "Do not rely on chatbot output as legal, medical, financial, security, or other professional advice. Verify important information independently and contact Rithy Bondeth directly for authoritative information about availability, pricing, project scope, or professional arrangements.",
         ],
       },
@@ -228,7 +228,7 @@ const en: ILegalDocuments = {
         id: "third-parties",
         title: "7. Third-party services and links",
         paragraphs: [
-          "The website links to or uses third-party services, including Mistral AI, Vercel, Resend, GitHub, LinkedIn, and YouTube. Their availability, content, and data practices are controlled by those providers. A link does not imply endorsement of every statement, product, or policy on the destination website.",
+          "The website links to or uses third-party services, including Groq, Vercel, Resend, GitHub, LinkedIn, and YouTube. Their availability, content, and data practices are controlled by those providers. A link does not imply endorsement of every statement, product, or policy on the destination website.",
         ],
       },
       {
@@ -263,7 +263,7 @@ const en: ILegalDocuments = {
     ],
     resources: [
       { label: "Privacy Policy", href: "/privacy" },
-      { label: "Mistral AI usage policy", href: "https://legal.mistral.ai/terms/usage-policy" },
+      { label: "Groq usage policy", href: "https://groq.com/terms-of-use" },
     ],
   },
 };
@@ -278,7 +278,7 @@ const km: ILegalDocuments = {
     intro:
       "គោលការណ៍នេះពន្យល់អំពីព័ត៌មានដែលគេហទំព័រនេះដំណើរការ គោលបំណងនៃការប្រើប្រាស់ និងអ្នកផ្តល់សេវាដែលជួយដំណើរការគេហទំព័រ។ វាអនុវត្តចំពោះអ្នកចូលមើល អតិថិជនសក្តានុពល ដៃគូសហការ និងអ្នកប្រើជំនួយការ AI។",
     effectiveLabel: "មានប្រសិទ្ធភាពចាប់ពី",
-    effectiveDate: "ថ្ងៃទី ១៤ ខែសីហា ឆ្នាំ ២០២៦",
+    effectiveDate: "ថ្ងៃទី ១ ខែតុលា ឆ្នាំ ២០២៦",
     contentsLabel: "មាតិកាក្នុងទំព័រ",
     resourcesLabel: "គោលការណ៍របស់អ្នកផ្តល់សេវា",
     contactLabel: "សំណួរអំពីឯកជនភាព",
@@ -314,9 +314,9 @@ const km: ILegalDocuments = {
         id: "chatbot",
         title: "៤. ជំនួយការ AI",
         paragraphs: [
-          "នៅពេលអ្នកផ្ញើសារទៅ Byte សារ និងប្រវត្តិសន្ទនាថ្មីៗដែលមានកម្រិត នឹងត្រូវបញ្ជូនទៅ Mistral AI ដើម្បីបង្កើតចម្លើយ។ គេហទំព័រនេះមិនមានបំណងរក្សាទុកមូលដ្ឋានទិន្នន័យប្រវត្តិសន្ទនាអចិន្ត្រៃយ៍ដាច់ដោយឡែកទេ។",
+          "នៅពេលអ្នកផ្ញើសារទៅ Byte សារ និងប្រវត្តិសន្ទនាថ្មីៗដែលមានកម្រិត នឹងត្រូវបញ្ជូនទៅ Groq ដើម្បីបង្កើតចម្លើយ។ គេហទំព័រនេះមិនមានបំណងរក្សាទុកមូលដ្ឋានទិន្នន័យប្រវត្តិសន្ទនាអចិន្ត្រៃយ៍ដាច់ដោយឡែកទេ។",
           "ចម្លើយរបស់ AI អាចមិនត្រឹមត្រូវ។ សូមកុំផ្ញើពាក្យសម្ងាត់ ព័ត៌មានទូទាត់ ឯកសារអាជីវកម្មសម្ងាត់ ព័ត៌មានសុខភាព លេខសម្គាល់រដ្ឋាភិបាល ឬទិន្នន័យផ្ទាល់ខ្លួនរសើបផ្សេងទៀត។",
-          "Mistral បញ្ជាក់ថា ទិន្នន័យក្រោមគម្រោង API ឥតគិតថ្លៃអាចត្រូវបានប្រើសម្រាប់បណ្តុះបណ្តាលម៉ូដែល លុះត្រាតែគណនីបានបិទជម្រើសនេះ។ Input និង output របស់គម្រោង Scale បង់តាមការប្រើប្រាស់ មិនត្រូវបានប្រើសម្រាប់បណ្តុះបណ្តាលតាមការគ្រប់គ្រងដែល Mistral បានផ្សព្វផ្សាយទេ។ Mistral នៅតែអាចដំណើរការទិន្នន័យសម្រាប់ផ្តល់សេវា សុវត្ថិភាព ការពារការរំលោភបំពាន និងអនុវត្តច្បាប់តាមលក្ខខណ្ឌរបស់ខ្លួន។",
+          "Groq បញ្ជាក់ថា តាមលំនាំដើម input និង output នៃសំណើ AI មិនត្រូវបានរក្សាទុកទេ។ ទិន្នន័យអាចត្រូវបានកត់ត្រាបណ្តោះអាសន្នសម្រាប់ដោះស្រាយបញ្ហា ឬតាមដានការរំលោភបំពាន អាស្រ័យលើការគ្រប់គ្រងទិន្នន័យរបស់ Groq និងតម្រូវការច្បាប់។ ទិន្នន័យអំពីការប្រើប្រាស់ត្រូវបានប្រមូលដាច់ដោយឡែក។",
         ],
       },
       {
@@ -338,7 +338,7 @@ const km: ILegalDocuments = {
         id: "providers",
         title: "៧. អ្នកផ្តល់សេវា និងការបង្ហាញព័ត៌មាន",
         paragraphs: [
-          "ព័ត៌មានត្រូវបានចែករំលែកតែក្នុងកម្រិតចាំបាច់ជាមួយអ្នកផ្តល់សេវា៖ Vercel សម្រាប់ការបង្ហោះ ការវិភាគ និងតាមដានដំណើរការ; Mistral AI សម្រាប់ចម្លើយជំនួយការ; និង Resend សម្រាប់ការផ្ញើអ៊ីមែលពីទម្រង់ទំនាក់ទំនង។ ព័ត៌មានក៏អាចត្រូវបានបង្ហាញនៅពេលចាំបាច់សមហេតុផល ដើម្បីអនុវត្តច្បាប់ ការពារសិទ្ធិ ស៊ើបអង្កេតការរំលោភបំពាន ឬការពារសុវត្ថិភាព។",
+          "ព័ត៌មានត្រូវបានចែករំលែកតែក្នុងកម្រិតចាំបាច់ជាមួយអ្នកផ្តល់សេវា៖ Vercel សម្រាប់ការបង្ហោះ ការវិភាគ និងតាមដានដំណើរការ; Groq សម្រាប់ចម្លើយជំនួយការ; និង Resend សម្រាប់ការផ្ញើអ៊ីមែលពីទម្រង់ទំនាក់ទំនង។ ព័ត៌មានក៏អាចត្រូវបានបង្ហាញនៅពេលចាំបាច់សមហេតុផល ដើម្បីអនុវត្តច្បាប់ ការពារសិទ្ធិ ស៊ើបអង្កេតការរំលោភបំពាន ឬការពារសុវត្ថិភាព។",
           "គេហទំព័រនេះមិនលក់ព័ត៌មានផ្ទាល់ខ្លួន និងមិនប្រើវាសម្រាប់ការផ្សាយពាណិជ្ជកម្មរបស់ភាគីទីបីទេ។",
         ],
       },
@@ -386,10 +386,10 @@ const km: ILegalDocuments = {
       },
     ],
     resources: [
-      { label: "គោលការណ៍ឯកជនភាព Mistral AI", href: "https://legal.mistral.ai/terms/privacy-policy" },
+      { label: "គោលការណ៍ឯកជនភាព Groq", href: "https://groq.com/privacy-policy" },
       {
-        label: "ការគ្រប់គ្រងការប្រើទិន្នន័យរបស់ Mistral AI",
-        href: "https://help.mistral.ai/en/articles/347617-do-you-use-my-user-data-to-train-your-artificial-intelligence-models",
+        label: "ការគ្រប់គ្រងការប្រើទិន្នន័យរបស់ Groq",
+        href: "https://console.groq.com/docs/your-data",
       },
       { label: "គោលការណ៍ឯកជនភាព Resend", href: "https://resend.com/legal/privacy-policy" },
       {
@@ -407,7 +407,7 @@ const km: ILegalDocuments = {
     intro:
       "លក្ខខណ្ឌទាំងនេះកំណត់ការរំពឹងទុកសម្រាប់ការប្រើប្រាស់គេហទំព័រ មាតិកាសាធារណៈ ទម្រង់ទំនាក់ទំនង និងជំនួយការ AI។ ដោយបន្តប្រើគេហទំព័រ អ្នកយល់ព្រមប្រើប្រាស់ដោយទទួលខុសត្រូវ និងស្របតាមលក្ខខណ្ឌទាំងនេះ។",
     effectiveLabel: "មានប្រសិទ្ធភាពចាប់ពី",
-    effectiveDate: "ថ្ងៃទី ១៤ ខែសីហា ឆ្នាំ ២០២៦",
+    effectiveDate: "ថ្ងៃទី ១ ខែតុលា ឆ្នាំ ២០២៦",
     contentsLabel: "មាតិកាក្នុងទំព័រ",
     resourcesLabel: "គោលការណ៍ពាក់ព័ន្ធ",
     contactLabel: "សំណួរអំពីលក្ខខណ្ឌ",
@@ -434,7 +434,7 @@ const km: ILegalDocuments = {
         id: "ai",
         title: "៣. ចម្លើយដែលបង្កើតដោយ AI",
         paragraphs: [
-          "Byte ជាជំនួយការ AI ដែលប្រើ Mistral AI។ ចម្លើយត្រូវបានបង្កើតដោយស្វ័យប្រវត្តិ ហើយអាចមិនពេញលេញ ហួសសម័យ លម្អៀង ឬខុស។ ចម្លើយមិនមែនជាសេចក្តីថ្លែងការណ៍ ការផ្តល់ជូន ការធានា ឬការប្តេជ្ញាចិត្តដែលមានកាតព្វកិច្ចពី Rithy Bondeth ទេ។",
+          "Byte ជាជំនួយការ AI ដែលប្រើ Groq។ ចម្លើយត្រូវបានបង្កើតដោយស្វ័យប្រវត្តិ ហើយអាចមិនពេញលេញ ហួសសម័យ លម្អៀង ឬខុស។ ចម្លើយមិនមែនជាសេចក្តីថ្លែងការណ៍ ការផ្តល់ជូន ការធានា ឬការប្តេជ្ញាចិត្តដែលមានកាតព្វកិច្ចពី Rithy Bondeth ទេ។",
           "កុំពឹងផ្អែកលើចម្លើយ AI ជាដំបូន្មានផ្នែកច្បាប់ វេជ្ជសាស្ត្រ ហិរញ្ញវត្ថុ សុវត្ថិភាព ឬវិជ្ជាជីវៈផ្សេងទៀត។ សូមផ្ទៀងផ្ទាត់ព័ត៌មានសំខាន់ដោយឯករាជ្យ និងទាក់ទង Rithy Bondeth ដោយផ្ទាល់សម្រាប់ព័ត៌មានផ្លូវការអំពីភាពទំនេរ តម្លៃ វិសាលភាពគម្រោង ឬកិច្ចព្រមព្រៀងវិជ្ជាជីវៈ។",
         ],
       },
@@ -464,7 +464,7 @@ const km: ILegalDocuments = {
         id: "third-parties",
         title: "៧. សេវា និងតំណភាគីទីបី",
         paragraphs: [
-          "គេហទំព័រភ្ជាប់ ឬប្រើសេវាភាគីទីបី រួមមាន Mistral AI, Vercel, Resend, GitHub, LinkedIn និង YouTube។ ភាពអាចប្រើបាន មាតិកា និងការអនុវត្តទិន្នន័យរបស់ពួកគេ គ្រប់គ្រងដោយអ្នកផ្តល់សេវានីមួយៗ។ តំណមិនមានន័យថាគាំទ្ររាល់សេចក្តីថ្លែងការណ៍ ផលិតផល ឬគោលការណ៍នៅគេហទំព័រគោលដៅទេ។",
+          "គេហទំព័រភ្ជាប់ ឬប្រើសេវាភាគីទីបី រួមមាន Groq, Vercel, Resend, GitHub, LinkedIn និង YouTube។ ភាពអាចប្រើបាន មាតិកា និងការអនុវត្តទិន្នន័យរបស់ពួកគេ គ្រប់គ្រងដោយអ្នកផ្តល់សេវានីមួយៗ។ តំណមិនមានន័យថាគាំទ្ររាល់សេចក្តីថ្លែងការណ៍ ផលិតផល ឬគោលការណ៍នៅគេហទំព័រគោលដៅទេ។",
         ],
       },
       {
@@ -499,7 +499,7 @@ const km: ILegalDocuments = {
     ],
     resources: [
       { label: "គោលការណ៍ឯកជនភាព", href: "/privacy" },
-      { label: "គោលការណ៍ប្រើប្រាស់ Mistral AI", href: "https://legal.mistral.ai/terms/usage-policy" },
+      { label: "គោលការណ៍ប្រើប្រាស់ Groq", href: "https://groq.com/terms-of-use" },
     ],
   },
 };
