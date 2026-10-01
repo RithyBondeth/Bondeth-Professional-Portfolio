@@ -46,7 +46,7 @@ export const videos: IVideo[] = [
       "A plain-language walkthrough of what actually happens inside a modern AI model — no maths background needed. Subtitled in Khmer.",
     descriptionKm:
       "ការពន្យល់ជាភាសាសាមញ្ញអំពីអ្វីដែលកើតឡើងនៅខាងក្នុងម៉ូដែល AI សម័យទំនើប ដោយមិនត្រូវការចំណេះដឹងគណិតវិទ្យា។ មានអក្សររត់ជាភាសាខ្មែរ។",
-    thumbnail: "/thumbnails/ai-how-it-works-portfolio-colors.png",
+    thumbnail: "/thumbnails/how-ai-works-poster.webp",
     languages: ["en", "km"],
     topics: ["AI", "Fundamentals", "Explainer"],
     relatedPost: "can-ai-replace-humans",
