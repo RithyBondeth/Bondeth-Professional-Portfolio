@@ -40,7 +40,7 @@ const composition = async ({ project, frame, text, rect, media }) => {
     ["postgresql", "PostgreSQL"],
     ["python", "Python"],
     ["fastapi", "FastAPI"],
-    ["openai", "OpenAI"],
+    ["huggingface", "Hugging Face"],
     ["flutter", "Flutter"],
     ["dart", "Dart"],
     ["swift", "Swift"],

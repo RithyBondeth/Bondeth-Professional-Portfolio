@@ -37,7 +37,7 @@ colors = {
     "postgresql": "4169E1",
     "python": "3776AB",
     "fastapi": "009688",
-    "openai": "141413",
+    "huggingface": "FFD21E",
     "flutter": "54C5F8",
     "dart": "0175C2",
     "swift": "F05138",
