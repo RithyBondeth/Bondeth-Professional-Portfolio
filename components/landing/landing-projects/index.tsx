@@ -13,6 +13,7 @@ const FEATURED_SLUGS = [
   "apsara-assistant",
   "apsara-elearning",
   "apsara-talent",
+  "romlerk",
 ];
 
 export default function LandingProjects(props: { lang: TLocale }) {
@@ -104,7 +105,9 @@ export default function LandingProjects(props: { lang: TLocale }) {
               {dict.projects.viewAllProjects}
             </span>
             <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-              {lang === "km" ? "រុករកស្នាដៃទាំងអស់" : "Explore the full collection"}
+              {lang === "km"
+                ? "រុករកស្នាដៃទាំងអស់"
+                : "Explore the full collection"}
             </span>
           </Link>
         </AnimateIn>

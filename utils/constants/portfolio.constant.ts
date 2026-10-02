@@ -398,7 +398,7 @@ export const projects: IProject[] = [
         },
       ],
     },
-    image: "/previews/bondex-notch.png",
+    image: "/project-preview/bondex-notch.png",
     gradient: "from-indigo-600/20 via-indigo-500/10 to-slate-800",
   },
   {
@@ -485,7 +485,7 @@ export const projects: IProject[] = [
         },
       ],
     },
-    image: "/previews/apsara-talent.png",
+    image: "/project-preview/apsara-talet.png",
     gradient: "from-blue-600/20 via-cyan-500/10 to-slate-800",
   },
   {
@@ -586,7 +586,7 @@ export const projects: IProject[] = [
         },
       ],
     },
-    image: "/previews/apsara-assistant.png",
+    image: "/project-preview/apsara-assistant.png",
     gradient: "from-violet-600/20 via-purple-500/10 to-slate-800",
   },
   {
@@ -662,7 +662,7 @@ export const projects: IProject[] = [
         },
       ],
     },
-    image: "/previews/apsara-agentic.png",
+    image: "/project-preview/apsara-agentic.png",
     gradient: "from-emerald-600/20 via-teal-500/10 to-slate-800",
   },
   {
@@ -734,7 +734,7 @@ export const projects: IProject[] = [
         },
       ],
     },
-    image: "/previews/apsara-elearning.png",
+    image: "/project-preview/apsara-elearning.png",
     gradient: "from-slate-600/20 via-gray-500/10 to-slate-800",
   },
   {
@@ -823,8 +823,25 @@ export const projects: IProject[] = [
         },
       ],
     },
-    image: "/previews/apsara-wallet.png",
+    image: "/project-preview/apsara-wallet.png",
     gradient: "from-green-600/20 via-green-500/10 to-slate-800",
+  },
+  {
+    slug: "romlerk",
+    title: "Romlerk",
+    description:
+      "A Flutter to-do and notes app with an AI assistant that helps turn everyday thoughts into tasks and reminders.",
+    overview:
+      "Romlerk brings notes and to-dos into one mobile space. Its AI assistant helps shape a thought into an actionable task or reminder. The iOS and Android apps are coming soon.",
+    tags: ["Flutter", "Dart"],
+    category: "Mobile",
+    domains: ["Productivity", "AI"],
+    year: null,
+    role: null,
+    visibility: "public",
+    links: [],
+    image: "/project-preview/romlerk.png",
+    gradient: "from-orange-600/20 via-amber-500/10 to-stone-800",
   },
   {
     slug: "pdfflow",

@@ -10,6 +10,7 @@ export default function LandingShowreel({ lang }: { lang: TLocale }) {
     { slug: "apsara-agentic", name: "Apsara Agentic" },
     { slug: "apsara-elearning", name: "Apsara Elearning" },
     { slug: "apsara-wallet", name: "Apsara Wallet" },
+    { slug: "romlerk", name: "Romlerk" },
     { slug: "bondex-notch", name: "Bondex Notch" },
   ];
 
@@ -41,9 +42,7 @@ export default function LandingShowreel({ lang }: { lang: TLocale }) {
             href={`/${lang}/#projects`}
             className="mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-primary hover:underline"
           >
-            {khmer
-              ? "ស្វែងយល់ពីករណីសិក្សារបស់ខ្ញុំ"
-              : "Explore the case studies"}
+            {khmer ? "ស្វែងយល់ពីគម្រោងរបស់ខ្ញុំ" : "Explore the projects"}
             <ArrowUpRight aria-hidden size={16} />
           </Link>
         </div>
@@ -55,30 +54,30 @@ export default function LandingShowreel({ lang }: { lang: TLocale }) {
             preload="none"
             width={1920}
             height={1080}
-            poster="/thumbnails/portfolio-showreel-v6-poster.png"
+            poster="/thumbnails/portfolio-showreel-v7-poster.png"
             aria-label={
               khmer
-                ? "វីដេអូណែនាំ Bondeth៖ បទពិសោធន៍ ជំនាញ និងករណីសិក្សាចំនួន ៦"
-                : "Meet Bondeth: experience, technologies, and six case studies"
+                ? "វីដេអូណែនាំ Bondeth៖ បទពិសោធន៍ ជំនាញ និងគម្រោងចំនួន ៧"
+                : "Meet Bondeth: experience, technologies, and seven projects"
             }
             aria-describedby="showreel-caption"
             className="aspect-video w-full rounded-lg border border-border/60 bg-background shadow-sm"
           >
-            <source src="/videos/portfolio-showreel-v6.mp4" type="video/mp4" />
+            <source src="/videos/portfolio-showreel-v7.mp4" type="video/mp4" />
             <track
               kind="subtitles"
-              src="/videos/portfolio-showreel-v6.en.vtt"
+              src="/videos/portfolio-showreel-v7.en.vtt"
               srcLang="en"
               label="English"
             />
             <track
               kind="subtitles"
-              src="/videos/portfolio-showreel-v6.km.vtt"
+              src="/videos/portfolio-showreel-v7.km.vtt"
               srcLang="km"
               label="ខ្មែរ"
               default={khmer}
             />
-            <a href="/videos/portfolio-showreel-v6.mp4">
+            <a href="/videos/portfolio-showreel-v7.mp4">
               {khmer ? "ទាញយកវីដេអូ" : "Download the showreel"}
             </a>
           </video>
@@ -92,9 +91,7 @@ export default function LandingShowreel({ lang }: { lang: TLocale }) {
           </figcaption>
           <nav
             aria-label={
-              khmer
-                ? "ករណីសិក្សាក្នុងវីដេអូ"
-                : "Case studies featured in the video"
+              khmer ? "គម្រោងក្នុងវីដេអូ" : "Projects featured in the video"
             }
             className="mt-3 flex flex-wrap gap-x-5 gap-y-1"
           >
@@ -115,8 +112,8 @@ export default function LandingShowreel({ lang }: { lang: TLocale }) {
             </summary>
             <p className="mt-2">
               {khmer
-                ? "វីដេអូមានបួនផ្នែក៖ ស្គាល់ Rithy Bondeth អ្នកអភិវឌ្ឍ Full Stack និងវិស្វករ AI នៅភ្នំពេញដែលមានបទពិសោធន៍ជាង ៣ ឆ្នាំ; អ្វីដែលខ្ញុំធ្វើក្នុងគេហទំព័រ កម្មវិធីទូរស័ព្ទ និងប្រព័ន្ធ AI; បច្ចេកវិទ្យាដែលខ្ញុំប្រើ; និងភស្តុតាងក្នុងគម្រោងចំនួន ៦។ Apsara Talent ប្រើការផ្គូផ្គងតាមអត្ថន័យ និងសេវា backend ចំនួន ៧។ Apsara Assistant គាំទ្រភាសា ៣ របៀបតាម Messenger និង Telegram។ Apsara Agentic មានការធ្វើតេស្តស្វ័យប្រវត្តិ ៤២៤។ Apsara Elearning ជួយសិស្សថ្នាក់ទី ១ ដល់ ១២ និងថ្នាក់សាកលវិទ្យាល័យ។ Apsara Wallet គ្រប់គ្រងប្រាក់រៀល និងដុល្លារក្នុងបញ្ជីតែមួយ។ Bondex Notch បន្ថយការប្រើ CPU ពី ១២–១៤% មក ៣% ក្នុងការវាស់ពេលចាក់តន្ត្រី។ រូបភាពគម្រោងពេញស៊ុម ក្រោយឆាកមានចលនាអក្សរ ASCII ហើយវីដេអូមានតន្ត្រីដើមដោយគ្មានការនិយាយ។"
-                : "The video follows four chapters: who I am—Rithy Bondeth, a Full Stack Developer and AI Engineer in Phnom Penh with 3+ years of experience; what I do—build web platforms, mobile apps, and AI systems; technologies I use; and proof in six projects. Apsara Talent uses semantic matching and seven backend services. Apsara Assistant handles three language modes across Messenger and Telegram. Apsara Agentic has 424 automated tests. Apsara Elearning serves Grades 1–12 and university with a lesson-grounded AI tutor. Apsara Wallet keeps riel and dollars in one ledger. Bondex Notch reduced measured CPU use from 12–14% to 3% while music plays. Project screenshots fill their frames, with animated ASCII in the background and an original instrumental score without narration."}
+                ? "វីដេអូមានបួនផ្នែក៖ ស្គាល់ Rithy Bondeth អ្នកអភិវឌ្ឍ Full Stack និងវិស្វករ AI នៅភ្នំពេញដែលមានបទពិសោធន៍ជាង ៣ ឆ្នាំ; អ្វីដែលខ្ញុំធ្វើលើគេហទំព័រ កម្មវិធីទូរស័ព្ទ និងប្រព័ន្ធ AI; បច្ចេកវិទ្យាដែលខ្ញុំប្រើ; និងស្នាដៃក្នុងគម្រោងចំនួន ៧។ គម្រោងដែលបង្ហាញមាន Apsara Talent, Apsara Assistant, Apsara Agentic, Apsara Elearning, Apsara Wallet, Romlerk និង Bondex Notch។ រូបភាពថ្មីនៃគម្រោងនីមួយៗបំពេញស៊ុម ហើយចលនាបន្ទាត់ និងរាងធរណីមាត្រភ្ជាប់ពីគម្រោងមួយទៅគម្រោងបន្ទាប់។ វីដេអូមានតន្ត្រីដើម ដោយគ្មានការនិយាយ។"
+                : "The video follows four chapters: who I am—Rithy Bondeth, a Full Stack Developer and AI Engineer in Phnom Penh with 3+ years of experience; what I do—build web platforms, mobile apps, and AI systems; technologies I use; and proof in seven projects. It features Apsara Talent, Apsara Assistant, Apsara Agentic, Apsara Elearning, Apsara Wallet, Romlerk, and Bondex Notch. New project previews fill their frames, while moving lines and shapes connect each project. The soundtrack is original and instrumental, without narration."}
             </p>
           </details>
         </figure>
