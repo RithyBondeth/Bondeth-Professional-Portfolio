@@ -9,15 +9,15 @@ export default function LandingAbout({ lang }: { lang: TLocale }) {
   const localized = getSiteConfig(lang);
   const principles = lang === "km"
     ? [
-        [Compass, "ភាពច្បាស់លាស់", "បំលែងគំនិតស្មុគស្មាញទៅជាបទពិសោធន៍ដែលងាយយល់។"],
-        [Heart, "ការយកចិត្តទុកដាក់", "គ្រប់ព័ត៌មានលម្អិតត្រូវបានគិតពីមនុស្សដែលនឹងប្រើវា។"],
-        [Layers3, "គុណភាពយូរអង្វែង", "បង្កើតផលិតផលដែលមានភាពរឹងមាំ និងអាចរីកចម្រើនបាន។"],
-      ] as const
+      [Compass, "ភាពច្បាស់លាស់", "បំលែងគំនិតស្មុគស្មាញទៅជាបទពិសោធន៍ដែលងាយយល់។"],
+      [Heart, "ការយកចិត្តទុកដាក់", "គ្រប់ព័ត៌មានលម្អិតត្រូវបានគិតពីមនុស្សដែលនឹងប្រើវា។"],
+      [Layers3, "គុណភាពយូរអង្វែង", "បង្កើតផលិតផលដែលមានភាពរឹងមាំ និងអាចរីកចម្រើនបាន។"],
+    ] as const
     : [
-        [Compass, "Clarity", "Turning complicated ideas into experiences that feel immediately understandable."],
-        [Heart, "Care", "Considering every detail through the eyes of the people who will use it."],
-        [Layers3, "Lasting quality", "Building products with the strength and flexibility to grow over time."],
-      ] as const;
+      [Compass, "Clarity", "Turning complicated ideas into experiences that feel immediately understandable."],
+      [Heart, "Care", "Considering every detail through the eyes of the people who will use it."],
+      [Layers3, "Lasting quality", "Building products with the strength and flexibility to grow over time."],
+    ] as const;
 
   return (
     <section id="about" className="relative overflow-clip px-6 py-20 sm:py-24 lg:py-28">
@@ -81,7 +81,7 @@ export default function LandingAbout({ lang }: { lang: TLocale }) {
               </div>
 
               <div className="mt-auto pt-10">
-                <h3 className="text-xl font-semibold tracking-[-.025em] text-foreground sm:text-2xl">
+                <h3 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
                   {title}
                 </h3>
                 <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">
