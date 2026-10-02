@@ -26,17 +26,8 @@ export default function LandingShowreel({ lang }: { lang: TLocale }) {
   const teaserRef = useRef<HTMLVideoElement>(null);
   const filmRef = useRef<HTMLVideoElement>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const [desktop, setDesktop] = useState(false);
   const [visible, setVisible] = useState(false);
   const [filmOpen, setFilmOpen] = useState(false);
-
-  useEffect(() => {
-    const media = window.matchMedia("(min-width: 768px)");
-    const update = () => setDesktop(media.matches);
-    update();
-    media.addEventListener("change", update);
-    return () => media.removeEventListener("change", update);
-  }, []);
 
   useEffect(() => {
     const stage = stageRef.current;
@@ -61,9 +52,9 @@ export default function LandingShowreel({ lang }: { lang: TLocale }) {
     };
   }, []);
 
-  // The preview is decorative. Never request it on mobile or for visitors who
-  // prefer reduced motion, and pause it when the page or film is out of view.
-  const previewEnabled = desktop && !reducedMotion && visible;
+  // The preview is decorative. Keep it muted and pause it when the page or film
+  // is out of view. Reduced-motion visitors continue to see the poster.
+  const previewEnabled = !reducedMotion && visible;
   useEffect(() => {
     const teaser = teaserRef.current;
     if (!teaser) return;
@@ -107,13 +98,13 @@ export default function LandingShowreel({ lang }: { lang: TLocale }) {
         <div className="mb-7 flex flex-col gap-3 md:mb-9 md:flex-row md:items-end md:justify-between md:gap-10">
           <div>
             <p className="font-mono text-xs uppercase tracking-[0.2em] text-primary">
-              {khmer ? "វីដេអូណែនាំ ៣០ វិនាទី" : "A 30-second introduction"}
+              {khmer ? "វីដេអូស្នាដៃ" : "Portfolio film"}
             </p>
             <h2
               id="showreel-heading"
               className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl lg:text-5xl"
             >
-              {khmer ? "រឿងរ៉ាវរបស់ខ្ញុំ ក្នុងចលនា។" : "My story, in motion."}
+              {khmer ? "ពីគំនិត ទៅជាផលិតផល។" : "From ideas to products."}
             </h2>
           </div>
           <p className="max-w-md text-sm leading-7 text-field-muted-foreground md:text-right">
@@ -137,6 +128,7 @@ export default function LandingShowreel({ lang }: { lang: TLocale }) {
           {previewEnabled && (
             <video
               ref={teaserRef}
+              autoPlay
               muted
               loop
               playsInline
@@ -170,12 +162,7 @@ export default function LandingShowreel({ lang }: { lang: TLocale }) {
           </span>
         </div>
 
-        <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <p className="text-xs leading-5 text-muted-foreground">
-            {khmer
-              ? "៣០ វិនាទី · 1080p / 120 fps · តន្ត្រីដើម និងចំណងជើងរងជាភាសាខ្មែរ"
-              : "30 seconds · 1080p / 120 fps · Original instrumental soundtrack"}
-          </p>
+        <div className="mt-3 flex justify-end">
           <Link
             href={`/${lang}/#projects`}
             className="inline-flex min-h-11 items-center gap-2 self-start text-sm font-semibold text-primary hover:underline"
