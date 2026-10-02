@@ -868,16 +868,16 @@ html[lang="km"] .rag-lab h4 {
     }
   }
 
-  /* RevealFallback: the same starting states, eased in by transitions when an
-     IntersectionObserver flags the element. Only active when the script has
-     confirmed view timelines are unsupported and tagged <html>. */
+  /* Keep entrance delays on the reveal properties only. Cards that are also
+     reveal targets retain their hover transitions without a stagger delay. */
   html.reveal-js :is(.reveal-on-view, .reveal-heading, .stagger-on-view > *) {
     animation: none;
+    --reveal-delay: calc(min(var(--rv-i, 0), 5) * var(--motion-stagger));
     transition:
-      opacity var(--motion-entrance) var(--motion-ease),
-      transform var(--motion-entrance) var(--motion-ease),
-      filter var(--motion-entrance) var(--motion-ease);
-    transition-delay: calc(min(var(--rv-i, 0), 5) * var(--motion-stagger));
+      opacity var(--motion-entrance) var(--motion-ease) var(--reveal-delay),
+      transform var(--motion-entrance) var(--motion-ease) var(--reveal-delay),
+      filter var(--motion-entrance) var(--motion-ease) var(--reveal-delay),
+      var(--card-hover-transition, color 0s);
   }
 
   html.reveal-js
@@ -1894,11 +1894,12 @@ main > section:not(:first-of-type, #projects) {
 .card-interactive {
   --card-lift: -4px;
   position: relative;
-  transition:
+  --card-hover-transition:
     translate var(--motion-feedback) var(--motion-ease-feedback),
     border-color var(--motion-feedback) var(--motion-ease-feedback),
     box-shadow var(--motion-feedback) var(--motion-ease-feedback),
     background-color var(--motion-feedback) var(--motion-ease-feedback);
+  transition: var(--card-hover-transition);
 }
 
 /* The sheen lives on a pseudo-element so it never disturbs card layout or
@@ -1918,7 +1919,9 @@ main > section:not(:first-of-type, #projects) {
   );
   background-size: 250% 100%;
   background-position: 100% 0;
-  transition: opacity var(--motion-feedback) ease-out;
+  transition:
+    opacity var(--motion-feedback) ease-out,
+    background-position 700ms var(--motion-ease);
 }
 
 .card-interactive [data-card-arrow],
@@ -1930,15 +1933,8 @@ main > section:not(:first-of-type, #projects) {
     border-color var(--motion-feedback) var(--motion-ease-feedback);
 }
 
-/* The lift uses the `translate` longhand, never `transform`, and is !important.
-   Most of these cards are entrance-animated by AnimateIn / StaggerIn, and GSAP
-   writes its resting state as INLINE `transform: translate(0,0); translate: none`
-   (there is no clearProps — the reveals reverse on scroll-up and need to keep
-   their values). An inline declaration beats any stylesheet rule on specificity
-   alone, so a `transform:` hover here would silently never fire, and a plain
-   `translate:` would lose to the inline `none`. Using a longhand GSAP only
-   neutralises, plus !important to outrank the inline value, keeps the two
-   systems composable: GSAP owns `transform`, hover owns `translate`. */
+/* Reveals own `transform`; the hover lift uses the independent `translate`
+   property so both movements compose. */
 @media (hover: hover) and (pointer: fine) {
   .card-interactive:hover {
     translate: 0 var(--card-lift) !important;
@@ -1948,9 +1944,6 @@ main > section:not(:first-of-type, #projects) {
   .card-interactive:hover::after {
     opacity: 1;
     background-position: 0 0;
-    transition:
-      opacity var(--motion-feedback) ease-out,
-      background-position 700ms var(--motion-ease);
   }
   .card-interactive:hover [data-card-arrow] {
     transform: translateX(4px);

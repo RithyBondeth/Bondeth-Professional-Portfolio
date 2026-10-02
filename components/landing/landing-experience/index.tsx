@@ -149,9 +149,9 @@ function OrgBadge(props: { org: IOrganization }) {
     <div
       tabIndex={0}
       aria-label={org.name}
-      className="group relative flex h-32 w-40 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border/40 bg-background/75 px-4 py-4 text-center shadow-sm outline-none transition-[border-color,background-color,transform,box-shadow] duration-500 ease-[cubic-bezier(.22,1,.36,1)] hover:-translate-y-0.5 hover:border-primary/30 hover:bg-background hover:shadow-[0_14px_30px_rgb(0_0_0/.08)] focus-visible:-translate-y-0.5 focus-visible:border-primary/40 focus-visible:ring-2 focus-visible:ring-primary/20 sm:h-36 sm:w-44"
+      className="group relative flex h-32 w-40 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border/40 bg-background/75 px-4 py-4 text-center shadow-sm outline-none transition-[border-color,background-color,translate,box-shadow] duration-500 ease-[cubic-bezier(.22,1,.36,1)] hover:-translate-y-0.5 hover:border-primary/30 hover:bg-background hover:shadow-[0_14px_30px_rgb(0_0_0/.08)] focus-visible:-translate-y-0.5 focus-visible:border-primary/40 focus-visible:ring-2 focus-visible:ring-primary/20 sm:h-36 sm:w-44"
     >
-      <div className="relative h-14 w-full max-w-28 will-change-[opacity,transform] transition-[opacity,transform] duration-500 ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-95 group-hover:opacity-0 group-focus-visible:scale-95 group-focus-visible:opacity-0 sm:h-16 sm:max-w-32">
+      <div className="relative h-14 w-full max-w-28 transition-[opacity,scale] duration-500 ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-95 group-hover:opacity-0 group-focus-visible:scale-95 group-focus-visible:opacity-0 sm:h-16 sm:max-w-32">
         <Image
           src={org.logo}
           alt={org.name}
@@ -161,7 +161,7 @@ function OrgBadge(props: { org: IOrganization }) {
           className="object-contain opacity-100"
         />
       </div>
-      <span className="pointer-events-none absolute inset-0 flex translate-y-1.5 items-center justify-center px-4 text-xs font-semibold leading-snug text-foreground opacity-0 will-change-[opacity,transform] transition-[opacity,transform] duration-500 ease-[cubic-bezier(.22,1,.36,1)] group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100">
+      <span className="pointer-events-none absolute inset-0 flex translate-y-1.5 items-center justify-center px-4 text-xs font-semibold leading-snug text-foreground opacity-0 transition-[opacity,translate] duration-500 ease-[cubic-bezier(.22,1,.36,1)] group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100">
         {org.name}
       </span>
     </div>
