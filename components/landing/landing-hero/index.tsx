@@ -4,7 +4,7 @@ import { useReducedMotion } from "@/components/utils/animations/use-motion";
 import { useEffect, useState, type CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowDown, ArrowUpRight, FileText, Mail } from "lucide-react";
+import { ArrowDown, ArrowUpRight, FileText, Mail, Play } from "lucide-react";
 import { Magnetic } from "@/components/utils/animations/magnetic";
 import { scrollToSection } from "@/components/utils/animations/smooth-scroll";
 import { TiltCard } from "@/components/utils/animations/tilt-card";
@@ -193,6 +193,19 @@ export default function LandingHero({ lang }: { lang: TLocale }) {
             </Magnetic>
           </div>
 
+          <a
+            href="#showreel"
+            onClick={(event) => {
+              event.preventDefault();
+              scrollToSection("showreel");
+            }}
+            className="hero-action mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-foreground underline decoration-primary/50 underline-offset-4 hover:text-primary hover:decoration-primary focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+          >
+            <Play size={14} fill="currentColor" aria-hidden="true" />
+            {lang === "km" ? "ទស្សនាវីដេអូ ៣០ វិនាទី" : "Watch the 30-second film"}
+            <ArrowUpRight size={14} aria-hidden="true" />
+          </a>
+
           <dl className="mx-auto mt-9 grid max-w-xl grid-cols-3 border-y border-border/55 py-4 text-left lg:mx-0">
             {proofPoints.map(([value, label], index) => (
               <div
@@ -248,7 +261,7 @@ export default function LandingHero({ lang }: { lang: TLocale }) {
         </TiltCard>
       </div>
       <button
-        onClick={() => scrollToSection("about")}
+        onClick={() => scrollToSection("showreel")}
         className="hero-scroll absolute bottom-7 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 text-[10px] font-semibold uppercase tracking-[.2em] text-field-muted-foreground"
         aria-label={dict.hero.scroll}
       >
