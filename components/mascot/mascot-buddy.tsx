@@ -2,11 +2,13 @@
 
 import { useReducedMotion } from "@/components/utils/animations/use-motion";
 import { MOTION } from "@/lib/motion-timing";
+import { isMotionReduced } from "@/lib/motion-preference";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { RobotArt } from "./robot-art";
 import type { TRobotMood } from "./robot-geometry";
 import { useMascotGaze } from "./use-mascot-gaze";
+import styles from "./mascot.module.css";
 
 /* --------------------------------- Copy ------------------------------------ */
 type TQuip = { text: string; mood: TRobotMood };
@@ -54,6 +56,7 @@ const QUIP_COOLDOWN_MS = 8_000;
 const WHEE_COOLDOWN_MS = 15_000;
 /** Scroll speed, in px per ms, that counts as a fling. */
 const FLING_SPEED = 4.5;
+const PROJECT_RUN_MS = 1_800;
 
 interface ITransient {
   mood: TRobotMood;
@@ -105,6 +108,8 @@ export function MascotBuddy({
   const transientTimer = useRef<number | undefined>(undefined);
   const lastQuipAt = useRef(0);
   const seenSections = useRef(new Set<string>());
+  const seenProjectRuns = useRef(new Set<string>());
+  const [running, setRunning] = useState(false);
 
   useMascotGaze(wrapRef, { enabled: !asleep && !reduceMotion });
 
@@ -248,7 +253,60 @@ export function MascotBuddy({
     return () => observer.disconnect();
   }, [pathname, quips, flash, text, reduceMotion]);
 
+  /* One celebratory entrance, using the existing robot so the chat target
+     stays in place. Only the decorative artwork travels along the bottom. */
+  useEffect(() => {
+    if (!quips || reduceMotion || forcedMood) return;
+    const projects = document.querySelector("main section#projects");
+    if (!projects || seenProjectRuns.current.has(pathname)) return;
+
+    let timer = 0;
+    const stop = () => {
+      window.clearTimeout(timer);
+      setRunning(false);
+    };
+    const arrive = () => {
+      stop();
+      flash("wave", text.quips.projects.text, QUIP_MS);
+    };
+    const observer = new IntersectionObserver((entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      const el = wrapRef.current;
+      if (!el || isMotionReduced() || document.hidden) return;
+
+      seenProjectRuns.current.add(pathname);
+      seenSections.current.add("projects");
+      observer.disconnect();
+      const rect = el.getBoundingClientRect();
+      const desktop = window.matchMedia("(min-width: 768px) and (hover: hover) and (pointer: fine)").matches;
+
+      // A dragged launcher may be near the top: wave there instead of sending
+      // the artwork through the reading area.
+      if (!desktop || rect.bottom < window.innerHeight - 120 || rect.left < 160) {
+        arrive();
+        return;
+      }
+
+      el.style.setProperty("--project-run-start", `${-rect.left - rect.width}px`);
+      el.style.setProperty("--project-run-duration", `${PROJECT_RUN_MS}ms`);
+      setRunning(true);
+      timer = window.setTimeout(arrive, PROJECT_RUN_MS);
+    }, { rootMargin: "0px 0px -25% 0px", threshold: 0 });
+
+    observer.observe(projects);
+    window.addEventListener("resize", stop);
+    document.addEventListener("visibilitychange", stop);
+    return () => {
+      observer.disconnect();
+      window.clearTimeout(timer);
+      window.removeEventListener("resize", stop);
+      document.removeEventListener("visibilitychange", stop);
+      stop();
+    };
+  }, [pathname, quips, reduceMotion, forcedMood, flash, text]);
+
   /* -------------------------------- Render UI ------------------------------- */
+  const isRunning = running && quips && !reduceMotion && !forcedMood;
   const mood: TRobotMood =
     forcedMood ?? (reduceMotion ? "idle" : transient?.mood) ?? (hovered ? "wave" : asleep ? "sleep" : "idle");
   const bubbleText = reduceMotion ? (forcedMood ? undefined : bubble) : transient?.text ?? (asleep || forcedMood ? undefined : bubble);
@@ -260,7 +318,7 @@ export function MascotBuddy({
       onPointerEnter={() => setHovered(true)}
       onPointerLeave={() => setHovered(false)}
     >
-      {bubbleText && (
+      {bubbleText && !isRunning && (
         <span
           key={transient?.text ? transient.key : "rest"}
           className={bubbleClassName}
@@ -269,7 +327,14 @@ export function MascotBuddy({
           {bubbleText}
         </span>
       )}
-      <RobotArt mood={mood} float={!reduceMotion} boot={booting && !reduceMotion} />
+      <span className={styles.projectRunner} data-running={isRunning || undefined}>
+        <RobotArt
+          mood={isRunning ? "happy" : mood}
+          running={isRunning}
+          float={!reduceMotion && !isRunning}
+          boot={booting && !reduceMotion && !isRunning}
+        />
+      </span>
     </span>
   );
 }

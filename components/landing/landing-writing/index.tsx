@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, FileText } from "lucide-react";
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
-import { SplitReveal } from "@/components/utils/animations/split-reveal";
+import { SectionHeading } from "@/components/landing/section-heading";
 import { getLabCatalog } from "@/components/labs/lab-catalog";
 import { getAllPosts } from "@/utils/functions/blog";
 import { getDictionary, type TLocale } from "@/utils/i18n";
@@ -51,13 +51,12 @@ export default async function LandingWriting(props: { lang: TLocale }) {
             {writing.eyebrow}
           </p>
         </AnimateIn>
-        <SplitReveal
-          as="h2"
-          type="lines"
+        <SectionHeading
+          section="writing"
           className="mt-3 max-w-3xl text-3xl font-bold text-foreground sm:text-4xl lg:text-5xl"
         >
           {writing.heading}
-        </SplitReveal>
+        </SectionHeading>
         <AnimateIn from="up" distance={24} delay={0.1}>
           <p className="mt-4 max-w-2xl text-sm leading-7 text-field-muted-foreground">
             {writing.blurb}

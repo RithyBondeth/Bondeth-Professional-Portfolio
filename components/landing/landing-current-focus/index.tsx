@@ -1,5 +1,5 @@
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
-import { SplitReveal } from "@/components/utils/animations/split-reveal";
+import { SectionHeading } from "@/components/landing/section-heading";
 import { StatusChip } from "@/components/utils/status-chip";
 import { DeferredGlobe } from "./deferred-globe";
 import { getDictionary, type TLocale } from "@/utils/i18n";
@@ -28,13 +28,12 @@ export default function LandingCurrentFocus(props: { lang: TLocale }) {
               </p>
             </AnimateIn>
 
-            <SplitReveal
-              as="h2"
-              type="lines"
+            <SectionHeading
+              section="current-focus"
               className="mt-3 text-3xl font-bold text-foreground sm:text-4xl lg:text-5xl"
             >
               {currentFocus.heading}
-            </SplitReveal>
+            </SectionHeading>
 
             <AnimateIn from="up" delay={0.1}>
               <p className="mt-5 max-w-xl text-sm leading-relaxed text-field-muted-foreground">

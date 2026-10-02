@@ -1,6 +1,6 @@
 import { siteConfig } from "@/utils/constants/portfolio.constant";
 import { AnimateIn } from "@/components/utils/animations/animate-in";
-import { SplitReveal } from "@/components/utils/animations/split-reveal";
+import { SectionHeading } from "@/components/landing/section-heading";
 import { StatusChip } from "@/components/utils/status-chip";
 import { ArrowRight, Clock3 } from "lucide-react";
 import ContactForm from "./contact-form";
@@ -22,13 +22,12 @@ export default function LandingContact(props: { lang: TLocale }) {
           </p>
         </AnimateIn>
 
-        <SplitReveal
-          as="h2"
-          type="lines"
+        <SectionHeading
+          section="contact"
           className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mt-3 mb-4"
         >
           {dict.contact.heading}
-        </SplitReveal>
+        </SectionHeading>
 
         <div className="mt-10 grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
           <div>

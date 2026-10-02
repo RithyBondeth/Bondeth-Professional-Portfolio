@@ -13,6 +13,179 @@
   image-rendering: pixelated;
 }
 
+.projectRunner {
+  display: block;
+  pointer-events: none;
+}
+
+/* Section markers share the title's first line, including wrapped Khmer text.
+   The heading provides the hover target; the artwork remains decorative. */
+.sectionHeading {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.35em;
+}
+
+.sectionIcon {
+  display: block;
+  flex: 0 0 auto;
+  width: clamp(32px, 0.95em, 54px);
+  margin-top: 0.04em;
+  pointer-events: none;
+  transition:
+    translate var(--motion-feedback) var(--motion-ease-feedback),
+    scale var(--motion-feedback) var(--motion-ease-feedback);
+}
+
+.sectionIcon .robot {
+  width: 100%;
+  height: auto;
+}
+
+/* A dozen title markers should not all blink, float and wave continuously. */
+.sectionIcon .robot * {
+  animation: none !important;
+}
+
+.sectionIcon[data-section-mascot="showreel"] { --section-gesture: section-pop; }
+.sectionIcon[data-section-mascot="about"] { --section-gesture: section-hello; }
+.sectionIcon[data-section-mascot="current-focus"] { --section-gesture: section-curious; }
+.sectionIcon[data-section-mascot="skills"] { --section-gesture: section-tinker; }
+.sectionIcon[data-section-mascot="experience"] { --section-gesture: section-stride; }
+.sectionIcon[data-section-mascot="education"] { --section-gesture: section-nod; }
+.sectionIcon[data-section-mascot="services"] { --section-gesture: section-offer; }
+.sectionIcon[data-section-mascot="projects"] { --section-gesture: section-hop; }
+.sectionIcon[data-section-mascot="writing"] { --section-gesture: section-ponder; }
+.sectionIcon[data-section-mascot="media"] { --section-gesture: section-peek; }
+.sectionIcon[data-section-mascot="recommendations"] { --section-gesture: section-sway; }
+.sectionIcon[data-section-mascot="contact"] { --section-gesture: section-greet; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .sectionIcon[data-performed] .robot {
+    transform-origin: 50% 85%;
+    animation: var(--section-gesture) 1400ms var(--motion-ease) both;
+  }
+
+  .sectionIcon[data-performed][data-section-mascot="about"] .armRight {
+    animation: section-arm-wave 1100ms ease-in-out both !important;
+  }
+
+  .sectionIcon[data-performed][data-section-mascot="contact"] .armRight {
+    animation: section-arm-wave 700ms ease-in-out 2 both !important;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .sectionHeading:hover .sectionIcon {
+    translate: 0 -2px;
+    scale: 1.05;
+  }
+}
+
+@keyframes section-pop {
+  0%, 100% { scale: 1; }
+  35% { scale: 1.09; }
+  65% { scale: 0.98; }
+}
+@keyframes section-hello {
+  0%, 100% { rotate: 0deg; }
+  35% { rotate: -6deg; }
+  65% { rotate: 3deg; }
+}
+@keyframes section-curious {
+  0%, 100% { rotate: 0deg; translate: 0 0; }
+  40%, 65% { rotate: 9deg; translate: 0 -2px; }
+}
+@keyframes section-tinker {
+  0%, 100% { rotate: 0deg; }
+  25%, 55% { rotate: -4deg; }
+  40%, 70% { rotate: 4deg; }
+}
+@keyframes section-stride {
+  0%, 100% { translate: 0 0; }
+  30% { translate: 3px -2px; }
+  60% { translate: -2px 0; }
+}
+@keyframes section-nod {
+  0%, 100% { scale: 1 1; translate: 0 0; }
+  35% { scale: 1 0.92; translate: 0 2px; }
+  65% { scale: 1 1.04; translate: 0 -1px; }
+}
+@keyframes section-offer {
+  0%, 100% { rotate: 0deg; translate: 0 0; }
+  40%, 65% { rotate: -5deg; translate: 3px 0; }
+}
+@keyframes section-hop {
+  0%, 100% { translate: 0 0; scale: 1; }
+  25% { scale: 1.04 0.96; }
+  50% { translate: 0 -6px; scale: 0.98 1.02; }
+  75% { scale: 1.02 0.98; }
+}
+@keyframes section-ponder {
+  0%, 100% { rotate: 0deg; }
+  30% { rotate: -8deg; }
+  65% { rotate: -3deg; }
+}
+@keyframes section-peek {
+  0%, 100% { translate: 0 0; rotate: 0deg; }
+  35% { translate: -3px 0; rotate: -7deg; }
+  70% { translate: 2px 0; rotate: 4deg; }
+}
+@keyframes section-sway {
+  0%, 100% { rotate: 0deg; }
+  25% { rotate: -7deg; }
+  50% { rotate: 7deg; }
+  75% { rotate: -3deg; }
+}
+@keyframes section-greet {
+  0%, 100% { translate: 0 0; }
+  25%, 65% { translate: 0 -3px; }
+  45%, 85% { translate: 0 0; }
+}
+@keyframes section-arm-wave {
+  0%, 100% { rotate: 0deg; }
+  25%, 65% { rotate: -148deg; }
+  45%, 80% { rotate: -118deg; }
+}
+
+@media (min-width: 768px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .projectRunner[data-running] {
+    animation: mascot-project-run var(--project-run-duration, 1800ms) cubic-bezier(0.2, 0, 0.45, 1) both;
+  }
+
+  .robot[data-running] .lean {
+    rotate: 8deg;
+  }
+
+  .projectRunner .robot[data-running] .bob {
+    animation: mascot-run-bob 180ms ease-in-out infinite;
+  }
+
+  .robot[data-running] .armLeft,
+  .robot[data-running] .armRight {
+    animation: mascot-run-arms 360ms ease-in-out infinite alternate;
+  }
+
+  .robot[data-running] .armRight {
+    animation-delay: -360ms;
+  }
+}
+
+@keyframes mascot-project-run {
+  from { translate: var(--project-run-start, -100vw) 0; }
+  to { translate: 0 0; }
+}
+
+@keyframes mascot-run-bob {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -2px; }
+}
+
+@keyframes mascot-run-arms {
+  from { rotate: -22deg; }
+  to { rotate: 22deg; }
+}
+
 /* ── Scroll lean (set from JS as a unitless --lean, in degrees) ── */
 .lean {
   transform-box: view-box;

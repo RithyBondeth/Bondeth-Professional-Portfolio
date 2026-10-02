@@ -1217,140 +1217,99 @@ main > section:not(:first-of-type, #projects) {
   }
 }
 
-/* ── Hero portrait: kinetic type behind (and around) the cutout ──────────────
-   The frame is a size container so the type scales with the card, not the
-   viewport: six rows at ~17cqh exactly fill its height at every breakpoint. */
+/* ── Hero portrait: horizontal technology marquees behind the cutout ─────── */
 .portrait-frame {
   container-type: size;
+}
+
+.portrait-backing {
+  border: 1px solid color-mix(in oklab, var(--brand-pixel) 28%, transparent);
+  background: color-mix(in oklab, var(--brand-pixel) 12%, var(--card));
+}
+
+.portrait-technologies {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 62%;
+  z-index: 1;
+  display: grid;
+  grid-template-rows: repeat(4, minmax(0, 1fr));
+  padding-block: 2cqh;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+}
+
+.portrait-tech-row {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding-block: 4px;
+}
+
+.portrait-tech-track,
+.portrait-tech-group {
+  display: flex;
+  width: max-content;
+}
+
+/* Two identical groups, each wider than the portrait, create a seamless loop. */
+.portrait-tech-group {
+  flex-shrink: 0;
+  gap: 18px;
+  padding-right: 18px;
+}
+
+.portrait-tech {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: clamp(2.5rem, 12cqw, 3.25rem);
+  aspect-ratio: 1;
+  border: 1px solid color-mix(in oklab, var(--border) 60%, transparent);
+  border-radius: 12px;
+  background: color-mix(in oklab, var(--card) 80%, transparent);
+  color: var(--tech-color-light);
+  opacity: 0.8;
+}
+
+[data-theme="dark"] .portrait-tech {
+  color: var(--tech-color-dark);
+}
+
+.portrait-tech svg {
+  width: 55%;
+  height: 55%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .portrait-tech-track {
+    animation: portrait-marquee var(--tech-duration) linear var(--tech-delay) infinite;
+  }
+
+  .portrait-tech-row[data-dir="right"] .portrait-tech-track {
+    animation-direction: reverse;
+  }
+}
+
+.portrait-image {
+  top: 6% !important;
+  height: 94% !important;
+  filter: drop-shadow(-8px 8px 12px rgb(0 0 0 / 0.12));
 }
 
 .portrait-stage {
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(
-      62% 46% at 50% 30%,
-      color-mix(in oklab, var(--brand-pixel) 24%, transparent),
-      transparent 72%
-    ),
-    linear-gradient(
-      180deg,
-      var(--card) 0%,
-      color-mix(in oklab, var(--secondary) 80%, var(--brand-pixel)) 100%
+  pointer-events: none;
+  background: linear-gradient(
+      145deg,
+      color-mix(in oklab, var(--brand-pixel) 18%, var(--card)),
+      color-mix(in oklab, var(--brand-pixel) 42%, var(--card))
     );
 }
 
-.portrait-type {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding-block: 1.5cqh;
-  font-family: var(--font-ui);
-  font-size: 16.4cqh;
-  font-weight: 700;
-  line-height: 0.92;
-  letter-spacing: -0.045em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  pointer-events: none;
-  user-select: none;
-}
-
-.portrait-type[data-layer="back"] {
-  z-index: 0;
-}
-
-.portrait-type[data-layer="front"] {
-  z-index: 20;
-}
-
-/* Only the coral row crosses in front of the portrait. */
-.portrait-type[data-layer="front"] .portrait-row:not([data-tone="accent"]) {
-  visibility: hidden;
-}
-
-.portrait-row {
-  display: flex;
-  overflow: hidden;
-}
-
-.portrait-track {
-  display: flex;
-  flex-shrink: 0;
-}
-
-.portrait-word {
-  display: inline-flex;
-  align-items: center;
-}
-
-/* A brand pixel between repeats instead of a typographic bullet. */
-.portrait-word::after {
-  content: "";
-  display: inline-block;
-  width: 0.14em;
-  height: 0.14em;
-  margin-inline: 0.28em;
-  background: currentColor;
-}
-
-.portrait-row[data-tone="ghost"] {
-  color: color-mix(in oklab, var(--foreground) 7%, transparent);
-}
-
-.portrait-row[data-tone="outline"] {
-  color: transparent;
-  -webkit-text-stroke: 1.25px color-mix(in oklab, var(--foreground) 20%, transparent);
-}
-
-.portrait-row[data-tone="outline"] .portrait-word::after {
-  background: color-mix(in oklab, var(--foreground) 20%, transparent);
-}
-
-.portrait-row[data-tone="outline-accent"] {
-  color: transparent;
-  -webkit-text-stroke: 1.25px color-mix(in oklab, var(--brand-pixel) 60%, transparent);
-}
-
-.portrait-row[data-tone="outline-accent"] .portrait-word::after {
-  background: color-mix(in oklab, var(--brand-pixel) 60%, transparent);
-}
-
-.portrait-row[data-tone="accent"] {
-  color: var(--brand-pixel);
-}
-
-.portrait-type[data-layer="front"] .portrait-row[data-tone="accent"] {
-  color: transparent;
-  -webkit-text-stroke: 1.5px color-mix(in oklab, var(--brand-pixel) 92%, white);
-}
-
-.portrait-type[data-layer="front"] .portrait-row[data-tone="accent"] .portrait-word::after {
-  background: transparent;
-}
-
-/* Static offset so reduced motion still shows a composed, off-centre wall of
-   type rather than every row starting flush left. */
-.portrait-track {
-  translate: calc(var(--row, 0) * -9%) 0;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .portrait-track {
-    translate: none;
-    animation: portrait-marquee var(--speed, 40s) linear infinite;
-    will-change: transform;
-  }
-
-  .portrait-row[data-dir="right"] .portrait-track {
-    animation-direction: reverse;
-  }
-}
-
-/* Six identical copies, so shifting by exactly half lands on copy four — the
-   same glyphs in the same place — and the loop has no seam. */
 @keyframes portrait-marquee {
   from {
     transform: translate3d(0, 0, 0);

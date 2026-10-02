@@ -59,6 +59,7 @@ export function RobotArt({
   style,
   float = false,
   boot = false,
+  running = false,
   title,
 }: {
   mood?: TRobotMood;
@@ -70,6 +71,8 @@ export function RobotArt({
   float?: boolean;
   /** One-shot power-on flicker of the eyes and antenna. */
   boot?: boolean;
+  /** Brief running gait for the Projects entrance. */
+  running?: boolean;
   /** Accessible name; omitted means decorative. */
   title?: string;
 }) {
@@ -86,6 +89,7 @@ export function RobotArt({
       data-variant={variant}
       data-float={float || undefined}
       data-boot={boot || undefined}
+      data-running={running || undefined}
       shapeRendering="crispEdges"
       role={title ? "img" : undefined}
       aria-hidden={title ? undefined : true}

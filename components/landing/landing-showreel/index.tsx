@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { SectionHeading } from "@/components/landing/section-heading";
 import Link from "next/link";
 import { ArrowUpRight, Play, X } from "lucide-react";
 import { useReducedMotion } from "@/components/utils/animations/use-motion";
@@ -100,12 +101,13 @@ export default function LandingShowreel({ lang }: { lang: TLocale }) {
             <p className="font-mono text-xs uppercase tracking-[0.2em] text-primary">
               {khmer ? "វីដេអូស្នាដៃ" : "Portfolio film"}
             </p>
-            <h2
+            <SectionHeading
+              section="showreel"
               id="showreel-heading"
               className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl lg:text-5xl"
             >
               {khmer ? "ពីគំនិត ទៅជាផលិតផល។" : "From ideas to products."}
-            </h2>
+            </SectionHeading>
           </div>
           <p className="max-w-md text-sm leading-7 text-field-muted-foreground md:text-right">
             {khmer

@@ -3,7 +3,7 @@ import type { ISkill } from "@/utils/interfaces/portfolio";
 import { getDictionary, type TLocale } from "@/utils/i18n";
 import { AnimateIn } from "@/components/utils/animations/animate-in";
 import { MarqueeTrack } from "@/components/utils/animations/marquee-track";
-import { SplitReveal } from "@/components/utils/animations/split-reveal";
+import { SectionHeading } from "@/components/landing/section-heading";
 import { SkillBadge } from "./skill-badge";
 import { SkillIconSprite } from "./skill-icon-sprite";
 
@@ -61,13 +61,12 @@ export default function LandingSkills({ lang }: { lang: TLocale }) {
               {lang === "km" ? "សមត្ថភាព" : "Capabilities"}
             </p>
           </AnimateIn>
-          <SplitReveal
-            as="h2"
-            type="lines"
+          <SectionHeading
+            section="skills"
             className="max-w-2xl text-4xl font-bold tracking-[-0.035em] text-foreground sm:text-5xl lg:text-6xl"
           >
             {dict.skills.heading}
-          </SplitReveal>
+          </SectionHeading>
         </div>
         <AnimateIn from="up" delay={0.12}>
           <p className="max-w-lg text-sm leading-relaxed text-field-muted-foreground sm:text-base">

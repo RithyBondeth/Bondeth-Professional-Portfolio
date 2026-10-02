@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, Bot, Code2, PanelsTopLeft, Smartphone } from "lucide-react";
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
-import { SplitReveal } from "@/components/utils/animations/split-reveal";
+import { SectionHeading } from "@/components/landing/section-heading";
 import { Magnetic } from "@/components/utils/animations/magnetic";
 import { getDictionary, type TLocale } from "@/utils/i18n";
 
@@ -22,13 +22,12 @@ export default function LandingServices(props: { lang: TLocale }) {
 
         <div className="mt-3 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
           <div>
-            <SplitReveal
-              as="h2"
-              type="lines"
+            <SectionHeading
+              section="services"
               className="text-3xl font-bold text-foreground sm:text-4xl lg:text-5xl"
             >
               {services.heading}
-            </SplitReveal>
+            </SectionHeading>
             <AnimateIn from="up" distance={24} delay={0.1}>
               <p className="mt-4 max-w-2xl text-sm leading-7 text-field-muted-foreground">
                 {services.blurb}

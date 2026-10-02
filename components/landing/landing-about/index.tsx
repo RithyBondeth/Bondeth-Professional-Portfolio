@@ -1,6 +1,6 @@
 import { ArrowUpRight, Compass, Heart, Layers3 } from "lucide-react";
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
-import { SplitReveal } from "@/components/utils/animations/split-reveal";
+import { SectionHeading } from "@/components/landing/section-heading";
 import { getDictionary, type TLocale } from "@/utils/i18n";
 import { getSiteConfig } from "@/utils/i18n/content";
 
@@ -28,9 +28,9 @@ export default function LandingAbout({ lang }: { lang: TLocale }) {
           </p>
         </AnimateIn>
         <div className="grid items-start gap-10 lg:grid-cols-[.85fr_1.15fr] lg:gap-16">
-          <SplitReveal as="h2" type="lines" className="max-w-lg text-4xl font-semibold leading-[1.02] tracking-[-.04em] text-foreground sm:text-5xl lg:text-6xl">
+          <SectionHeading section="about" className="max-w-lg text-4xl font-semibold leading-[1.02] tracking-[-.04em] text-foreground sm:text-5xl lg:text-6xl">
             {dict.about.heading}
-          </SplitReveal>
+          </SectionHeading>
           <div>
             <StaggerIn from="right" distance={36} stagger={.1} className="space-y-5 text-base leading-relaxed text-field-muted-foreground sm:text-lg">
               {localized.bio.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}

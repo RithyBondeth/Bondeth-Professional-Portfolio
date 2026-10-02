@@ -1,5 +1,5 @@
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
-import { SplitReveal } from "@/components/utils/animations/split-reveal";
+import { SectionHeading } from "@/components/landing/section-heading";
 import { getDictionary, type TLocale } from "@/utils/i18n";
 import { getEducations } from "@/utils/i18n/content";
 
@@ -20,13 +20,12 @@ export default function LandingEducation(props: { lang: TLocale }) {
           </p>
         </AnimateIn>
 
-        <SplitReveal
-          as="h2"
-          type="lines"
+        <SectionHeading
+          section="education"
           className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mt-3 mb-12"
         >
           {dict.education.heading}
-        </SplitReveal>
+        </SectionHeading>
 
         {/* Degree Cards Section */}
         <StaggerIn

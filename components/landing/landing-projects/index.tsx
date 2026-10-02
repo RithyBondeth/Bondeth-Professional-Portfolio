@@ -2,7 +2,7 @@ import Link from "next/link";
 import { SkillIconSprite } from "@/components/landing/landing-skills/skill-icon-sprite";
 import { techIconKeys } from "@/components/projects/tech-icon-map";
 import { AnimateIn } from "@/components/utils/animations/animate-in";
-import { SplitReveal } from "@/components/utils/animations/split-reveal";
+import { SectionHeading } from "@/components/landing/section-heading";
 import { HorizontalScroll } from "@/components/utils/animations/horizontal-scroll";
 import { ProjectCard } from "@/components/projects/project-card";
 import { getProjects } from "@/utils/i18n/content";
@@ -34,13 +34,12 @@ export default function LandingProjects(props: { lang: TLocale }) {
 
       <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
         <div>
-          <SplitReveal
-            as="h2"
-            type="lines"
+          <SectionHeading
+            section="projects"
             className="mt-3 text-3xl font-bold text-foreground sm:text-4xl lg:text-5xl"
           >
             {dict.projects.heading}
-          </SplitReveal>
+          </SectionHeading>
           <AnimateIn from="up" distance={24} delay={0.1}>
             <p className="mt-3 max-w-2xl text-sm leading-relaxed text-field-muted-foreground">
               {dict.projects.featuredBlurb}

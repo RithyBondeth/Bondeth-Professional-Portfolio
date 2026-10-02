@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
-import { SplitReveal } from "@/components/utils/animations/split-reveal";
+import { SectionHeading } from "@/components/landing/section-heading";
 import { YouTubeIcon } from "@/components/utils/icons";
 import { siteConfig, videos } from "@/utils/constants/portfolio.constant";
 import { getDictionary, type TLocale } from "@/utils/i18n";
@@ -62,13 +62,12 @@ export default function LandingMedia(props: { lang: TLocale }) {
               {lang === "km" ? "វីដេអូ និងការពន្យល់" : "Stories and explainers"}
             </p>
           </AnimateIn>
-          <SplitReveal
-            as="h2"
-            type="lines"
+          <SectionHeading
+            section="media"
             className="mt-3 text-3xl font-bold text-foreground sm:text-4xl lg:text-5xl"
           >
             {media.heading}
-          </SplitReveal>
+          </SectionHeading>
           <AnimateIn from="up" delay={0.1}>
             <p className="mt-5 text-sm leading-7 text-field-muted-foreground">
               {media.blurb}

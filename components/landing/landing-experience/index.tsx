@@ -3,7 +3,7 @@ import { organizations } from "@/utils/constants/portfolio.constant";
 import { IOrganization } from "@/utils/interfaces/portfolio";
 import { AnimateIn, StaggerIn } from "@/components/utils/animations/animate-in";
 import { EarlierRoles } from "@/components/landing/landing-experience/earlier-roles";
-import { SplitReveal } from "@/components/utils/animations/split-reveal";
+import { SectionHeading } from "@/components/landing/section-heading";
 import { DrawLine } from "@/components/utils/animations/draw-line";
 import { MarqueeTrack } from "@/components/utils/animations/marquee-track";
 import { getDictionary, type TLocale } from "@/utils/i18n";
@@ -30,13 +30,12 @@ export default function LandingExperience(props: { lang: TLocale }) {
           </p>
         </AnimateIn>
 
-        <SplitReveal
-          as="h2"
-          type="lines"
+        <SectionHeading
+          section="experience"
           className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mt-3 mb-12"
         >
           {dict.experience.heading}
-        </SplitReveal>
+        </SectionHeading>
 
         {/* Timeline Section */}
         <div className="relative">

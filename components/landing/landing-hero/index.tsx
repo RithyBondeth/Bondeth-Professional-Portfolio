@@ -5,6 +5,8 @@ import { useEffect, useState, type CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowDown, ArrowUpRight, FileText, Mail, Play } from "lucide-react";
+import { skillGroups } from "@/utils/constants/portfolio.constant";
+import { skillIconId } from "@/components/landing/landing-skills/skill-icon-id";
 import { Magnetic } from "@/components/utils/animations/magnetic";
 import { scrollToSection } from "@/components/utils/animations/smooth-scroll";
 import { TiltCard } from "@/components/utils/animations/tilt-card";
@@ -55,40 +57,46 @@ function useRoleTypewriter(firstRole: string, secondRole: string) {
 }
 
 /* ----------------------------- Portrait backdrop ---------------------------- */
-/**
- * Kinetic type behind the cutout portrait. Rows drift in alternating
- * directions; the coral row is drawn twice — solid behind the portrait and as
- * an outline in front of it — so the type reads as wrapping around him rather
- * than sitting flat behind a sticker.
- *
- * Both layers render every row so their geometry is identical; the front layer
- * hides all but the coral row. Decorative, English in every locale.
- */
-const PORTRAIT_ROWS = [
-  { text: "Full Stack", tone: "outline", speed: 46 },
-  { text: "Bondeth", tone: "ghost", speed: 54 },
-  { text: "AI Engineer", tone: "outline-accent", speed: 40 },
-  { text: "Bondeth", tone: "accent", speed: 34 },
-  { text: "Web · Mobile · AI", tone: "outline", speed: 50 },
-  { text: "Build · Ship", tone: "ghost", speed: 58 },
-] as const;
+const PORTRAIT_TECHNOLOGY_ROWS = [
+  { category: "Full Stack", sources: ["Mobile", "Frontend", "Backend"] },
+  { category: "Databases", sources: ["Databases"] },
+  { category: "AI & ML", sources: ["AI & ML"] },
+  { category: "Cloud & DevOps", sources: ["Cloud", "DevOps & Tools"] },
+].map(({ category, sources }) => {
+  const skills = sources.flatMap(source => skillGroups.find(group => group.category === source)?.skills ?? []);
+  // Even the short database row needs a full group wider than the portrait.
+  const half = Array.from({ length: Math.ceil(10 / skills.length) * skills.length }, (_, index) => skills[index % skills.length]);
+  return { category, half };
+});
 
-function PortraitType({ layer }: { layer: "back" | "front" }) {
+function PortraitTechnologies() {
   return (
-    <div aria-hidden lang="en" className="portrait-type" data-layer={layer}>
-      {PORTRAIT_ROWS.map(({ text, tone, speed }, index) => (
-        <div
-          key={`${text}-${index}`}
-          className="portrait-row"
-          data-tone={tone}
-          data-dir={index % 2 === 0 ? "left" : "right"}
-          style={{ "--speed": `${speed}s`, "--row": index } as CSSProperties}
-        >
-          <div className="portrait-track">
-            {Array.from({ length: 6 }, (_, copy) => (
-              <span key={copy} className="portrait-word">
-                {text}
-              </span>
+    <div aria-hidden="true" className="portrait-technologies">
+      {PORTRAIT_TECHNOLOGY_ROWS.map(({ category, half }, row) => (
+        <div key={category} className="portrait-tech-row" data-category={category} data-dir={row % 2 === 0 ? "left" : "right"}>
+          <div
+            className="portrait-tech-track"
+            style={{ "--tech-duration": `${32 + row * 4}s`, "--tech-delay": `${row * -7}s` } as CSSProperties}
+          >
+            {Array.from({ length: 2 }, (_, copy) => (
+              <div key={copy} className="portrait-tech-group">
+                {half.map((skill, index) => (
+                  <span
+                    key={`${skill.name}-${index}`}
+                    className="portrait-tech"
+                    data-technology={skill.name}
+                    style={{
+                      "--tech-color-light": skill.colorLight ?? skill.color,
+                      "--tech-color-dark": skill.color,
+                    } as CSSProperties}
+                  >
+                    {/* The skills section supplies the shared SVG symbols. */}
+                    <svg aria-hidden="true" focusable="false">
+                      <use href={`#${skillIconId(skill.icon)}`} />
+                    </svg>
+                  </span>
+                ))}
+              </div>
             ))}
           </div>
         </div>
@@ -232,23 +240,23 @@ export default function LandingHero({ lang }: { lang: TLocale }) {
         >
           <div
             aria-hidden
-            className="hero-portrait-detail absolute inset-x-[3%] bottom-[1%] top-[5%] translate-x-3 translate-y-3 rounded-2xl bg-primary/7"
+            className="hero-portrait-detail portrait-backing absolute inset-x-[3%] bottom-[1%] top-[5%] translate-x-3 translate-y-3 rounded-2xl"
           />
 
           <div className="portrait-frame relative isolate mx-auto h-[94%] w-[88%] overflow-hidden rounded-2xl border border-border/60 bg-card shadow-[0_28px_75px_rgb(0_0_0/.14)]">
             <span aria-hidden className="portrait-stage" />
-            <PortraitType layer="back" />
+            <PortraitTechnologies />
             <Image
               src="/bondeth.webp"
               alt={lang === "km" ? "ហែម ឫទ្ធីបណ្ឌិត" : "Rithy Bondeth"}
               fill
               priority
               sizes="(max-width:1024px) 80vw, 40vw"
-              className="z-10 object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.025] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+              className="portrait-image z-10 object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.025] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
             />
-            <PortraitType layer="front" />
             <span aria-hidden className="portrait-scan z-30" />
           </div>
+
 
           <div className="hero-portrait-detail absolute bottom-[2%] right-0 rounded-full border border-border/60 bg-background/92 px-4 py-2.5 shadow-[0_12px_30px_rgb(0_0_0/.12)] backdrop-blur-xl sm:px-5">
             <div className="flex items-center gap-2.5">
