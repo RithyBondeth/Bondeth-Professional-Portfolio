@@ -6,6 +6,48 @@ import { IProjectLink } from "./project-link.interface";
 
 export type TProjectVisibility = "public" | "limited" | "confidential";
 
+/** One choice that shaped the build, and what it cost. */
+export interface ICaseStudyDecision {
+  title: string;
+  body: string;
+  /** What was given up. Omit rather than invent one. */
+  tradeoff?: string;
+}
+
+export interface ICaseStudyMetric {
+  /** Short and scannable: "3,200", "< 1s", "2 languages". */
+  value: string;
+  label: string;
+}
+
+export interface ICaseStudyImage {
+  /** Under /public. Shared by every locale; only captions are translated. */
+  src: string;
+  alt: string;
+  caption?: string;
+}
+
+/**
+ * The long form of a flagship project: why it existed, the decisions that
+ * shaped it, and what came of it. Optional and additive — a project without
+ * one keeps the short overview layout, so this only goes on work that has a
+ * story worth reading.
+ *
+ * Every field is a claim a reader may repeat in an interview, so leave a
+ * section out rather than fill it with something that is not true.
+ */
+export interface IProjectCaseStudy {
+  /** Who it is for and what was broken or missing. */
+  problem: string;
+  /** The hard limits the solution had to live within. */
+  constraints?: string[];
+  decisions: ICaseStudyDecision[];
+  /** What changed because it shipped. */
+  outcome?: string;
+  metrics?: ICaseStudyMetric[];
+  gallery?: ICaseStudyImage[];
+}
+
 export interface IProject {
   slug: string;
   title: string;
@@ -58,6 +100,7 @@ export interface IProject {
    * reach it. Empty for projects with no public surface at all.
    */
   links: IProjectLink[];
+  caseStudy?: IProjectCaseStudy;
   /** URL to a screenshot/preview image */
   image: string | null;
   /** Tailwind gradient classes used as a fallback when image is null */

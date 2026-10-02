@@ -88,6 +88,17 @@ export const en = {
     heading: "Academic background",
   },
   projects: {
+    caseStudy: {
+      badge: "Case study",
+      read: "read case study",
+      problem: "The problem",
+      constraints: "Constraints",
+      decisions: "Key decisions",
+      decision: "Decision",
+      tradeoff: "Trade-off",
+      outcome: "Outcome",
+      gallery: "Inside the product",
+    },
     myRole: "My role",
     practice: "Practice & early work",
     practiceBlurb:

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import LandingHero from "@/components/landing/landing-hero";
+import LandingShowreel from "@/components/landing/landing-showreel";
 import LandingAbout from "@/components/landing/landing-about";
 import LandingCurrentFocus from "@/components/landing/landing-current-focus";
 import LandingSkills from "@/components/landing/landing-skills";
@@ -85,6 +86,7 @@ export default async function IndexPage({ params }: IHomePageProps) {
       />
 
       <LandingHero lang={lang} />
+      <LandingShowreel lang={lang} />
       <LandingAbout lang={lang} />
       <LandingCurrentFocus lang={lang} />
       <LandingSkills lang={lang} />

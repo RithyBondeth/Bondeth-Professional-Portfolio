@@ -6,6 +6,10 @@ import { AnimateIn } from "@/components/utils/animations/animate-in";
 import { ProjectLinkIcon } from "@/components/projects/project-link-icon";
 import { TopicCluster } from "@/components/topic-cluster";
 import { TechBadges } from "@/components/projects/tech-badges";
+import {
+  CaseStudy,
+  countCaseStudySections,
+} from "@/components/projects/case-study";
 import { SkillIconSprite } from "@/components/landing/landing-skills/skill-icon-sprite";
 import { techIconKeys } from "@/components/projects/tech-icon-map";
 import { getLinkLabel } from "@/utils/functions/project-links";
@@ -69,6 +73,12 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
   if (!project) notFound();
 
   const dict = getDictionary(lang);
+  const caseStudy = project.caseStudy;
+  // The case study's problem section stands in for the overview card, and the
+  // sections after it keep counting from where it stops.
+  const firstSection = caseStudy ? countCaseStudySections(caseStudy) + 1 : 1;
+  const sectionLabel = (offset: number) =>
+    String(firstSection + offset).padStart(2, "0");
   const visibilityLabel =
     project.visibility === "limited"
       ? dict.projects.limitedProject
@@ -164,27 +174,35 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
           </AnimateIn>
         )}
 
-        <div className="mt-16 grid gap-6 md:grid-cols-2">
-          <AnimateIn from="up">
-            <section className="h-full rounded-lg border border-border/60 bg-card p-6">
-              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
-                01 / {dict.projects.overview}
-              </p>
-              <h2 className="mt-4 text-xl font-semibold text-foreground">
-                {dict.projects.overview}
-              </h2>
-              {/* `overview`, not `description` — the hero above already shows
+        {caseStudy && (
+          <CaseStudy caseStudy={caseStudy} dict={dict} title={project.title} />
+        )}
+
+        <div
+          className={`grid gap-6 ${caseStudy ? "mt-6" : "mt-16 md:grid-cols-2"}`}
+        >
+          {!caseStudy && (
+            <AnimateIn from="up">
+              <section className="h-full rounded-lg border border-border/60 bg-card p-6">
+                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
+                  {sectionLabel(0)} / {dict.projects.overview}
+                </p>
+                <h2 className="mt-4 text-xl font-semibold text-foreground">
+                  {dict.projects.overview}
+                </h2>
+                {/* `overview`, not `description` — the hero above already shows
                   the description, and this card used to repeat it verbatim. */}
-              <p className="mt-4 text-sm leading-7 text-muted-foreground">
-                {project.overview ?? project.description}
-              </p>
-            </section>
-          </AnimateIn>
+                <p className="mt-4 text-sm leading-7 text-muted-foreground">
+                  {project.overview ?? project.description}
+                </p>
+              </section>
+            </AnimateIn>
+          )}
 
           <AnimateIn from="up" delay={0.08}>
             <section className="h-full rounded-lg border border-border/60 bg-card p-6">
               <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
-                02 / {dict.projects.technologies}
+                {sectionLabel(caseStudy ? 0 : 1)} / {dict.projects.technologies}
               </p>
               <h2 className="mt-4 text-xl font-semibold text-foreground">
                 {dict.projects.technologies}
@@ -209,7 +227,8 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
           <AnimateIn from="up" delay={0.12}>
             <section className="mt-6 rounded-lg border border-border/60 bg-card p-6">
               <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
-                03 / {dict.projects.publicResources}
+                {sectionLabel(caseStudy ? 1 : 2)} /{" "}
+                {dict.projects.publicResources}
               </p>
               <h2 className="mt-4 text-xl font-semibold text-foreground">
                 {dict.projects.publicResources}
