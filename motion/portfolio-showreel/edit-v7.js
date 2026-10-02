@@ -528,15 +528,13 @@ const composition = async ({ project, frame, text, rect, media }) => {
                 },
               ),
             ],
-            {
-              animate: [
-                track("opacity", [
-                  key(0, 0),
-                  key(first ? 0.39 : 0.08, 0),
-                  key(first ? 0.65 : 0.46, 1),
-                ]),
-              ],
-            },
+            first
+              ? {
+                  animate: [
+                    track("opacity", [key(0, 0), key(0.39, 0), key(0.65, 1)]),
+                  ],
+                }
+              : {},
           ),
           R(-110, 0, 10, 1080, C.coral, {
             opacity: 0.8,
@@ -558,10 +556,12 @@ const composition = async ({ project, frame, text, rect, media }) => {
             }
           : {
               clip: true,
-              animate: [
-                tween("opacity", 0, 1, 0, 0.46),
-                tween("offsetX", 82, 0, 0, 0.56),
-              ],
+              reveal: {
+                from: i % 2 ? "right" : "left",
+                at: 0,
+                duration: 0.56,
+                easing: "house",
+              },
             },
       ),
       at,
