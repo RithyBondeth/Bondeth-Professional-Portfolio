@@ -50,6 +50,12 @@ export function ProjectCard(props: {
             </div>
           )}
 
+          {project.caseStudy && project.visibility !== "confidential" && (
+            <div className="absolute left-3 top-3 rounded-lg border border-primary/25 bg-background/85 px-2 py-1 font-mono text-[9px] uppercase tracking-wider text-primary backdrop-blur-sm">
+              {dict.projects.caseStudy.badge}
+            </div>
+          )}
+
           {badge && (
             <div
               className={`absolute right-3 top-3 flex items-center gap-1 rounded-lg border bg-background/80 px-2 py-1 backdrop-blur-sm ${
@@ -102,10 +108,16 @@ export function ProjectCard(props: {
             {project.visibility !== "confidential" && (
               <Link
                 href={`/${lang}/projects/${project.slug}`}
-                aria-label={`${dict.projects.viewDetails}: ${project.title}`}
+                aria-label={`${
+                  project.caseStudy
+                    ? dict.projects.caseStudy.read
+                    : dict.projects.viewDetails
+                }: ${project.title}`}
                 className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-border/50 bg-muted/40 px-3 font-mono text-xs text-muted-foreground transition-colors hover:border-primary/30 hover:text-primary"
               >
-                {dict.projects.viewDetails}
+                {project.caseStudy
+                  ? dict.projects.caseStudy.read
+                  : dict.projects.viewDetails}
                 <span aria-hidden>→</span>
               </Link>
             )}

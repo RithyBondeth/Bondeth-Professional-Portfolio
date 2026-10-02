@@ -9,6 +9,7 @@ import {
   IProject,
   ISiteConfig,
   IEducation,
+  IProjectCaseStudy,
 } from "@/utils/interfaces/portfolio";
 import { kmContent } from "./content.km";
 import type { TLocale } from ".";
@@ -41,9 +42,45 @@ export function getProjects(lang: TLocale): IProject[] {
   if (lang !== "km") return projects;
   // Keyed by slug, not index: an untranslated project falls back to English
   // rather than silently inheriting its neighbour's copy.
-  return projects.map((project) => ({
-    ...project,
-    ...(kmContent.projects[project.slug as keyof typeof kmContent.projects] ??
-      {}),
-  }));
+  return projects.map((project) => {
+    const translation: Partial<IProject> =
+      kmContent.projects[project.slug as keyof typeof kmContent.projects] ?? {};
+
+    return {
+      ...project,
+      ...translation,
+      caseStudy: mergeCaseStudy(project.caseStudy, translation.caseStudy),
+    };
+  });
+}
+
+/**
+ * Case studies merge field by field rather than wholesale, so a translation
+ * can carry prose alone: metric values and gallery images stay with the
+ * English source, and only their labels, alt text, and captions are
+ * overridden by index. A section the translation skips falls back to English.
+ */
+function mergeCaseStudy(
+  source: IProjectCaseStudy | undefined,
+  translation: Partial<IProjectCaseStudy> | undefined,
+): IProjectCaseStudy | undefined {
+  if (!source || !translation) return source;
+
+  return {
+    ...source,
+    ...translation,
+    decisions: source.decisions.map((decision, index) => ({
+      ...decision,
+      ...translation.decisions?.[index],
+    })),
+    metrics: source.metrics?.map((metric, index) => ({
+      ...metric,
+      label: translation.metrics?.[index]?.label ?? metric.label,
+    })),
+    gallery: source.gallery?.map((image, index) => ({
+      ...image,
+      alt: translation.gallery?.[index]?.alt ?? image.alt,
+      caption: translation.gallery?.[index]?.caption ?? image.caption,
+    })),
+  };
 }
