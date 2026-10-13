@@ -55,6 +55,7 @@
 .sectionIcon[data-section-mascot="education"] { --section-gesture: section-nod; }
 .sectionIcon[data-section-mascot="services"] { --section-gesture: section-offer; }
 .sectionIcon[data-section-mascot="projects"] { --section-gesture: section-hop; }
+.sectionIcon[data-section-mascot="github"] { --section-gesture: section-tinker; }
 .sectionIcon[data-section-mascot="writing"] { --section-gesture: section-ponder; }
 .sectionIcon[data-section-mascot="media"] { --section-gesture: section-peek; }
 .sectionIcon[data-section-mascot="recommendations"] { --section-gesture: section-sway; }

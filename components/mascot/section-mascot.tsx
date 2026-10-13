@@ -17,6 +17,7 @@ const SECTION_MOODS = {
   education: "wink",
   services: "wave",
   projects: "happy",
+  github: "think",
   writing: "think",
   media: "surprised",
   recommendations: "happy",
