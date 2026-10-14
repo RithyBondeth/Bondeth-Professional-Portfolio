@@ -33,7 +33,9 @@
      and terminal-style covers, which are Latin and must look identical in
      every language. This is the ONLY family that stays monospace now that the
      rest of the English UI has moved to Noto Serif. */
-  --font-code: var(--font-jetbrains), "JetBrains Mono", ui-monospace, monospace;
+  --font-code:
+    "LocalArrows", var(--font-jetbrains), "JetBrains Mono", ui-monospace,
+    monospace;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -97,7 +99,9 @@
   /* Ubuntu is the shared UI and reading face. The Khmer locale prepends a
      unicode-ranged Kantumruy Pro face, while code keeps the separate JetBrains
      Mono stack in --font-code. */
-  --font-ui: var(--font-ubuntu), Ubuntu, ui-sans-serif, system-ui, sans-serif;
+  --font-ui:
+    "LocalArrows", var(--font-ubuntu), Ubuntu, ui-sans-serif, system-ui,
+    sans-serif;
   --font-serif: var(--font-ui);
   /* Near-monochrome, but no longer *pure* grayscale: every neutral carries a
      few points of blue so the ramp sits with the ribbon-field background
@@ -373,6 +377,19 @@
   --inline-code-foreground: #d97757;
 }
 
+/* Arrow glyphs use local symbol fonts so UI and code fonts do not need an
+   additional downloaded subset. All other characters fall through to the
+   current Ubuntu or Khmer stack. */
+@font-face {
+  font-family: "LocalArrows";
+  src:
+    local("Apple Symbols"), local("Segoe UI Symbol"),
+    local("Noto Sans Symbols 2"), local("DejaVu Sans"),
+    local("Arial Unicode MS");
+  unicode-range: U+2190-21FF, U+2794-27BF, U+2B00-2BFF;
+  font-display: swap;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -394,14 +411,14 @@
   h2,
   h3,
   h4 {
-    font-family: var(--font-serif), ui-serif, Georgia, serif;
+    font-family: "LocalArrows", var(--font-serif), ui-serif, Georgia, serif;
     letter-spacing: -0.025em;
   }
   p,
   li,
   blockquote,
   figcaption {
-    font-family: var(--font-serif), ui-serif, Georgia, serif;
+    font-family: "LocalArrows", var(--font-serif), ui-serif, Georgia, serif;
   }
   /* Code always renders in JetBrains Mono, in every locale. Tailwind's
      Preflight resets these tags to `--font-mono`, which is remapped to
@@ -411,7 +428,7 @@
   code,
   kbd,
   samp {
-    font-family: var(--font-code);
+    font-family: "LocalArrows", var(--font-code);
   }
 }
 
@@ -421,8 +438,8 @@
    by /en instead of being claimed by Kantumruy's Latin glyphs. ── */
 html[lang="km"] {
   --font-ui:
-    "Kantumruy Pro Khmer", var(--font-ubuntu), Ubuntu, ui-sans-serif, system-ui,
-    sans-serif;
+    "LocalArrows", "Kantumruy Pro Khmer", var(--font-ubuntu), Ubuntu,
+    ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-ui);
 }
 
@@ -432,8 +449,8 @@ html[lang="km"] {
    keeps its dedicated JetBrains stack even when shown inside Khmer content. */
 html :lang(km):not(pre, code, kbd, samp) {
   font-family:
-    "Kantumruy Pro Khmer", var(--font-ubuntu), Ubuntu, ui-sans-serif, system-ui,
-    sans-serif;
+    "LocalArrows", "Kantumruy Pro Khmer", var(--font-ubuntu), Ubuntu,
+    ui-sans-serif, system-ui, sans-serif;
   letter-spacing: normal;
 }
 
@@ -479,8 +496,8 @@ html[lang="km"]
   .rag-lab
   :is(p, li, button, label, output, textarea, blockquote, summary, dt, dd) {
   font-family:
-    "Kantumruy Pro Khmer", var(--font-ubuntu), Ubuntu, ui-sans-serif, system-ui,
-    sans-serif;
+    "LocalArrows", "Kantumruy Pro Khmer", var(--font-ubuntu), Ubuntu,
+    ui-sans-serif, system-ui, sans-serif;
   letter-spacing: normal;
 }
 

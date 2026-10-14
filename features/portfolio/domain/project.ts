@@ -81,6 +81,16 @@ export interface Project {
   year?: string | null;
   /** What you personally owned, in a few words. */
   role?: string | null;
+  /**
+   * What the work actually achieved — users reached, volume handled, a number
+   * that moved, a decision it unblocked. One short line each.
+   *
+   * Deliberately left empty rather than filled with plausible-sounding figures:
+   * these are the claims an interviewer checks, and an invented one is worse
+   * than an absent one. The section renders only when this has entries, so a
+   * project with nothing measurable to report simply doesn't show it.
+   */
+  outcomes?: string[] | null;
   /** Slug of a blog post about this work. */
   relatedPost?: string | null;
   /** Path of a lab that demonstrates a technique it uses. */
@@ -102,7 +112,7 @@ export interface Project {
   links: ProjectLink[];
   caseStudy?: ProjectCaseStudy;
   /** URL to a screenshot/preview image */
-  image: string | null;
-  /** Tailwind gradient classes used as a fallback when image is null */
+  image: string;
+  /** Tailwind gradient classes used when a preview is withheld */
   gradient: string;
 }

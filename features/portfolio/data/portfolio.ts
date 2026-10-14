@@ -318,9 +318,8 @@ export const projects: Project[] = [
     category: "macOS",
     domains: ["Developer Tools"],
     tier: "production",
-    // TODO(bondeth): fill these in — both render only when set.
-    year: null,
-    role: null,
+    year: "2026",
+    role: "Sole developer",
     visibility: "public",
     links: [{ kind: "site", url: "https://bondex-notch.bondeth.site" }],
     // Sourced from the project's own repositories (READMEs, docs, tests, and
@@ -411,9 +410,8 @@ export const projects: Project[] = [
     category: "Web",
     domains: ["Recruitment"],
     tier: "production",
-    // TODO(bondeth): fill these in — both render only when set.
-    year: null,
-    role: null,
+    year: "2025 – present",
+    role: "Sole developer",
     visibility: "public",
     links: [{ kind: "app", url: "https://talent.apsara.social" }],
     // Sourced from the project's own repositories (READMEs, docs, tests, and
@@ -498,9 +496,8 @@ export const projects: Project[] = [
     category: "Web",
     domains: ["AI"],
     tier: "production",
-    // TODO(bondeth): fill these in — both render only when set.
-    year: null,
-    role: null,
+    year: "2026",
+    role: "Sole developer",
     visibility: "public",
     links: [{ kind: "app", url: "https://assistant.apsara.social" }],
     // Sourced from the project's own repositories (READMEs, docs, tests, and
@@ -592,9 +589,8 @@ export const projects: Project[] = [
     category: "Web",
     domains: ["AI"],
     tier: "production",
-    // TODO(bondeth): fill these in — both render only when set.
-    year: null,
-    role: null,
+    year: "2026",
+    role: "Sole developer",
     visibility: "public",
     links: [{ kind: "app", url: "https://agentic.apsara.social" }],
     // Sourced from the project's own repositories (READMEs, docs, tests, and
@@ -675,9 +671,8 @@ export const projects: Project[] = [
     category: "Web",
     domains: ["AI", "Education"],
     tier: "production",
-    // TODO(bondeth): fill these in — both render only when set.
-    year: null,
-    role: null,
+    year: "2026",
+    role: "Sole developer",
     visibility: "public",
     links: [{ kind: "app", url: "https://elearning.apsara.social" }],
     // Sourced from the project's own repositories (READMEs, docs, tests, and
@@ -747,9 +742,8 @@ export const projects: Project[] = [
     category: "Mobile",
     domains: ["Fintech"],
     tier: "production",
-    // TODO(bondeth): fill these in — both render only when set.
-    year: null,
-    role: null,
+    year: "2026",
+    role: "Sole developer",
     visibility: "public",
     links: [{ kind: "app", url: "https://wallet.apsara.social" }],
     // Sourced from the project's own repositories (READMEs, docs, tests, and
@@ -846,9 +840,8 @@ export const projects: Project[] = [
     category: "Web",
     domains: ["Productivity"],
     tier: "production",
-    // TODO(bondeth): fill these in — both render only when set.
-    year: null,
-    role: null,
+    year: "2026",
+    role: "Sole developer",
     visibility: "public",
     links: [{ kind: "app", url: "https://pdfflow.bondeth.site" }],
     // Sourced from the project's own repositories (READMEs, docs, tests, and
@@ -914,7 +907,7 @@ export const projects: Project[] = [
         },
       ],
     },
-    image: "/previews/pdfflow.png",
+    image: "/previews/pdfflow.webp",
     gradient: "from-blue-600/20 via-blue-500/10 to-slate-800",
   },
   {
@@ -928,9 +921,8 @@ export const projects: Project[] = [
     category: "Web",
     domains: ["Developer Tools"],
     tier: "production",
-    // TODO(bondeth): fill these in — both render only when set.
-    year: null,
-    role: null,
+    year: "2026",
+    role: "Sole developer",
     visibility: "public",
     links: [{ kind: "app", url: "https://reahu.bondeth.site" }],
     // Sourced from the project's own repositories (READMEs, docs, tests, and
@@ -980,7 +972,7 @@ export const projects: Project[] = [
         },
       ],
     },
-    image: "/previews/reahu-generator.png",
+    image: "/previews/reahu-generator.webp",
     gradient: "from-red-600/20 via-red-500/10 to-slate-800",
   },
   {
@@ -994,12 +986,11 @@ export const projects: Project[] = [
     category: "Web",
     domains: ["GovTech"],
     tier: "production",
-    // TODO(bondeth): fill these in — both render only when set.
-    year: null,
-    role: null,
+    year: "2025 – present",
+    role: "Software Engineer, Digital Economy and Business Committee",
     visibility: "limited",
     links: [{ kind: "app", url: "https://digitaleconomy.gov.kh/?lang=kh" }],
-    image: "/previews/debc-website.png",
+    image: "/previews/debc-website.webp",
     gradient: "from-blue-700/20 via-indigo-500/10 to-slate-800",
   },
   {
@@ -1020,12 +1011,11 @@ export const projects: Project[] = [
     category: "Web",
     domains: ["GovTech"],
     tier: "production",
-    // TODO(bondeth): fill these in — both render only when set.
-    year: null,
-    role: null,
+    year: "2025 – present",
+    role: "Software Engineer, Digital Economy and Business Committee",
     visibility: "limited",
     links: [{ kind: "app", url: "https://informal.digitaleconomy.gov.kh/km" }],
-    image: "/previews/informal-economy.png",
+    image: "/previews/informal-economy.webp",
     gradient: "from-amber-600/20 via-orange-500/10 to-slate-800",
   },
   {
@@ -1046,7 +1036,7 @@ export const projects: Project[] = [
     links: [
       { kind: "app", url: "https://edf-cip-website-dev.intechdevkh.com/en" },
     ],
-    image: "/previews/cambodia-investment-platform.png",
+    image: "/previews/cambodia-investment-platform.webp",
     gradient: "from-emerald-700/20 via-green-500/10 to-slate-800",
   },
   {
@@ -1060,15 +1050,11 @@ export const projects: Project[] = [
     category: "Web",
     domains: ["Community"],
     tier: "production",
-    // TODO(bondeth): fill these in — both render only when set.
-    year: null,
-    role: null,
+    year: "2023 – 2024",
+    role: "Developer, freelance team",
     visibility: "public",
-    links: [
-      { kind: "app", url: "https://codehub-bondeth.netlify.app/signin" },
-      { kind: "repo", url: "https://github.com/bondeth/codehub" },
-    ],
-    image: "/previews/codehub.png",
+    links: [{ kind: "app", url: "https://codehub-bondeth.netlify.app/signin" }],
+    image: "/previews/codehub.webp",
     gradient: "from-rose-600/20 via-pink-500/10 to-slate-800",
   },
   {
@@ -1082,15 +1068,14 @@ export const projects: Project[] = [
     category: "Web",
     domains: [],
     tier: "practice",
-    // TODO(bondeth): fill these in — both render only when set.
-    year: null,
-    role: null,
+    year: "2026",
+    role: "Sole developer",
     visibility: "public",
     links: [
       { kind: "app", url: "https://apple-bondeth.vercel.app" },
-      { kind: "repo", url: "https://github.com/bondeth/apple-clone" },
+      { kind: "repo", url: "https://github.com/RithyBondeth/Next-Apple-Clone" },
     ],
-    image: "/previews/apple-clone.png",
+    image: "/previews/apple-clone.webp",
     gradient: "from-zinc-600/20 via-slate-500/10 to-slate-800",
   },
   {
@@ -1108,11 +1093,8 @@ export const projects: Project[] = [
     year: null,
     role: null,
     visibility: "public",
-    links: [
-      { kind: "app", url: "https://tesla-bondeth.vercel.app" },
-      { kind: "repo", url: "https://github.com/bondeth/tesla-clone" },
-    ],
-    image: "/previews/tesla-clone.png",
+    links: [{ kind: "app", url: "https://tesla-bondeth.vercel.app" }],
+    image: "/previews/tesla-clone.webp",
     gradient: "from-zinc-600/20 via-slate-500/10 to-slate-800",
   },
   {
@@ -1130,11 +1112,8 @@ export const projects: Project[] = [
     year: null,
     role: null,
     visibility: "public",
-    links: [
-      { kind: "app", url: "https://sabynews-clone-bondeth.netlify.app" },
-      { kind: "repo", url: "https://github.com/bondeth/sabynews-clone" },
-    ],
-    image: "/previews/sabynews-clone.png",
+    links: [{ kind: "app", url: "https://sabynews-clone-bondeth.netlify.app" }],
+    image: "/previews/sabynews-clone.webp",
     gradient: "from-red-600/20 via-rose-500/10 to-slate-800",
   },
   {
@@ -1152,11 +1131,8 @@ export const projects: Project[] = [
     year: null,
     role: null,
     visibility: "public",
-    links: [
-      { kind: "app", url: "https://bondeth-blog.vercel.app" },
-      { kind: "repo", url: "https://github.com/bondeth/bondeth-blog" },
-    ],
-    image: "/previews/bondeth-vlog.png",
+    links: [{ kind: "app", url: "https://bondeth-blog.vercel.app" }],
+    image: "/previews/bondeth-vlog.webp",
     gradient: "from-slate-600/20 via-gray-500/10 to-slate-800",
   },
 ];
