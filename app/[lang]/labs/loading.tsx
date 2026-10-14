@@ -1,4 +1,5 @@
-import { Skeleton } from "@/components/ui/skeleton";
+import { MascotLoader } from "@/shared/components/mascot/mascot-loader";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 
 /**
  * Loading UI for the labs index. Mirrors labs/page.tsx: the terminal-style
@@ -11,6 +12,7 @@ export default function LabsLoading() {
       aria-label="Loading labs"
       className="flex-1 px-6 pb-16 sm:pb-24 pt-32 font-sans"
     >
+      <MascotLoader label="Loading labs" />
       <div className="mx-auto max-w-5xl">
         {/* Heading block */}
         <Skeleton className="h-3 w-24" />
@@ -23,7 +25,7 @@ export default function LabsLoading() {
           {Array.from({ length: 3 }).map((_, i) => (
             <div
               key={i}
-              className="overflow-hidden rounded border border-border/60 bg-card"
+              className="overflow-hidden rounded-lg border border-border/60 bg-card"
             >
               <div className="grid md:grid-cols-[0.8fr_1.2fr]">
                 {/* Vignette / preview pane */}
@@ -32,13 +34,13 @@ export default function LabsLoading() {
                 {/* Copy pane */}
                 <div className="flex flex-col p-6 sm:p-8">
                   <div className="flex gap-2">
-                    <Skeleton className="h-6 w-24 rounded" />
-                    <Skeleton className="h-6 w-16 rounded" />
+                    <Skeleton className="h-6 w-24 rounded-lg" />
+                    <Skeleton className="h-6 w-16 rounded-lg" />
                   </div>
                   <Skeleton className="mt-5 h-7 w-2/3" />
                   <Skeleton className="mt-4 h-4 w-full" />
                   <Skeleton className="mt-2 h-4 w-5/6" />
-                  <Skeleton className="mt-7 h-11 w-32 rounded" />
+                  <Skeleton className="mt-7 h-11 w-32 rounded-lg" />
                 </div>
               </div>
             </div>

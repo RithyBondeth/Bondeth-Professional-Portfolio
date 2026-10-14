@@ -2,23 +2,27 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AnimateIn } from "@/components/utils/animations/animate-in";
-import { ProjectLinkIcon } from "@/components/projects/project-link-icon";
-import { TopicCluster } from "@/components/topic-cluster";
-import { TechBadges } from "@/components/projects/tech-badges";
-import { ProjectCard } from "@/components/projects/project-card";
-import { SkillIconSprite } from "@/components/landing/landing-skills/skill-icon-sprite";
-import { techIconKeys } from "@/components/projects/tech-icon-map";
-import { getLinkLabel } from "@/utils/functions/project-links";
-import { projects, siteConfig } from "@/utils/constants/portfolio.constant";
-import { getProjects } from "@/utils/i18n/content";
-import { getDictionary, hasLocale, locales, type TLocale } from "@/utils/i18n";
+import { AnimateIn } from "@/shared/components/motion/animate-in";
+import { ProjectLinkIcon } from "@/features/portfolio/components/projects/project-link-icon";
+import { TopicCluster } from "@/features/blog/components/topic-cluster";
+import { TechBadges } from "@/features/portfolio/components/projects/tech-badges";
+import {
+  CaseStudy,
+  countCaseStudySections,
+} from "@/features/portfolio/components/projects/case-study";
+import { SkillIconSprite } from "@/features/portfolio/components/skills/skill-icon-sprite";
+import { techIconKeys } from "@/features/portfolio/components/projects/tech-icon-map";
+import { getLinkLabel } from "@/features/portfolio/domain/project-links";
+import { projects, siteConfig } from "@/features/portfolio/data/portfolio";
+import { getProjects } from "@/features/portfolio/data/localized-content";
+import { getDictionary, hasLocale, locales, type Locale } from "@/shared/i18n";
+import { ProjectCard } from "@/features/portfolio/components/projects/project-card";
 
-interface IProjectPageProps {
+interface ProjectPageProps {
   params: Promise<{ lang: string; slug: string }>;
 }
 
-function getProject(slug: string, lang: TLocale) {
+function getProject(slug: string, lang: Locale) {
   return getProjects(lang).find(
     (project) => project.slug === slug && project.visibility !== "confidential",
   );
@@ -34,7 +38,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({
   params,
-}: IProjectPageProps): Promise<Metadata> {
+}: ProjectPageProps): Promise<Metadata> {
   const { lang, slug } = await params;
   if (!hasLocale(lang)) return {};
 
@@ -62,7 +66,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function ProjectPage({ params }: IProjectPageProps) {
+export default async function ProjectPage({ params }: ProjectPageProps) {
   const { lang, slug } = await params;
   if (!hasLocale(lang)) notFound();
 
@@ -70,6 +74,12 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
   if (!project) notFound();
 
   const dict = getDictionary(lang);
+  const caseStudy = project.caseStudy;
+  // The case study's problem section stands in for the overview card, and the
+  // sections after it keep counting from where it stops.
+  const firstSection = caseStudy ? countCaseStudySections(caseStudy) + 1 : 1;
+  const sectionLabel = (offset: number) =>
+    String(firstSection + offset).padStart(2, "0");
 
   // Everything a visitor could actually navigate to, in the curated order the
   // constants file declares. Confidential projects have no detail route, so
@@ -144,7 +154,7 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
           <div>
             <AnimateIn from="left" distance={40}>
               <div className="mb-5 flex flex-wrap items-center gap-3">
-                <span className="rounded border border-primary/20 bg-primary/5 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-primary">
+                <span className="rounded-lg border border-primary/20 bg-primary/5 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-primary">
                   {visibilityLabel}
                 </span>
                 <span className="font-mono text-xs text-muted-foreground">
@@ -180,7 +190,7 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
 
         {project.visibility === "limited" && (
           <AnimateIn from="up" delay={0.1}>
-            <aside className="mt-12 rounded border border-status-warning/25 bg-status-warning/5 p-5">
+            <aside className="mt-12 rounded-lg border border-status-warning/25 bg-status-warning/5 p-5">
               <p className="font-mono text-xs font-semibold uppercase tracking-wider text-status-warning">
                 {dict.projects.limitedNoticeTitle}
               </p>
@@ -191,27 +201,35 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
           </AnimateIn>
         )}
 
-        <div className="mt-16 grid gap-6 md:grid-cols-2">
-          <AnimateIn from="up">
-            <section className="h-full rounded border border-border/60 bg-card p-6">
-              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
-                01 / {dict.projects.overview}
-              </p>
-              <h2 className="mt-4 text-xl font-semibold text-foreground">
-                {dict.projects.overview}
-              </h2>
-              {/* `overview`, not `description` — the hero above already shows
+        {caseStudy && (
+          <CaseStudy caseStudy={caseStudy} dict={dict} title={project.title} />
+        )}
+
+        <div
+          className={`grid gap-6 ${caseStudy ? "mt-6" : "mt-16 md:grid-cols-2"}`}
+        >
+          {!caseStudy && (
+            <AnimateIn from="up">
+              <section className="h-full rounded-lg border border-border/60 bg-card p-6">
+                <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
+                  {sectionLabel(0)} / {dict.projects.overview}
+                </p>
+                <h2 className="mt-4 text-xl font-semibold text-foreground">
+                  {dict.projects.overview}
+                </h2>
+                {/* `overview`, not `description` — the hero above already shows
                   the description, and this card used to repeat it verbatim. */}
-              <p className="mt-4 text-sm leading-7 text-muted-foreground">
-                {project.overview ?? project.description}
-              </p>
-            </section>
-          </AnimateIn>
+                <p className="mt-4 text-sm leading-7 text-muted-foreground">
+                  {project.overview ?? project.description}
+                </p>
+              </section>
+            </AnimateIn>
+          )}
 
           <AnimateIn from="up" delay={0.08}>
-            <section className="h-full rounded border border-border/60 bg-card p-6">
+            <section className="h-full rounded-lg border border-border/60 bg-card p-6">
               <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
-                02 / {dict.projects.technologies}
+                {sectionLabel(caseStudy ? 0 : 1)} / {dict.projects.technologies}
               </p>
               <h2 className="mt-4 text-xl font-semibold text-foreground">
                 {dict.projects.technologies}
@@ -238,7 +256,7 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
           <AnimateIn from="up" delay={0.1}>
             <section className="mt-6 rounded border border-border/60 bg-card p-6">
               <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
-                03 / {dict.projects.outcome}
+                {sectionLabel(caseStudy ? 1 : 2)} / {dict.projects.outcome}
               </p>
               <h2 className="mt-4 text-xl font-semibold text-foreground">
                 {dict.projects.outcome}
@@ -249,7 +267,10 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
                     key={item}
                     className="flex gap-3 text-sm leading-7 text-muted-foreground"
                   >
-                    <span aria-hidden className="mt-2.5 size-1.5 shrink-0 rounded-full bg-primary" />
+                    <span
+                      aria-hidden
+                      className="mt-2.5 size-1.5 shrink-0 rounded-full bg-primary"
+                    />
                     {item}
                   </li>
                 ))}
@@ -260,9 +281,12 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
 
         {project.links.length > 0 && (
           <AnimateIn from="up" delay={0.12}>
-            <section className="mt-6 rounded border border-border/60 bg-card p-6">
+            <section className="mt-6 rounded-lg border border-border/60 bg-card p-6">
               <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
-                {project.outcomes?.length ? "04" : "03"} / {dict.projects.publicResources}
+                {sectionLabel(
+                  (caseStudy ? 1 : 2) + (project.outcomes?.length ? 1 : 0),
+                )}{" "}
+                / {dict.projects.publicResources}
               </p>
               <h2 className="mt-4 text-xl font-semibold text-foreground">
                 {dict.projects.publicResources}
@@ -278,8 +302,8 @@ export default async function ProjectPage({ params }: IProjectPageProps) {
                     // so it gets the filled treatment and the rest sit beside it.
                     className={
                       index === 0
-                        ? "btn-fx btn-fx-primary inline-flex items-center gap-2 rounded bg-primary-fill px-4 py-2.5 font-mono text-xs text-primary-foreground"
-                        : "btn-fx inline-flex items-center gap-2 rounded border border-border/60 bg-muted/40 px-4 py-2.5 font-mono text-xs text-muted-foreground hover:border-primary/30 hover:text-primary"
+                        ? "btn-fx btn-fx-primary inline-flex items-center gap-2 rounded-lg bg-primary-fill px-4 py-2.5 font-mono text-xs text-primary-foreground"
+                        : "btn-fx inline-flex items-center gap-2 rounded-lg border border-border/60 bg-muted/40 px-4 py-2.5 font-mono text-xs text-muted-foreground hover:border-primary/30 hover:text-primary"
                     }
                   >
                     {getLinkLabel(link.kind, dict)}
@@ -366,7 +390,7 @@ function ProjectPreview(props: { title: string; image: string }) {
   const { title, image } = props;
 
   return (
-    <div className="relative aspect-16/10 overflow-hidden rounded border border-border/60 bg-card shadow-2xl shadow-black/10">
+    <div className="relative aspect-16/10 overflow-hidden rounded-lg border border-border/60 bg-card shadow-2xl shadow-black/10">
       <Image
         src={image}
         alt={`${title} preview`}

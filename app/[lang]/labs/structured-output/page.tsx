@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AnimateIn } from "@/components/utils/animations/animate-in";
-import { StructuredOutputLab } from "@/components/labs/structured-output-lab";
-import { getDictionary, hasLocale } from "@/utils/i18n";
+import { AnimateIn } from "@/shared/components/motion/animate-in";
+import { StructuredOutputLab } from "@/features/labs/components/structured-output-lab";
+import { getDictionary, hasLocale } from "@/shared/i18n";
 
-interface IStructuredOutputPageProps {
+interface StructuredOutputPageProps {
   params: Promise<{ lang: string }>;
 }
 
 export async function generateMetadata({
   params,
-}: IStructuredOutputPageProps): Promise<Metadata> {
+}: StructuredOutputPageProps): Promise<Metadata> {
   const { lang } = await params;
   if (!hasLocale(lang)) return {};
   const { labs } = getDictionary(lang);
@@ -32,28 +32,32 @@ export async function generateMetadata({
 
 export default async function StructuredOutputPage({
   params,
-}: IStructuredOutputPageProps) {
+}: StructuredOutputPageProps) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   const { labs } = getDictionary(lang);
 
   return (
-    <main id="main-content" tabIndex={-1} className="flex-1 px-6 pb-16 sm:pb-24 pt-32 font-sans">
+    <main
+      id="main-content"
+      tabIndex={-1}
+      className="flex-1 px-6 pb-16 sm:pb-24 pt-32 font-sans"
+    >
       <div className="mx-auto max-w-6xl">
         <AnimateIn>
           <Link
             href={`/${lang}/labs`}
-            className="inline-flex min-h-11 items-center gap-2 font-mono text-xs text-field-muted-foreground transition-colors hover:text-primary"
+            className="inline-flex min-h-10 items-center gap-2 rounded-full border border-border/60 bg-card px-4 text-xs font-medium text-field-muted-foreground transition-colors hover:border-primary/30 hover:text-primary"
           >
             <span aria-hidden>←</span>
             {labs.backToLabs}
           </Link>
 
           <div className="mt-5 flex flex-wrap items-center gap-2">
-            <span className="rounded border border-primary/20 bg-primary/5 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-primary">
+            <span className="rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
               {labs.experimental}
             </span>
-            <span className="rounded border border-status-success/25 bg-status-success/5 px-2 py-1 font-mono text-[10px] text-status-success">
+            <span className="rounded-full border border-status-success/25 bg-status-success/5 px-3 py-1 text-xs font-medium text-status-success">
               {labs.playground.localMode}
             </span>
           </div>
@@ -75,9 +79,9 @@ export default async function StructuredOutputPage({
             {labs.playground.steps.map((step, index) => (
               <article
                 key={step.title}
-                className="rounded border border-border/60 bg-card p-5"
+                className="rounded-lg border border-border/60 bg-card p-5"
               >
-                <span className="font-mono text-[10px] text-primary">
+                <span className="text-xs font-semibold text-primary">
                   0{index + 1}
                 </span>
                 <h2 className="mt-3 text-sm font-semibold text-foreground">
@@ -92,8 +96,8 @@ export default async function StructuredOutputPage({
         </AnimateIn>
 
         <AnimateIn from="up" delay={0.15}>
-          <div className="mt-8 rounded border border-border/60 bg-card p-6">
-            <p className="font-mono text-[10px] uppercase tracking-wider text-primary">
+          <div className="mt-8 rounded-lg border border-border/60 bg-card p-6">
+            <p className="text-xs font-semibold text-primary">
               {labs.playground.relatedReading}
             </p>
             <Link

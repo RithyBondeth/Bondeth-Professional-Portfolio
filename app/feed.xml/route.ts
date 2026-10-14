@@ -1,7 +1,6 @@
-import { getAllPosts } from "@/utils/functions/blog";
-import { siteConfig } from "@/utils/constants/portfolio.constant";
+import { getAllPosts } from "@/features/blog/server";
+import { siteConfig } from "@/features/portfolio/data/portfolio";
 
-/* ---------------------------------- Utils ---------------------------------- */
 function escapeXml(value: string): string {
   return value
     .replace(/&/g, "&amp;")
@@ -11,7 +10,6 @@ function escapeXml(value: string): string {
     .replace(/'/g, "&apos;");
 }
 
-/* --------------------------------- Handler --------------------------------- */
 export async function GET() {
   const posts = await getAllPosts();
 

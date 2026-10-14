@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { retrievePortfolioContext } from "@/utils/functions/labs/rag-retrieval";
-import { rateLimit, getClientId } from "@/utils/functions/rate-limit";
+import { retrievePortfolioContext } from "@/features/labs/domain/rag-retrieval";
+import { rateLimit, getClientId } from "@/shared/server/rate-limit";
 
 const MAX_QUERY_LENGTH = 300;
 const RATE_LIMIT = 30;
@@ -24,7 +24,10 @@ export async function POST(request: Request) {
   try {
     payload = await request.json();
   } catch {
-    return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid request body." },
+      { status: 400 },
+    );
   }
 
   const query =

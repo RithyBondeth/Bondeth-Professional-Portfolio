@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "components/chatbot/pixel-chatbot.module.css"
+        ],
+        "createdAt": "2026-10-01T03:35:30.524Z",
+        "reason": "Agent: line 702 styles semantic Markdown blockquotes, not decorative cards; git blame dates it to de1ae794 before the homepage redesign."
+      }
+    ]
+  }
+}

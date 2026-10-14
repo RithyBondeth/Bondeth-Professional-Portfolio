@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import {
   compareEvalCandidates,
   isEvalSuiteId,
-} from "@/utils/functions/labs/llm-evals";
-import { rateLimit, getClientId } from "@/utils/functions/rate-limit";
+} from "@/features/labs/domain/llm-evals";
+import { rateLimit, getClientId } from "@/shared/server/rate-limit";
 
 const MAX_RESPONSE_LENGTH = 3000;
 const RATE_LIMIT = 30;
@@ -27,11 +27,17 @@ export async function POST(request: Request) {
   try {
     payload = await request.json();
   } catch {
-    return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid request body." },
+      { status: 400 },
+    );
   }
 
   if (typeof payload !== "object" || payload === null) {
-    return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid request body." },
+      { status: 400 },
+    );
   }
 
   const suiteId =
@@ -48,7 +54,10 @@ export async function POST(request: Request) {
       : "";
 
   if (!isEvalSuiteId(suiteId)) {
-    return NextResponse.json({ error: "Unknown evaluation suite." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Unknown evaluation suite." },
+      { status: 400 },
+    );
   }
 
   if (!candidateA || !candidateB) {
@@ -63,7 +72,9 @@ export async function POST(request: Request) {
     candidateB.length > MAX_RESPONSE_LENGTH
   ) {
     return NextResponse.json(
-      { error: `Each response must be ${MAX_RESPONSE_LENGTH} characters or fewer.` },
+      {
+        error: `Each response must be ${MAX_RESPONSE_LENGTH} characters or fewer.`,
+      },
       { status: 400 },
     );
   }

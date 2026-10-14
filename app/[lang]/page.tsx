@@ -1,28 +1,30 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import LandingHero from "@/components/landing/landing-hero";
-import LandingAbout from "@/components/landing/landing-about";
-import LandingCurrentFocus from "@/components/landing/landing-current-focus";
-import LandingSkills from "@/components/landing/landing-skills";
-import LandingExperience from "@/components/landing/landing-experience";
-import LandingEducation from "@/components/landing/landing-education";
-import LandingServices from "@/components/landing/landing-services";
-import LandingProjects from "@/components/landing/landing-projects";
-import LandingMedia from "@/components/landing/landing-media";
-import LandingRecommendations from "@/components/landing/landing-recommendations";
-import LandingContact from "@/components/landing/landing-contact";
-import { siteConfig } from "@/utils/constants/portfolio.constant";
-import { hasLocale } from "@/utils/i18n";
-import { getSiteConfig } from "@/utils/i18n/content";
+import LandingHero from "@/features/portfolio/components/hero/hero";
+import LandingShowreel from "@/features/portfolio/components/showreel/showreel";
+import LandingAbout from "@/features/portfolio/components/about/about";
+import LandingCurrentFocus from "@/features/portfolio/components/current-focus/current-focus";
+import LandingSkills from "@/features/portfolio/components/skills/skills";
+import LandingExperience from "@/features/portfolio/components/experience/experience";
+import LandingEducation from "@/features/portfolio/components/education/education";
+import LandingServices from "@/features/portfolio/components/services/services";
+import LandingProjects from "@/features/portfolio/components/projects/projects";
+import LandingGithub from "@/features/portfolio/components/github/github";
+import LandingWriting from "@/features/portfolio/components/writing/writing";
+import LandingMedia from "@/features/portfolio/components/media/media";
+import LandingRecommendations from "@/features/portfolio/components/recommendations/recommendations";
+import LandingContact from "@/features/portfolio/components/contact/contact";
+import { siteConfig } from "@/features/portfolio/data/portfolio";
+import { hasLocale } from "@/shared/i18n";
+import { getSiteConfig } from "@/features/portfolio/data/localized-content";
 
-interface IHomePageProps {
+interface HomePageProps {
   params: Promise<{ lang: string }>;
 }
 
-/* --------------------------------- Metadata --------------------------------- */
 export async function generateMetadata({
   params,
-}: IHomePageProps): Promise<Metadata> {
+}: HomePageProps): Promise<Metadata> {
   const { lang } = await params;
 
   return {
@@ -42,13 +44,11 @@ export async function generateMetadata({
   };
 }
 
-export default async function IndexPage({ params }: IHomePageProps) {
-  /* ---------------------------------- Utils --------------------------------- */
+export default async function IndexPage({ params }: HomePageProps) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   const localized = getSiteConfig(lang);
 
-  /* ------------------------------ Structured Data ----------------------------- */
   const personJsonLd = {
     "@context": "https://schema.org",
     "@type": "Person",
@@ -70,9 +70,10 @@ export default async function IndexPage({ params }: IHomePageProps) {
     },
   };
 
-  /* -------------------------------- Render UI ------------------------------- */
   return (
-    <main id="main-content" tabIndex={-1}>
+    // data-scroll-story: every reveal on this page also animates out as it
+    // leaves the viewport (see the scroll-driven reveals in globals.css).
+    <main id="main-content" tabIndex={-1} data-scroll-story>
       {/* Structured Data (JSON-LD) */}
       <script
         type="application/ld+json"
@@ -81,37 +82,19 @@ export default async function IndexPage({ params }: IHomePageProps) {
         }}
       />
 
-      {/* Section 1: Hero */}
       <LandingHero lang={lang} />
-
-      {/* Section 2: About */}
+      <LandingShowreel lang={lang} />
       <LandingAbout lang={lang} />
-
-      {/* Section 3: Current Focus */}
       <LandingCurrentFocus lang={lang} />
-
-      {/* Section 4: Skills */}
       <LandingSkills lang={lang} />
-
-      {/* Section 5: Experience */}
       <LandingExperience lang={lang} />
-
-      {/* Section 6: Education */}
       <LandingEducation lang={lang} />
-
-      {/* Section 7: Services */}
       <LandingServices lang={lang} />
-
-      {/* Section 8: Projects */}
       <LandingProjects lang={lang} />
-
-      {/* Section 9: Media */}
+      <LandingGithub lang={lang} />
+      <LandingWriting lang={lang} />
       <LandingMedia lang={lang} />
-
-      {/* Section 10: Recommendations */}
       <LandingRecommendations lang={lang} />
-
-      {/* Section 11: Contact */}
       <LandingContact lang={lang} />
     </main>
   );

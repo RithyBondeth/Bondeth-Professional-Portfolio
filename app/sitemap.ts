@@ -1,9 +1,8 @@
 import type { MetadataRoute } from "next";
-import { getAllPosts } from "@/utils/functions/blog";
-import { projects, siteConfig } from "@/utils/constants/portfolio.constant";
-import { locales } from "@/utils/i18n";
+import { getAllPosts } from "@/features/blog/server";
+import { projects, siteConfig } from "@/features/portfolio/data/portfolio";
+import { locales } from "@/shared/i18n";
 
-/* ---------------------------------- Utils ---------------------------------- */
 function languageAlternates(path: string): Record<string, string> {
   return Object.fromEntries(
     locales.map((locale) => [locale, `${siteConfig.url}/${locale}${path}`]),
@@ -45,6 +44,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
       alternates: { languages: languageAlternates("/resume") },
     });
+
+    entries.push(
+      {
+        url: `${siteConfig.url}/${locale}/privacy`,
+        lastModified: new Date("2026-08-14"),
+        changeFrequency: "yearly",
+        priority: 0.3,
+        alternates: { languages: languageAlternates("/privacy") },
+      },
+      {
+        url: `${siteConfig.url}/${locale}/terms`,
+        lastModified: new Date("2026-08-14"),
+        changeFrequency: "yearly",
+        priority: 0.3,
+        alternates: { languages: languageAlternates("/terms") },
+      },
+    );
 
     entries.push(
       {

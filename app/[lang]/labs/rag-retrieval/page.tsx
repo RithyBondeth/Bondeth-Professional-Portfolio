@@ -1,18 +1,20 @@
+import { ragExperienceCopy } from "@/features/labs/components/rag-experience-copy";
+import { retrievePortfolioContext } from "@/features/labs/domain/rag-retrieval";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AnimateIn } from "@/components/utils/animations/animate-in";
-import { RagRetrievalLab } from "@/components/labs/rag-retrieval-lab";
-import { TopicCluster } from "@/components/topic-cluster";
-import { getDictionary, hasLocale } from "@/utils/i18n";
+import { AnimateIn } from "@/shared/components/motion/animate-in";
+import { RagRetrievalLab } from "@/features/labs/components/rag-retrieval-lab";
+import { TopicCluster } from "@/features/blog/components/topic-cluster";
+import { getDictionary, hasLocale } from "@/shared/i18n";
 
-interface IRagRetrievalPageProps {
+interface RagRetrievalPageProps {
   params: Promise<{ lang: string }>;
 }
 
 export async function generateMetadata({
   params,
-}: IRagRetrievalPageProps): Promise<Metadata> {
+}: RagRetrievalPageProps): Promise<Metadata> {
   const { lang } = await params;
   if (!hasLocale(lang)) return {};
   const { labs } = getDictionary(lang);
@@ -33,72 +35,57 @@ export async function generateMetadata({
 
 export default async function RagRetrievalPage({
   params,
-}: IRagRetrievalPageProps) {
+}: RagRetrievalPageProps) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   const { labs } = getDictionary(lang);
 
+  const copy = lang === "km" ? ragExperienceCopy.km : ragExperienceCopy.en;
+
   return (
-    <main id="main-content" tabIndex={-1} className="flex-1 px-6 pb-16 sm:pb-24 pt-32 font-sans">
+    <main
+      id="main-content"
+      tabIndex={-1}
+      className="flex-1 px-6 pb-16 sm:pb-24 pt-32 font-sans"
+    >
       <div className="mx-auto max-w-6xl">
         <AnimateIn>
           <Link
             href={`/${lang}/labs`}
-            className="inline-flex min-h-11 items-center gap-2 font-mono text-xs text-field-muted-foreground transition-colors hover:text-primary"
+            className="inline-flex min-h-10 items-center gap-2 rounded-full border border-border/60 bg-card px-4 text-xs font-medium text-field-muted-foreground transition-colors hover:border-primary/30 hover:text-primary"
           >
             <span aria-hidden>←</span>
             {labs.backToLabs}
           </Link>
 
           <div className="mt-5 flex flex-wrap items-center gap-2">
-            <span className="rounded border border-primary/20 bg-primary/5 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-primary">
-              {labs.experimental}
+            <span className="rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
+              {labs.ragTitle}
             </span>
-            <span className="rounded border border-status-success/25 bg-status-success/5 px-2 py-1 font-mono text-[10px] text-status-success">
+            <span className="rounded-full border border-status-success/25 bg-status-success/5 px-3 py-1 text-xs font-medium text-status-success">
               {labs.rag.localMode}
             </span>
           </div>
 
           <h1 className="mt-5 text-4xl font-bold text-foreground sm:text-5xl">
-            {labs.ragTitle}
+            {copy.heading}
           </h1>
           <p className="mt-4 max-w-3xl text-sm leading-relaxed text-field-muted-foreground">
-            {labs.rag.intro}
+            {copy.intro}
           </p>
         </AnimateIn>
 
         <AnimateIn from="up" delay={0.08} className="mt-10">
-          <RagRetrievalLab labels={labs.rag} />
-        </AnimateIn>
-
-        <AnimateIn from="up" delay={0.12}>
-          <section className="mt-10 grid gap-5 sm:grid-cols-3">
-            {labs.rag.steps.map((step, index) => (
-              <article
-                key={step.title}
-                className="rounded border border-border/60 bg-card p-5"
-              >
-                <span className="font-mono text-[10px] text-primary">
-                  0{index + 1}
-                </span>
-                <h2 className="mt-3 text-sm font-semibold text-foreground">
-                  {step.title}
-                </h2>
-                <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                  {step.description}
-                </p>
-              </article>
-            ))}
-          </section>
+          <RagRetrievalLab
+            labels={labs.rag}
+            lang={lang}
+            initialResult={retrievePortfolioContext(labs.rag.presets[0].value)}
+          />
         </AnimateIn>
 
         {/* Supersedes the old single "related reading" link — the cluster
             surfaces the note and video alongside the same blog post. */}
-        <TopicCluster
-          lang={lang}
-          current="lab"
-          hubSlug="rag-in-60-seconds"
-        />
+        <TopicCluster lang={lang} current="lab" hubSlug="rag-in-60-seconds" />
       </div>
     </main>
   );

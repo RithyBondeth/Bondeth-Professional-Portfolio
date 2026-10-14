@@ -1,15 +1,15 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getPostsByTag } from "@/utils/functions/blog";
-import { AnimateIn } from "@/components/utils/animations/animate-in";
-import { BlogExplorer } from "@/components/blog/blog-explorer";
-import { hasLocale, getDictionary } from "@/utils/i18n";
+import { getPostsByTag } from "@/features/blog/server";
+import { AnimateIn } from "@/shared/components/motion/animate-in";
+import { BlogExplorer } from "@/features/blog/components/blog-explorer";
+import { hasLocale, getDictionary } from "@/shared/i18n";
 
-interface ITagPageProps {
+interface TagPageProps {
   params: Promise<{ lang: string; slug: string }>;
 }
 
-export default async function TagPage({ params }: ITagPageProps) {
+export default async function TagPage({ params }: TagPageProps) {
   const { lang, slug } = await params;
   if (!hasLocale(lang)) notFound();
 
@@ -46,12 +46,16 @@ export default async function TagPage({ params }: ITagPageProps) {
   );
 
   return (
-    <main id="main-content" tabIndex={-1} className="flex-1 pt-32 pb-16 sm:pb-24 px-6 font-sans">
+    <main
+      id="main-content"
+      tabIndex={-1}
+      className="flex-1 pt-32 pb-16 sm:pb-24 px-6 font-sans"
+    >
       <div className="max-w-4xl mx-auto">
         <AnimateIn>
           <Link
             href={`/${lang}/blog`}
-            className="text-primary font-mono text-xs hover:underline mb-1 inline-block uppercase tracking-[0.25em]"
+            className="mb-1 inline-flex min-h-10 items-center rounded-full border border-border/60 bg-card px-4 text-xs font-medium text-muted-foreground transition-colors hover:border-primary/30 hover:text-primary"
           >
             ← {dict.blog.backToAll}
           </Link>
@@ -78,8 +82,8 @@ export default async function TagPage({ params }: ITagPageProps) {
             </AnimateIn>
           ) : (
             <AnimateIn delay={0.15}>
-              <div className="py-20 text-center border border-dashed border-border rounded">
-                <p className="text-muted-foreground font-mono text-sm">
+              <div className="py-20 text-center border border-dashed border-border rounded-lg">
+                <p className="text-sm text-muted-foreground">
                   {dict.blog.empty}
                 </p>
               </div>

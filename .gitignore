@@ -10,7 +10,6 @@
 !.yarn/releases
 !.yarn/versions
 
-.claude
 # testing
 /coverage
 
@@ -31,6 +30,7 @@
 # misc
 .DS_Store
 *.pem
+/tmp/
 
 # debug
 npm-debug.log*
@@ -40,6 +40,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -48,6 +49,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Claude Code
+# Local assistant configuration
 .claude/
-/.next-preview/

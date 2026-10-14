@@ -1,25 +1,24 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ResumeActions } from "@/components/resume/resume-actions";
-import { skillGroups } from "@/utils/constants/portfolio.constant";
-import { getDictionary, hasLocale } from "@/utils/i18n";
+import { ResumeActions } from "@/features/portfolio/components/resume/resume-actions";
+import { skillGroups } from "@/features/portfolio/data/portfolio";
+import { getDictionary, hasLocale } from "@/shared/i18n";
 import {
   getEducations,
   getExperiences,
   getSiteConfig,
-} from "@/utils/i18n/content";
+} from "@/features/portfolio/data/localized-content";
 
-interface IResumePageProps {
+interface ResumePageProps {
   params: Promise<{ lang: string }>;
 }
 
 export async function generateMetadata({
   params,
-}: IResumePageProps): Promise<Metadata> {
+}: ResumePageProps): Promise<Metadata> {
   const { lang } = await params;
   if (!hasLocale(lang)) return {};
   const dict = getDictionary(lang);
-  const site = getSiteConfig(lang);
 
   return {
     // The root layout's template already appends the site name.
@@ -37,7 +36,7 @@ export async function generateMetadata({
 }
 
 /**
- * The résumé as a page rather than only as a file.
+ * The resume as a page rather than only as a file.
  *
  * Everything here is read from the same localized accessors the landing
  * sections use, so this cannot drift from the site — but note it CAN drift
@@ -47,7 +46,7 @@ export async function generateMetadata({
  *
  * Print layout is handled by the global `@media print` block in globals.css.
  */
-export default async function ResumePage({ params }: IResumePageProps) {
+export default async function ResumePage({ params }: ResumePageProps) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
 
@@ -120,7 +119,7 @@ export default async function ResumePage({ params }: IResumePageProps) {
           <ResumeActions downloadLabel={r.downloadPdf} printLabel={r.print} />
         </div>
 
-        {/* Bio doubles as the résumé summary. */}
+        {/* Bio doubles as the resume summary. */}
         <section className="mt-12">
           {site.bio.map((paragraph, i) => (
             <p

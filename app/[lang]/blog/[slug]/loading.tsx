@@ -1,4 +1,5 @@
-import { Skeleton } from "@/components/ui/skeleton";
+import { MascotLoader } from "@/shared/components/mascot/mascot-loader";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 
 /**
  * Loading UI for a single blog post. Mirrors blog/[slug]/page.tsx: back link,
@@ -11,12 +12,13 @@ export default function BlogPostLoading() {
       aria-label="Loading post"
       className="flex-1 pt-32 pb-16 sm:pb-24 px-6 bg-background font-sans"
     >
+      <MascotLoader label="Loading post" />
       <div className="mx-auto max-w-6xl">
         {/* Back link */}
         <Skeleton className="mb-8 h-3 w-24" />
 
         {/* Cover */}
-        <Skeleton className="mb-8 aspect-2/1 w-full max-w-3xl rounded sm:aspect-5/2" />
+        <Skeleton className="mb-8 aspect-2/1 w-full max-w-3xl rounded-lg sm:aspect-5/2" />
 
         {/* Meta + title */}
         <div className="max-w-3xl">
@@ -39,7 +41,7 @@ export default function BlogPostLoading() {
                 style={{ width: `${90 - (i % 4) * 12}%` }}
               />
             ))}
-            <Skeleton className="mt-6 h-40 w-full rounded" />
+            <Skeleton className="mt-6 h-40 w-full rounded-lg" />
             {Array.from({ length: 5 }).map((_, i) => (
               <Skeleton
                 key={`b-${i}`}

@@ -1,4 +1,5 @@
-import { Skeleton } from "@/components/ui/skeleton";
+import { MascotLoader } from "@/shared/components/mascot/mascot-loader";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 
 /**
  * Loading UI for a single project. Mirrors projects/[slug]/page.tsx: header
@@ -11,6 +12,7 @@ export default function ProjectLoading() {
       aria-label="Loading project"
       className="flex-1 bg-background px-6 pb-16 sm:pb-24 pt-32 font-sans"
     >
+      <MascotLoader label="Loading project" />
       <div className="mx-auto max-w-5xl">
         {/* Back link */}
         <Skeleton className="mb-8 h-3 w-28" />
@@ -24,7 +26,7 @@ export default function ProjectLoading() {
             <Skeleton className="mt-6 h-4 w-full max-w-2xl" />
             <Skeleton className="mt-2 h-4 w-5/6 max-w-xl" />
           </div>
-          <Skeleton className="aspect-16/10 w-full rounded border border-border/60" />
+          <Skeleton className="aspect-16/10 w-full rounded-lg border border-border/60" />
         </div>
 
         {/* Detail cards */}
@@ -32,7 +34,7 @@ export default function ProjectLoading() {
           {Array.from({ length: 2 }).map((_, i) => (
             <div
               key={i}
-              className="h-full rounded border border-border/60 bg-card p-6"
+              className="h-full rounded-lg border border-border/60 bg-card p-6"
             >
               <Skeleton className="h-3 w-28" />
               <Skeleton className="mt-4 h-4 w-full" />
@@ -42,11 +44,11 @@ export default function ProjectLoading() {
           ))}
         </div>
 
-        <div className="mt-6 rounded border border-border/60 bg-card p-6">
+        <div className="mt-6 rounded-lg border border-border/60 bg-card p-6">
           <Skeleton className="h-3 w-28" />
           <div className="mt-4 flex flex-wrap gap-2">
             {Array.from({ length: 6 }).map((_, i) => (
-              <Skeleton key={i} className="h-7 w-20 rounded" />
+              <Skeleton key={i} className="h-7 w-20 rounded-lg" />
             ))}
           </div>
         </div>

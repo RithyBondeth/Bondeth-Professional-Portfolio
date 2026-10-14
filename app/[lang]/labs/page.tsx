@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AnimateIn } from "@/components/utils/animations/animate-in";
-import { ScrambleText } from "@/components/utils/animations/scramble-text";
-import { LabVignetteFx } from "@/components/labs/lab-vignette-fx";
-import { getDictionary, hasLocale } from "@/utils/i18n";
+import { ArrowUpRight } from "lucide-react";
+import { getLabCatalog } from "@/features/labs/components/lab-catalog";
+import { AnimateIn } from "@/shared/components/motion/animate-in";
+import { getDictionary, hasLocale } from "@/shared/i18n";
 
-interface ILabsPageProps {
+interface LabsPageProps {
   params: Promise<{ lang: string }>;
 }
 
 export async function generateMetadata({
   params,
-}: ILabsPageProps): Promise<Metadata> {
+}: LabsPageProps): Promise<Metadata> {
   const { lang } = await params;
   if (!hasLocale(lang)) return {};
   const { labs } = getDictionary(lang);
@@ -31,194 +31,82 @@ export async function generateMetadata({
   };
 }
 
-export default async function LabsPage({ params }: ILabsPageProps) {
+export default async function LabsPage({ params }: LabsPageProps) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   const { labs } = getDictionary(lang);
 
+  const labCards = getLabCatalog(labs);
+
   return (
-    <main id="main-content" tabIndex={-1} className="flex-1 px-6 pb-16 sm:pb-24 pt-32 font-sans">
-      <div className="mx-auto max-w-5xl">
+    <main
+      id="main-content"
+      tabIndex={-1}
+      className="flex-1 px-6 pb-16 pt-32 font-sans sm:pb-24"
+    >
+      <div className="mx-auto max-w-6xl">
         <AnimateIn>
-          <p className="font-mono text-xs uppercase tracking-[0.25em] text-primary">
-            <ScrambleText text="$ ls labs/" />
+          <p data-eyebrow className="text-sm font-semibold text-primary">
+            {lang === "km" ? "ការពិសោធន៍អន្តរកម្ម" : "Interactive experiments"}
           </p>
-          <h1 className="mt-3 text-4xl font-bold text-foreground sm:text-5xl">
-            {labs.heading}
-          </h1>
-          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-field-muted-foreground">
-            {labs.blurb}
-          </p>
+          <div className="mt-4 grid items-end gap-5 md:grid-cols-[1fr_0.8fr]">
+            <h1 className="text-4xl font-bold text-foreground sm:text-5xl">
+              {labs.heading}
+            </h1>
+            <p className="max-w-2xl text-sm leading-relaxed text-field-muted-foreground md:justify-self-end">
+              {labs.blurb}
+            </p>
+          </div>
         </AnimateIn>
 
-        <AnimateIn from="up" delay={0.08}>
-          <article className="card-interactive group mt-12 overflow-hidden rounded border border-border/60 bg-card">
-            <div className="grid md:grid-cols-[0.8fr_1.2fr]">
-              <div className="technical-palette relative min-h-56 overflow-hidden [background:radial-gradient(circle_at_30%_30%,rgba(148,162,255,0.18),transparent_45%),radial-gradient(circle_at_70%_70%,rgba(178,149,255,0.16),transparent_45%),var(--technical-surface)] p-6">
-                <div className="absolute inset-x-6 top-6 rounded border border-border/40 bg-black/50 p-4 font-code text-[11px] leading-6">
-                  <p className="text-muted-foreground">{"{"}</p>
-                  <p className="pl-4 text-status-success">
-                    &quot;name&quot;: &quot;Sokha&quot;,
-                  </p>
-                  <p className="pl-4 text-status-success">
-                    &quot;service&quot;: &quot;AI assistant&quot;,
-                  </p>
-                  <p className="pl-4 text-status-success">
-                    &quot;urgency&quot;: &quot;high&quot;
-                  </p>
-                  <p className="text-muted-foreground">
-                    {"}"}
-                    <span className="type-caret ml-1 inline-block h-[1.05em] w-[0.5em] translate-y-[0.15em] bg-status-success/80" />
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex flex-col p-6 sm:p-8">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="rounded border border-primary/20 bg-primary/5 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-primary">
-                    {labs.experimental}
-                  </span>
-                  <span className="rounded border border-status-success/25 bg-status-success/5 px-2 py-1 font-mono text-[10px] text-status-success">
-                    {labs.costFree}
-                  </span>
-                </div>
-                <h2 className="mt-5 text-2xl font-bold text-foreground">
-                  {labs.structuredOutputTitle}
-                </h2>
-                <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">
-                  {labs.structuredOutputDescription}
-                </p>
-                <Link
-                  href={`/${lang}/labs/structured-output`}
-                  className="btn-fx btn-fx-primary mt-7 inline-flex min-h-11 w-fit items-center gap-2 rounded bg-primary-fill px-4 font-mono text-xs font-medium text-primary-foreground"
-                >
-                  {labs.openLab}
-                  <span aria-hidden data-card-arrow>
-                    →
-                  </span>
-                </Link>
-              </div>
-            </div>
-          </article>
-        </AnimateIn>
-
-        <AnimateIn from="up" delay={0.12}>
-          <article className="card-interactive group mt-6 overflow-hidden rounded border border-border/60 bg-card">
-            <div className="grid md:grid-cols-[0.8fr_1.2fr]">
-              <div className="technical-palette relative min-h-56 overflow-hidden [background:radial-gradient(circle_at_70%_25%,rgba(178,149,255,0.2),transparent_40%),radial-gradient(circle_at_25%_75%,rgba(148,162,255,0.16),transparent_42%),var(--technical-surface)] p-6">
-                <LabVignetteFx className="absolute inset-x-6 top-6 space-y-2 font-code text-[10px]">
-                  {[92, 76, 48].map((score, index) => (
+        <section className="mt-12 grid gap-5 lg:grid-cols-3">
+          {labCards.map((lab, index) => {
+            const Icon = lab.icon;
+            return (
+              <AnimateIn key={lab.path} from="up" delay={0.08 + index * 0.04}>
+                <article className="card-interactive group flex h-full flex-col overflow-hidden rounded-2xl border border-border/60 bg-card">
+                  <div className="relative grid min-h-56 place-items-center overflow-hidden border-b border-border/50 bg-secondary/60 p-6">
                     <div
-                      key={score}
-                      className="rounded border border-border/40 bg-black/50 p-3"
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">
-                          chunk_0{index + 1}
-                        </span>
-                        <span className="text-status-success">{score}%</span>
-                      </div>
-                      <div className="mt-2 h-1 overflow-hidden rounded bg-border">
-                        <div
-                          data-lab-bar
-                          className="h-full rounded bg-status-success"
-                          style={{ width: `${score}%` }}
-                        />
-                      </div>
+                      aria-hidden
+                      className="absolute -right-16 -top-16 size-40 rounded-full bg-primary/10 blur-3xl"
+                    />
+                    <span className="absolute left-5 top-5 grid size-10 place-items-center rounded-xl border border-border/60 bg-card/80 text-primary shadow-sm backdrop-blur">
+                      <Icon aria-hidden className="size-5" />
+                    </span>
+                    {lab.visual}
+                  </div>
+
+                  <div className="flex flex-1 flex-col p-6">
+                    <div className="flex flex-wrap items-center gap-2 text-xs font-medium">
+                      <span className="rounded-full bg-primary/10 px-3 py-1 text-primary">
+                        {lab.featured ?? labs.experimental}
+                      </span>
+                      <span className="rounded-full bg-status-success/10 px-3 py-1 text-status-success">
+                        {labs.costFree}
+                      </span>
                     </div>
-                  ))}
-                </LabVignetteFx>
-              </div>
-
-              <div className="flex flex-col p-6 sm:p-8">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="rounded border border-primary/20 bg-primary/5 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-primary">
-                    {labs.experimental}
-                  </span>
-                  <span className="rounded border border-status-success/25 bg-status-success/5 px-2 py-1 font-mono text-[10px] text-status-success">
-                    {labs.costFree}
-                  </span>
-                </div>
-                <h2 className="mt-5 text-2xl font-bold text-foreground">
-                  {labs.ragTitle}
-                </h2>
-                <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">
-                  {labs.ragDescription}
-                </p>
-                <Link
-                  href={`/${lang}/labs/rag-retrieval`}
-                  className="btn-fx btn-fx-primary mt-7 inline-flex min-h-11 w-fit items-center gap-2 rounded bg-primary-fill px-4 font-mono text-xs font-medium text-primary-foreground"
-                >
-                  {labs.openLab}
-                  <span aria-hidden data-card-arrow>
-                    →
-                  </span>
-                </Link>
-              </div>
-            </div>
-          </article>
-        </AnimateIn>
-
-        <AnimateIn from="up" delay={0.16}>
-          <article className="card-interactive group mt-6 overflow-hidden rounded border border-border/60 bg-card">
-            <div className="grid md:grid-cols-[0.8fr_1.2fr]">
-              <div className="technical-palette relative min-h-56 overflow-hidden [background:radial-gradient(circle_at_30%_20%,rgba(148,162,255,0.16),transparent_40%),radial-gradient(circle_at_75%_75%,rgba(178,149,255,0.22),transparent_45%),var(--technical-surface)] p-6">
-                <LabVignetteFx className="absolute inset-x-6 top-8 grid grid-cols-2 gap-3 font-code">
-                  <div
-                    data-lab-tile
-                    className="rounded border border-status-success/30 bg-status-success/5 p-4 text-center"
-                  >
-                    <p className="text-[10px] text-muted-foreground">
-                      candidate_A
+                    <h2 className="mt-5 text-xl font-bold text-foreground">
+                      {lab.title}
+                    </h2>
+                    <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">
+                      {lab.description}
                     </p>
-                    <p className="mt-3 text-3xl font-bold text-status-success">
-                      100%
-                    </p>
-                    <p className="mt-2 text-[10px] text-status-success">
-                      4/4 passed
-                    </p>
+                    <Link
+                      href={`/${lang}${lab.path}`}
+                      className="btn-fx btn-fx-primary mt-7 inline-flex min-h-11 w-fit items-center gap-2 rounded-full bg-primary-fill px-5 text-sm font-semibold text-primary-foreground"
+                    >
+                      {labs.openLab}
+                      <ArrowUpRight
+                        aria-hidden
+                        className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                      />
+                    </Link>
                   </div>
-                  <div
-                    data-lab-tile
-                    className="rounded border border-status-danger/25 bg-status-danger/5 p-4 text-center"
-                  >
-                    <p className="text-[10px] text-muted-foreground">
-                      candidate_B
-                    </p>
-                    <p className="mt-3 text-3xl font-bold text-status-danger">20%</p>
-                    <p className="mt-2 text-[10px] text-status-danger">1/4 passed</p>
-                  </div>
-                </LabVignetteFx>
-              </div>
-
-              <div className="flex flex-col p-6 sm:p-8">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="rounded border border-primary/20 bg-primary/5 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-primary">
-                    {labs.experimental}
-                  </span>
-                  <span className="rounded border border-status-success/25 bg-status-success/5 px-2 py-1 font-mono text-[10px] text-status-success">
-                    {labs.costFree}
-                  </span>
-                </div>
-                <h2 className="mt-5 text-2xl font-bold text-foreground">
-                  {labs.evalTitle}
-                </h2>
-                <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">
-                  {labs.evalDescription}
-                </p>
-                <Link
-                  href={`/${lang}/labs/llm-evals`}
-                  className="btn-fx btn-fx-primary mt-7 inline-flex min-h-11 w-fit items-center gap-2 rounded bg-primary-fill px-4 font-mono text-xs font-medium text-primary-foreground"
-                >
-                  {labs.openLab}
-                  <span aria-hidden data-card-arrow>
-                    →
-                  </span>
-                </Link>
-              </div>
-            </div>
-          </article>
-        </AnimateIn>
+                </article>
+              </AnimateIn>
+            );
+          })}
+        </section>
       </div>
     </main>
   );

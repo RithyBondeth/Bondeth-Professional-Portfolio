@@ -1,48 +1,41 @@
+import { MotionScript } from "@/shared/components/motion/motion-script";
+import { MOTION_CSS_VARS } from "@/shared/lib/motion-timing";
 import type { Metadata } from "next";
-import { JetBrains_Mono, Kantumruy_Pro, Noto_Serif } from "next/font/google";
+import { JetBrains_Mono, Ubuntu } from "next/font/google";
 import { notFound } from "next/navigation";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import "../globals.css";
-import { cn } from "@/lib/utils";
-import Nav from "@/components/navbar";
-import Footer from "@/components/footer";
-import CommandPalette from "@/components/command-palette";
-import { ThemeProvider, ThemeScript } from "@/components/utils/theme/theme-provider";
-import { SmoothScroll } from "@/components/utils/animations/smooth-scroll";
-import { GrainField } from "@/components/utils/animations/grain-field";
-import { siteConfig } from "@/utils/constants/portfolio.constant";
-import { locales, hasLocale, getDictionary } from "@/utils/i18n";
-import { getSiteConfig } from "@/utils/i18n/content";
-import { getAllPosts } from "@/utils/functions/blog";
+import "@/app/globals.css";
+import { cn } from "@/shared/lib/utils";
+import Nav from "@/features/navigation/components/navbar/navbar";
+import Footer from "@/features/navigation/components/footer/footer";
+import DeferredCommandPalette from "@/features/navigation/components/command-palette/deferred-command-palette";
+import DeferredPixelChatbot from "@/features/chatbot/components/deferred-pixel-chatbot";
+import {
+  ThemeProvider,
+  ThemeScript,
+} from "@/shared/components/theme/theme-provider";
+import { SmoothScroll } from "@/shared/components/motion/smooth-scroll";
+import { RevealFallback } from "@/shared/components/motion/reveal-fallback";
+import { AmbientBackground } from "@/shared/components/background/ambient-background";
+import { siteConfig } from "@/features/portfolio/data/portfolio";
+import { locales, hasLocale, getDictionary } from "@/shared/i18n";
+import { getSiteConfig } from "@/features/portfolio/data/localized-content";
+import { getAllPosts } from "@/features/blog/server";
+import { buildChatTours } from "@/features/chatbot/server/tour";
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-jetbrains",
 });
 
-const notoSerif = Noto_Serif({
+const ubuntu = Ubuntu({
   subsets: ["latin"],
-  variable: "--font-serif",
+  weight: ["300", "400", "500", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-ubuntu",
 });
 
-// NOT preloaded, unlike the other two. Both locales share this layout, so
-// next/font emits a preload <link> for every font in the module graph on every
-// page — which put Kantumruy's two subsets (89kB, the Khmer one alone is 56kB)
-// in the critical path of the English pages, competing with Noto Serif, the
-// font /en actually renders its LCP text in.
-//
-// Nothing on /en can reference this family: the only rule that reaches for it
-// is `html[lang="km"]` (globals.css). On /km the browser discovers it while
-// parsing that render-blocking stylesheet — a touch later than a preload, and
-// `display: swap` means text paints in the fallback either way.
-const kantumruyPro = Kantumruy_Pro({
-  subsets: ["khmer", "latin"],
-  variable: "--font-khmer",
-  preload: false,
-});
-
-/* --------------------------------- Metadata --------------------------------- */
 export async function generateStaticParams() {
   return locales.map((lang) => ({ lang }));
 }
@@ -119,56 +112,52 @@ export default async function RootLayout({
     title,
     tags,
   }));
+  const tours = await buildChatTours(lang);
 
   return (
     <html
+      style={MOTION_CSS_VARS}
       lang={lang}
-      // next-themes mutates the class on <html> before hydration
+      // The theme initialization script sets the class before hydration
       suppressHydrationWarning
-      // Next 16 no longer overrides CSS smooth-scroll during SPA navigations;
-      // this attribute restores instant scroll-to-top on route changes.
-      data-scroll-behavior="smooth"
       className={cn(
         "h-full",
         "antialiased",
-        notoSerif.variable,
-        "font-mono",
+        ubuntu.variable,
+        "font-sans",
         jetbrainsMono.variable,
-        kantumruyPro.variable,
       )}
     >
       <body className="isolate min-h-full flex flex-col">
-        {/* Prevent theme flash: ThemeScript uses useServerInsertedHTML, so Next
-            flushes this into <head> during SSR only. It is never part of the
-            client-side React tree, so React never encounters a raw <script>
-            while rebuilding the locale layout on a language switch. */}
+        {/* Injected once per document before hydration to avoid a theme flash. */}
         <ThemeScript />
+        <MotionScript />
         <ThemeProvider>
           {/* The site's ambient background, mounted ONCE and fixed to the
               viewport. It sits here rather than inside each section on purpose:
               a copy per section put a seam at every section boundary, where one
-              instance's ribbons ended and the next one's started over. Landing
+              instance's grid ended and the next one's started over. Landing
               sections carry no background of their own so this shows through.
 
-              It is a sibling of <SmoothScroll>, not a child — ScrollSmoother
-              puts a `transform` on #smooth-content, and a transformed ancestor
-              turns `fixed` into "fixed relative to that element", which would
-              make this scroll away with the page. */}
-          <GrainField />
+              It is a sibling of the scroll content so its fixed positioning
+              remains independent of every page section. */}
+          <AmbientBackground />
+          <RevealFallback />
           <a
             href="#main-content"
-            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-100 focus:rounded focus:bg-primary-fill focus:px-4 focus:py-2 focus:font-mono focus:text-sm focus:text-primary-foreground focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring"
+            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-100 focus:rounded-lg focus:bg-primary-fill focus:px-4 focus:py-2 focus:font-mono focus:text-sm focus:text-primary-foreground focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring"
           >
             {dict.nav.skipToContent}
           </a>
           <Nav lang={lang} />
-          {/* Everything that scrolls lives inside the smooth-scroll content;
-              the fixed navbar and the portaled command palette stay outside. */}
+          {/* Page content and footer share one normal document-flow boundary;
+              fixed and portaled controls remain outside it. */}
           <SmoothScroll>
             {children}
             <Footer lang={lang} />
           </SmoothScroll>
-          <CommandPalette lang={lang} posts={palettePosts} />
+          <DeferredCommandPalette lang={lang} posts={palettePosts} />
+          <DeferredPixelChatbot lang={lang} tours={tours} />
         </ThemeProvider>
         <Analytics />
         <SpeedInsights />
