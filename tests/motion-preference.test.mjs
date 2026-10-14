@@ -4,9 +4,15 @@ import { test } from "node:test";
 import vm from "node:vm";
 import ts from "typescript";
 
-const code = ts.transpileModule(readFileSync(new URL("../lib/motion-preference.ts", import.meta.url), "utf8"), {
-  compilerOptions: { module: ts.ModuleKind.CommonJS },
-}).outputText;
+const code = ts.transpileModule(
+  readFileSync(
+    new URL("../shared/lib/motion-preference.ts", import.meta.url),
+    "utf8",
+  ),
+  {
+    compilerOptions: { module: ts.ModuleKind.CommonJS },
+  },
+).outputText;
 
 function environment({ reduced = false } = {}) {
   const media = new EventTarget();

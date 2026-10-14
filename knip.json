@@ -1,0 +1,13 @@
+{
+  "$schema": "https://unpkg.com/knip/schema.json",
+  "entry": ["scripts/*.mjs", "motion/portfolio-showreel/edit-v*.js"],
+  "project": [
+    "app/**/*.{ts,tsx,css}",
+    "features/**/*.{ts,tsx}",
+    "shared/**/*.{ts,tsx,css}",
+    "scripts/*.mjs",
+    "tests/*.mjs",
+    "motion/portfolio-showreel/*.js"
+  ],
+  "ignoreDependencies": ["@fontsource-variable/kantumruy-pro"]
+}

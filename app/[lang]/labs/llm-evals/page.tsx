@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AnimateIn } from "@/components/utils/animations/animate-in";
-import { LlmEvalLab } from "@/components/labs/llm-eval-lab";
-import { getDictionary, hasLocale } from "@/utils/i18n";
+import { AnimateIn } from "@/shared/components/motion/animate-in";
+import { LlmEvalLab } from "@/features/labs/components/llm-eval-lab";
+import { getDictionary, hasLocale } from "@/shared/i18n";
 
-interface ILlmEvalsPageProps {
+interface LlmEvalsPageProps {
   params: Promise<{ lang: string }>;
 }
 
 export async function generateMetadata({
   params,
-}: ILlmEvalsPageProps): Promise<Metadata> {
+}: LlmEvalsPageProps): Promise<Metadata> {
   const { lang } = await params;
   if (!hasLocale(lang)) return {};
   const { labs } = getDictionary(lang);
@@ -30,7 +30,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function LlmEvalsPage({ params }: ILlmEvalsPageProps) {
+export default async function LlmEvalsPage({ params }: LlmEvalsPageProps) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   const { labs } = getDictionary(lang);

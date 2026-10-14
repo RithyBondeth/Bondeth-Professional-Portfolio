@@ -12,7 +12,7 @@ assets.mkdir(exist_ok=True)
 
 shutil.copy2(root / "portrait-v7.png", assets / "portrait-v7.png")
 previews = {
-    "talent": "apsara-talet.png",
+    "talent": "apsara-talent.png",
     "assistant": "apsara-assistant.png",
     "agentic": "apsara-agentic.png",
     "elearning": "apsara-elearning.png",

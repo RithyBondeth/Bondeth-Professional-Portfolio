@@ -1,15 +1,15 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getPostsByTag } from "@/utils/functions/blog";
-import { AnimateIn } from "@/components/utils/animations/animate-in";
-import { BlogExplorer } from "@/components/blog/blog-explorer";
-import { hasLocale, getDictionary } from "@/utils/i18n";
+import { getPostsByTag } from "@/features/blog/server";
+import { AnimateIn } from "@/shared/components/motion/animate-in";
+import { BlogExplorer } from "@/features/blog/components/blog-explorer";
+import { hasLocale, getDictionary } from "@/shared/i18n";
 
-interface ITagPageProps {
+interface TagPageProps {
   params: Promise<{ lang: string; slug: string }>;
 }
 
-export default async function TagPage({ params }: ITagPageProps) {
+export default async function TagPage({ params }: TagPageProps) {
   const { lang, slug } = await params;
   if (!hasLocale(lang)) notFound();
 

@@ -1,20 +1,20 @@
-import { ragExperienceCopy } from "@/components/labs/rag-experience-copy";
-import { retrievePortfolioContext } from "@/utils/functions/labs/rag-retrieval";
+import { ragExperienceCopy } from "@/features/labs/components/rag-experience-copy";
+import { retrievePortfolioContext } from "@/features/labs/domain/rag-retrieval";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AnimateIn } from "@/components/utils/animations/animate-in";
-import { RagRetrievalLab } from "@/components/labs/rag-retrieval-lab";
-import { TopicCluster } from "@/components/topic-cluster";
-import { getDictionary, hasLocale } from "@/utils/i18n";
+import { AnimateIn } from "@/shared/components/motion/animate-in";
+import { RagRetrievalLab } from "@/features/labs/components/rag-retrieval-lab";
+import { TopicCluster } from "@/features/blog/components/topic-cluster";
+import { getDictionary, hasLocale } from "@/shared/i18n";
 
-interface IRagRetrievalPageProps {
+interface RagRetrievalPageProps {
   params: Promise<{ lang: string }>;
 }
 
 export async function generateMetadata({
   params,
-}: IRagRetrievalPageProps): Promise<Metadata> {
+}: RagRetrievalPageProps): Promise<Metadata> {
   const { lang } = await params;
   if (!hasLocale(lang)) return {};
   const { labs } = getDictionary(lang);
@@ -35,7 +35,7 @@ export async function generateMetadata({
 
 export default async function RagRetrievalPage({
   params,
-}: IRagRetrievalPageProps) {
+}: RagRetrievalPageProps) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   const { labs } = getDictionary(lang);
@@ -76,7 +76,11 @@ export default async function RagRetrievalPage({
         </AnimateIn>
 
         <AnimateIn from="up" delay={0.08} className="mt-10">
-          <RagRetrievalLab labels={labs.rag} lang={lang} initialResult={retrievePortfolioContext(labs.rag.presets[0].value)} />
+          <RagRetrievalLab
+            labels={labs.rag}
+            lang={lang}
+            initialResult={retrievePortfolioContext(labs.rag.presets[0].value)}
+          />
         </AnimateIn>
 
         {/* Supersedes the old single "related reading" link — the cluster

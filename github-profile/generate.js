@@ -6,12 +6,13 @@ const fontCss = fs.readFileSync(__dirname + "/fonts.css", "utf8");
 const SANS = "'Ubuntu',Helvetica,Arial,sans-serif";
 const MONO = "'Ubuntu Mono',ui-monospace,monospace";
 
-const W = 900, H = 320;
+const W = 900,
+  H = 320;
 
 // ---- Typewriter phrases (Ubuntu Mono advance = 0.5em => 13.5px/char at 27px) ----
 const phrases = ["Full Stack Developer", "AI Engineer", "Next.js Craftsman"];
 const CH = 13.5;
-const X0 = 60;                          // left text origin
+const X0 = 60; // left text origin
 const widths = phrases.map((p) => Math.round(p.length * CH));
 
 // caret x + clip width keyTimes across a 12s cycle (3 x 4s slices)
@@ -27,15 +28,31 @@ function seg(i) {
 
 // ---- Tech pills (name + brand dot color) ----
 const tech = [
-  ["TypeScript", "#3178C6"], ["React", "#61DAFB"], ["Next.js", "#FFFFFF"],
-  ["Vue.js", "#4FC08D"], ["Python", "#3776AB"], ["NestJS", "#E0234E"],
-  ["FastAPI", "#009688"], ["GraphQL", "#E10098"], ["PostgreSQL", "#4169E1"],
-  ["Redis", "#FF4438"], ["OpenAI", "#FFFFFF"], ["Anthropic", "#D97757"],
-  ["LangChain", "#10B981"], ["Flutter", "#54C5F8"], ["Docker", "#2496ED"],
-  ["Kubernetes", "#326CE5"], ["GCP", "#4285F4"], ["Tailwind", "#06B6D4"],
+  ["TypeScript", "#3178C6"],
+  ["React", "#61DAFB"],
+  ["Next.js", "#FFFFFF"],
+  ["Vue.js", "#4FC08D"],
+  ["Python", "#3776AB"],
+  ["NestJS", "#E0234E"],
+  ["FastAPI", "#009688"],
+  ["GraphQL", "#E10098"],
+  ["PostgreSQL", "#4169E1"],
+  ["Redis", "#FF4438"],
+  ["OpenAI", "#FFFFFF"],
+  ["Anthropic", "#D97757"],
+  ["LangChain", "#10B981"],
+  ["Flutter", "#54C5F8"],
+  ["Docker", "#2496ED"],
+  ["Kubernetes", "#326CE5"],
+  ["GCP", "#4285F4"],
+  ["Tailwind", "#06B6D4"],
 ];
 
-const PILL_H = 30, GAP = 14, PAD = 16, DOT = 6, FS = 14;
+const PILL_H = 30,
+  GAP = 14,
+  PAD = 16,
+  DOT = 6,
+  FS = 14;
 // approx text width for pill sizing
 const tw = (s) => Math.round(s.length * 8.1);
 let cursor = 0;
@@ -88,7 +105,8 @@ for (let i = 0; i < 3; i++) {
   caretKT.push((i * slice).toFixed(3), g.typeIn.toFixed(3), g.hold.toFixed(3));
   caretX.push(X0, X0 + widths[i], X0 + widths[i]);
 }
-caretKT.push("1"); caretX.push(X0);
+caretKT.push("1");
+caretX.push(X0);
 const caretKTs = "0;" + caretKT.join(";");
 const caretXs = X0 + ";" + caretX.join(";");
 

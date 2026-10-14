@@ -1,8 +1,8 @@
 import { ImageResponse } from "next/og";
-import { RobotOg } from "@/components/brand/robot-og";
-import { getPostBySlug } from "@/utils/functions/blog";
-import { siteConfig } from "@/utils/constants/portfolio.constant";
-import { hasLocale } from "@/utils/i18n";
+import { RobotOg } from "@/shared/components/brand/robot-og";
+import { getPostBySlug } from "@/features/blog/server";
+import { siteConfig } from "@/features/portfolio/data/portfolio";
+import { hasLocale } from "@/shared/i18n";
 
 export const alt = "Blog post";
 export const size = {

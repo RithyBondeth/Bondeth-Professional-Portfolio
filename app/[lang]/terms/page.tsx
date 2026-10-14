@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { LegalPage } from "@/components/legal/legal-page";
-import { hasLocale } from "@/utils/i18n";
-import { getLegalDocument } from "@/utils/i18n/legal";
+import { LegalPage } from "@/features/legal/components/legal-page";
+import { hasLocale } from "@/shared/i18n";
+import { getLegalDocument } from "@/features/legal/data/legal";
 
-interface ITermsPageProps {
+interface TermsPageProps {
   params: Promise<{ lang: string }>;
 }
 
-export async function generateMetadata({ params }: ITermsPageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: TermsPageProps): Promise<Metadata> {
   const { lang } = await params;
   if (!hasLocale(lang)) return {};
   const document = getLegalDocument(lang, "terms");
@@ -23,7 +25,7 @@ export async function generateMetadata({ params }: ITermsPageProps): Promise<Met
   };
 }
 
-export default async function TermsPage({ params }: ITermsPageProps) {
+export default async function TermsPage({ params }: TermsPageProps) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
 

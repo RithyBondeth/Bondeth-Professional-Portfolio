@@ -1,9 +1,8 @@
 import type { MetadataRoute } from "next";
-import { getAllPosts } from "@/utils/functions/blog";
-import { projects, siteConfig } from "@/utils/constants/portfolio.constant";
-import { locales } from "@/utils/i18n";
+import { getAllPosts } from "@/features/blog/server";
+import { projects, siteConfig } from "@/features/portfolio/data/portfolio";
+import { locales } from "@/shared/i18n";
 
-/* ---------------------------------- Utils ---------------------------------- */
 function languageAlternates(path: string): Record<string, string> {
   return Object.fromEntries(
     locales.map((locale) => [locale, `${siteConfig.url}/${locale}${path}`]),

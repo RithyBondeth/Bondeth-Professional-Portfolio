@@ -1,0 +1,14 @@
+node_modules/
+.next*/
+next-env.d.ts
+package-lock.json
+public/
+content/
+github-profile/fonts.css
+github-profile/*.svg
+github-profile/preview/
+motion/
+tmp/
+.claude/
+.impeccable/
+*.tsbuildinfo

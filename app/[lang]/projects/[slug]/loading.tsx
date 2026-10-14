@@ -1,5 +1,5 @@
-import { MascotLoader } from "@/components/mascot/mascot-loader";
-import { Skeleton } from "@/components/ui/skeleton";
+import { MascotLoader } from "@/shared/components/mascot/mascot-loader";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 
 /**
  * Loading UI for a single project. Mirrors projects/[slug]/page.tsx: header

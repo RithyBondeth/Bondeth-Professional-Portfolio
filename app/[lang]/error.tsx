@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ArrowLeft, RefreshCw } from "lucide-react";
-import { RobotArt } from "@/components/mascot/robot-art";
+import { RobotArt } from "@/shared/components/mascot/robot-art";
 
 export default function SegmentError({
   error,

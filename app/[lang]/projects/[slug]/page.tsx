@@ -2,26 +2,26 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AnimateIn } from "@/components/utils/animations/animate-in";
-import { ProjectLinkIcon } from "@/components/projects/project-link-icon";
-import { TopicCluster } from "@/components/topic-cluster";
-import { TechBadges } from "@/components/projects/tech-badges";
+import { AnimateIn } from "@/shared/components/motion/animate-in";
+import { ProjectLinkIcon } from "@/features/portfolio/components/projects/project-link-icon";
+import { TopicCluster } from "@/features/blog/components/topic-cluster";
+import { TechBadges } from "@/features/portfolio/components/projects/tech-badges";
 import {
   CaseStudy,
   countCaseStudySections,
-} from "@/components/projects/case-study";
-import { SkillIconSprite } from "@/components/landing/landing-skills/skill-icon-sprite";
-import { techIconKeys } from "@/components/projects/tech-icon-map";
-import { getLinkLabel } from "@/utils/functions/project-links";
-import { projects, siteConfig } from "@/utils/constants/portfolio.constant";
-import { getProjects } from "@/utils/i18n/content";
-import { getDictionary, hasLocale, locales, type TLocale } from "@/utils/i18n";
+} from "@/features/portfolio/components/projects/case-study";
+import { SkillIconSprite } from "@/features/portfolio/components/skills/skill-icon-sprite";
+import { techIconKeys } from "@/features/portfolio/components/projects/tech-icon-map";
+import { getLinkLabel } from "@/features/portfolio/domain/project-links";
+import { projects, siteConfig } from "@/features/portfolio/data/portfolio";
+import { getProjects } from "@/features/portfolio/data/localized-content";
+import { getDictionary, hasLocale, locales, type Locale } from "@/shared/i18n";
 
-interface IProjectPageProps {
+interface ProjectPageProps {
   params: Promise<{ lang: string; slug: string }>;
 }
 
-function getProject(slug: string, lang: TLocale) {
+function getProject(slug: string, lang: Locale) {
   return getProjects(lang).find(
     (project) => project.slug === slug && project.visibility !== "confidential",
   );
@@ -37,7 +37,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({
   params,
-}: IProjectPageProps): Promise<Metadata> {
+}: ProjectPageProps): Promise<Metadata> {
   const { lang, slug } = await params;
   if (!hasLocale(lang)) return {};
 
@@ -65,7 +65,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function ProjectPage({ params }: IProjectPageProps) {
+export default async function ProjectPage({ params }: ProjectPageProps) {
   const { lang, slug } = await params;
   if (!hasLocale(lang)) notFound();
 

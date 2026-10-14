@@ -44,3 +44,6 @@ obsolete website MP4s, captions, and posters are intentionally not shipped.
 - `portfolio-showreel-source.zip` — original 24-second, 30 fps cut.
 
 Extract an archive into its own directory to inspect or rebuild that version.
+
+The v6 preparation script copies its archived preview inputs from
+`source-assets/v6/`; these images are not served by the website.

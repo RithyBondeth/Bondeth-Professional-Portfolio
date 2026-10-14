@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { siteConfig } from "@/utils/constants/portfolio.constant";
-import { hasLocale, getDictionary } from "@/utils/i18n";
+import { siteConfig } from "@/features/portfolio/data/portfolio";
+import { hasLocale, getDictionary } from "@/shared/i18n";
 
 export async function generateMetadata({
   params,
