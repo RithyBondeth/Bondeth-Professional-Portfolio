@@ -18,7 +18,11 @@ const nextConfig: NextConfig = {
   // the blog as `format: "note"`. Permanent, since the URLs were published.
   async redirects() {
     return [
-      { source: "/:lang(en|km)/notes", destination: "/:lang/blog", permanent: true },
+      {
+        source: "/:lang(en|km)/notes",
+        destination: "/:lang/blog",
+        permanent: true,
+      },
       {
         source: "/:lang(en|km)/notes/:slug",
         destination: "/:lang/blog/:slug",

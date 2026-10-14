@@ -1,22 +1,24 @@
-"""Fetch existing portfolio images and pinned Simple Icons assets for the native build."""
+"""Copy existing portfolio images and pinned Simple Icons assets for the native build."""
 from pathlib import Path
+import shutil
 import subprocess
 import urllib.request
 
 root = Path(__file__).parent
 assets = root / "assets"
 assets.mkdir(exist_ok=True)
+repo = root.parent.parent
 images = {
-    "portrait.webp": "https://bondeth.dev/bondeth.webp",
-    "talent.png": "https://bondeth.dev/previews/apsara-talent.png",
-    "assistant.png": "https://bondeth.dev/previews/apsara-assistant.png",
-    "agentic.png": "https://bondeth.dev/previews/apsara-agentic.png",
-    "elearning.png": "https://bondeth.dev/previews/apsara-elearning.png",
-    "wallet.png": "https://bondeth.dev/previews/apsara-wallet.png",
-    "notch.png": "https://bondeth.dev/previews/bondex-notch.png",
+    "portrait.webp": repo / "public" / "bondeth.webp",
+    "talent.png": root / "source-assets/v6/apsara-talent.png",
+    "assistant.png": root / "source-assets/v6/apsara-assistant.png",
+    "agentic.png": root / "source-assets/v6/apsara-agentic.png",
+    "elearning.png": root / "source-assets/v6/apsara-elearning.png",
+    "wallet.png": root / "source-assets/v6/apsara-wallet.png",
+    "notch.png": root / "source-assets/v6/bondex-notch.png",
 }
-for filename, url in images.items():
-    urllib.request.urlretrieve(url, assets / filename)
+for filename, source in images.items():
+    shutil.copy2(source, assets / filename)
 
 # Simple Icons v16, the same icon family used by the portfolio's skill badges.
 colors = {"react": "61DAFB", "nextdotjs": "141413", "typescript": "3178C6",

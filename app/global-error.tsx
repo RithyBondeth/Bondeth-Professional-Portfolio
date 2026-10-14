@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import "./globals.css";
+import "@/app/globals.css";
 
 /**
  * Last-resort boundary: the only thing that catches a throw from the root

@@ -10,7 +10,6 @@
 !.yarn/releases
 !.yarn/versions
 
-.claude
 # testing
 /coverage
 
@@ -50,6 +49,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Claude Code
+# Local assistant configuration
 .claude/
-/.next-preview/

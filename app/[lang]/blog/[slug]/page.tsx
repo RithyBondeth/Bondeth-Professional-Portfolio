@@ -1,31 +1,31 @@
+import { getTableOfContents } from "@/features/blog/domain/get-table-of-contents";
+import { slugifyTag } from "@/features/blog/domain/slugify-tag";
 import type { Metadata } from "next";
 import {
   getPostBySlug,
   getAllPosts,
   getRelatedPosts,
-  getTableOfContents,
-  slugifyTag,
-} from "@/utils/functions/blog";
-import { siteConfig } from "@/utils/constants/portfolio.constant";
+} from "@/features/blog/server";
+import { siteConfig } from "@/features/portfolio/data/portfolio";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import Link from "next/link";
-import { AnimateIn } from "@/components/utils/animations/animate-in";
-import { BlogCover } from "@/components/blog/blog-cover";
-import { mdxComponents } from "@/components/blog/mdx-components";
-import { TableOfContents } from "@/components/blog/table-of-contents";
-import { BlogShare } from "@/components/blog/blog-share";
-import { TopicCluster } from "@/components/topic-cluster";
-import { FacebookIcon, YouTubeIcon } from "@/components/utils/icons";
-import { ReadingProgress } from "@/components/blog/reading-progress";
+import { AnimateIn } from "@/shared/components/motion/animate-in";
+import { BlogCover } from "@/features/blog/components/blog-cover";
+import { mdxComponents } from "@/features/blog/components/mdx-components";
+import { TableOfContents } from "@/features/blog/components/table-of-contents";
+import { BlogShare } from "@/features/blog/components/blog-share";
+import { TopicCluster } from "@/features/blog/components/topic-cluster";
+import { FacebookIcon, YouTubeIcon } from "@/shared/components/icons/icons";
+import { ReadingProgress } from "@/features/blog/components/reading-progress";
 import rehypePrettyCode, {
   type Options as PrettyCodeOptions,
 } from "rehype-pretty-code";
 import remarkGfm from "remark-gfm";
-import { hasLocale, getDictionary, locales } from "@/utils/i18n";
+import { hasLocale, getDictionary, locales } from "@/shared/i18n";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
-interface IBlogPostPageProps {
+interface BlogPostPageProps {
   params: Promise<{ lang: string; slug: string }>;
 }
 
@@ -38,7 +38,6 @@ const prettyCodeOptions: PrettyCodeOptions = {
   },
 };
 
-/* --------------------------------- Metadata --------------------------------- */
 export async function generateStaticParams() {
   const postsByLocale = await Promise.all(
     locales.map(async (lang) => {
@@ -55,7 +54,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({
   params,
-}: IBlogPostPageProps): Promise<Metadata> {
+}: BlogPostPageProps): Promise<Metadata> {
   const { slug, lang } = await params;
   if (!hasLocale(lang)) return {};
 
@@ -95,8 +94,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function BlogPostPage({ params }: IBlogPostPageProps) {
-  /* ---------------------------------- Utils --------------------------------- */
+export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { lang, slug } = await params;
   if (!hasLocale(lang)) notFound();
   const dict = getDictionary(lang);
@@ -125,7 +123,6 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
       ? post
       : (allPosts.find((item) => item.relatedPost === post.slug) ?? null);
 
-  /* ------------------------------ Structured Data ----------------------------- */
   const blogPostJsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -141,7 +138,6 @@ export default async function BlogPostPage({ params }: IBlogPostPageProps) {
     },
   };
 
-  /* -------------------------------- Render UI ------------------------------- */
   return (
     <main
       id="main-content"

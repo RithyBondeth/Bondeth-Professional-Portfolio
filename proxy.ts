@@ -1,13 +1,17 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { locales, defaultLocale, hasLocale, type TLocale } from "@/utils/i18n";
+import {
+  locales,
+  defaultLocale,
+  hasLocale,
+  type Locale,
+} from "@/shared/i18n/index";
 
-/* ---------------------------------- Utils ---------------------------------- */
 /**
  * Picks the visitor's locale: cookie preference first (set by the
  * language switcher), then the Accept-Language header, then English.
  */
-function getLocale(request: NextRequest): TLocale {
+function getLocale(request: NextRequest): Locale {
   const cookieLocale = request.cookies.get("NEXT_LOCALE")?.value;
   if (cookieLocale && hasLocale(cookieLocale)) {
     return cookieLocale;
@@ -23,12 +27,11 @@ function getLocale(request: NextRequest): TLocale {
   return defaultLocale;
 }
 
-/* ---------------------------------- Proxy ----------------------------------- */
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const pathnameHasLocale = locales.some(
-    (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
+    (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`,
   );
   if (pathnameHasLocale) return;
 

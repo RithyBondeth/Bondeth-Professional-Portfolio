@@ -1,14 +1,14 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getAllTags } from "@/utils/functions/blog";
-import { AnimateIn } from "@/components/utils/animations/animate-in";
-import { hasLocale, getDictionary } from "@/utils/i18n";
+import { getAllTags } from "@/features/blog/server";
+import { AnimateIn } from "@/shared/components/motion/animate-in";
+import { hasLocale, getDictionary } from "@/shared/i18n";
 
-interface ITagsPageProps {
+interface TagsPageProps {
   params: Promise<{ lang: string }>;
 }
 
-export default async function TagsPage({ params }: ITagsPageProps) {
+export default async function TagsPage({ params }: TagsPageProps) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
 

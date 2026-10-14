@@ -33,7 +33,9 @@
      and terminal-style covers, which are Latin and must look identical in
      every language. This is the ONLY family that stays monospace now that the
      rest of the English UI has moved to Noto Serif. */
-  --font-code: var(--font-jetbrains), "JetBrains Mono", ui-monospace, monospace;
+  --font-code:
+    "LocalArrows", var(--font-jetbrains), "JetBrains Mono", ui-monospace,
+    monospace;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -97,7 +99,9 @@
   /* Ubuntu is the shared UI and reading face. The Khmer locale prepends a
      unicode-ranged Kantumruy Pro face, while code keeps the separate JetBrains
      Mono stack in --font-code. */
-  --font-ui: var(--font-ubuntu), Ubuntu, ui-sans-serif, system-ui, sans-serif;
+  --font-ui:
+    "LocalArrows", var(--font-ubuntu), Ubuntu, ui-sans-serif, system-ui,
+    sans-serif;
   --font-serif: var(--font-ui);
   /* Near-monochrome, but no longer *pure* grayscale: every neutral carries a
      few points of blue so the ramp sits with the ribbon-field background
@@ -239,7 +243,6 @@
   --btn-sheen: rgb(255 255 255 / 0.2);
   --btn-wipe: rgb(217 119 87 / 0.08);
 
-  /* ---- Editor windows (see the .editor-* classes further down) ---- */
   /* Translucent rather than solid, and deliberately WITHOUT backdrop-filter:
      the gradient-wave ribbons behind are already soft and low-frequency, so
      letting them tint straight through reads the same as a frosted panel while
@@ -352,7 +355,6 @@
   --btn-sheen: rgb(20 20 19 / 0.18);
   --btn-wipe: rgb(217 119 87 / 0.1);
 
-  /* ---- Editor windows ---- */
   /* Near-black with a few points of blue rather than the #000 these windows
      used to be, so they sit with the dark-mode wave instead of punching a hole
      through it. Kept opaque: the ribbons are dim enough here that letting them
@@ -373,6 +375,19 @@
   --code-punct: #94a3b8;
   --inline-code-bg: #111110;
   --inline-code-foreground: #d97757;
+}
+
+/* Arrow glyphs use local symbol fonts so UI and code fonts do not need an
+   additional downloaded subset. All other characters fall through to the
+   current Ubuntu or Khmer stack. */
+@font-face {
+  font-family: "LocalArrows";
+  src:
+    local("Apple Symbols"), local("Segoe UI Symbol"),
+    local("Noto Sans Symbols 2"), local("DejaVu Sans"),
+    local("Arial Unicode MS");
+  unicode-range: U+2190-21FF, U+2794-27BF, U+2B00-2BFF;
+  font-display: swap;
 }
 
 @layer base {
@@ -396,14 +411,14 @@
   h2,
   h3,
   h4 {
-    font-family: var(--font-serif), ui-serif, Georgia, serif;
+    font-family: "LocalArrows", var(--font-serif), ui-serif, Georgia, serif;
     letter-spacing: -0.025em;
   }
   p,
   li,
   blockquote,
   figcaption {
-    font-family: var(--font-serif), ui-serif, Georgia, serif;
+    font-family: "LocalArrows", var(--font-serif), ui-serif, Georgia, serif;
   }
   /* Code always renders in JetBrains Mono, in every locale. Tailwind's
      Preflight resets these tags to `--font-mono`, which is remapped to
@@ -413,7 +428,7 @@
   code,
   kbd,
   samp {
-    font-family: var(--font-code);
+    font-family: "LocalArrows", var(--font-code);
   }
 }
 
@@ -423,8 +438,8 @@
    by /en instead of being claimed by Kantumruy's Latin glyphs. ── */
 html[lang="km"] {
   --font-ui:
-    "Kantumruy Pro Khmer", var(--font-ubuntu), Ubuntu, ui-sans-serif, system-ui,
-    sans-serif;
+    "LocalArrows", "Kantumruy Pro Khmer", var(--font-ubuntu), Ubuntu,
+    ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-ui);
 }
 
@@ -434,8 +449,8 @@ html[lang="km"] {
    keeps its dedicated JetBrains stack even when shown inside Khmer content. */
 html :lang(km):not(pre, code, kbd, samp) {
   font-family:
-    "Kantumruy Pro Khmer", var(--font-ubuntu), Ubuntu, ui-sans-serif, system-ui,
-    sans-serif;
+    "LocalArrows", "Kantumruy Pro Khmer", var(--font-ubuntu), Ubuntu,
+    ui-sans-serif, system-ui, sans-serif;
   letter-spacing: normal;
 }
 
@@ -477,8 +492,12 @@ html[lang="km"] :is(h1, h2, h3, h4, h5, h6):lang(km) {
    Keep the whole surface on the Khmer face so labels, controls, and evidence
    excerpts share one baseline instead of falling back inconsistently. */
 html[lang="km"] .rag-lab,
-html[lang="km"] .rag-lab :is(p, li, button, label, output, textarea, blockquote, summary, dt, dd) {
-  font-family: "Kantumruy Pro Khmer", var(--font-ubuntu), Ubuntu, ui-sans-serif, system-ui, sans-serif;
+html[lang="km"]
+  .rag-lab
+  :is(p, li, button, label, output, textarea, blockquote, summary, dt, dd) {
+  font-family:
+    "LocalArrows", "Kantumruy Pro Khmer", var(--font-ubuntu), Ubuntu,
+    ui-sans-serif, system-ui, sans-serif;
   letter-spacing: normal;
 }
 
@@ -765,8 +784,7 @@ html[lang="km"] .rag-lab h4 {
   from {
     opacity: 0;
     filter: blur(var(--rv-blur));
-    transform: perspective(1100px)
-      translate3d(var(--rv-x), var(--rv-y), 0)
+    transform: perspective(1100px) translate3d(var(--rv-x), var(--rv-y), 0)
       rotateX(var(--rv-rx)) rotateY(var(--rv-ry)) rotate(var(--rv-r))
       scale(var(--rv-s));
   }
@@ -836,7 +854,9 @@ html[lang="km"] .rag-lab h4 {
     .reveal-on-view,
     .reveal-heading,
     .stagger-on-view > * {
-      --rv-start: calc(var(--rv-offset, 0%) + var(--rv-i, 0) * var(--rv-step, 4%));
+      --rv-start: calc(
+        var(--rv-offset, 0%) + var(--rv-i, 0) * var(--rv-step, 4%)
+      );
       animation-name: var(--rv-enter);
       animation-fill-mode: both;
       /* Scrubbed by scroll, so the curve maps to distance, not time. A strong
@@ -844,7 +864,8 @@ html[lang="km"] .rag-lab h4 {
          bottom edge; ease-out-cubic spreads it across the scroll. */
       animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1);
       animation-timeline: view();
-      animation-range: entry var(--rv-start) cover calc(var(--rv-span, 28%) + var(--rv-start));
+      animation-range: entry var(--rv-start) cover
+        calc(var(--rv-span, 28%) + var(--rv-start));
     }
 
     /* Scroll story: on the homepage (main[data-scroll-story]) every block
@@ -854,7 +875,8 @@ html[lang="km"] .rag-lab h4 {
 
        Depart only runs once the block is on its way out and fills nothing
        outside that range, so the entrance's resting state shows in between. */
-    [data-scroll-story] :is(.reveal-on-view, .reveal-heading):not([data-depart="off"]),
+    [data-scroll-story]
+      :is(.reveal-on-view, .reveal-heading):not([data-depart="off"]),
     [data-scroll-story] .stagger-on-view:not([data-depart="off"]) > *,
     .reveal-on-view[data-depart="on"],
     .stagger-on-view[data-depart="on"] > * {
@@ -881,11 +903,12 @@ html[lang="km"] .rag-lab h4 {
   }
 
   html.reveal-js
-    :is(.reveal-on-view, .reveal-heading, .stagger-on-view > *):not(.is-revealed) {
+    :is(.reveal-on-view, .reveal-heading, .stagger-on-view > *):not(
+      .is-revealed
+    ) {
     opacity: 0;
     filter: blur(var(--rv-blur));
-    transform: perspective(1100px)
-      translate3d(var(--rv-x), var(--rv-y), 0)
+    transform: perspective(1100px) translate3d(var(--rv-x), var(--rv-y), 0)
       rotateX(var(--rv-rx)) rotateY(var(--rv-ry)) rotate(var(--rv-r))
       scale(var(--rv-s));
   }
@@ -938,7 +961,6 @@ main > section:not(:first-of-type, #projects) {
     transform: translate3d(calc(var(--travel) * -1), 0, 0);
   }
 }
-
 
 .magnetic-lite,
 .tilt-card-lite {
@@ -1238,7 +1260,13 @@ main > section:not(:first-of-type, #projects) {
   overflow: hidden;
   pointer-events: none;
   user-select: none;
-  mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+  mask-image: linear-gradient(
+    90deg,
+    transparent,
+    black 8%,
+    black 92%,
+    transparent
+  );
 }
 
 .portrait-tech-row {
@@ -1285,7 +1313,8 @@ main > section:not(:first-of-type, #projects) {
 
 @media (prefers-reduced-motion: no-preference) {
   .portrait-tech-track {
-    animation: portrait-marquee var(--tech-duration) linear var(--tech-delay) infinite;
+    animation: portrait-marquee var(--tech-duration) linear var(--tech-delay)
+      infinite;
   }
 
   .portrait-tech-row[data-dir="right"] .portrait-tech-track {
@@ -1304,10 +1333,10 @@ main > section:not(:first-of-type, #projects) {
   inset: 0;
   pointer-events: none;
   background: linear-gradient(
-      145deg,
-      color-mix(in oklab, var(--brand-pixel) 18%, var(--card)),
-      color-mix(in oklab, var(--brand-pixel) 42%, var(--card))
-    );
+    145deg,
+    color-mix(in oklab, var(--brand-pixel) 18%, var(--card)),
+    color-mix(in oklab, var(--brand-pixel) 42%, var(--card))
+  );
 }
 
 @keyframes portrait-marquee {
@@ -1363,7 +1392,8 @@ main > section:not(:first-of-type, #projects) {
   }
 
   .hero-portrait {
-    animation: hero-portrait-in var(--motion-entrance) var(--motion-ease) 60ms both;
+    animation: hero-portrait-in var(--motion-entrance) var(--motion-ease) 60ms
+      both;
   }
 
   .hero-portrait-detail {
@@ -2126,7 +2156,6 @@ main > section:not(:first-of-type, #projects) {
   translate: 0 1px;
 }
 
-/* ---- Primary: specular sheen sweeps across the fill ---- */
 .btn-fx-primary::after {
   content: "";
   position: absolute;
@@ -2146,7 +2175,6 @@ main > section:not(:first-of-type, #projects) {
   transition: opacity var(--motion-feedback) ease-out;
 }
 
-/* ---- Outline: tinted fill wipes in from the left ---- */
 .btn-fx-outline::before {
   content: "";
   position: absolute;
@@ -2375,25 +2403,48 @@ html.theme-switching::view-transition-new(root) {
 
 /* The device reduced-motion preference stops decorative motion. */
 
-html[data-motion="quiet"], html[data-motion="quiet"] *, html[data-motion="quiet"] *::before, html[data-motion="quiet"] *::after {
+html[data-motion="quiet"],
+html[data-motion="quiet"] *,
+html[data-motion="quiet"] *::before,
+html[data-motion="quiet"] *::after {
   animation: none !important;
   transition-duration: 0s !important;
   transition-delay: 0s !important;
   scroll-behavior: auto !important;
 }
-html[data-motion="quiet"] :is(.reveal-on-view, .reveal-heading, .stagger-on-view > *) {
+html[data-motion="quiet"]
+  :is(.reveal-on-view, .reveal-heading, .stagger-on-view > *) {
   opacity: 1 !important;
   transform: none !important;
   filter: none !important;
   clip-path: none !important;
 }
-html[data-motion="quiet"] :is(.hero-kicker, .hero-title-line, .hero-copy, .hero-action, .hero-proof, .hero-portrait, .hero-portrait-detail, .portrait-row, .hero-scroll) {
+html[data-motion="quiet"]
+  :is(
+    .hero-kicker,
+    .hero-title-line,
+    .hero-copy,
+    .hero-action,
+    .hero-proof,
+    .hero-portrait,
+    .hero-portrait-detail,
+    .portrait-row,
+    .hero-scroll
+  ) {
   opacity: 1 !important;
   translate: none !important;
   scale: none !important;
   rotate: none !important;
 }
-html[data-motion="quiet"] :is(.card-interactive, .tilt-card-lite, .magnetic-lite, .btn-fx, [data-btn-arrow], [data-btn-glyph]),
+html[data-motion="quiet"]
+  :is(
+    .card-interactive,
+    .tilt-card-lite,
+    .magnetic-lite,
+    .btn-fx,
+    [data-btn-arrow],
+    [data-btn-glyph]
+  ),
 html[data-motion="quiet"] svg[data-mood] * {
   translate: none !important;
   scale: none !important;
@@ -2402,30 +2453,51 @@ html[data-motion="quiet"] svg[data-mood] * {
 }
 
 @media (prefers-reduced-motion: reduce) {
-
-html, html *, html *::before, html *::after {
-  animation: none !important;
-  transition-duration: 0s !important;
-  transition-delay: 0s !important;
-  scroll-behavior: auto !important;
-}
-html :is(.reveal-on-view, .reveal-heading, .stagger-on-view > *) {
-  opacity: 1 !important;
-  transform: none !important;
-  filter: none !important;
-  clip-path: none !important;
-}
-html :is(.hero-kicker, .hero-title-line, .hero-copy, .hero-action, .hero-proof, .hero-portrait, .hero-portrait-detail, .portrait-row, .hero-scroll) {
-  opacity: 1 !important;
-  translate: none !important;
-  scale: none !important;
-  rotate: none !important;
-}
-html :is(.card-interactive, .tilt-card-lite, .magnetic-lite, .btn-fx, [data-btn-arrow], [data-btn-glyph]),
-html svg[data-mood] * {
-  translate: none !important;
-  scale: none !important;
-  rotate: none !important;
-  transform: none !important;
-}
+  html,
+  html *,
+  html *::before,
+  html *::after {
+    animation: none !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+    scroll-behavior: auto !important;
+  }
+  html :is(.reveal-on-view, .reveal-heading, .stagger-on-view > *) {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    clip-path: none !important;
+  }
+  html
+    :is(
+      .hero-kicker,
+      .hero-title-line,
+      .hero-copy,
+      .hero-action,
+      .hero-proof,
+      .hero-portrait,
+      .hero-portrait-detail,
+      .portrait-row,
+      .hero-scroll
+    ) {
+    opacity: 1 !important;
+    translate: none !important;
+    scale: none !important;
+    rotate: none !important;
+  }
+  html
+    :is(
+      .card-interactive,
+      .tilt-card-lite,
+      .magnetic-lite,
+      .btn-fx,
+      [data-btn-arrow],
+      [data-btn-glyph]
+    ),
+  html svg[data-mood] * {
+    translate: none !important;
+    scale: none !important;
+    rotate: none !important;
+    transform: none !important;
+  }
 }

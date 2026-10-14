@@ -1,25 +1,28 @@
-import { MotionScript } from "@/components/utils/animations/motion-script";
-import { MOTION_CSS_VARS } from "@/lib/motion-timing";
+import { MotionScript } from "@/shared/components/motion/motion-script";
+import { MOTION_CSS_VARS } from "@/shared/lib/motion-timing";
 import type { Metadata } from "next";
 import { JetBrains_Mono, Ubuntu } from "next/font/google";
 import { notFound } from "next/navigation";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import "../globals.css";
-import { cn } from "@/lib/utils";
-import Nav from "@/components/navbar";
-import Footer from "@/components/footer";
-import DeferredCommandPalette from "@/components/command-palette/deferred-command-palette";
-import DeferredPixelChatbot from "@/components/chatbot/deferred-pixel-chatbot";
-import { ThemeProvider, ThemeScript } from "@/components/utils/theme/theme-provider";
-import { SmoothScroll } from "@/components/utils/animations/smooth-scroll";
-import { RevealFallback } from "@/components/utils/animations/reveal-fallback";
-import { AmbientBackground } from "@/components/background/ambient-background";
-import { siteConfig } from "@/utils/constants/portfolio.constant";
-import { locales, hasLocale, getDictionary } from "@/utils/i18n";
-import { getSiteConfig } from "@/utils/i18n/content";
-import { getAllPosts } from "@/utils/functions/blog";
-import { buildChatTours } from "@/utils/chatbot/tour";
+import "@/app/globals.css";
+import { cn } from "@/shared/lib/utils";
+import Nav from "@/features/navigation/components/navbar/navbar";
+import Footer from "@/features/navigation/components/footer/footer";
+import DeferredCommandPalette from "@/features/navigation/components/command-palette/deferred-command-palette";
+import DeferredPixelChatbot from "@/features/chatbot/components/deferred-pixel-chatbot";
+import {
+  ThemeProvider,
+  ThemeScript,
+} from "@/shared/components/theme/theme-provider";
+import { SmoothScroll } from "@/shared/components/motion/smooth-scroll";
+import { RevealFallback } from "@/shared/components/motion/reveal-fallback";
+import { AmbientBackground } from "@/shared/components/background/ambient-background";
+import { siteConfig } from "@/features/portfolio/data/portfolio";
+import { locales, hasLocale, getDictionary } from "@/shared/i18n";
+import { getSiteConfig } from "@/features/portfolio/data/localized-content";
+import { getAllPosts } from "@/features/blog/server";
+import { buildChatTours } from "@/features/chatbot/server/tour";
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
@@ -33,7 +36,6 @@ const ubuntu = Ubuntu({
   variable: "--font-ubuntu",
 });
 
-/* --------------------------------- Metadata --------------------------------- */
 export async function generateStaticParams() {
   return locales.map((lang) => ({ lang }));
 }
@@ -116,7 +118,7 @@ export default async function RootLayout({
     <html
       style={MOTION_CSS_VARS}
       lang={lang}
-      // next-themes mutates the class on <html> before hydration
+      // The theme initialization script sets the class before hydration
       suppressHydrationWarning
       className={cn(
         "h-full",

@@ -1,9 +1,8 @@
 import type { MetadataRoute } from "next";
-import { getAllPosts } from "@/utils/functions/blog";
-import { projects, siteConfig } from "@/utils/constants/portfolio.constant";
-import { locales } from "@/utils/i18n";
+import { getAllPosts } from "@/features/blog/server";
+import { projects, siteConfig } from "@/features/portfolio/data/portfolio";
+import { locales } from "@/shared/i18n";
 
-/* ---------------------------------- Utils ---------------------------------- */
 function languageAlternates(path: string): Record<string, string> {
   return Object.fromEntries(
     locales.map((locale) => [locale, `${siteConfig.url}/${locale}${path}`]),
@@ -107,7 +106,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           url: `${siteConfig.url}/${locale}/projects/${project.slug}`,
           lastModified: new Date(),
           changeFrequency: "monthly" as const,
-          priority: project.visibility === "public" ? 0.7 : 0.5,
+          // Practice work sinks below everything else: a Tesla clone built to
+          // learn scroll animations was ranking level with a national
+          // government platform, which is not the impression the sitemap
+          // should be giving a crawler.
+          priority:
+            project.tier === "practice"
+              ? 0.3
+              : project.visibility === "public"
+                ? 0.7
+                : 0.5,
           alternates: {
             languages: languageAlternates(`/projects/${project.slug}`),
           },

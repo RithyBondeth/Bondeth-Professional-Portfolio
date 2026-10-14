@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { LegalPage } from "@/components/legal/legal-page";
-import { hasLocale } from "@/utils/i18n";
-import { getLegalDocument } from "@/utils/i18n/legal";
+import { LegalPage } from "@/features/legal/components/legal-page";
+import { hasLocale } from "@/shared/i18n";
+import { getLegalDocument } from "@/features/legal/data/legal";
 
-interface IPrivacyPageProps {
+interface PrivacyPageProps {
   params: Promise<{ lang: string }>;
 }
 
-export async function generateMetadata({ params }: IPrivacyPageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PrivacyPageProps): Promise<Metadata> {
   const { lang } = await params;
   if (!hasLocale(lang)) return {};
   const document = getLegalDocument(lang, "privacy");
@@ -18,12 +20,16 @@ export async function generateMetadata({ params }: IPrivacyPageProps): Promise<M
     description: document.metaDescription,
     alternates: {
       canonical: `/${lang}/privacy`,
-      languages: { en: "/en/privacy", km: "/km/privacy", "x-default": "/en/privacy" },
+      languages: {
+        en: "/en/privacy",
+        km: "/km/privacy",
+        "x-default": "/en/privacy",
+      },
     },
   };
 }
 
-export default async function PrivacyPage({ params }: IPrivacyPageProps) {
+export default async function PrivacyPage({ params }: PrivacyPageProps) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
 

@@ -1,0 +1,14 @@
+export interface SiteConfig {
+  name: string;
+  url: string;
+  title: string;
+  tagline: string;
+  bio: string[];
+  email: string;
+  github: string;
+  linkedin: string;
+  facebook: string;
+  instagram: string;
+  youtube: string;
+  resume: string;
+}

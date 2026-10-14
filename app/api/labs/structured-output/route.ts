@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { extractStructuredContact } from "@/utils/functions/labs/structured-output";
-import { rateLimit, getClientId } from "@/utils/functions/rate-limit";
+import { extractStructuredContact } from "@/features/labs/domain/structured-output";
+import { rateLimit, getClientId } from "@/shared/server/rate-limit";
 
 const MAX_INPUT_LENGTH = 2000;
 const RATE_LIMIT = 30;
@@ -24,7 +24,10 @@ export async function POST(request: Request) {
   try {
     payload = await request.json();
   } catch {
-    return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid request body." },
+      { status: 400 },
+    );
   }
 
   const input =

@@ -1,20 +1,20 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { AnimateIn } from "@/components/utils/animations/animate-in";
-import { ScrambleText } from "@/components/utils/animations/scramble-text";
-import { ProjectExplorer } from "@/components/projects/project-explorer";
-import { SkillIconSprite } from "@/components/landing/landing-skills/skill-icon-sprite";
-import { techIconKeys } from "@/components/projects/tech-icon-map";
-import { getProjects } from "@/utils/i18n/content";
-import { getDictionary, hasLocale } from "@/utils/i18n";
+import { AnimateIn } from "@/shared/components/motion/animate-in";
+import { ScrambleText } from "@/shared/components/motion/scramble-text";
+import { ProjectExplorer } from "@/features/portfolio/components/projects/project-explorer";
+import { SkillIconSprite } from "@/features/portfolio/components/skills/skill-icon-sprite";
+import { techIconKeys } from "@/features/portfolio/components/projects/tech-icon-map";
+import { getProjects } from "@/features/portfolio/data/localized-content";
+import { getDictionary, hasLocale } from "@/shared/i18n";
 
-interface IProjectsPageProps {
+interface ProjectsPageProps {
   params: Promise<{ lang: string }>;
 }
 
 export async function generateMetadata({
   params,
-}: IProjectsPageProps): Promise<Metadata> {
+}: ProjectsPageProps): Promise<Metadata> {
   const { lang } = await params;
   if (!hasLocale(lang)) return {};
   const dict = getDictionary(lang);
@@ -33,7 +33,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function ProjectsPage({ params }: IProjectsPageProps) {
+export default async function ProjectsPage({ params }: ProjectsPageProps) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
 

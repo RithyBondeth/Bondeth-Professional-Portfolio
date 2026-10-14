@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { ArrowLeft } from "lucide-react";
-import { RobotArt } from "@/components/mascot/robot-art";
+import { RobotArt } from "@/shared/components/mascot/robot-art";
 
 export const metadata: Metadata = {
   title: "404 — Page Not Found",

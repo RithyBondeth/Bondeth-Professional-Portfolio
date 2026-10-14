@@ -32,26 +32,26 @@ This is the source of [bondeth.dev](https://bondeth.dev), the personal portfolio
 - **Resume page,** plus privacy and terms pages.
 - **SEO:** dynamic Open Graph images, JSON-LD, a sitemap, `hreflang` alternates, and RSS.
 - **Contact form** with server-side validation and a honeypot, sent through Resend.
-- **Dark and light themes,** GSAP scroll animations, and WebGL shader backgrounds, all with reduced-motion fallbacks.
+- **Dark and light themes,** GSAP scroll animations, and ambient backgrounds, all with reduced-motion fallbacks.
 
 ## Tech Stack
 
-| Area | Technology |
-| --- | --- |
-| Framework | Next.js 16 (App Router, React Server Components), React 19 |
-| Language | TypeScript |
-| Styling | Tailwind CSS 4, shadcn/ui, Base UI |
-| Content | MDX (next-mdx-remote, gray-matter, remark-gfm, rehype-pretty-code, Shiki) |
-| Animation | GSAP, Paper Design shaders, d3-geo globe |
-| AI | Groq (chatbot and labs) |
-| Email | Resend |
-| Analytics and hosting | Vercel Analytics, Speed Insights, Vercel |
+| Area                  | Technology                                                                |
+| --------------------- | ------------------------------------------------------------------------- |
+| Framework             | Next.js 16 (App Router, React Server Components), React 19                |
+| Language              | TypeScript                                                                |
+| Styling               | Tailwind CSS 4, shadcn/ui styles                                          |
+| Content               | MDX (next-mdx-remote, gray-matter, remark-gfm, rehype-pretty-code, Shiki) |
+| Animation             | GSAP, CSS motion, d3-geo globe                                            |
+| AI                    | Groq (chatbot); deterministic local AI labs                               |
+| Email                 | Resend                                                                    |
+| Analytics and hosting | Vercel Analytics, Speed Insights, Vercel                                  |
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js and npm
+- Node.js 20.9 or later and npm
 
 ### Installation
 
@@ -67,46 +67,55 @@ Open [http://localhost:8888](http://localhost:8888).
 
 ### Environment Variables
 
-| Variable | Purpose |
-| --- | --- |
-| `GROQ_API_KEY` | Chatbot and AI lab responses |
-| `GROQ_CHAT_MODEL` | Optional Groq model override |
-| `RESEND_API_KEY` | Contact-form email |
-| `CONTACT_FROM_EMAIL` | Optional verified sender address |
-| `NEXT_PUBLIC_SITE_URL` | Optional canonical URL for SEO |
+| Variable               | Purpose                          |
+| ---------------------- | -------------------------------- |
+| `GROQ_API_KEY`         | Chatbot responses                |
+| `GROQ_CHAT_MODEL`      | Optional Groq model override     |
+| `RESEND_API_KEY`       | Contact-form email               |
+| `CONTACT_FROM_EMAIL`   | Optional verified sender address |
+| `NEXT_PUBLIC_SITE_URL` | Optional canonical URL for SEO   |
 
 ### Scripts
 
-| Command | Description |
-| --- | --- |
-| `npm run dev` | Start the development server on port 8888 |
-| `npm run build` | Create a production build |
-| `npm run start` | Serve the production build |
-| `npm run lint` | Run ESLint |
-| `npm run test:rag` | Test the RAG retrieval lab |
-| `npm run test:motion` | Test the reduced-motion preferences |
+| Command                    | Description                                              |
+| -------------------------- | -------------------------------------------------------- |
+| `npm run dev`              | Start the development server on port 8888                |
+| `npm run build`            | Create a production build                                |
+| `npm run start`            | Serve the production build                               |
+| `npm run lint`             | Check code and architectural import boundaries           |
+| `npm run typecheck`        | Check TypeScript, including unused locals and parameters |
+| `npm run format`           | Format maintained source and configuration               |
+| `npm run format:check`     | Verify formatting                                        |
+| `npm run check:unused`     | Detect unused files, exports, and dependencies           |
+| `npm test`                 | Run all regression tests                                 |
+| `npm run test:rag`         | Test the RAG retrieval lab                               |
+| `npm run test:motion`      | Test the reduced-motion preferences                      |
+| `npm run generate:globe`   | Regenerate the globe land-dot lattice                    |
+| `npm run generate:profile` | Regenerate GitHub profile SVG artwork                    |
 
 ## Project Structure
 
 ```text
 Bondeth-Professional-Portfolio/
-├── app/
-│   ├── [lang]/          # Locale-prefixed routes (en | km): landing, blog, projects,
-│   │                    # labs, resume, privacy, terms
-│   ├── api/             # chat, contact, and AI lab endpoints
-│   ├── feed.xml/        # RSS feed
-│   ├── sitemap.ts
-│   └── robots.ts
-├── components/          # Landing sections, blog, labs, chatbot, mascot, command palette
+├── app/                 # Next.js routes, metadata, API adapters, global styles
+├── features/            # Portfolio, blog, labs, chatbot, contact, navigation, legal
+│   └── <feature>/       # Domain rules/types, data, components, server adapters
+├── shared/              # Reusable UI, hooks, localization, libraries, infrastructure
 ├── content/blog/        # English and Khmer MDX posts
-├── utils/               # Portfolio data, i18n dictionaries, blog helpers
-├── public/              # Images, logos, project previews, resume PDF
+├── public/              # Website images, videos, logos, resume PDF
+├── scripts/             # Repeatable asset generators
+├── tests/               # Blog content, RAG retrieval, motion preferences
+├── motion/              # Editable showreel sources and archived inputs
+├── github-profile/      # Profile artwork and generator
+├── docs/architecture.md # Dependency boundaries and naming conventions
 └── proxy.ts             # Locale detection and redirects
 ```
 
+See [architecture guidance](docs/architecture.md) for layer boundaries and conventions. Use npm and the committed `package-lock.json` for reproducible installs.
+
 ## Content
 
-- All portfolio data (bio, skills, experience, projects, education) lives in `utils/constants/portfolio.constant.ts`, with Khmer overrides in `utils/i18n/`.
+- All portfolio data (bio, skills, experience, projects, education) lives in `features/portfolio/data/portfolio.ts`, with Khmer overrides in `features/portfolio/data/localized-content.km.ts`.
 - Blog posts are MDX files in `content/blog/`, with frontmatter for `title`, `date`, `excerpt`, `tags`, and an optional cover image.
 
 ## Deployment

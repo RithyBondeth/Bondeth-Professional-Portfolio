@@ -3,17 +3,16 @@ import {
   getAllCategories,
   getAllPosts,
   getAllTags,
-} from "@/utils/functions/blog";
-import { AnimateIn } from "@/components/utils/animations/animate-in";
-import { BlogExplorer } from "@/components/blog/blog-explorer";
-import { hasLocale, getDictionary } from "@/utils/i18n";
+} from "@/features/blog/server";
+import { AnimateIn } from "@/shared/components/motion/animate-in";
+import { BlogExplorer } from "@/features/blog/components/blog-explorer";
+import { hasLocale, getDictionary } from "@/shared/i18n";
 
-interface IBlogPageProps {
+interface BlogPageProps {
   params: Promise<{ lang: string }>;
 }
 
-export default async function BlogPage({ params }: IBlogPageProps) {
-  /* ---------------------------------- Utils --------------------------------- */
+export default async function BlogPage({ params }: BlogPageProps) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   const dict = getDictionary(lang);
@@ -48,7 +47,6 @@ export default async function BlogPage({ params }: IBlogPageProps) {
     }),
   );
 
-  /* -------------------------------- Render UI ------------------------------- */
   return (
     <main
       id="main-content"
