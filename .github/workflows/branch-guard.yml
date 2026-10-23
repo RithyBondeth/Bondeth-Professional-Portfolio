@@ -1,0 +1,22 @@
+name: Branch guard
+
+# main only takes promotions from develop: feature PRs go into develop first.
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, reopened, synchronize, edited]
+
+jobs:
+  main-from-develop:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require develop as the source branch
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+        run: |
+          if [ "$HEAD_REF" != "develop" ] || [ "$HEAD_REPO" != "$GITHUB_REPOSITORY" ]; then
+            echo "::error::PRs into main must come from develop (got $HEAD_REPO:$HEAD_REF). Retarget this PR to develop."
+            exit 1
+          fi
+          echo "Source branch is develop."
