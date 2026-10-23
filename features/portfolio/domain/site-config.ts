@@ -10,5 +10,7 @@ export interface SiteConfig {
   facebook: string;
   instagram: string;
   youtube: string;
+  /** The interactive 3D companion site — linked out, never embedded. */
+  world3d: string;
   resume: string;
 }
