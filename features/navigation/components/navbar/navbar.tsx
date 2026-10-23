@@ -8,7 +8,7 @@ import { MOTION } from "@/shared/lib/motion-timing";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FileText, Languages } from "lucide-react";
+import { ArrowUpRight, Box, FileText, Languages } from "lucide-react";
 import { NAV_ICON_BUTTON } from "@/shared/lib/utils";
 import { trackCvDownload } from "@/features/portfolio/lib/track-cv-download";
 import { scrollToSection } from "@/shared/components/motion/smooth-scroll";
@@ -433,6 +433,18 @@ export default function Navbar(props: { lang: Locale }) {
             </button>
           </li>
           <li>
+            <a
+              href={siteConfig.world3d}
+              target="_blank"
+              rel="noopener"
+              aria-label={dict.nav.world3d}
+              title={dict.nav.world3d}
+              className={NAV_ICON_BUTTON}
+            >
+              <Box data-btn-glyph className="w-3.5 h-3.5" />
+            </a>
+          </li>
+          <li>
             {/* The readable resume, not the file. The PDF is one tracked click
                 away on that page, and an HTML resume is what a phone, a search
                 engine and the Khmer locale can all actually use. */}
@@ -512,6 +524,19 @@ export default function Navbar(props: { lang: Locale }) {
                 </li>
               );
             })}
+            <li>
+              <a
+                href={siteConfig.world3d}
+                target="_blank"
+                rel="noopener"
+                onClick={() => setMenuOpen(false)}
+                className="flex min-h-11 items-center gap-2 rounded-lg border-l border-transparent px-3 text-xs font-mono text-muted-foreground transition-all hover:border-border hover:text-foreground"
+              >
+                <Box className="w-3.5 h-3.5" aria-hidden />
+                {dict.nav.world3d}
+                <ArrowUpRight className="w-3 h-3" aria-hidden />
+              </a>
+            </li>
             <li className="mt-2 pt-3 border-t border-border/50">
               <a
                 href={siteConfig.resume}

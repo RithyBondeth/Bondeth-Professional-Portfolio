@@ -28,6 +28,7 @@ export const siteConfig: SiteConfig = {
   facebook: "https://www.facebook.com/profile.php?id=100094498908703",
   instagram: "https://www.instagram.com/r.bondeth/",
   youtube: "https://www.youtube.com/@rithybondeth6588",
+  world3d: "https://3d.bondeth.dev",
   resume: "/files/bondeth-resume.pdf",
 };
 
@@ -974,6 +975,24 @@ export const projects: Project[] = [
     },
     image: "/previews/reahu-generator.webp",
     gradient: "from-red-600/20 via-red-500/10 to-slate-800",
+  },
+  {
+    slug: "bondeth-world",
+    title: "Bondeth World",
+    description:
+      "My portfolio as a place — a floating cartoon island in the browser with interactive project galleries, an AI portal, and a BMW M4 you can drive.",
+    overview:
+      "A 3D world is a heavy first impression, so the site never makes anyone wait for it: the about, skills, and project pages are browsable while the scene is still loading, and the island arrives on top of content that already works. Built with React and Three.js, bundled with Vite.",
+    tags: ["React.js", "Three.js", "WebGL", "Vite"],
+    category: "Web",
+    domains: ["Creative"],
+    tier: "production",
+    year: "2026",
+    role: "Sole developer",
+    visibility: "public",
+    links: [{ kind: "app", url: "https://3d.bondeth.dev" }],
+    image: "/previews/bondeth-world-island.webp",
+    gradient: "from-emerald-700/20 via-teal-500/10 to-slate-800",
   },
   {
     slug: "debc-website",

@@ -81,6 +81,14 @@ function FileIcon() {
     </svg>
   );
 }
+function CubeIcon() {
+  return (
+    <svg {...iconProps}>
+      <path d="M21 8 12 3 3 8v8l9 5 9-5z" />
+      <path d="m3 8 9 5 9-5M12 13v8" />
+    </svg>
+  );
+}
 function CheckIcon() {
   return (
     <svg {...iconProps}>
@@ -239,6 +247,14 @@ export default function CommandPalette(props: {
           trackCvDownload("command-palette");
           window.open(siteConfig.resume, "_blank", "noopener");
         },
+      },
+      {
+        id: "world3d",
+        group: "general",
+        label: cp.open3dWorld,
+        keywords: "3d world three.js webgl interactive island game ពិភព",
+        icon: <CubeIcon />,
+        run: () => window.open(siteConfig.world3d, "_blank", "noopener"),
       },
     ];
 

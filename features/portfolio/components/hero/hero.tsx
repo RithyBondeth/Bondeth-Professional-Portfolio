@@ -4,7 +4,7 @@ import { useReducedMotion } from "@/shared/hooks/use-reduced-motion";
 import { useEffect, useState, type CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowDown, ArrowUpRight, FileText, Mail, Play } from "lucide-react";
+import { ArrowDown, ArrowUpRight, Box, FileText, Mail } from "lucide-react";
 import { skillGroups } from "@/features/portfolio/data/portfolio";
 import { skillIconId } from "@/features/portfolio/components/skills/skill-icon-id";
 import { Magnetic } from "@/shared/components/motion/magnetic";
@@ -216,18 +216,15 @@ export default function LandingHero({ lang }: { lang: Locale }) {
             </Magnetic>
           </div>
 
+          {/* Leaves the site, so it opens in a new tab and keeps this one. */}
           <a
-            href="#showreel"
-            onClick={(event) => {
-              event.preventDefault();
-              scrollToSection("showreel");
-            }}
+            href={localized.world3d}
+            target="_blank"
+            rel="noopener"
             className="hero-action mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-foreground underline decoration-primary/50 underline-offset-4 hover:text-primary hover:decoration-primary focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
           >
-            <Play size={14} fill="currentColor" aria-hidden="true" />
-            {lang === "km"
-              ? "ទស្សនាវីដេអូ ៣០ វិនាទី"
-              : "Watch the 30-second film"}
+            <Box size={14} aria-hidden="true" />
+            {dict.hero.world3d}
             <ArrowUpRight size={14} aria-hidden="true" />
           </a>
 

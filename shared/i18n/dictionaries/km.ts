@@ -14,6 +14,7 @@ export const km: Dictionary = {
     blog: "ប្លុក",
     resume: "ប្រវត្តិរូប",
     resumeMobile: "ប្រវត្តិរូប (PDF)",
+    world3d: "ពិភព 3D",
     toggleMenu: "បើក/បិទម៉ឺនុយ",
     toggleTheme: "ប្តូរផ្ទៃពណ៌",
     toggleLanguage: "ប្តូរភាសា",
@@ -25,6 +26,7 @@ export const km: Dictionary = {
     viewWork: "មើលស្នាដៃ",
     resume: "មើលប្រវត្តិរូប",
     getInTouch: "ទាក់ទងខ្ញុំ",
+    world3d: "ស្វែងយល់ពិភព 3D របស់ខ្ញុំ",
     scroll: "រំកិលចុះ",
   },
   about: {
@@ -649,6 +651,7 @@ export const km: Dictionary = {
     emailCopied: "បានចម្លងអ៊ីមែលរួចរាល់",
     openResume: "បើកប្រវត្តិរូប",
     downloadResume: "ទាញយកប្រវត្តិរូប (PDF)",
+    open3dWorld: "ស្វែងយល់ពិភព 3D របស់ខ្ញុំ",
     viewGithub: "មើលគណនី GitHub",
     viewLinkedin: "មើលគណនី LinkedIn",
     viewFacebook: "មើលគណនី Facebook",
