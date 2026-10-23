@@ -12,6 +12,7 @@ export const en = {
     blog: "Blog",
     resume: "Resume",
     resumeMobile: "Resume",
+    world3d: "3D World",
     toggleMenu: "Toggle menu",
     toggleTheme: "Switch theme",
     toggleLanguage: "Switch language",
@@ -22,6 +23,7 @@ export const en = {
     viewWork: "View selected work",
     resume: "View resume",
     getInTouch: "Get in touch",
+    world3d: "Explore my 3D world",
     scroll: "scroll",
   },
   about: {
@@ -654,6 +656,7 @@ export const en = {
     emailCopied: "Email copied to clipboard",
     openResume: "Open resume",
     downloadResume: "Download resume (PDF)",
+    open3dWorld: "Explore my 3D world",
     viewGithub: "View GitHub profile",
     viewLinkedin: "View LinkedIn profile",
     viewFacebook: "View Facebook profile",
