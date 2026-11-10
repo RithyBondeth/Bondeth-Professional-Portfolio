@@ -6,4 +6,11 @@
  * page is `site` — a brochure, not the product.
  */
 export type ProjectLinkKind =
-  "app" | "site" | "appstore" | "playstore" | "download" | "repo" | "video";
+  | "app"
+  | "site"
+  | "appstore"
+  | "playstore"
+  | "download"
+  | "repo"
+  | "docs"
+  | "video";

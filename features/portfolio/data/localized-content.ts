@@ -12,6 +12,8 @@ import type {
   ProjectCaseStudy,
 } from "@/features/portfolio/domain";
 import { kmContent } from "@/features/portfolio/data/localized-content.km";
+import { getProjectResources } from "@/features/portfolio/data/project-resources";
+import { projectNotes } from "@/features/portfolio/data/project-notes";
 import type { Locale } from "@/shared/i18n";
 
 /**
@@ -38,17 +40,28 @@ export function getEducations(lang: Locale): Education[] {
 }
 
 export function getProjects(lang: Locale): Project[] {
-  if (lang !== "km") return projects;
   // Keyed by slug, not index: an untranslated project falls back to English
   // rather than silently inheriting its neighbour's copy.
   return projects.map((project) => {
     const translation: Partial<Project> =
-      kmContent.projects[project.slug as keyof typeof kmContent.projects] ?? {};
+      lang === "km"
+        ? (kmContent.projects[
+            project.slug as keyof typeof kmContent.projects
+          ] ?? {})
+        : {};
+
+    const original = mergeCaseStudy(project.caseStudy, translation.caseStudy);
 
     return {
       ...project,
       ...translation,
-      caseStudy: mergeCaseStudy(project.caseStudy, translation.caseStudy),
+      links: getProjectResources(project),
+      caseStudy: original
+        ? {
+            ...original,
+            language: lang === "km" && !translation.caseStudy ? "en" : lang,
+          }
+        : projectNotes[project.slug]?.[lang],
     };
   });
 }

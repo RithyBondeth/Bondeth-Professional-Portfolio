@@ -10,7 +10,7 @@ import { skillIconId } from "@/features/portfolio/components/skills/skill-icon-i
 import { Magnetic } from "@/shared/components/motion/magnetic";
 import { scrollToSection } from "@/shared/components/motion/smooth-scroll";
 import { TiltCard } from "@/shared/components/motion/tilt-card";
-import { getDictionary, type Locale } from "@/shared/i18n";
+import { formatCount, getDictionary, type Locale } from "@/shared/i18n";
 import { getSiteConfig } from "@/features/portfolio/data/localized-content";
 
 function useRoleTypewriter(firstRole: string, secondRole: string) {
@@ -122,7 +122,13 @@ function PortraitTechnologies() {
   );
 }
 
-export default function LandingHero({ lang }: { lang: Locale }) {
+export default function LandingHero({
+  lang,
+  projectCount,
+}: {
+  lang: Locale;
+  projectCount: number;
+}) {
   const dict = getDictionary(lang);
   const localized = getSiteConfig(lang);
   const typedRole = useRoleTypewriter(dict.hero.titles[0], dict.hero.titles[1]);
@@ -130,12 +136,12 @@ export default function LandingHero({ lang }: { lang: Locale }) {
     lang === "km"
       ? [
           ["០៦", "តួនាទីការងារ"],
-          ["១៦", "គម្រោងដែលបានជ្រើសរើស"],
+          [formatCount(projectCount, lang), "គម្រោងក្នុងបញ្ជី"],
           ["Web · Mobile · AI", "វិស័យជំនាញ"],
         ]
       : [
           ["06", "roles across teams"],
-          ["16", "selected projects"],
+          [formatCount(projectCount, lang), "project profiles"],
           ["Web · Mobile · AI", "product range"],
         ];
 
