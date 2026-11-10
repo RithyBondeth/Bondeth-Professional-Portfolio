@@ -113,6 +113,11 @@ export const en = {
     searchPlaceholder: "Search by project, topic, or technology",
     clearFilters: "Clear filters",
     resultsLabel: "Projects shown",
+    artwork: {
+      heading: "Product artwork",
+      description:
+        "A cover and three feature panels designed around the product’s interface and colors. Select any image to see it in full.",
+    },
     caseStudy: {
       screenshotSource: "Screenshot source",
       englishOriginal: "This case study is shown in its original English.",
