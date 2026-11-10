@@ -453,7 +453,7 @@ export const projects: Project[] = [
       ],
     },
     image: "/project-preview/apsara-talent.png",
-    logo: "/project-logos/apsara-talent.webp",
+    logo: "/project-logos/apsara-talent-at-512822149334.svg",
   },
   {
     slug: "apsara-assistant",
