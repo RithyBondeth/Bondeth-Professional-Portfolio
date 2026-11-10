@@ -1,4 +1,5 @@
 import Image from "next/image";
+import artwork from "@/features/portfolio/data/project-artwork.json";
 import imageDimensions from "@/features/portfolio/data/project-image-dimensions.json";
 import type { Project } from "@/features/portfolio/domain";
 import { ProjectPreviewViewer } from "@/features/portfolio/components/projects/project-preview-viewer";
@@ -43,19 +44,29 @@ export function ProjectMedia({
   openLabel: string;
   closeLabel: string;
 }) {
-  if (project.image && project.visibility !== "confidential") {
+  const hasHero =
+    !detail &&
+    project.visibility === "public" &&
+    Object.hasOwn(artwork, project.slug);
+  const preview = hasHero
+    ? `/project-artwork/${project.slug}/hero.webp`
+    : project.image;
+
+  if (preview && project.visibility !== "confidential") {
     return (
       <>
         {detail ? (
           <ProjectScreenshot
-            src={project.image}
+            src={preview}
             alt={project.title}
             eager
             sizes="(min-width: 1024px) 460px, 90vw"
           />
         ) : (
           <Image
-            src={dimensions[project.image]?.thumbnail ?? project.image}
+            src={
+              hasHero ? preview : (dimensions[preview]?.thumbnail ?? preview)
+            }
             alt=""
             fill
             loading={eager ? "eager" : "lazy"}
@@ -64,9 +75,9 @@ export function ProjectMedia({
             data-card-media=""
           />
         )}
-        {project.previewType === "landing" && (
+        {(hasHero || project.previewType === "landing") && (
           <ProjectPreviewViewer
-            src={project.image}
+            src={preview}
             title={project.title}
             openLabel={openLabel}
             closeLabel={closeLabel}
