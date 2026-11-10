@@ -17,6 +17,14 @@ export function getDictionary(lang: Locale): Dictionary {
   return dictionaries[lang];
 }
 
+/** Keep count labels stable when the browser lacks Khmer numbering data. */
+export function formatCount(count: number, lang: Locale): string {
+  const digits = String(count);
+  return lang === "km"
+    ? digits.replace(/\d/g, (digit) => "០១២៣៤៥៦៧៨៩"[Number(digit)])
+    : digits;
+}
+
 /**
  * Prefixes an app-internal href with the locale segment.
  * "/#about" -> "/en#about", "/blog" -> "/en/blog", "/" -> "/en"

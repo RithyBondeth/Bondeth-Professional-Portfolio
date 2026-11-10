@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
+import {
+  ProjectLogo,
+  ProjectMedia,
+} from "@/features/portfolio/components/projects/project-media";
 import { notFound } from "next/navigation";
 import { AnimateIn } from "@/shared/components/motion/animate-in";
 import { ProjectLinkIcon } from "@/features/portfolio/components/projects/project-link-icon";
@@ -104,7 +107,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     .filter((item) =>
       domains.size > 0
         ? (item.domains ?? []).some((d) => domains.has(d))
-        : item.category === project.category,
+        : item.group === project.group,
     )
     .slice(0, 3);
 
@@ -157,8 +160,13 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                 <span className="rounded-lg border border-primary/20 bg-primary/5 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-primary">
                   {visibilityLabel}
                 </span>
+                {project.status && (
+                  <span className="rounded-lg border border-border px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                    {dict.projects.status[project.status]}
+                  </span>
+                )}
                 <span className="font-mono text-xs text-muted-foreground">
-                  {project.category}
+                  {dict.projects.groups[project.group]} · {project.category}
                 </span>
                 {project.domains?.map((domain) => (
                   <span
@@ -174,9 +182,12 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                   </span>
                 )}
               </div>
-              <h1 className="text-4xl font-bold leading-tight text-foreground sm:text-5xl lg:text-6xl">
-                {project.title}
-              </h1>
+              <div className="flex items-center gap-4">
+                <ProjectLogo project={project} detail />
+                <h1 className="text-4xl font-bold leading-tight text-foreground sm:text-5xl lg:text-6xl">
+                  {project.title}
+                </h1>
+              </div>
               <p className="mt-6 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
                 {project.description}
               </p>
@@ -184,7 +195,15 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           </div>
 
           <AnimateIn from="right" distance={40} delay={0.08}>
-            <ProjectPreview title={project.title} image={project.image} />
+            <div className="relative overflow-hidden rounded-xl border border-border/60 bg-card shadow-2xl shadow-black/10">
+              <ProjectMedia
+                project={project}
+                fallback={dict.projects.previewUnavailable}
+                openLabel={dict.projects.openPreview}
+                closeLabel={dict.projects.closePreview}
+                detail
+              />
+            </div>
           </AnimateIn>
         </div>
 
@@ -202,7 +221,24 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         )}
 
         {caseStudy && (
-          <CaseStudy caseStudy={caseStudy} dict={dict} title={project.title} />
+          <>
+            {project.overview && (
+              <section className="mt-12 max-w-3xl border-l-2 border-primary/30 pl-5">
+                <h2 className="mb-2 text-sm font-semibold text-foreground">
+                  {dict.projects.overview}
+                </h2>
+                <p className="text-sm leading-7 text-muted-foreground">
+                  {project.overview}
+                </p>
+              </section>
+            )}
+            <CaseStudy
+              caseStudy={caseStudy}
+              lang={lang}
+              dict={dict}
+              title={project.title}
+            />
+          </>
         )}
 
         <div
@@ -383,24 +419,5 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         )}
       </div>
     </main>
-  );
-}
-
-function ProjectPreview(props: { title: string; image: string }) {
-  const { title, image } = props;
-
-  return (
-    <div className="relative aspect-16/10 overflow-hidden rounded-lg border border-border/60 bg-card shadow-2xl shadow-black/10">
-      <Image
-        src={image}
-        alt={`${title} preview`}
-        fill
-        priority
-        // Without this, `fill` implies sizes="100vw" and the browser fetches a
-        // viewport-wide source for a panel never wider than ~460px.
-        sizes="(min-width: 1024px) 460px, 90vw"
-        className="object-cover"
-      />
-    </div>
   );
 }

@@ -1,10 +1,12 @@
 import type {
   ProjectCategory,
+  ProjectGroup,
   ProjectTier,
 } from "@/features/portfolio/domain/project-category";
 import type { ProjectLink } from "@/features/portfolio/domain/project-link";
 
 type ProjectVisibility = "public" | "limited" | "confidential";
+type ProjectStatus = "prototype" | "in-development" | "academic";
 
 /** One choice that shaped the build, and what it cost. */
 interface CaseStudyDecision {
@@ -25,6 +27,10 @@ interface CaseStudyImage {
   src: string;
   alt: string;
   caption?: string;
+  /** Public page captured for this screenshot. */
+  sourceUrl: string;
+  /** Date of capture in YYYY-MM-DD format. */
+  capturedAt: string;
 }
 
 /**
@@ -37,6 +43,8 @@ interface CaseStudyImage {
  * section out rather than fill it with something that is not true.
  */
 export interface ProjectCaseStudy {
+  /** Set for a write-up displayed in its original language. */
+  language?: "en" | "km";
   /** Who it is for and what was broken or missing. */
   problem: string;
   /** The hard limits the solution had to live within. */
@@ -73,10 +81,14 @@ export interface Project {
   tags: string[];
   /** Platform only — see ProjectCategory. */
   category: ProjectCategory;
+  /** Primary editorial collection, independent of platform and topic tags. */
+  group: ProjectGroup;
   /** Problem domains: "AI", "GovTech", "Fintech". Filterable, and additive. */
   domains?: string[];
   /** Defaults to "production" when omitted. */
   tier?: ProjectTier;
+  /** Display a maturity or academic label independently of public visibility. */
+  status?: ProjectStatus;
   /** Year or range the work happened, e.g. "2025" or "2024–2025". */
   year?: string | null;
   /** What you personally owned, in a few words. */
@@ -111,8 +123,10 @@ export interface Project {
    */
   links: ProjectLink[];
   caseStudy?: ProjectCaseStudy;
-  /** URL to a screenshot/preview image */
-  image: string;
-  /** Tailwind gradient classes used when a preview is withheld */
-  gradient: string;
+  /** Verified screenshot or published product preview. */
+  image: string | null;
+  /** Landing screenshots can open at full size from the card or detail page. */
+  previewType?: "landing";
+  /** Official brand mark or app icon, when one is available. */
+  logo?: string;
 }

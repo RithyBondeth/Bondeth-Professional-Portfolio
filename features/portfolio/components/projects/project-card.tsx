@@ -1,5 +1,8 @@
-import Image from "next/image";
 import Link from "next/link";
+import {
+  ProjectLogo,
+  ProjectMedia,
+} from "@/features/portfolio/components/projects/project-media";
 import { TiltCard } from "@/shared/components/motion/tilt-card";
 import { TechBadges } from "@/features/portfolio/components/projects/tech-badges";
 import { ProjectLinkIcon } from "@/features/portfolio/components/projects/project-link-icon";
@@ -15,10 +18,13 @@ export function ProjectCard(props: {
   project: Project;
   dict: Dictionary;
   lang: Locale;
+  eagerPreview?: boolean;
 }) {
-  const { project, dict, lang } = props;
+  const { project, dict, lang, eagerPreview } = props;
   const primary = getPrimaryLink(project);
-  const badge = getMediaBadge(project);
+  const badge = project.status
+    ? { label: dict.projects.status[project.status], live: false }
+    : getMediaBadge(project);
 
   return (
     /* 3D tilt + glare shell — desktop pointers only, static elsewhere. */
@@ -27,34 +33,14 @@ export function ProjectCard(props: {
           (the two transforms would fight) and keeps only the border warm-up,
           glow, and sheen. */}
       <article className="card-interactive group flex h-full flex-col overflow-hidden rounded-lg border border-border/60 bg-card [--card-lift:0px]">
-        <div className="relative h-44 overflow-hidden">
-          {project.image && project.visibility !== "confidential" ? (
-            <Image
-              src={project.image}
-              alt={`${project.title} preview`}
-              fill
-              // Without this, `fill` means `sizes="100vw"` and the browser
-              // picks the widest srcset candidate — a 3840px render of a
-              // preview that is never shown above 420px. The card is
-              // `min(84vw, 420px)` in the landing strip and a third of a
-              // max-w-6xl grid on /projects, so 420 covers the widest case.
-              sizes="(min-width: 640px) 420px, 90vw"
-              data-card-media
-              className="object-cover"
-            />
-          ) : (
-            <div
-              className={`absolute inset-0 bg-linear-to-br ${project.gradient}`}
-            >
-              <ProjectChrome category={project.category} />
-            </div>
-          )}
-
-          {project.caseStudy && project.visibility !== "confidential" && (
-            <div className="absolute left-3 top-3 rounded-lg border border-primary/25 bg-background/85 px-2 py-1 font-mono text-[9px] uppercase tracking-wider text-primary backdrop-blur-sm">
-              {dict.projects.caseStudy.badge}
-            </div>
-          )}
+        <div className="relative aspect-video overflow-hidden bg-muted">
+          <ProjectMedia
+            project={project}
+            fallback={dict.projects.previewUnavailable}
+            openLabel={dict.projects.openPreview}
+            closeLabel={dict.projects.closePreview}
+            eager={eagerPreview}
+          />
 
           {badge && (
             <div
@@ -77,18 +63,27 @@ export function ProjectCard(props: {
         </div>
 
         <div className="flex flex-1 flex-col gap-3 p-5">
-          <div className="flex items-start gap-2">
-            <span
-              aria-hidden
-              className="mt-0.5 font-mono text-[10px] text-muted-foreground"
-            >
-              ▸
-            </span>
-            <h3 className="font-mono text-sm font-semibold leading-snug text-foreground">
-              {project.title}
-            </h3>
+          <div className="flex items-center gap-3">
+            <ProjectLogo project={project} />
+            <div className="min-w-0">
+              <p className="mb-1 text-[10px] leading-snug text-muted-foreground">
+                {dict.projects.groups[project.group]} · {project.category}
+              </p>
+              <h3 className="text-base font-semibold leading-snug text-foreground">
+                {project.visibility === "confidential" ? (
+                  project.title
+                ) : (
+                  <Link
+                    href={`/${lang}/projects/${project.slug}`}
+                    className="rounded-sm hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                  >
+                    {project.title}
+                  </Link>
+                )}
+              </h3>
+            </div>
             {project.visibility !== "public" && (
-              <span className="ml-auto rounded-lg border border-status-warning/25 bg-status-warning/5 px-1.5 py-0.5 text-left font-mono text-[9px] text-status-warning">
+              <span className="ml-auto shrink-0 max-w-[32%] rounded-lg border border-status-warning/25 bg-status-warning/5 px-1.5 py-0.5 text-left font-mono text-[9px] text-status-warning">
                 {project.visibility === "limited"
                   ? dict.projects.limitedProject
                   : dict.projects.confidentialProject}
@@ -107,7 +102,7 @@ export function ProjectCard(props: {
           <div className="flex items-center gap-2 border-t border-border/40 pt-3">
             {project.visibility !== "confidential" && (
               <Link
-                href={`/${lang}/projects/${project.slug}`}
+                href={`/${lang}/projects/${project.slug}${project.caseStudy ? "#project-case-study" : ""}`}
                 aria-label={`${
                   project.caseStudy
                     ? dict.projects.caseStudy.read
@@ -145,64 +140,5 @@ export function ProjectCard(props: {
         </div>
       </article>
     </TiltCard>
-  );
-}
-
-/** Three traffic lights, shared by every window-shaped frame. */
-function TrafficLights() {
-  return (
-    <>
-      <span className="h-2 w-2 rounded-full bg-red-500/70" />
-      <span className="h-2 w-2 rounded-full bg-yellow-500/70" />
-      <span className="h-2 w-2 rounded-full bg-green-500/70" />
-    </>
-  );
-}
-
-/**
- * Stand-in artwork for projects with no screenshot yet. The frame follows the
- * artifact, not the link — a native app drawn inside browser chrome would
- * quietly misrepresent what was built.
- *
- * Mobile still falls through to the browser frame; swap in a phone bezel here
- * once there is a mobile project to put in it.
- */
-function ProjectChrome(props: { category: Project["category"] }) {
-  if (props.category === "macOS") {
-    return (
-      <>
-        {/* Window bar: traffic lights, no URL field. */}
-        <div className="absolute inset-x-0 top-0 flex h-7 items-center gap-1.5 bg-background/70 px-3 backdrop-blur-sm">
-          <TrafficLights />
-          <div className="mx-auto h-2 w-16 rounded-sm bg-border/50" />
-        </div>
-        {/* Sidebar + detail split, the shape most Mac utilities take. */}
-        <div className="absolute inset-0 top-7 flex gap-2 p-3">
-          <div className="flex w-1/3 flex-col gap-1.5 rounded-lg border border-foreground/10 bg-foreground/5 p-2">
-            <div className="h-1.5 w-full rounded-lg bg-foreground/15" />
-            <div className="h-1.5 w-4/5 rounded-lg bg-foreground/10" />
-            <div className="h-1.5 w-3/5 rounded-lg bg-foreground/10" />
-          </div>
-          <div className="flex flex-1 flex-col gap-2">
-            <div className="h-2.5 w-2/3 rounded-lg bg-foreground/10" />
-            <div className="flex-1 rounded-lg border border-foreground/10 bg-foreground/5" />
-          </div>
-        </div>
-      </>
-    );
-  }
-
-  return (
-    <>
-      <div className="absolute inset-x-0 top-0 flex h-7 items-center gap-1.5 bg-background/70 px-3 backdrop-blur-sm">
-        <TrafficLights />
-        <div className="ml-2 h-3 max-w-35 flex-1 rounded-sm bg-border/60" />
-      </div>
-      <div className="absolute inset-0 top-7 flex flex-col gap-2 p-4">
-        <div className="h-2.5 w-3/4 rounded-lg bg-foreground/10" />
-        <div className="h-2.5 w-1/2 rounded-lg bg-foreground/10" />
-        <div className="mt-2 h-14 rounded-lg border border-foreground/10 bg-foreground/5" />
-      </div>
-    </>
   );
 }

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { loadTypescript } from "./helpers/load-typescript.mjs";
+import { loadTypescript } from "../scripts/lib/load-typescript.mjs";
 
 const { getAllPosts } = loadTypescript("features/blog/server/get-all-posts.ts");
 const { getPostBySlug } = loadTypescript(

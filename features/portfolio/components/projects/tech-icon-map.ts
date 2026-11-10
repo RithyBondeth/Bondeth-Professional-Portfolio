@@ -15,10 +15,10 @@ export const TECH_ICONS: Record<
   { icon: string; color: string; colorLight?: string }
 > = {
   TypeScript: { icon: "SiTypescript", color: "#3178C6" },
-  "React.js": { icon: "SiReact", color: "#61DAFB" },
+  React: { icon: "SiReact", color: "#61DAFB" },
   "Next.js": { icon: "SiNextdotjs", color: "#FFFFFF", colorLight: "#0A0A0A" },
-  "Nuxt.js": { icon: "SiNuxt", color: "#4FC08D" },
-  "Vue.js": { icon: "SiVuedotjs", color: "#4FC08D" },
+  Nuxt: { icon: "SiNuxt", color: "#4FC08D" },
+  Vue: { icon: "SiVuedotjs", color: "#4FC08D" },
   "Tailwind CSS": { icon: "SiTailwindcss", color: "#06B6D4" },
   Python: { icon: "SiPython", color: "#3776AB" },
   "Node.js": { icon: "SiNodedotjs", color: "#339933" },
