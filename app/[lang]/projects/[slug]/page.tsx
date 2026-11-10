@@ -19,6 +19,7 @@ import { getLinkLabel } from "@/features/portfolio/domain/project-links";
 import { projects, siteConfig } from "@/features/portfolio/data/portfolio";
 import { getProjects } from "@/features/portfolio/data/localized-content";
 import { getDictionary, hasLocale, locales, type Locale } from "@/shared/i18n";
+import { ProjectArtwork } from "@/features/portfolio/components/projects/project-artwork";
 import { ProjectCard } from "@/features/portfolio/components/projects/project-card";
 
 interface ProjectPageProps {
@@ -240,6 +241,8 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             />
           </>
         )}
+
+        <ProjectArtwork project={project} dict={dict} />
 
         <div
           className={`grid gap-6 ${caseStudy ? "mt-6" : "mt-16 md:grid-cols-2"}`}

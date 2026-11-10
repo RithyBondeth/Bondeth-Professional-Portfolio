@@ -1,0 +1,178 @@
+{
+  "askdb": {
+    "hero": "Ask your data anything.",
+    "features": [
+      "Your data. Your questions.",
+      "Read-only. By design.",
+      "Follow every repair."
+    ]
+  },
+  "cambodia-3d-map": {
+    "hero": "Cambodia. Another dimension.",
+    "features": [
+      "A country in 3D.",
+      "Find a place. Follow the route.",
+      "Landmarks with identity."
+    ]
+  },
+  "bondeth-studio": {
+    "hero": "One idea. A finished video.",
+    "features": [
+      "From a thought to a series.",
+      "Keep control of every scene.",
+      "Give your ideas a voice."
+    ]
+  },
+  "the-unbroken-debt": {
+    "hero": "An ancestral debt. A long night.",
+    "features": [
+      "Step into the unknown.",
+      "Your inventory lives in the world.",
+      "Make every resource count."
+    ]
+  },
+  "angkor-architect": {
+    "hero": "Build a city. Think like Angkor.",
+    "features": [
+      "A city begins with water.",
+      "Shape the land. Guide the water.",
+      "Keep your city in your hands."
+    ]
+  },
+  "bondeth-ai": {
+    "hero": "Speak Khmer. Be heard.",
+    "features": [
+      "Voice, with a Khmer focus.",
+      "From speech to clear text.",
+      "Make words audible."
+    ]
+  },
+  "nexus-pc": {
+    "hero": "Your library. Your next experiment.",
+    "features": [
+      "A library that stays local.",
+      "Import with clear boundaries.",
+      "An honest experiment."
+    ]
+  },
+  "visioncare-ai": {
+    "hero": "Explore vision. Study the models.",
+    "features": [
+      "Computer vision. In a web app.",
+      "Check the image before classifying.",
+      "Compare models. Document the work."
+    ]
+  },
+  "bondex-notch": {
+    "hero": "Your Mac’s notch. Finally useful.",
+    "features": [
+      "Know what’s happening.",
+      "Keep your music within reach.",
+      "Small tools. Less switching."
+    ]
+  },
+  "apsara-talent": {
+    "hero": "Find your fit. Build what’s next.",
+    "features": [
+      "Opportunity, closer to you.",
+      "A resume with a head start.",
+      "Take Apsara Talent with you."
+    ]
+  },
+  "apsara-assistant": {
+    "hero": "Keep the shop conversation going.",
+    "features": [
+      "Your shop. One workspace.",
+      "Two channels. One inbox.",
+      "From a question to an order."
+    ]
+  },
+  "apsara-agentic": {
+    "hero": "Your terminal. Your coding partner.",
+    "features": [
+      "Meet Makor. Stay in the terminal.",
+      "See the diff. Then decide.",
+      "Verification is part of the job."
+    ]
+  },
+  "apsara-elearning": {
+    "hero": "Learn in Khmer. Keep moving forward.",
+    "features": [
+      "A place to keep learning.",
+      "Learn. Practice. Review.",
+      "Progress you can come back to."
+    ]
+  },
+  "apsara-wallet": {
+    "hero": "Smart finance. A better future.",
+    "features": [
+      "Every wallet. One clear view.",
+      "Budgets that hold.",
+      "Goals worth saving for."
+    ]
+  },
+  "romlerk": {
+    "hero": "Your day. A little lighter.",
+    "features": [
+      "Today, a little clearer.",
+      "Say it. Review it. Save it.",
+      "Make room for what’s next."
+    ]
+  },
+  "pdfflow": {
+    "hero": "Do the document. Leave no footprint.",
+    "features": [
+      "The PDF job. Without the account.",
+      "Upload. Process. Download. Done.",
+      "A useful set of document tools."
+    ]
+  },
+  "reahu-generator": {
+    "hero": "Your GitHub story. Ready to read.",
+    "features": [
+      "Compose your next introduction.",
+      "Edit here. Preview there.",
+      "Make it yours. Take it with you."
+    ]
+  },
+  "bondeth-world": {
+    "hero": "A portfolio. A place to explore.",
+    "features": [
+      "Take the scenic route.",
+      "A different kind of night shift.",
+      "Another way to see the work."
+    ]
+  },
+  "code-hub": {
+    "hero": "Work, ideas, and what’s next.",
+    "features": [
+      "A place for the work.",
+      "From a project to a conversation.",
+      "Built for more than a visit."
+    ]
+  },
+  "apple-clone": {
+    "hero": "A study in product storytelling.",
+    "features": [
+      "Layout, with a product focus.",
+      "Built around the scroll.",
+      "Local assets. Reusable patterns."
+    ]
+  },
+  "tesla-clone": {
+    "hero": "A study in full-screen impact.",
+    "features": [
+      "One screen. One strong idea.",
+      "Explore the page patterns.",
+      "Small details. A complete page."
+    ]
+  },
+  "sabynews-clone": {
+    "hero": "A study in Khmer news layouts.",
+    "features": [
+      "A grid full of stories.",
+      "Navigate by what interests you.",
+      "Desktop rhythm. Mobile clarity."
+    ]
+  }
+}
