@@ -1062,7 +1062,7 @@ export const projects: Project[] = [
     visibility: "public",
     links: [],
     image: "/previews/sabynews-clone.webp",
-    logo: "/project-logos/sabynews-clone.webp",
+    logo: "/project-logos/sabynews-clone-black-40b7a851bfc6.webp",
   },
   {
     slug: "bondeth-vlog",
