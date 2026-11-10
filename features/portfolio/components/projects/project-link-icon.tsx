@@ -1,3 +1,4 @@
+import { BookOpen } from "lucide-react";
 import {
   AppleIcon,
   DownloadIcon,
@@ -21,6 +22,8 @@ export function ProjectLinkIcon(props: {
       return <AppleIcon className={className} />;
     case "repo":
       return <GitHubIcon className={className} />;
+    case "docs":
+      return <BookOpen aria-hidden className={className} />;
     case "video":
       return <YouTubeIcon className={className} />;
     default:

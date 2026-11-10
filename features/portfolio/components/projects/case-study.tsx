@@ -1,7 +1,7 @@
-import Image from "next/image";
-import { AnimateIn } from "@/shared/components/motion/animate-in";
+import { ProjectScreenshot } from "@/features/portfolio/components/projects/project-media";
+import { ProjectPreviewViewer } from "@/features/portfolio/components/projects/project-preview-viewer";
 import type { ProjectCaseStudy } from "@/features/portfolio/domain";
-import type { Dictionary } from "@/shared/i18n";
+import type { Dictionary, Locale } from "@/shared/i18n";
 
 /** How many numbered sections a case study adds, so the page can continue the count. */
 export function countCaseStudySections(caseStudy: ProjectCaseStudy) {
@@ -9,204 +9,215 @@ export function countCaseStudySections(caseStudy: ProjectCaseStudy) {
   return 2 + (hasOutcome ? 1 : 0) + (caseStudy.gallery?.length ? 1 : 0);
 }
 
-function Eyebrow({ index, label }: { index: number; label: string }) {
+function SectionTitle({ index, label }: { index: number; label: string }) {
   return (
-    <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
-      {String(index).padStart(2, "0")} / {label}
-    </p>
+    <h3 className="flex items-baseline gap-3 text-xl font-semibold tracking-tight text-foreground">
+      <span aria-hidden className="font-mono text-xs text-primary">
+        {String(index).padStart(2, "0")}
+      </span>
+      {label}
+    </h3>
   );
 }
 
-/**
- * The long-form half of a project page: problem, decisions, outcome, gallery.
- * Each block renders only when it has content, so a case study can grow one
- * section at a time without leaving an empty heading on the page.
- */
-export function CaseStudy(props: {
+const PANEL = "min-w-0 rounded-xl border border-border/60 bg-card p-5 sm:p-7";
+
+export function CaseStudy({
+  caseStudy,
+  dict,
+  title,
+  lang,
+}: {
   caseStudy: ProjectCaseStudy;
   dict: Dictionary;
   title: string;
+  lang: Locale;
 }) {
-  const { caseStudy, dict, title } = props;
   const labels = dict.projects.caseStudy;
-  const hasOutcome = Boolean(caseStudy.outcome || caseStudy.metrics?.length);
-  const hasGallery = Boolean(caseStudy.gallery?.length);
-  // Problem and decisions are always present; outcome and gallery number
-  // themselves only when they render.
-  const number = {
-    problem: 1,
-    decisions: 2,
-    outcome: 3,
-    gallery: hasOutcome ? 4 : 3,
-  };
+  const {
+    problem,
+    decisions,
+    constraints,
+    outcome,
+    metrics,
+    gallery,
+    language,
+  } = caseStudy;
+  const hasOutcome = Boolean(outcome || metrics?.length);
 
   return (
-    <div className="mt-16 space-y-6">
-      {/* Problem + constraints */}
-      <div
-        className={`grid gap-6 ${caseStudy.constraints?.length ? "lg:grid-cols-[1.25fr_0.75fr]" : ""}`}
-      >
-        <AnimateIn from="up">
-          <section className="h-full rounded-lg border border-border/60 bg-card p-6 sm:p-8">
-            <Eyebrow index={number.problem} label={labels.problem} />
-            <h2 className="sr-only">{labels.problem}</h2>
-            <p className="mt-5 text-lg leading-8 text-foreground sm:text-xl sm:leading-9">
-              {caseStudy.problem}
-            </p>
-          </section>
-        </AnimateIn>
+    <section
+      className="mt-14 space-y-6 scroll-mt-32"
+      aria-labelledby="project-case-study"
+    >
+      <header className="border-b border-border/60 pb-4">
+        <h2
+          id="project-case-study"
+          className="scroll-mt-32 text-3xl font-semibold tracking-tight text-foreground"
+        >
+          {labels.badge}
+        </h2>
+        {language && language !== lang && (
+          <p className="mt-2 text-sm text-muted-foreground">
+            {labels.englishOriginal}
+          </p>
+        )}
+      </header>
 
-        {caseStudy.constraints && caseStudy.constraints.length > 0 && (
-          <AnimateIn from="up" delay={0.08}>
-            <aside className="h-full rounded-lg border border-border/60 bg-card p-6">
-              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
-                {labels.constraints}
-              </p>
-              <ul className="mt-5 space-y-3">
-                {caseStudy.constraints.map((constraint, position) => (
-                  <li
-                    key={`${position}-${constraint}`}
-                    className="flex gap-3 text-sm leading-6 text-muted-foreground"
-                  >
-                    <span
-                      aria-hidden
-                      className="mt-2.5 size-1.5 shrink-0 bg-brand-pixel"
-                    />
-                    {constraint}
-                  </li>
-                ))}
-              </ul>
-            </aside>
-          </AnimateIn>
+      <div
+        className={`grid gap-4 ${constraints?.length ? "lg:grid-cols-[1.25fr_0.75fr]" : ""}`}
+      >
+        <section className={PANEL}>
+          <SectionTitle index={1} label={labels.problem} />
+          <p
+            lang={language}
+            className="mt-4 max-w-prose text-base leading-7 text-foreground sm:text-lg sm:leading-8"
+          >
+            {problem}
+          </p>
+        </section>
+
+        {constraints && constraints.length > 0 && (
+          <aside className={PANEL}>
+            <h3 className="text-base font-semibold text-foreground">
+              {labels.constraints}
+            </h3>
+            <ul
+              lang={language}
+              className="mt-3 list-disc space-y-2 pl-5 text-sm leading-6 text-muted-foreground marker:text-primary"
+            >
+              {constraints.map((constraint) => (
+                <li key={constraint}>{constraint}</li>
+              ))}
+            </ul>
+          </aside>
         )}
       </div>
 
-      {/* Decisions */}
-      <section className="pt-6">
-        <AnimateIn from="up">
-          <Eyebrow index={number.decisions} label={labels.decisions} />
-          <h2 className="mt-3 text-2xl font-semibold text-foreground">
-            {labels.decisions}
-          </h2>
-        </AnimateIn>
-        {/* Three across when the count divides by three, otherwise pairs —
-            four decisions read better as 2×2 than as 3 + 1 orphan. */}
+      <section className="pt-3">
+        <SectionTitle index={2} label={labels.decisions} />
         <ol
-          className={`mt-6 grid gap-4 ${
-            caseStudy.decisions.length % 3 === 0
-              ? "lg:grid-cols-3"
-              : "md:grid-cols-2"
-          }`}
+          className={`mt-4 grid gap-4 ${decisions.length > 1 ? "md:grid-cols-2" : ""}`}
         >
-          {caseStudy.decisions.map((decision, position) => (
-            <li key={`${position}-${decision.title}`} className="h-full">
-              <AnimateIn from="up" delay={position * 0.06} className="h-full">
-                <article className="flex h-full flex-col rounded-lg border border-border/60 bg-card p-6">
-                  <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                    {labels.decision} {String(position + 1).padStart(2, "0")}
+          {decisions.map((decision, index) => (
+            <li key={decision.title} className={PANEL}>
+              <p
+                aria-hidden
+                className="text-xs font-medium text-muted-foreground"
+              >
+                {labels.decision} {String(index + 1).padStart(2, "0")}
+              </p>
+              <h4
+                lang={language}
+                className="mt-2 text-base font-semibold leading-snug text-foreground"
+              >
+                {decision.title}
+              </h4>
+              <p
+                lang={language}
+                className="mt-2 max-w-prose text-sm leading-7 text-muted-foreground"
+              >
+                {decision.body}
+              </p>
+              {decision.tradeoff && (
+                <div className="mt-4 border-t border-border/60 pt-3">
+                  <p className="text-xs font-semibold text-foreground">
+                    {labels.tradeoff}
                   </p>
-                  <h3 className="mt-3 text-base font-semibold leading-snug text-foreground">
-                    {decision.title}
-                  </h3>
-                  <p className="mt-3 flex-1 text-sm leading-7 text-muted-foreground">
-                    {decision.body}
+                  <p
+                    lang={language}
+                    className="mt-1 max-w-prose text-sm leading-6 text-muted-foreground"
+                  >
+                    {decision.tradeoff}
                   </p>
-                  {decision.tradeoff && (
-                    <div className="mt-5 border-t border-border/50 pt-4">
-                      <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
-                        {labels.tradeoff}
-                      </p>
-                      <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                        {decision.tradeoff}
-                      </p>
-                    </div>
-                  )}
-                </article>
-              </AnimateIn>
+                </div>
+              )}
             </li>
           ))}
         </ol>
       </section>
 
-      {/* Outcome */}
       {hasOutcome && (
-        <AnimateIn from="up">
-          <section className="rounded-lg border border-border/60 bg-card p-6 sm:p-8">
-            <Eyebrow index={number.outcome} label={labels.outcome} />
-            <h2 className="sr-only">{labels.outcome}</h2>
-            {caseStudy.metrics && caseStudy.metrics.length > 0 && (
-              <dl className="mt-6 grid grid-cols-2 gap-6 sm:grid-cols-4">
-                {caseStudy.metrics.map((metric, position) => (
-                  <div
-                    key={`${position}-${metric.label}`}
-                    className="border-l-2 border-brand-pixel pl-4"
-                  >
-                    <dt className="sr-only">{metric.label}</dt>
-                    <dd className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-                      {metric.value}
-                    </dd>
-                    <dd className="mt-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                      {metric.label}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-            )}
-            {caseStudy.outcome && (
-              <p
-                className={`text-base leading-8 text-muted-foreground ${
-                  caseStudy.metrics?.length ? "mt-8" : "mt-5"
-                }`}
-              >
-                {caseStudy.outcome}
-              </p>
-            )}
-          </section>
-        </AnimateIn>
+        <section className={PANEL}>
+          <SectionTitle index={3} label={labels.outcome} />
+          {metrics && metrics.length > 0 && (
+            <dl
+              lang={language}
+              className="mt-5 grid grid-cols-[repeat(auto-fit,minmax(min(100%,9rem),1fr))] gap-3"
+            >
+              {metrics.map(({ label, value }) => (
+                <div
+                  key={label}
+                  className="flex min-w-0 flex-col rounded-lg border border-border/60 bg-muted/30 p-4"
+                >
+                  <dt className="order-2 mt-1 text-xs leading-snug text-muted-foreground">
+                    {label}
+                  </dt>
+                  <dd className="text-xl font-bold tracking-tight break-words text-foreground sm:text-2xl">
+                    {value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          )}
+          {outcome && (
+            <p
+              lang={language}
+              className="mt-4 max-w-prose text-sm leading-7 text-muted-foreground"
+            >
+              {outcome}
+            </p>
+          )}
+        </section>
       )}
 
-      {/* Gallery */}
-      {hasGallery && caseStudy.gallery && (
-        <section className="pt-6">
-          <AnimateIn from="up">
-            <Eyebrow index={number.gallery} label={labels.gallery} />
-            <h2 className="mt-3 text-2xl font-semibold text-foreground">
-              {labels.gallery}
-            </h2>
-          </AnimateIn>
-          {/* A lone image takes the full width rather than half a grid. */}
+      {gallery && gallery.length > 0 && (
+        <section className="pt-3">
+          <SectionTitle index={hasOutcome ? 4 : 3} label={labels.gallery} />
           <div
-            className={`mt-6 grid gap-6 ${
-              caseStudy.gallery.length > 1 ? "sm:grid-cols-2" : ""
-            }`}
+            className={`mt-4 grid items-start gap-5 ${gallery.length > 1 ? "sm:grid-cols-2" : ""}`}
           >
-            {caseStudy.gallery.map((image, position) => (
-              <AnimateIn
-                key={image.src}
-                from="up"
-                delay={(position % 2) * 0.06}
-              >
-                <figure>
-                  <div className="relative aspect-16/10 overflow-hidden rounded-lg border border-border/60 bg-card">
-                    <Image
-                      src={image.src}
-                      alt={image.alt || `${title}: ${image.caption ?? ""}`}
-                      fill
-                      sizes="(min-width: 640px) 512px, 100vw"
-                      className="object-cover object-top"
-                    />
-                  </div>
-                  {image.caption && (
-                    <figcaption className="mt-3 font-mono text-xs text-muted-foreground">
-                      {image.caption}
-                    </figcaption>
-                  )}
-                </figure>
-              </AnimateIn>
+            {gallery.map((image, index) => (
+              <figure key={image.src} className="min-w-0">
+                <div className="relative overflow-hidden rounded-xl border border-border/60 bg-card">
+                  <ProjectScreenshot
+                    src={image.src}
+                    alt={image.alt || `${title} — ${index + 1}`}
+                    sizes={
+                      gallery.length > 1
+                        ? "(min-width: 640px) 512px, 90vw"
+                        : "(min-width: 1024px) 1024px, 90vw"
+                    }
+                  />
+                  <ProjectPreviewViewer
+                    src={image.src}
+                    title={
+                      image.caption || image.alt || `${title} — ${index + 1}`
+                    }
+                    openLabel={dict.projects.openPreview}
+                    closeLabel={dict.projects.closePreview}
+                  />
+                </div>
+                <figcaption className="mt-2 space-y-1 text-sm leading-6 text-muted-foreground">
+                  {image.caption && <p lang={language}>{image.caption}</p>}
+                  <p className="text-xs">
+                    <a
+                      href={image.sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-sm text-primary underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                    >
+                      {labels.screenshotSource}
+                    </a>
+                    {" · "}
+                    <time dateTime={image.capturedAt}>{image.capturedAt}</time>
+                  </p>
+                </figcaption>
+              </figure>
             ))}
           </div>
         </section>
       )}
-    </div>
+    </section>
   );
 }

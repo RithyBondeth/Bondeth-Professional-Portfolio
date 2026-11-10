@@ -8,6 +8,7 @@ import type {
   Organization,
   Video,
 } from "@/features/portfolio/domain";
+import { recentProjects } from "@/features/portfolio/data/recent-projects";
 
 export const siteConfig: SiteConfig = {
   name: "Bondeth",
@@ -95,7 +96,7 @@ export const skillGroups: SkillGroup[] = [
     category: "Frontend",
     skills: [
       { name: "TypeScript", icon: "SiTypescript", color: "#3178C6", level: 3 },
-      { name: "React.js", icon: "SiReact", color: "#61DAFB", level: 3 },
+      { name: "React", icon: "SiReact", color: "#61DAFB", level: 3 },
       {
         name: "Next.js",
         icon: "SiNextdotjs",
@@ -103,8 +104,8 @@ export const skillGroups: SkillGroup[] = [
         colorLight: "#0A0A0A",
         level: 3,
       },
-      { name: "Vue.js", icon: "SiVuedotjs", color: "#4FC08D", level: 3 },
-      { name: "Nuxt.js", icon: "SiNuxt", color: "#4FC08D", level: 3 },
+      { name: "Vue", icon: "SiVuedotjs", color: "#4FC08D", level: 3 },
+      { name: "Nuxt", icon: "SiNuxt", color: "#4FC08D", level: 3 },
       {
         name: "Tailwind CSS",
         icon: "SiTailwindcss",
@@ -237,7 +238,7 @@ export const experiences: Experience[] = [
     period: "2023 – 2024",
     description:
       "Collaborated with a freelancing team on web and mobile app development projects. Delivered multiple client projects including e-commerce and service platforms.",
-    tags: ["Vue.js", "NestJS", "PostgreSQL", "Flutter"],
+    tags: ["Vue", "NestJS", "PostgreSQL", "Flutter"],
   },
   {
     role: "Web Developer Internship",
@@ -308,8 +309,10 @@ export const organizations: Organization[] = [
 ];
 
 export const projects: Project[] = [
+  ...recentProjects,
   {
     slug: "bondex-notch",
+    group: "developer-tools",
     title: "Bondex Notch",
     description:
       "A native macOS utility that turns the notch into a live view of your music, coding agents, running tasks, downloads, and system status.",
@@ -365,36 +368,14 @@ export const projects: Project[] = [
         { value: "0", label: "third-party dependencies" },
         { value: "macOS 14+", label: "Apple Silicon & Intel" },
       ],
-      gallery: [
-        {
-          src: "/projects/bondex-notch/productivity.webp",
-          alt: "Bondex Notch's Home panel with a focus timer, an upcoming meeting, running coding agents, and music",
-          caption:
-            "Home: a focus timer, the next meeting, Codex and Claude at work, and what's playing.",
-        },
-        {
-          src: "/projects/bondex-notch/system.webp",
-          alt: "Bondex Notch's System panel with CPU, memory, network, and device batteries",
-          caption:
-            "System: CPU, memory, network, and every connected device's battery.",
-        },
-        {
-          src: "/projects/bondex-notch/clipboard.webp",
-          alt: "Bondex Notch's searchable clipboard history",
-          caption: "A searchable clipboard history, kept on the Mac.",
-        },
-        {
-          src: "/projects/bondex-notch/settings-appearance.webp",
-          alt: "Bondex Notch's appearance settings with accent colours and panel options",
-          caption: "Appearance settings — accent, material, and panel size.",
-        },
-      ],
+      gallery: [],
     },
     image: "/project-preview/bondex-notch.png",
-    gradient: "from-indigo-600/20 via-indigo-500/10 to-slate-800",
+    logo: "/project-logos/bondex-notch.webp",
   },
   {
     slug: "apsara-talent",
+    group: "products",
     title: "Apsara Talent",
     description:
       "A recruitment platform for Cambodia — semantic matching between candidates and companies, a full hiring pipeline, chat, interviews, and an AI resume builder — on seven NestJS services.",
@@ -463,24 +444,20 @@ export const projects: Project[] = [
       ],
       gallery: [
         {
-          src: "/projects/apsara-talent/dashboard.webp",
-          alt: "Apsara Talent's candidate dashboard with likes, matches, and profile completeness",
-          caption:
-            "The candidate dashboard — likes, mutual matches, and profile completeness.",
-        },
-        {
-          src: "/projects/apsara-talent/sign-in.webp",
-          alt: "Apsara Talent's sign-in screen with Google, Facebook, LinkedIn, GitHub, and phone login",
-          caption:
-            "Sign in with Google, Facebook, LinkedIn, GitHub, a phone number, or email.",
+          src: "/projects/apsara-talent/login.webp",
+          alt: "Apsara Talent sign-in page",
+          caption: "Public sign-in page, captured from the running website.",
+          sourceUrl: "https://talent.apsara.social/login",
+          capturedAt: "2026-11-10",
         },
       ],
     },
     image: "/project-preview/apsara-talent.png",
-    gradient: "from-blue-600/20 via-cyan-500/10 to-slate-800",
+    logo: "/project-logos/apsara-talent.webp",
   },
   {
     slug: "apsara-assistant",
+    group: "products",
     title: "Apsara Assistant",
     description:
       "An AI sales assistant for Cambodian shops — it answers customers on Messenger and Telegram from the seller's own catalogue, in Khmer, English, or romanized Khmer, and can take an order and a payment while the seller sleeps.",
@@ -551,49 +528,33 @@ export const projects: Project[] = [
       ],
       gallery: [
         {
-          src: "/projects/apsara-assistant/chat-khmer.webp",
-          alt: "A customer and Apsara Assistant chatting in Khmer about stock and paying by KHQR",
-          caption:
-            "Auto-reply in Khmer — stock, delivery, and payment by KHQR, answered instantly.",
-        },
-        {
-          src: "/projects/apsara-assistant/order-verified.webp",
-          alt: "An order created from a Messenger conversation, with its payment marked verified",
-          caption:
-            "An order created from a Messenger conversation, with the payment verified.",
-        },
-        {
-          src: "/projects/apsara-assistant/features.webp",
-          alt: "Apsara Assistant's feature grid, led by Khmer-language AI and multi-platform messaging",
-          caption:
-            "Khmer script, romanized Khmer, and English — across Messenger, Telegram, and the web.",
-        },
-        {
-          src: "/projects/apsara-assistant/integrations.webp",
-          alt: "The seller's Integrations screen with Messenger, Telegram, and Stripe connections",
-          caption:
-            "The seller connects Messenger, Telegram, and their own Stripe account.",
+          src: "/projects/apsara-assistant/login.webp",
+          alt: "Apsara Assistant sign-in page",
+          caption: "Public sign-in page, captured from the running website.",
+          sourceUrl: "https://assistant.apsara.social/login",
+          capturedAt: "2026-11-10",
         },
       ],
     },
     image: "/project-preview/apsara-assistant.png",
-    gradient: "from-violet-600/20 via-purple-500/10 to-slate-800",
+    logo: "/project-logos/apsara-assistant.webp",
   },
   {
     slug: "apsara-agentic",
+    group: "ai-data",
     title: "Apsara Agentic",
     description:
       "A local, bring-your-own-key coding agent for the terminal — it reads and edits a real repository, runs checks, and asks before every change. No Apsara server in the loop.",
     overview:
       "The model proposes; the CLI owns permissions, execution, recovery, and state. File tools are confined to the chosen workspace, every edit is shown as a diff and checkpointed before it lands, and a change only counts as done once the project's own tests pass. Written in Python with LiteLLM for model routing, MCP for external tools, and Tree-sitter for code intelligence across a dozen languages, with a Next.js site for the alpha.",
     tags: ["Python", "LiteLLM", "MCP", "Tree-sitter", "Next.js", "TypeScript"],
-    category: "Web",
+    category: "CLI",
     domains: ["AI"],
     tier: "production",
     year: "2026",
     role: "Sole developer",
     visibility: "public",
-    links: [{ kind: "app", url: "https://agentic.apsara.social" }],
+    links: [{ kind: "site", url: "https://agentic.apsara.social" }],
     // Sourced from the project's own repositories (READMEs, docs, tests, and
     // code). Every figure below is measured or counted there — re-check it
     // against the repo before changing it.
@@ -638,24 +599,21 @@ export const projects: Project[] = [
       ],
       gallery: [
         {
-          src: "/projects/apsara-agentic/agent-loop.webp",
-          alt: "Apsara Agentic's product page showing the terminal interface and the review step",
+          src: "/projects/apsara-agentic/install.webp",
+          alt: "Apsara Agentic installation guide",
           caption:
-            "The agent loop as a product: bounded tools and a review step before any edit lands.",
-        },
-        {
-          src: "/projects/apsara-agentic/capabilities.webp",
-          alt: "Apsara Agentic's capabilities: project-local init and workspace-scoped tools",
-          caption:
-            "Project-local setup and workspace-scoped tools — the behaviours that make it trustworthy.",
+            "Public installation guide. This is documentation, not a terminal session.",
+          sourceUrl: "https://agentic.apsara.social/install",
+          capturedAt: "2026-11-10",
         },
       ],
     },
     image: "/project-preview/apsara-agentic.png",
-    gradient: "from-emerald-600/20 via-teal-500/10 to-slate-800",
+    logo: "/project-logos/apsara-agentic.webp",
   },
   {
     slug: "apsara-elearning",
+    group: "products",
     title: "Apsara Elearning",
     description:
       "A bilingual learning platform for Cambodian students from Grade 1 to university, with Apsara AI — a tutor that explains in Khmer, grounded in the lesson the student is on.",
@@ -709,24 +667,20 @@ export const projects: Project[] = [
       ],
       gallery: [
         {
-          src: "/projects/apsara-elearning/flower-anatomy-km.webp",
-          alt: "A Grade 12 biology diagram of a flower's anatomy, labelled in Khmer",
-          caption:
-            "Grade 12 biology, labelled in Khmer — the material meets students in their language.",
-        },
-        {
-          src: "/projects/apsara-elearning/gene-expression-km.webp",
-          alt: "A Grade 12 diagram of gene expression from DNA to protein, labelled in Khmer",
-          caption:
-            "Gene expression from DNA to protein, with Khmer labels throughout.",
+          src: "/projects/apsara-elearning/login.webp",
+          alt: "Apsara Elearning sign-in page",
+          caption: "Public sign-in page, captured from the running website.",
+          sourceUrl: "https://elearning.apsara.social/login",
+          capturedAt: "2026-11-10",
         },
       ],
     },
     image: "/project-preview/apsara-elearning.png",
-    gradient: "from-slate-600/20 via-gray-500/10 to-slate-800",
+    logo: "/project-logos/apsara-elearning.webp",
   },
   {
     slug: "apsara-wallet",
+    group: "products",
     title: "Apsara Wallet",
     description:
       "A personal finance app for Cambodia — wallets in riel and dollars, receipt scanning on the phone, budgets, savings goals, and spending insights, in Khmer and English.",
@@ -791,30 +745,14 @@ export const projects: Project[] = [
         { value: "EN + ខ្មែរ", label: "fully localised" },
         { value: "v1.0.0", label: "release-ready" },
       ],
-      gallery: [
-        {
-          src: "/projects/apsara-wallet/gallery-overview-en.webp",
-          alt: "Apsara Wallet's dashboard, wallet list, and add-transaction screens",
-          caption:
-            "Dashboard, wallets, and adding a transaction — riel first, dollars derived.",
-        },
-        {
-          src: "/projects/apsara-wallet/gallery-planning-en.webp",
-          alt: "Apsara Wallet's budget, savings goals, and analytics screens",
-          caption: "Budgets, savings goals, and spending analytics.",
-        },
-        {
-          src: "/projects/apsara-wallet/gallery-overview-km.webp",
-          alt: "Apsara Wallet's dashboard, wallets, and analytics screens in Khmer",
-          caption: "The same app in Khmer — every screen is localised.",
-        },
-      ],
+      gallery: [],
     },
     image: "/project-preview/apsara-wallet.png",
-    gradient: "from-green-600/20 via-green-500/10 to-slate-800",
+    logo: "/project-logos/apsara-wallet.webp",
   },
   {
     slug: "romlerk",
+    group: "products",
     title: "Romlerk",
     description:
       "A Flutter to-do and notes app with an AI assistant that helps turn everyday thoughts into tasks and reminders.",
@@ -828,23 +766,24 @@ export const projects: Project[] = [
     visibility: "public",
     links: [],
     image: "/project-preview/romlerk.png",
-    gradient: "from-orange-600/20 via-amber-500/10 to-stone-800",
+    logo: "/project-logos/romlerk.webp",
   },
   {
     slug: "pdfflow",
-    title: "PDFlow",
+    group: "developer-tools",
+    title: "PDFFlow",
     description:
       "Private PDF tools that forget you were here — merge, split, compress, convert, protect, and watermark documents with no account, no tracking, and files deleted within 30 minutes.",
     overview:
       "Thirteen tools for PDFs, images, and Office files, built around one promise: upload, do the job, download, and leave no footprint. A Nuxt 4 front end talks to a stateless FastAPI service; Celery workers do the CPU-heavy work with PyMuPDF, pypdf, Pillow, and LibreOffice; Redis carries both the job queue and live progress; and PostgreSQL holds metadata only — never document contents. Runs on Railway.",
-    tags: ["TypeScript", "Nuxt.js", "FastAPI", "Celery", "Redis", "PostgreSQL"],
+    tags: ["TypeScript", "Nuxt", "FastAPI", "Celery", "Redis", "PostgreSQL"],
     category: "Web",
     domains: ["Productivity"],
     tier: "production",
     year: "2026",
     role: "Sole developer",
     visibility: "public",
-    links: [{ kind: "app", url: "https://pdfflow.bondeth.site" }],
+    links: [],
     // Sourced from the project's own repositories (READMEs, docs, tests, and
     // code). Every figure below is measured or counted there — re-check it
     // against the repo before changing it.
@@ -893,32 +832,20 @@ export const projects: Project[] = [
         { value: "0", label: "accounts or trackers" },
         { value: "149", label: "backend tests" },
       ],
-      gallery: [
-        {
-          src: "/projects/pdfflow/tools.webp",
-          alt: "PDFlow's tool catalogue, grouped by what each tool does to a document",
-          caption:
-            "The toolbox — thirteen tools, each showing its accepted files and output up front.",
-        },
-        {
-          src: "/projects/pdfflow/lifecycle.webp",
-          alt: "PDFlow's four steps from upload to automatic deletion",
-          caption:
-            "From upload to automatic deletion, shown exactly as it happens.",
-        },
-      ],
+      gallery: [],
     },
     image: "/previews/pdfflow.webp",
-    gradient: "from-blue-600/20 via-blue-500/10 to-slate-800",
+    logo: "/project-logos/pdfflow.webp",
   },
   {
     slug: "reahu-generator",
+    group: "developer-tools",
     title: "Reahu Generator",
     description:
       "A GitHub profile README builder — compose a profile from 17 blocks or 12 templates, preview it exactly as GitHub will render it, and export the Markdown. No account, no backend.",
     overview:
       "A Reahu document is an ordered array of typed blocks, rendered to Markdown by a pipeline that never imports Vue — so the part that matters can be tested on its own. The builder keeps the editor and a GitHub-style preview side by side, with undo, redo, autosave, and share links that carry the whole document in the URL. Built with Nuxt 4, Vue 3, and TypeScript, and deployed on Vercel.",
-    tags: ["TypeScript", "Nuxt.js", "Vue.js", "Tailwind CSS"],
+    tags: ["TypeScript", "Nuxt", "Vue", "Tailwind CSS"],
     category: "Web",
     domains: ["Developer Tools"],
     tier: "production",
@@ -966,42 +893,45 @@ export const projects: Project[] = [
       ],
       gallery: [
         {
-          src: "/projects/reahu-generator/builder.webp",
-          alt: "Reahu Generator's builder: block editors on the left, a live GitHub-style preview on the right",
-          caption:
-            "The builder — edit blocks on the left, see GitHub's rendering on the right, then share, copy, or download.",
+          src: "/projects/reahu-generator/builder-live.webp",
+          alt: "Reahu Generator builder page",
+          caption: "Public builder, captured from the running website.",
+          sourceUrl: "https://reahu.bondeth.site/build",
+          capturedAt: "2026-11-10",
         },
       ],
     },
     image: "/previews/reahu-generator.webp",
-    gradient: "from-red-600/20 via-red-500/10 to-slate-800",
+    logo: "/project-logos/reahu-generator.webp",
   },
   {
     slug: "bondeth-world",
+    group: "games-3d",
     title: "Bondeth World",
     description:
       "My portfolio as a place — a floating cartoon island in the browser with interactive project galleries, an AI portal, and a BMW M4 you can drive.",
     overview:
       "A 3D world is a heavy first impression, so the site never makes anyone wait for it: the about, skills, and project pages are browsable while the scene is still loading, and the island arrives on top of content that already works. Built with React and Three.js, bundled with Vite.",
-    tags: ["React.js", "Three.js", "WebGL", "Vite"],
+    tags: ["React", "TypeScript", "Three.js", "React Three Fiber", "Vite"],
     category: "Web",
-    domains: ["Creative"],
+    domains: ["3D", "Creative"],
     tier: "production",
     year: "2026",
     role: "Sole developer",
     visibility: "public",
     links: [{ kind: "app", url: "https://3d.bondeth.dev" }],
     image: "/previews/bondeth-world-island.webp",
-    gradient: "from-emerald-700/20 via-teal-500/10 to-slate-800",
+    logo: "/project-logos/bondeth-world.webp",
   },
   {
     slug: "debc-website",
+    group: "public-sector",
     title: "DEBC Website",
     description:
       "The official website of Cambodia's Digital Economy and Business Committee, publishing policy, news, and government services.",
     overview:
-      "A government site's binding requirement isn't its feature list, it's staying up and staying readable on whatever device and connection the public actually has. Next.js over a NestJS API with Supabase and PostgreSQL behind it, deployed on AWS in Docker behind Nginx, monitored with Sentry, Prometheus, and Grafana.",
-    tags: ["TypeScript", "Next.js", "NestJS", "Supabase", "PostgreSQL", "AWS"],
+      "The public site gives visitors one place to find the committee’s policy publications, announcements, digital products, and services.",
+    tags: ["Next.js"],
     category: "Web",
     domains: ["GovTech"],
     tier: "production",
@@ -1010,23 +940,17 @@ export const projects: Project[] = [
     visibility: "limited",
     links: [{ kind: "app", url: "https://digitaleconomy.gov.kh/?lang=kh" }],
     image: "/previews/debc-website.webp",
-    gradient: "from-blue-700/20 via-indigo-500/10 to-slate-800",
+    logo: "/project-logos/debc-website.webp",
   },
   {
     slug: "informal-economy",
+    group: "public-sector",
     title: "Informal Economy",
     description:
       "A national registration platform for Cambodia's informal economy workers, built with the Ministry of Economy and Finance.",
     overview:
-      "Registering informal workers at national scale means designing for someone filling in a form once, on a phone, possibly with help — so the failure modes that matter are dropped submissions and ambiguous state, not throughput. Next.js and NestJS microservices communicate over RabbitMQ, with PostgreSQL and Supabase for storage, running on Kubernetes and AWS behind Nginx and monitored with Sentry, Prometheus, and Grafana.",
-    tags: [
-      "TypeScript",
-      "Next.js",
-      "NestJS",
-      "Microservices",
-      "Kubernetes",
-      "AWS",
-    ],
+      "The public portal explains eligibility, registration, and support in Khmer, with guidance and an entry point for workers starting registration on a phone.",
+    tags: ["Next.js"],
     category: "Web",
     domains: ["GovTech"],
     tier: "production",
@@ -1035,16 +959,17 @@ export const projects: Project[] = [
     visibility: "limited",
     links: [{ kind: "app", url: "https://informal.digitaleconomy.gov.kh/km" }],
     image: "/previews/informal-economy.webp",
-    gradient: "from-amber-600/20 via-orange-500/10 to-slate-800",
+    logo: "/project-logos/informal-economy.webp",
   },
   {
     slug: "cambodia-investment-platform",
+    group: "public-sector",
     title: "Cambodia Investment Platform",
     description:
       "The landing site for Cambodia Investment Platform, connecting startups, MSMEs, investors, and the public to digital financing.",
     overview:
-      "A landing page for a financing mechanism has one job and it's an editorial one: explain a complicated instrument to four audiences — founders, small businesses, investors, and the public — without losing any of them or writing four different pages. Next.js and Tailwind, deployed on Vercel.",
-    tags: ["TypeScript", "Next.js", "Tailwind CSS", "Vercel"],
+      "The public landing page explains how the financing platform works, who it serves, and where founders, small businesses, and investors can start.",
+    tags: ["Next.js"],
     category: "Web",
     domains: ["GovTech", "Fintech"],
     tier: "production",
@@ -1056,16 +981,17 @@ export const projects: Project[] = [
       { kind: "app", url: "https://edf-cip-website-dev.intechdevkh.com/en" },
     ],
     image: "/previews/cambodia-investment-platform.webp",
-    gradient: "from-emerald-700/20 via-green-500/10 to-slate-800",
+    logo: "/project-logos/cambodia-investment-platform.webp",
   },
   {
     slug: "code-hub",
+    group: "products",
     title: "Code Hub",
     description:
       "A developer community platform from my freelance years, with Google, Facebook, and GitHub SSO for discovering and sharing projects.",
     overview:
       "Three SSO providers was the actual build: each returns a different shape of profile, and reconciling them into one account without duplicating a user who signs in a second way through a different provider is most of the work in a social login flow. React on the front, NestJS API, PostgreSQL for accounts and projects, Firebase alongside for auth plumbing, containerised with Docker.",
-    tags: ["TypeScript", "React.js", "NestJS", "PostgreSQL", "Firebase"],
+    tags: ["React", "Vite", "TypeScript", "NestJS", "PostgreSQL", "Firebase"],
     category: "Web",
     domains: ["Community"],
     tier: "production",
@@ -1074,18 +1000,19 @@ export const projects: Project[] = [
     visibility: "public",
     links: [{ kind: "app", url: "https://codehub-bondeth.netlify.app/signin" }],
     image: "/previews/codehub.webp",
-    gradient: "from-rose-600/20 via-pink-500/10 to-slate-800",
+    logo: "/project-logos/code-hub.webp",
   },
   {
     slug: "apple-clone",
+    group: "practice",
     title: "Apple Clone",
     description:
       "A front-end rebuild of Apple's product pages — full-screen model showcases, scroll-driven sections, and navigation.",
     overview:
-      "Practice work. The interesting constraint in Apple's layouts is that scroll position drives the content rather than merely moving past it, which is a different implementation problem from a static page and the reason this was worth rebuilding. React, TypeScript, and Tailwind on Vercel.",
-    tags: ["TypeScript", "React.js", "Tailwind CSS", "Vercel"],
+      "Practice work. The interesting constraint in Apple's layouts is that scroll position drives the content rather than merely moving past it, which is a different implementation problem from a static page and the reason this was worth rebuilding. The implementation uses Next.js, TypeScript, and Tailwind CSS.",
+    tags: ["Next.js", "TypeScript", "React", "Tailwind CSS"],
     category: "Web",
-    domains: [],
+    domains: ["Frontend"],
     tier: "practice",
     year: "2026",
     role: "Sole developer",
@@ -1095,18 +1022,19 @@ export const projects: Project[] = [
       { kind: "repo", url: "https://github.com/RithyBondeth/Next-Apple-Clone" },
     ],
     image: "/previews/apple-clone.webp",
-    gradient: "from-zinc-600/20 via-slate-500/10 to-slate-800",
+    logo: "/project-logos/apple-clone.webp",
   },
   {
     slug: "tesla-clone",
+    group: "practice",
     title: "Tesla Clone",
     description:
       "A front-end rebuild of Tesla's site — full-screen model showcases, smooth scroll sections, and navigation.",
     overview:
       "Practice work, built alongside the Apple rebuild to compare how two companies solve the same full-bleed product page differently. React, TypeScript, and Tailwind on Vercel.",
-    tags: ["TypeScript", "React.js", "Tailwind CSS", "Vercel"],
+    tags: ["React", "TypeScript", "Tailwind CSS"],
     category: "Web",
-    domains: [],
+    domains: ["Frontend"],
     tier: "practice",
     // TODO(bondeth): fill these in — both render only when set.
     year: null,
@@ -1114,37 +1042,39 @@ export const projects: Project[] = [
     visibility: "public",
     links: [{ kind: "app", url: "https://tesla-bondeth.vercel.app" }],
     image: "/previews/tesla-clone.webp",
-    gradient: "from-zinc-600/20 via-slate-500/10 to-slate-800",
+    logo: "/project-logos/tesla-clone.webp",
   },
   {
     slug: "sabynews-clone",
-    title: "Sabynews Clone",
+    group: "practice",
+    title: "Sabay News Clone",
     description:
       "A pixel-faithful rebuild of the Sabay News portal — dense Khmer-language grids and category navigation.",
     overview:
-      "Practice work, and a harder layout problem than it looks: Khmer sets at a different line height to Latin, so a news grid tuned on English copy breaks the moment real headlines go into it. React, TypeScript, and Tailwind on Vercel.",
-    tags: ["TypeScript", "React.js", "Tailwind CSS", "Vercel"],
+      "Practice work, and a harder layout problem than it looks: Khmer sets at a different line height to Latin, so a news grid tuned on English copy breaks the moment real headlines go into it. The implementation uses React and styled-components.",
+    tags: ["React", "TypeScript", "styled-components"],
     category: "Web",
-    domains: [],
+    domains: ["Frontend", "Media"],
     tier: "practice",
     // TODO(bondeth): fill these in — both render only when set.
     year: null,
     role: null,
     visibility: "public",
-    links: [{ kind: "app", url: "https://sabynews-clone-bondeth.netlify.app" }],
+    links: [],
     image: "/previews/sabynews-clone.webp",
-    gradient: "from-red-600/20 via-rose-500/10 to-slate-800",
+    logo: "/project-logos/sabynews-clone.webp",
   },
   {
     slug: "bondeth-vlog",
+    group: "practice",
     title: "Bondeth Vlog",
     description:
       "My first personal site — blog posts, projects, and skills behind an animated 3D logo.",
     overview:
       "Early work, kept here as a marker of where the current site started. React, TypeScript, and Tailwind on Vercel.",
-    tags: ["TypeScript", "React.js", "Tailwind CSS", "Vercel"],
+    tags: ["React", "TypeScript", "Tailwind CSS"],
     category: "Web",
-    domains: [],
+    domains: ["Portfolio", "Media"],
     tier: "practice",
     // TODO(bondeth): fill these in — both render only when set.
     year: null,
@@ -1152,6 +1082,6 @@ export const projects: Project[] = [
     visibility: "public",
     links: [{ kind: "app", url: "https://bondeth-blog.vercel.app" }],
     image: "/previews/bondeth-vlog.webp",
-    gradient: "from-slate-600/20 via-gray-500/10 to-slate-800",
+    logo: "/project-logos/bondeth-vlog.webp",
   },
 ];

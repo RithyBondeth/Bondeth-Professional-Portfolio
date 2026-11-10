@@ -15,7 +15,8 @@
     "format:check": "prettier --check .",
     "check:unused": "knip",
     "generate:globe": "node scripts/generate-globe-dots.mjs",
-    "generate:profile": "node github-profile/generate.js"
+    "generate:profile": "node github-profile/generate.js",
+    "generate:project-thumbnails": "node scripts/generate-project-thumbnails.mjs"
   },
   "dependencies": {
     "@fontsource-variable/kantumruy-pro": "^5.3.0",
@@ -54,6 +55,7 @@
     "eslint-config-next": "16.2.4",
     "knip": "6.41.0",
     "prettier": "3.9.10",
+    "sharp": "0.34.5",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
