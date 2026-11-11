@@ -89,6 +89,7 @@ export default async function IndexPage({ params }: HomePageProps) {
             .length
         }
       />
+      <LandingProjects lang={lang} />
       <LandingShowreel lang={lang} />
       <LandingAbout lang={lang} />
       <LandingCurrentFocus lang={lang} />
@@ -96,7 +97,6 @@ export default async function IndexPage({ params }: HomePageProps) {
       <LandingExperience lang={lang} />
       <LandingEducation lang={lang} />
       <LandingServices lang={lang} />
-      <LandingProjects lang={lang} />
       <LandingGithub lang={lang} />
       <LandingWriting lang={lang} />
       <LandingMedia lang={lang} />

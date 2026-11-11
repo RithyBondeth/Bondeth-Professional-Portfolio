@@ -297,7 +297,10 @@ export const organizations: Organization[] = [
     name: "Pailin Province Hall",
     logo: "/organizations/display/pailin-province-hall-logo.png",
   },
-  { name: "Apsara Talent", logo: "/organizations/apsara-logo.svg" },
+  {
+    name: "Apsara Talent",
+    logo: "/project-logos/apsara-talent-at-512822149334.svg",
+  },
   {
     name: "Digital Economy and Business Committee",
     logo: "/organizations/display/debc-logo.png",
