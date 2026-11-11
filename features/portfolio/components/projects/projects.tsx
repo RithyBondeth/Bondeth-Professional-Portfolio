@@ -3,23 +3,12 @@ import { SkillIconSprite } from "@/features/portfolio/components/skills/skill-ic
 import { techIconKeys } from "@/features/portfolio/components/projects/tech-icon-map";
 import { AnimateIn } from "@/shared/components/motion/animate-in";
 import { SectionHeading } from "@/features/portfolio/components/section-heading";
-import { HorizontalScroll } from "@/shared/components/motion/horizontal-scroll";
 import { ProjectCard } from "@/features/portfolio/components/projects/project-card";
 import { getProjects } from "@/features/portfolio/data/localized-content";
 import { getDictionary, type Locale } from "@/shared/i18n";
 
-/** New featured work first, followed by the established portfolio picks. */
-const FEATURED_SLUGS = [
-  "askdb",
-  "cambodia-3d-map",
-  "bondeth-studio",
-  "bondex-notch",
-  "apsara-agentic",
-  "apsara-assistant",
-  "apsara-elearning",
-  "apsara-talent",
-  "romlerk",
-];
+/** Featured hiring platform, native macOS utility, and creator toolkit. */
+const FEATURED_SLUGS = ["apsara-talent", "bondex-notch", "bondeth-studio"];
 
 export default function LandingProjects(props: { lang: Locale }) {
   const { lang } = props;
@@ -66,56 +55,29 @@ export default function LandingProjects(props: { lang: Locale }) {
   );
 
   return (
-    /* Scrolling down pins this section and carries the featured work
-       sideways; when the row runs out, the page scrolls on. Without scroll
-       timelines, or under reduced motion, HorizontalScroll falls back to a
-       native swipe strip. The cards deal in from the right as it arrives,
-       on a short span: their entrance is tied to their vertical position,
-       which freezes once the stage pins, so it must finish before then. */
-    <section id="projects" className="relative isolate">
+    <section
+      id="projects"
+      className="relative isolate px-6 py-16 sm:py-20 lg:py-24"
+    >
       {/* Icon geometry for the featured cards' tech badges. */}
       <SkillIconSprite
         icons={featured.flatMap((project) => techIconKeys(project.tags))}
       />
-      <HorizontalScroll header={header} trackClassName="items-stretch py-2">
-        {featured.map((project, index) => (
-          <AnimateIn
-            key={project.slug}
-            from="right"
-            delay={index * 0.04}
-            span={28}
-            className="w-[min(84vw,420px)] shrink-0 snap-start"
-          >
-            <ProjectCard project={project} dict={dict} lang={lang} />
-          </AnimateIn>
-        ))}
-
-        {/* The strip ends with a destination, not a dead stop. */}
-        <AnimateIn
-          key="view-all"
-          from="right"
-          delay={featured.length * 0.04}
-          span={28}
-          className="flex w-[min(70vw,340px)] shrink-0 snap-start"
-        >
-          <Link
-            href={`/${lang}/projects`}
-            className="group flex h-full w-full flex-col items-center justify-center gap-4 rounded-lg border border-dashed border-border/70 bg-card/40 p-8 text-center transition-colors hover:border-primary/40 hover:bg-primary/5"
-          >
-            <span className="font-mono text-4xl text-primary transition-transform duration-300 group-hover:translate-x-2 motion-reduce:transform-none">
-              →
-            </span>
-            <span className="font-mono text-sm text-foreground">
-              {dict.projects.viewAllProjects}
-            </span>
-            <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-              {lang === "km"
-                ? "រុករកស្នាដៃទាំងអស់"
-                : "Explore the full collection"}
-            </span>
-          </Link>
-        </AnimateIn>
-      </HorizontalScroll>
+      <div className="mx-auto max-w-6xl">
+        {header}
+        <div className="mt-10 grid gap-6 lg:grid-cols-3">
+          {featured.map((project, index) => (
+            <AnimateIn
+              key={project.slug}
+              from="up"
+              delay={index * 0.08}
+              className="min-w-0"
+            >
+              <ProjectCard project={project} dict={dict} lang={lang} />
+            </AnimateIn>
+          ))}
+        </div>
+      </div>
     </section>
   );
 }

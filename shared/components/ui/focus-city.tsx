@@ -1,6 +1,8 @@
 "use client";
 
 import * as React from "react";
+import { Select } from "@/shared/components/ui/select";
+import { DatePicker } from "@/shared/components/ui/date-picker";
 import {
   Box,
   CalendarDays,
@@ -490,24 +492,22 @@ export function FocusCity({
           </div>
         </div>
         <div className="fc-tools">
-          <label className="fc-range">
-            <span className="fc-sr-only">{labels.rangeLabel}</span>
-            <select
-              value={weeks}
-              onChange={(event) => {
-                setWeeks(Number(event.target.value));
+          <div className="fc-range">
+            <Select
+              value={String(weeks)}
+              ariaLabel={labels.rangeLabel}
+              compact
+              onValueChange={(value) => {
+                setWeeks(Number(value));
                 setManualRange(true);
                 hideHover();
               }}
-            >
-              {weekOptions.map((option) => (
-                <option key={option} value={option}>
-                  {labels.weeksOption(option)}
-                </option>
-              ))}
-            </select>
-            <ChevronDown size={12} aria-hidden="true" />
-          </label>
+              options={weekOptions.map((option) => ({
+                value: String(option),
+                label: labels.weeksOption(option),
+              }))}
+            />
+          </div>
           <div className="fc-switch" role="group" aria-label={labels.viewLabel}>
             <button
               type="button"
@@ -775,21 +775,20 @@ export function FocusCity({
           </div>
         </div>
         <div className="fc-day-nav">
-          <label className="fc-date-picker">
-            <span className="fc-sr-only">{labels.selectDay}</span>
-            <input
-              type="date"
+          <div className="fc-date-picker">
+            <DatePicker
               value={active.day.date}
               min={available[0].day.date}
               max={lastDate}
-              onChange={(event) => {
-                const day = available.find(
-                  (block) => block.day.date === event.target.value,
-                );
+              label={labels.selectDay}
+              locale={locale}
+              displayValue={`${shortDate(active.day.date)}, ${active.day.date.slice(0, 4)}`}
+              onValueChange={(value) => {
+                const day = available.find((block) => block.day.date === value);
                 if (day) selectDay(day.day);
               }}
             />
-          </label>
+          </div>
           <button
             className="cursor-interaction"
             type="button"
@@ -851,18 +850,18 @@ export function FocusCity({
 }
 
 const styles = `
-.focus-city{--fc-surface:light-dark(#fff,#111);--fc-ink:light-dark(#171717,#ededed);--fc-muted:light-dark(#686868,#aaa);--fc-border:light-dark(#e8e8e8,#2a2a2a);--fc-hover:light-dark(#f5f5f5,#242424);--fc-subtle:light-dark(#fafafa,#181818);--fc-selected:light-dark(#171717,#ededed);--fc-on-selected:light-dark(#fff,#151515);--fc-ground:light-dark(#f3f5f4,#191e1b);--fc-empty:light-dark(#e5eae7,#26332c);--fc-green-1:light-dark(#d0ead9,#2e6748);--fc-green-2:light-dark(#99d4b0,#408d60);--fc-green-3:light-dark(#58b781,#5cbe83);--fc-green-4:light-dark(#25935a,#88d4a5);--fc-shadow:light-dark(#00000008,#00000030);color:var(--fc-ink);background:var(--fc-surface);border:1px solid var(--fc-border);border-radius:14px;box-shadow:0 3px 16px var(--fc-shadow);width:100%;max-width:720px;margin-inline:auto;overflow:hidden;font-family:Inter,Geist,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:13px;line-height:1.5;text-align:left;box-sizing:border-box;isolation:isolate}
+.focus-city{--fc-surface:light-dark(#fff,#111);--fc-ink:light-dark(#171717,#ededed);--fc-muted:light-dark(#686868,#aaa);--fc-border:light-dark(#e8e8e8,#2a2a2a);--fc-hover:light-dark(#f5f5f5,#242424);--fc-subtle:light-dark(#fafafa,#181818);--fc-selected:light-dark(#171717,#ededed);--fc-on-selected:light-dark(#fff,#151515);--fc-ground:light-dark(#f3f5f4,#191e1b);--fc-empty:light-dark(#e5eae7,#26332c);--fc-green-1:light-dark(#d0ead9,#2e6748);--fc-green-2:light-dark(#99d4b0,#408d60);--fc-green-3:light-dark(#58b781,#5cbe83);--fc-green-4:light-dark(#25935a,#88d4a5);--fc-shadow:light-dark(#00000008,#00000030);color:var(--fc-ink);background:var(--fc-surface);border:1px solid var(--fc-border);border-radius:14px;box-shadow:0 3px 16px var(--fc-shadow);width:100%;max-width:720px;margin-inline:auto;overflow:hidden;font-family:var(--font-ui,inherit);font-size:13px;line-height:1.5;text-align:left;box-sizing:border-box;isolation:isolate}
 .focus-city[data-theme=light]{color-scheme:light}.focus-city[data-theme=dark]{color-scheme:dark}.dark .focus-city[data-theme=auto]{color-scheme:dark}
-.focus-city *,.focus-city *::before,.focus-city *::after{box-sizing:border-box}.focus-city button,.focus-city select,.focus-city input{font:inherit;color:inherit}.focus-city button{transition:background .16s ease,color .16s ease,transform .16s ease}.focus-city button:active:not(:disabled){transform:translateY(1px)}.focus-city button:disabled{opacity:.3;cursor:default}.focus-city svg:not(.fc-chart){flex:none}.fc-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-.fc-header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:23px 24px 0}.fc-heading{display:flex;gap:11px;align-items:center;min-width:0}.fc-emblem{width:34px;height:34px;border:1px solid var(--fc-border);border-radius:9px;display:grid;place-items:center;background:var(--fc-subtle);flex:none}.fc-heading h2{font-size:15px;font-weight:500;letter-spacing:-.3px;line-height:1.3;margin:0}.fc-heading p{font-size:12px;line-height:1.4;color:var(--fc-muted);margin:4px 0 0}.fc-tools{display:flex;align-items:center;gap:8px;flex:none}.fc-range{display:flex;position:relative;align-items:center}.fc-range select{appearance:none;background:var(--fc-surface);border:1px solid var(--fc-border);border-radius:7px;height:32px;padding:0 27px 0 10px;font-size:12px}.fc-range>svg{position:absolute;right:9px;pointer-events:none;color:var(--fc-muted)}.fc-switch{display:flex;padding:3px;background:var(--fc-subtle);border:1px solid var(--fc-border);border-radius:8px;gap:2px}.fc-switch button{display:flex;align-items:center;justify-content:center;gap:5px;border:0;background:transparent;border-radius:5px;height:25px;padding:0 8px;font-size:12px;color:var(--fc-muted)}.fc-switch button:hover{background:var(--fc-hover);color:var(--fc-ink)}.fc-switch button[aria-pressed=true]{background:var(--fc-selected);color:var(--fc-on-selected);box-shadow:0 1px 2px var(--fc-shadow)}.fc-switch button[aria-pressed=true]:hover{background:var(--fc-selected);color:var(--fc-on-selected)}
+.focus-city *,.focus-city *::before,.focus-city *::after{box-sizing:border-box}.focus-city button,.focus-city input{font:inherit;color:inherit}.focus-city button{transition:background .16s ease,color .16s ease,transform .16s ease}.focus-city button:active:not(:disabled){transform:translateY(1px)}.focus-city button:disabled{opacity:.3;cursor:default}.focus-city svg:not(.fc-chart){flex:none}.fc-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.fc-header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:23px 24px 0}.fc-heading{display:flex;gap:11px;align-items:center;min-width:0}.fc-emblem{width:34px;height:34px;border:1px solid var(--fc-border);border-radius:9px;display:grid;place-items:center;background:var(--fc-subtle);flex:none}.fc-heading h2{font-size:15px;font-weight:500;letter-spacing:-.3px;line-height:1.3;margin:0}.fc-heading p{font-size:12px;line-height:1.4;color:var(--fc-muted);margin:4px 0 0}.fc-tools{display:flex;align-items:center;gap:8px;flex:none}.fc-range{display:flex;position:relative;align-items:center}.fc-switch{display:flex;padding:3px;background:var(--fc-subtle);border:1px solid var(--fc-border);border-radius:8px;gap:2px}.fc-switch button{display:flex;align-items:center;justify-content:center;gap:5px;border:0;background:transparent;border-radius:5px;height:25px;padding:0 8px;font-size:12px;color:var(--fc-muted)}.fc-switch button:hover{background:var(--fc-hover);color:var(--fc-ink)}.fc-switch button[aria-pressed=true]{background:var(--fc-selected);color:var(--fc-on-selected);box-shadow:0 1px 2px var(--fc-shadow)}.fc-switch button[aria-pressed=true]:hover{background:var(--fc-selected);color:var(--fc-on-selected)}
 .fc-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:26px 24px 21px}.fc-stats>div{display:flex;flex-direction:column}.fc-stats>div+div{padding-left:22px;border-left:1px solid var(--fc-border)}.fc-stats span{color:var(--fc-muted);font-size:12px}.fc-stats strong{display:block;font-size:24px;line-height:1.35;font-weight:500;letter-spacing:-.8px;margin:3px 0 2px;font-variant-numeric:tabular-nums;white-space:nowrap}.fc-stats em{font-size:15px;font-weight:400;font-style:normal;letter-spacing:-.2px}.fc-stats small{font-size:11px;color:var(--fc-muted)}
 .fc-plot-header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 24px;color:var(--fc-muted);font-size:11px;min-height:23px}.fc-plot-header>span{display:flex;align-items:center;gap:6px}.fc-camera{height:24px;width:24px;border:0;background:transparent;display:grid;place-items:center;border-radius:5px;padding:0}.fc-camera:hover{background:var(--fc-hover)}.fc-plot{position:relative;margin:0 10px;touch-action:pan-y}.fc-chart{display:block;overflow:visible;user-select:none}.fc-plot[data-view=city] .fc-chart{cursor:grab}.fc-dragging .fc-chart{cursor:grabbing!important}.fc-block{--fc-top:var(--fc-empty)}.fc-block[data-level="1"]{--fc-top:var(--fc-green-1)}.fc-block[data-level="2"]{--fc-top:var(--fc-green-2)}.fc-block[data-level="3"]{--fc-top:var(--fc-green-3)}.fc-block[data-level="4"]{--fc-top:var(--fc-green-4)}.fc-roof{fill:var(--fc-top)}.fc-left{fill:color-mix(in srgb,var(--fc-top) 87%,var(--fc-ink) 13%)}.fc-right{fill:color-mix(in srgb,var(--fc-top) 72%,var(--fc-ink) 28%)}.fc-block{transition:transform .24s cubic-bezier(.2,.8,.3,1)}.fc-block.fc-hovered{transform:translateY(-4px)}.fc-plot[data-view=heatmap] .fc-block.fc-hovered{transform:translateY(-2px)}.fc-face{transition:filter .24s ease}.fc-hovered .fc-face{filter:brightness(1.1)}.fc-axis text{fill:var(--fc-muted);font-size:11px;font-family:inherit}.fc-tooltip{position:absolute;left:0;top:0;opacity:0;transition:opacity .18s ease,transform .16s cubic-bezier(.2,.8,.3,1);will-change:transform,opacity;min-width:150px;z-index:3;pointer-events:none;border:1px solid var(--fc-border);border-radius:8px;padding:8px 10px;box-shadow:0 4px 16px var(--fc-shadow);background:var(--fc-surface);display:flex;flex-direction:column;gap:2px;font-size:11px}.fc-tooltip-visible{opacity:1}@starting-style{.fc-tooltip-visible{opacity:0}}.fc-tooltip>span{color:var(--fc-muted)}.fc-tooltip>strong{font-size:13px;font-weight:500}.fc-tooltip small{font-size:11px;color:var(--fc-muted);font-weight:400}
 .fc-legend{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 24px 18px;font-size:11px;color:var(--fc-muted)}.fc-legend>div{display:flex;align-items:center;gap:4px}.fc-legend i{width:10px;height:10px;border-radius:2px;background:var(--fc-empty)}.fc-legend i[data-level="1"]{background:var(--fc-green-1)}.fc-legend i[data-level="2"]{background:var(--fc-green-2)}.fc-legend i[data-level="3"]{background:var(--fc-green-3)}.fc-legend i[data-level="4"]{background:var(--fc-green-4)}.fc-legend>div>span:first-child{margin-right:3px}.fc-legend>div>span:last-child{margin-left:3px}
-.fc-day-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 24px;border-top:1px solid var(--fc-border);background:var(--fc-subtle)}.fc-day-identity{display:flex;align-items:center;gap:10px;min-width:0}.fc-day-icon{display:grid;place-items:center;width:32px;height:32px;flex:none;border:1px solid var(--fc-border);background:var(--fc-surface);border-radius:8px;color:var(--fc-muted)}.fc-day-identity strong{display:block;font-weight:500;font-size:12px}.fc-day-identity div>span{display:block;color:var(--fc-muted);font-size:11px;font-variant-numeric:tabular-nums}.fc-middle-dot{padding:0 6px}.fc-day-nav{display:flex;gap:5px;align-items:center}.fc-day-nav button{width:30px;height:30px;display:grid;place-items:center;background:var(--fc-surface);border:1px solid var(--fc-border);border-radius:6px;padding:0}.fc-day-nav button:hover:not(:disabled){background:var(--fc-hover)}.fc-date-picker{margin-right:3px}.fc-date-picker input{width:122px;max-width:100%;font-size:11px;border:1px solid var(--fc-border);border-radius:6px;height:30px;padding:0 6px;background:var(--fc-surface);font-variant-numeric:tabular-nums}
+.fc-day-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 24px;border-top:1px solid var(--fc-border);background:var(--fc-subtle)}.fc-day-identity{display:flex;align-items:center;gap:10px;min-width:0}.fc-day-icon{display:grid;place-items:center;width:32px;height:32px;flex:none;border:1px solid var(--fc-border);background:var(--fc-surface);border-radius:8px;color:var(--fc-muted)}.fc-day-identity strong{display:block;font-weight:500;font-size:12px}.fc-day-identity div>span{display:block;color:var(--fc-muted);font-size:11px;font-variant-numeric:tabular-nums}.fc-middle-dot{padding:0 6px}.fc-day-nav{display:flex;gap:5px;align-items:center}.fc-day-nav>button{width:44px;height:44px;display:grid;place-items:center;background:var(--fc-surface);border:1px solid var(--fc-border);border-radius:6px;padding:0}.fc-day-nav>button:hover:not(:disabled){background:var(--fc-hover)}.fc-date-picker{margin-right:3px}
 .fc-sessions{border-top:1px solid var(--fc-border)}.fc-sessions summary{list-style:none;display:flex;align-items:center;justify-content:space-between;min-height:40px;padding:0 24px;color:var(--fc-muted);font-size:11px;transition:background .16s ease}.fc-sessions summary::-webkit-details-marker{display:none}.fc-sessions summary:hover{background:var(--fc-hover);color:var(--fc-ink)}.fc-sessions summary>svg{transition:transform .2s ease}.fc-sessions[open] summary>svg{transform:rotate(180deg)}.fc-session-list{padding:0 24px 12px;animation:fc-reveal .18s ease}.fc-session{display:flex;align-items:center;gap:9px;min-height:44px}.fc-session+.fc-session{border-top:1px solid var(--fc-border)}.fc-session-marker{width:5px;height:5px;background:var(--fc-green-3);border-radius:50%;flex:none}.fc-session>div{flex:1;min-width:0}.fc-session strong{display:block;font-size:12px;font-weight:400;overflow-wrap:anywhere}.fc-session a{color:inherit;text-decoration:none}.fc-session a:hover{text-decoration:underline;text-underline-offset:2px}.fc-session>div>span{display:block;color:var(--fc-muted);font-size:11px}.fc-session>span:last-child{font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap}.fc-empty{color:var(--fc-muted);font-size:12px;margin:3px 0 5px}.fc-sessions summary:active{background:var(--fc-hover)}
 @keyframes fc-reveal{from{opacity:.5;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:560px){.fc-header{align-items:flex-start;flex-wrap:wrap;gap:14px;padding:19px 18px 0}.fc-tools{width:100%;justify-content:space-between}.fc-stats{margin:22px 18px 18px;gap:8px}.fc-stats>div+div{padding-left:12px}.fc-stats strong{font-size:21px}.fc-stats em{font-size:12px}.fc-plot-header{margin:0 18px}.fc-legend{margin:0 18px 16px}.fc-day-row{padding:14px 18px;flex-wrap:wrap}.fc-day-nav{margin-left:auto}.fc-sessions summary{padding-inline:18px}.fc-session-list{padding-inline:18px}.fc-stats span{font-size:11px}}
 @media(max-width:380px){.fc-stats strong{font-size:19px;letter-spacing:-.6px}.fc-stats small{font-size:11px;max-width:86px}.fc-day-nav{width:100%;margin-left:0;justify-content:flex-end}.fc-date-picker{margin-right:auto}.fc-day-identity{width:100%}.fc-legend{gap:4px}}
-@media(pointer:coarse){.fc-switch button{height:38px;min-width:44px}.fc-range select{height:44px;font-size:16px}.fc-day-nav button{width:44px;height:44px}.fc-date-picker input{height:44px;width:148px;font-size:16px}.fc-sessions summary{min-height:44px}.fc-camera{height:44px;width:44px}.fc-plot-header{min-height:32px}}
+@media(pointer:coarse){.fc-switch button{height:38px;min-width:44px}.fc-day-nav>button{width:44px;height:44px}.fc-sessions summary{min-height:44px}.fc-camera{height:44px;width:44px}.fc-plot-header{min-height:32px}}
 @media(prefers-reduced-motion:reduce){.focus-city *,.focus-city *::before,.focus-city *::after{animation:none!important;transition:none!important}}
 `;
