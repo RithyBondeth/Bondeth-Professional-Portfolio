@@ -4,6 +4,20 @@ The catalog separates a project's **collection** (why someone would browse it), 
 
 Each card uses the same pattern: a real preview, the project mark, a short description, up to six technology names, and links to the profile and primary resource. Detail pages add an overview, the problem and engineering decisions, the stack, and public resources. Document outcomes or numbers only when a source substantiates them. Public-sector profiles use published pages and do not link to internal repositories or documentation.
 
+## Featured work and case-study evidence
+
+The homepage places three projects immediately after the hero: Apsara Talent, Bondex Notch, and Bondeth Studio. Keep the rest of the catalog on the projects page. Featured work uses a responsive grid rather than a pinned horizontal strip. The organizations marquee uses Apsara Talent's current blue AT monogram, shared with its project card.
+
+The expanded English and Khmer case studies were checked against these local repository revisions on 2026-11-10:
+
+| Project         | Revision  | Evidence                                                                                                                                                                                                                                                                |
+| --------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| AskDB           | `ef0b644` | `README.md`, `backend/askdb/validate.py`, `backend/askdb/db.py`, `backend/askdb/pipeline.py`, and `backend/eval/dataset.jsonl`: two read-only layers, shared pipeline, inspectable repairs, and a 35-question evaluation set. No comparative model accuracy is claimed. |
+| Cambodia 3D Map | `9fbac78` | `README.md` and `docs/PROJECT_NOTES.md`: MapLibre with custom landmarks, simulated and live GPS sharing one navigation engine, and the current mobile/data/service limits. Production readiness and field-tested performance are not claimed.                           |
+| Bondeth Studio  | `d8f4d45` | `README.md`, `pipeline/store.ts`, and `pipeline/voice.ts`: editable JSON artifacts, caption alignment, hash-based narration reuse, vertical/landscape exports, and the documented CI render and visual checks. No audience or time-saving figures are claimed.          |
+
+These are implemented capabilities and documented engineering decisions, not adoption metrics. Recheck the repositories before adding performance, accuracy, customer, or revenue claims. The longer studies live in `recent-projects.ts`, with Khmer translations in `localized-content.km.ts`; short fallback notes remain available for other projects.
+
 ## Media sources
 
 - **AskDB**: captured the local app with its bundled Chinook sample database. The small mark is from the app header, not the deployment platform's favicon.

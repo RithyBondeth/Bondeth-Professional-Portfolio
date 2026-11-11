@@ -3,7 +3,7 @@ import {
   ProjectLogo,
   ProjectMedia,
 } from "@/features/portfolio/components/projects/project-media";
-import { TiltCard } from "@/shared/components/motion/tilt-card";
+import { ProjectCardSurface } from "@/features/portfolio/components/projects/project-card-surface";
 import { TechBadges } from "@/features/portfolio/components/projects/tech-badges";
 import { ProjectLinkIcon } from "@/features/portfolio/components/projects/project-link-icon";
 import {
@@ -27,13 +27,9 @@ export function ProjectCard(props: {
     : getMediaBadge(project);
 
   return (
-    /* 3D tilt + glare shell — desktop pointers only, static elsewhere. */
-    <TiltCard maxTilt={6} className="relative h-full rounded-lg">
-      {/* TiltCard owns the 3D lean, so this card opts out of the shared lift
-          (the two transforms would fight) and keeps only the border warm-up,
-          glow, and sheen. */}
-      <article className="card-interactive group flex h-full flex-col overflow-hidden rounded-lg border border-border/60 bg-card [--card-lift:0px]">
-        <div className="relative aspect-video overflow-hidden bg-muted">
+    <ProjectCardSurface>
+      <article className="card-interactive project-card group flex h-full flex-col overflow-hidden rounded-lg border border-border/60 bg-card">
+        <div className="project-card-preview relative aspect-video overflow-hidden bg-muted">
           <ProjectMedia
             project={project}
             fallback={dict.projects.previewUnavailable}
@@ -69,7 +65,7 @@ export function ProjectCard(props: {
               <p className="mb-1 text-[10px] leading-snug text-muted-foreground">
                 {dict.projects.groups[project.group]} · {project.category}
               </p>
-              <h3 className="text-base font-semibold leading-snug text-foreground">
+              <h3 className="project-card-title text-base font-semibold leading-snug text-foreground">
                 {project.visibility === "confidential" ? (
                   project.title
                 ) : (
@@ -108,12 +104,14 @@ export function ProjectCard(props: {
                     ? dict.projects.caseStudy.read
                     : dict.projects.viewDetails
                 }: ${project.title}`}
-                className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-border/50 bg-muted/40 px-3 font-mono text-xs text-muted-foreground transition-colors hover:border-primary/30 hover:text-primary"
+                className="project-card-link btn-fx btn-fx-outline inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-border/50 bg-muted/40 px-3 font-mono text-xs text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
               >
                 {project.caseStudy
                   ? dict.projects.caseStudy.read
                   : dict.projects.viewDetails}
-                <span aria-hidden>→</span>
+                <span aria-hidden data-card-arrow>
+                  →
+                </span>
               </Link>
             )}
 
@@ -122,10 +120,15 @@ export function ProjectCard(props: {
                 href={primary.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-fx btn-fx-primary ml-auto flex size-11 items-center justify-center rounded-lg bg-primary-fill text-primary-foreground"
+                className="btn-fx btn-fx-primary ml-auto flex size-11 items-center justify-center rounded-lg bg-primary-fill text-primary-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                 aria-label={`${getLinkLabel(primary.kind, dict)}: ${project.title}`}
               >
-                <ProjectLinkIcon kind={primary.kind} className="h-3.5 w-3.5" />
+                <span data-btn-glyph>
+                  <ProjectLinkIcon
+                    kind={primary.kind}
+                    className="h-3.5 w-3.5"
+                  />
+                </span>
               </a>
             ) : project.visibility === "confidential" ? (
               <span className="ml-auto font-mono text-[10px] text-status-warning">
@@ -139,6 +142,6 @@ export function ProjectCard(props: {
           </div>
         </div>
       </article>
-    </TiltCard>
+    </ProjectCardSurface>
   );
 }

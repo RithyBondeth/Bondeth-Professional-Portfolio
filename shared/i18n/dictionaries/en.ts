@@ -112,6 +112,9 @@ export const en = {
     searchLabel: "Search projects",
     searchPlaceholder: "Search by project, topic, or technology",
     clearFilters: "Clear filters",
+    clearSearch: "Clear search",
+    activeFilters: "Active filters",
+    removeFilter: "Remove filter",
     resultsLabel: "Projects shown",
     artwork: {
       heading: "Product artwork",
@@ -144,7 +147,7 @@ export const en = {
     filterDomain: "Topic",
     heading: "Things I've built",
     featuredBlurb:
-      "Selected public work and limited profiles that show the products and systems I've contributed to.",
+      "Three builds across hiring, native macOS tools, and video production. Explore the problem, the engineering decisions, and what each delivers.",
     viewAllProjects: "View all projects",
     allProjectsHeading: "All projects",
     allProjectsBlurb:

@@ -155,7 +155,7 @@ function OrgBadge(props: { org: Organization }) {
           fill
           loading="eager"
           sizes="128px"
-          className="object-contain opacity-100"
+          className={`object-contain opacity-100 ${org.name === "Apsara Talent" ? "scale-80" : ""}`}
         />
       </div>
       <span className="pointer-events-none absolute inset-0 flex translate-y-1.5 items-center justify-center px-4 text-xs font-semibold leading-snug text-foreground opacity-0 transition-[opacity,translate] duration-500 ease-[cubic-bezier(.22,1,.36,1)] group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100">

@@ -115,6 +115,9 @@ export const km: Dictionary = {
     searchLabel: "ស្វែងរកគម្រោង",
     searchPlaceholder: "ស្វែងរកតាមឈ្មោះគម្រោង ប្រធានបទ ឬបច្ចេកវិទ្យា",
     clearFilters: "សម្អាតតម្រង",
+    clearSearch: "សម្អាតការស្វែងរក",
+    activeFilters: "តម្រងដែលកំពុងប្រើ",
+    removeFilter: "ដកតម្រងចេញ",
     resultsLabel: "គម្រោងដែលបង្ហាញ",
     artwork: {
       heading: "រូបរចនាផលិតផល",
@@ -147,7 +150,7 @@ export const km: Dictionary = {
     filterDomain: "វិស័យ",
     heading: "ស្នាដៃដែលខ្ញុំបានបង្កើត",
     featuredBlurb:
-      "ស្នាដៃសាធារណៈ និងព័ត៌មានមានកម្រិតដែលបង្ហាញពីផលិតផល និងប្រព័ន្ធដែលខ្ញុំបានចូលរួមអភិវឌ្ឍ។",
+      "គម្រោងបីផ្នែកជ្រើសរើសបុគ្គលិក ឧបករណ៍ macOS ដើម និងការផលិតវីដេអូ។ ស្វែងយល់ពីបញ្ហា ការសម្រេចចិត្តបច្ចេកទេស និងលទ្ធផលនៃគម្រោងនីមួយៗ។",
     viewAllProjects: "មើលគម្រោងទាំងអស់",
     allProjectsHeading: "គម្រោងទាំងអស់",
     allProjectsBlurb:

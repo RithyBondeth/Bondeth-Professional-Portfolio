@@ -288,7 +288,7 @@ export default function LandingHero({
         </TiltCard>
       </div>
       <button
-        onClick={() => scrollToSection("showreel")}
+        onClick={() => scrollToSection("projects")}
         className="hero-scroll absolute bottom-7 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 text-[10px] font-semibold uppercase tracking-[.2em] text-field-muted-foreground"
         aria-label={dict.hero.scroll}
       >

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { AnimateIn } from "@/shared/components/motion/animate-in";
 import { ScrambleText } from "@/shared/components/motion/scramble-text";
 import { ProjectExplorer } from "@/features/portfolio/components/projects/project-explorer";
 import { SkillIconSprite } from "@/features/portfolio/components/skills/skill-icon-sprite";
@@ -47,7 +46,7 @@ export default async function ProjectsPage({ params }: ProjectsPageProps) {
       className="flex-1 px-6 pb-16 sm:pb-24 pt-32 font-sans"
     >
       <div className="mx-auto max-w-6xl">
-        <AnimateIn>
+        <div>
           <p className="font-mono text-xs uppercase tracking-[0.25em] text-primary">
             <ScrambleText text="$ ls projects/" />
           </p>
@@ -57,15 +56,15 @@ export default async function ProjectsPage({ params }: ProjectsPageProps) {
           <p className="mb-10 mt-4 max-w-2xl text-sm leading-relaxed text-field-muted-foreground">
             {dict.projects.allProjectsBlurb}
           </p>
-        </AnimateIn>
+        </div>
 
-        <AnimateIn delay={0.08}>
+        <div>
           {/* Icon geometry for every card's tech badges, defined once. */}
           <SkillIconSprite
             icons={projects.flatMap((project) => techIconKeys(project.tags))}
           />
           <ProjectExplorer projects={projects} dict={dict} lang={lang} />
-        </AnimateIn>
+        </div>
       </div>
     </main>
   );
