@@ -10,8 +10,8 @@ import { GlyphField } from "@/shared/components/background/glyph-field";
  *    scrolls. Radial gradients are soft by construction, so nothing needs a
  *    `filter: blur()` (which would re-rasterise every frame).
  * 2. Pointer glow — a warm light that eases after the cursor.
- * 3. Glyph field — flowing monospace characters that scramble into code under
- *    the cursor (see glyph-field.tsx).
+ * 3. Glyph field — folded ASCII ribbons with coral contour highlights and
+ *    a cursor-driven code wake (see glyph-field.tsx).
  * 4. Grain, for a little physical texture.
  *
  * Reduced motion freezes it all into a still composition.
