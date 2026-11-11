@@ -12,6 +12,7 @@ export const km: Dictionary = {
     contact: "ទំនាក់ទំនង",
     labs: "ពិសោធន៍ AI",
     blog: "ប្លុក",
+    news: "ព័ត៌មាន",
     resume: "ប្រវត្តិរូប",
     resumeMobile: "ប្រវត្តិរូប (PDF)",
     world3d: "ពិភព 3D",
@@ -616,6 +617,19 @@ export const km: Dictionary = {
     ctaAction: "ចាប់ផ្តើមការសន្ទនា",
     location: "រាជធានីភ្នំពេញ ប្រទេសកម្ពុជា · UTC+7",
     madeWithCare: "រចនា និងបង្កើតដោយយកចិត្តទុកដាក់នៅភ្នំពេញ",
+  },
+  news: {
+    heading: "ព័ត៌មានបច្ចេកវិទ្យា",
+    description:
+      "អត្ថបទអំពីសូហ្វវែរ AI ក្រុមហ៊ុនទើបបង្កើត និងវិទ្យាសាស្ត្រ ដែលបានចែករំលែកលើ Hacker News។",
+    top: "ពេញនិយម",
+    latest: "ថ្មីបំផុត",
+    feedLabel: "បញ្ជីព័ត៌មាន",
+    loading: "កំពុងផ្ទុកអត្ថបទ",
+    unavailable: "មិនអាចបង្ហាញអត្ថបទបាននៅពេលនេះទេ។",
+    browseSource: "មើលព័ត៌មានលើ Hacker News",
+    comment: "មតិ",
+    comments: "មតិ",
   },
   blog: {
     formatNote: "កំណត់ត្រា ៦០ វិនាទី",
