@@ -62,6 +62,7 @@ export const navLinks: NavLink[] = [
   { href: "/#projects", label: "Projects" },
   { href: "/labs", label: "Labs" },
   { href: "/blog", label: "Blog" },
+  { href: "/news", label: "Technology News" },
   { href: "/#contact", label: "Contact" },
 ];
 
@@ -72,8 +73,8 @@ export const primaryNavLinks = navLinks.filter(
 /**
  * Desktop navbar only: the homepage's own scroll-sections (About through
  * Services) collapse into a single "Explore" dropdown so the bar isn't a
- * wall of 8 text links — real destinations (Projects, Labs, Blog, Contact)
- * stay directly clickable. The mobile menu and footer still use the full
+ * long row of text links. Other destinations stay directly clickable.
+ * The mobile menu and footer still use the full
  * `navLinks` / `primaryNavLinks` lists since a vertical list has no clutter
  * problem.
  */

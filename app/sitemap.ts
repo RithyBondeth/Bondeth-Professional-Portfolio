@@ -38,6 +38,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
 
     entries.push({
+      url: `${siteConfig.url}/${locale}/news`,
+      changeFrequency: "hourly",
+      alternates: { languages: languageAlternates("/news") },
+    });
+
+    entries.push({
       url: `${siteConfig.url}/${locale}/resume`,
       lastModified: new Date(),
       changeFrequency: "monthly",
