@@ -21,7 +21,7 @@ const HOVER_RADIUS = 170;
 /** Per-frame retention of cursor heat, so the cursor leaves a fading wake. */
 const HEAT_DECAY = 0.9;
 /** The field drifts at a fraction of scroll speed, so it reads as depth. */
-const SCROLL_PARALLAX = 0.35;
+const SCROLL_PARALLAX = 0.18;
 
 interface Grid {
   cols: number;
@@ -31,6 +31,8 @@ interface Grid {
   /** Per-column visibility: quieter behind the centred content column. */
   columnWeight: Float32Array;
   heat: Float32Array;
+  ridgeA: Float32Array;
+  ridgeB: Float32Array;
 }
 
 function readTheme() {
@@ -86,13 +88,13 @@ function hash(value: number) {
  * ASCII texture, drawn with Canvas 2D rather than WebGL so it costs no extra
  * dependency.
  *
- * Density comes from slow, domain-warped sine waves (a "plasma"), so the
- * characters thicken and thin like weather. The field drifts at parallax speed
+ * Two folded ribbons carry fine contour bands, with coral catching the
+ * crests and a quieter centre keeping text legible. The field drifts at parallax speed
  * with the scroll. Near the cursor, glyphs light up in the brand colour and
  * scramble into code characters, leaving a wake that fades behind it.
  *
  * Cost control: glyphs are blitted from a pre-rendered atlas, empty cells are
- * skipped, the loop is capped at 30fps (20 on touch devices), and requestAnimationFrame
+ * skipped, the loop is capped at 24fps (12 on touch devices), and requestAnimationFrame
  * pauses in background tabs. Reduced motion renders one still frame.
  */
 export function GlyphField() {
@@ -107,7 +109,7 @@ export function GlyphField() {
     const finePointer = window.matchMedia(
       "(hover: hover) and (pointer: fine)",
     ).matches;
-    const frameInterval = 1000 / (finePointer ? 30 : 20);
+    const frameInterval = 1000 / (finePointer ? 24 : 12);
 
     let theme = readTheme();
     let dpr = 1;
@@ -115,7 +117,9 @@ export function GlyphField() {
     let grid: Grid | null = null;
     let frame = 0;
     let lastFrame = 0;
+    let previousDraw = 0;
     let disposed = false;
+    let ready = false;
     // Pointer target and its eased follower, in CSS px.
     let targetX = -9999;
     let targetY = -9999;
@@ -125,21 +129,21 @@ export function GlyphField() {
     const layout = () => {
       const width = window.innerWidth;
       const height = window.innerHeight;
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      dpr = Math.min(window.devicePixelRatio || 1, finePointer ? 2 : 1.25);
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
       context.setTransform(dpr, 0, 0, dpr, 0, 0);
 
       const compact = width < 640;
-      const cellW = compact ? 11 : 12;
-      const cellH = compact ? 17 : 18;
+      const cellW = compact ? 12 : 10;
+      const cellH = compact ? 18 : 16;
       const cols = Math.ceil(width / cellW);
       const rows = Math.ceil(height / cellH);
 
       const columnWeight = new Float32Array(cols);
       for (let col = 0; col < cols; col++) {
         const fromCentre = Math.abs(col / (cols - 1) - 0.5) * 2;
-        columnWeight[col] = 0.45 + 0.55 * Math.pow(fromCentre, 1.6);
+        columnWeight[col] = 0.24 + 0.76 * Math.pow(fromCentre, 1.3);
       }
 
       grid = {
@@ -149,22 +153,40 @@ export function GlyphField() {
         cellH,
         columnWeight,
         heat: new Float32Array(cols * rows),
+        ridgeA: new Float32Array(cols),
+        ridgeB: new Float32Array(cols),
       };
       atlas = buildAtlas(cellW, cellH, dpr, theme);
     };
 
     const draw = (now: number) => {
       if (!grid || !atlas) return;
-      const { cols, rows, cellW, cellH, columnWeight, heat } = grid;
+      const { cols, rows, cellW, cellH, columnWeight, heat, ridgeA, ridgeB } =
+        grid;
       const time = reduceMotion ? 0 : now / 1000;
+      const elapsed = previousDraw
+        ? Math.min(now - previousDraw, 100)
+        : frameInterval;
+      previousDraw = now;
+      const retention = Math.pow(HEAT_DECAY, elapsed / (1000 / 30));
       const scrollRows = (window.scrollY * SCROLL_PARALLAX) / cellH;
-      const baseAlpha = theme.dark ? 0.11 : 0.15;
+      const baseAlpha = theme.dark ? 0.22 : 0.23;
       const srcW = cellW * dpr;
       const srcH = cellH * dpr;
       const scrambleTick = Math.floor(time * 14);
 
-      pointerX += (targetX - pointerX) * 0.35;
-      pointerY += (targetY - pointerY) * 0.35;
+      const ease = 1 - Math.pow(0.65, elapsed / (1000 / 30));
+      pointerX += (targetX - pointerX) * ease;
+      pointerY += (targetY - pointerY) * ease;
+
+      // Warp each column once per frame, rather than repeating it per glyph.
+      for (let col = 0; col < cols; col++) {
+        const x = col / cols - 0.5;
+        ridgeA[col] =
+          x * 2.4 + Math.sin(x * 5.1 + time * 0.13) * 1.2 - time * 0.11;
+        ridgeB[col] =
+          -x * 3.1 + Math.cos(x * 4.2 - time * 0.1) * 1.1 + time * 0.09 + 2.1;
+      }
 
       context.clearRect(0, 0, cols * cellW, rows * cellH);
 
@@ -177,7 +199,7 @@ export function GlyphField() {
           const index = row * cols + col;
 
           // Cursor heat: the lens, plus a decaying wake.
-          let warmth = heat[index] * HEAT_DECAY;
+          let warmth = finePointer ? heat[index] * retention : 0;
           if (Math.abs(dy) < HOVER_RADIUS) {
             const dx = col * cellW + cellW / 2 - pointerX;
             if (Math.abs(dx) < HOVER_RADIUS) {
@@ -190,27 +212,35 @@ export function GlyphField() {
           let glyph: number;
           let alpha: number;
           let tone: number;
+          let offsetX = 0;
+          let offsetY = 0;
 
           if (warmth > 0.08) {
             const pick = hash(index * 7.13 + scrambleTick);
             glyph = SCRAMBLE_INDEX[Math.floor(pick * SCRAMBLE_INDEX.length)];
             // Capped well below opaque: the lens passes behind body text.
-            alpha = 0.1 + warmth * 0.48;
+            alpha = (0.08 + warmth * 0.3) * (0.5 + columnWeight[col] * 0.5);
+            const dx = col * cellW + cellW / 2 - pointerX;
+            const distance = Math.hypot(dx, dy) || 1;
+            offsetX = (dx / distance) * warmth * 6;
+            offsetY = (dy / distance) * warmth * 6;
             tone = 1;
           } else {
-            // Domain-warped plasma, roughly in [-3, 3].
-            const x = col;
-            const wave =
-              Math.sin(
-                x * 0.085 + time * 0.32 + Math.sin(y * 0.07 + time * 0.2) * 1.8,
-              ) +
-              Math.sin(
-                y * 0.11 - time * 0.26 + Math.sin(x * 0.05 - time * 0.15) * 1.5,
-              ) +
-              Math.sin((x + y) * 0.045 + time * 0.21);
-            // Keep only the upper part of the range, so the field stays sparse.
-            const density = ((wave / 3 + 1) / 2 - 0.42) / 0.58;
-            if (density <= 0) continue;
+            // Two folded ribbons repeat vertically, so scrolling reveals a
+            // continuous field. Narrow contour bands describe their surfaces.
+            const depth = y / rows;
+            const distanceA = Math.abs(Math.sin(depth * 6.2 + ridgeA[col]));
+            const distanceB = Math.abs(Math.sin(depth * 5.4 + ridgeB[col]));
+            const surfaceA = Math.exp(-distanceA * distanceA * 10);
+            const surfaceB = Math.exp(-distanceB * distanceB * 10) * 0.82;
+            const ribbon = Math.max(surfaceA, surfaceB);
+            if (ribbon < 0.035) continue;
+            const distance = surfaceA > surfaceB ? distanceA : distanceB;
+            const contour = Math.pow(
+              0.5 + 0.5 * Math.cos(distance * 34 - time * 0.25),
+              12,
+            );
+            const density = Math.min(1, ribbon * (0.26 + contour * 0.7));
             const step =
               1 +
               Math.min(
@@ -218,8 +248,9 @@ export function GlyphField() {
                 Math.floor(density * (RAMP.length - 1)),
               );
             glyph = RAMP_INDEX[step];
-            alpha = baseAlpha * (0.35 + density * 0.65) * columnWeight[col];
-            tone = 0;
+            tone = contour > 0.5 && ribbon > 0.4 ? 1 : 0;
+            alpha = baseAlpha * (0.22 + density * 0.78) * columnWeight[col];
+            if (tone === 1) alpha *= 1.35;
           }
 
           context.globalAlpha = alpha;
@@ -229,8 +260,8 @@ export function GlyphField() {
             tone * srcH,
             srcW,
             srcH,
-            col * cellW,
-            row * cellH,
+            col * cellW + offsetX,
+            row * cellH + offsetY,
             cellW,
             cellH,
           );
@@ -249,8 +280,10 @@ export function GlyphField() {
     const start = () => {
       if (disposed) return;
       layout();
+      ready = true;
+      cancelAnimationFrame(frame);
       if (reduceMotion) draw(0);
-      else frame = requestAnimationFrame(loop);
+      else if (!document.hidden) frame = requestAnimationFrame(loop);
     };
 
     // Measure glyphs in the real monospace face, not a fallback.
@@ -288,7 +321,17 @@ export function GlyphField() {
       attributeFilter: ["data-theme"],
     });
 
+    const onVisibilityChange = () => {
+      cancelAnimationFrame(frame);
+      frame = 0;
+      previousDraw = lastFrame = 0;
+      if (ready && !document.hidden && !reduceMotion && !disposed)
+        frame = requestAnimationFrame(loop);
+    };
+
+    document.addEventListener("visibilitychange", onVisibilityChange);
     window.addEventListener("resize", onResize);
+    window.addEventListener("blur", onPointerLeave);
     if (finePointer && !reduceMotion) {
       window.addEventListener("pointermove", onPointerMove, { passive: true });
       document.documentElement.addEventListener("pointerleave", onPointerLeave);
@@ -298,7 +341,9 @@ export function GlyphField() {
       disposed = true;
       cancelAnimationFrame(frame);
       themeObserver.disconnect();
+      document.removeEventListener("visibilitychange", onVisibilityChange);
       window.removeEventListener("resize", onResize);
+      window.removeEventListener("blur", onPointerLeave);
       window.removeEventListener("pointermove", onPointerMove);
       document.documentElement.removeEventListener(
         "pointerleave",
