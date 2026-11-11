@@ -194,6 +194,13 @@ export default function Navbar(props: { lang: Locale }) {
       .map(({ href }) => href)
       .filter((href) => href.startsWith("/#"))
       .map((href) => href.replace("/#", ""));
+    const activePage = topNavLinks.find(({ href }) => {
+      if (href.startsWith("/#")) return false;
+      const localizedHref = localizeHref(href, lang);
+      return (
+        pathname === localizedHref || pathname.startsWith(`${localizedHref}/`)
+      );
+    });
 
     let frame = 0;
 
@@ -229,11 +236,8 @@ export default function Navbar(props: { lang: Locale }) {
       const threshold = window.innerHeight * 0.35;
       let current = "";
 
-      // Check if we are on the blog page
-      if (window.location.pathname.includes("/labs")) {
-        current = "labs";
-      } else if (window.location.pathname.includes("/blog")) {
-        current = "blog";
+      if (activePage) {
+        current = navKeyFromHref(activePage.href);
       } else {
         for (const id of sectionIds) {
           const el = document.getElementById(id);
@@ -256,7 +260,7 @@ export default function Navbar(props: { lang: Locale }) {
       window.removeEventListener("scroll", onScroll);
       if (frame) cancelAnimationFrame(frame);
     };
-  }, []);
+  }, [lang, pathname]);
 
   // One sliding underline glides between active links instead of each link
   // painting its own — jumps instantly under reduced motion.

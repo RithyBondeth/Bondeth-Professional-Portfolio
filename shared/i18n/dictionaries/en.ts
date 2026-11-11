@@ -10,6 +10,7 @@ export const en = {
     contact: "Contact",
     labs: "Labs",
     blog: "Blog",
+    news: "News",
     resume: "Resume",
     resumeMobile: "Resume",
     world3d: "3D World",
@@ -621,6 +622,19 @@ export const en = {
     ctaAction: "Start a conversation",
     location: "Phnom Penh, Cambodia · UTC+7",
     madeWithCare: "Designed and made with care in Phnom Penh",
+  },
+  news: {
+    heading: "Technology News",
+    description:
+      "Stories about software, AI, startups, and science shared on Hacker News.",
+    top: "Top",
+    latest: "Latest",
+    feedLabel: "News feeds",
+    loading: "Loading stories",
+    unavailable: "Stories are temporarily unavailable.",
+    browseSource: "Browse Hacker News",
+    comment: "comment",
+    comments: "comments",
   },
   blog: {
     formatNote: "60-second note",

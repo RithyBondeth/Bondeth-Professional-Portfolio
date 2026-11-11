@@ -140,7 +140,9 @@ export default function Footer(props: { lang: Locale }) {
             </h3>
             <ul className="mt-4 space-y-2.5">
               {primaryNavLinks
-                .filter(({ href }) => !["/labs", "/blog"].includes(href))
+                .filter(
+                  ({ href }) => !["/labs", "/blog", "/news"].includes(href),
+                )
                 .map(({ href }) => (
                   <li key={href}>
                     <Link
@@ -182,6 +184,14 @@ export default function Footer(props: { lang: Locale }) {
                   className="text-field-muted-foreground transition-colors hover:text-primary"
                 >
                   {dict.nav.blog}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={`/${lang}/news`}
+                  className="text-field-muted-foreground transition-colors hover:text-primary"
+                >
+                  {dict.nav.news}
                 </Link>
               </li>
               <li>
