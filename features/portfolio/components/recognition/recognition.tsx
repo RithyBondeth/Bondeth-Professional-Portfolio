@@ -141,15 +141,17 @@ export default function LandingRecognition(props: { lang: Locale }) {
                       {item.description}
                     </p>
 
-                    <a
-                      href={item.certificate.src}
-                      target="_blank"
-                      rel="noopener"
-                      className="btn-fx btn-fx-primary inline-flex min-h-11 items-center gap-2 self-start rounded-lg bg-primary-fill px-4 font-mono text-xs font-medium text-primary-foreground"
-                    >
-                      {copy.viewCertificate}
-                      <ArrowUpRight aria-hidden className="size-3.5" />
-                    </a>
+                    {item.link && (
+                      <a
+                        href={item.link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn-fx btn-fx-primary inline-flex min-h-11 items-center gap-2 self-start rounded-lg bg-primary-fill px-4 font-mono text-xs font-medium text-primary-foreground"
+                      >
+                        {item.link.label}
+                        <ArrowUpRight aria-hidden className="size-3.5" />
+                      </a>
+                    )}
                   </StaggerIn>
                 </div>
               </article>

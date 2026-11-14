@@ -96,7 +96,6 @@ export const en = {
     heading: "Recognized for impact",
     blurb:
       "Formal recognition for public-sector work that reached people at national scale.",
-    viewCertificate: "View certificate",
     certificateLabel: "Certificate",
     openImage: "Open full-size image",
   },

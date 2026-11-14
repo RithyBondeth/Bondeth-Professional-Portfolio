@@ -66,6 +66,11 @@ export function getRecognitions(lang: Locale): Recognition[] {
       value: item.metric.valueKm ?? item.metric.value,
       label: item.metric.labelKm ?? item.metric.label,
     },
+    link: item.link && {
+      ...item.link,
+      href: item.link.hrefKm ?? item.link.href,
+      label: item.link.labelKm ?? item.link.label,
+    },
     cover: localizeImage(item.cover),
     certificate: localizeImage(item.certificate),
     photos: item.photos.map(localizeImage),

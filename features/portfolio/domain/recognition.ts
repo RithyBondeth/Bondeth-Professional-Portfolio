@@ -37,9 +37,16 @@ export interface Recognition {
     label: string;
     labelKm?: string;
   };
+  /** The work being recognized, e.g. the live platform. Opens in a new tab. */
+  link?: {
+    href: string;
+    hrefKm?: string;
+    label: string;
+    labelKm?: string;
+  };
   /** Lead image, shown large. */
   cover: RecognitionImage;
-  /** The certificate itself, linked in full. */
+  /** The certificate itself, opened full size from its thumbnail. */
   certificate: RecognitionImage;
   /** Further event photos, shown as thumbnails. */
   photos: RecognitionImage[];

@@ -307,6 +307,12 @@ export const recognitions: Recognition[] = [
       label: "registrations on the digital platform by 30 Sep 2026",
       labelKm: "អ្នកចុះឈ្មោះលើវេទិកាឌីជីថល គិតត្រឹម ៣០ កញ្ញា ២០២៦",
     },
+    link: {
+      href: "https://informal.digitaleconomy.gov.kh/en",
+      hrefKm: "https://informal.digitaleconomy.gov.kh/km",
+      label: "View CamIE platform",
+      labelKm: "មើលវេទិកា CamIE",
+    },
     cover: {
       src: "/recognition/award-ceremony.webp",
       width: 1800,
