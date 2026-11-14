@@ -5,6 +5,7 @@ export const en = {
     skills: "Skills",
     experience: "Experience",
     education: "Education",
+    recognition: "Recognition",
     services: "Services",
     projects: "Projects",
     contact: "Contact",
@@ -89,6 +90,15 @@ export const en = {
   },
   education: {
     heading: "Academic background",
+  },
+  recognition: {
+    eyebrow: "Recognition",
+    heading: "Recognized for impact",
+    blurb:
+      "Formal recognition for public-sector work that reached people at national scale.",
+    viewCertificate: "View certificate",
+    certificateLabel: "Certificate",
+    openImage: "Open full-size image",
   },
   projects: {
     groups: {

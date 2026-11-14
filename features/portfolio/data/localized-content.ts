@@ -3,6 +3,7 @@ import {
   experiences,
   educations,
   projects,
+  recognitions,
 } from "@/features/portfolio/data/portfolio";
 import type {
   Experience,
@@ -10,6 +11,8 @@ import type {
   SiteConfig,
   Education,
   ProjectCaseStudy,
+  Recognition,
+  RecognitionImage,
 } from "@/features/portfolio/domain";
 import { kmContent } from "@/features/portfolio/data/localized-content.km";
 import { getProjectResources } from "@/features/portfolio/data/project-resources";
@@ -37,6 +40,36 @@ export function getExperiences(lang: Locale): Experience[] {
 export function getEducations(lang: Locale): Education[] {
   if (lang !== "km") return educations;
   return educations.map((edu, i) => ({ ...edu, ...kmContent.educations[i] }));
+}
+
+/**
+ * Khmer fields sit on each entry and are optional, so every one falls back to
+ * the English copy rather than rendering empty on /km.
+ */
+export function getRecognitions(lang: Locale): Recognition[] {
+  if (lang !== "km") return recognitions;
+
+  const localizeImage = (image: RecognitionImage): RecognitionImage => ({
+    ...image,
+    alt: image.altKm ?? image.alt,
+  });
+
+  return recognitions.map((item) => ({
+    ...item,
+    title: item.titleKm ?? item.title,
+    issuer: item.issuerKm ?? item.issuer,
+    dateLabel: item.dateLabelKm ?? item.dateLabel,
+    location: item.locationKm ?? item.location,
+    description: item.descriptionKm ?? item.description,
+    metric: item.metric && {
+      ...item.metric,
+      value: item.metric.valueKm ?? item.metric.value,
+      label: item.metric.labelKm ?? item.metric.label,
+    },
+    cover: localizeImage(item.cover),
+    certificate: localizeImage(item.certificate),
+    photos: item.photos.map(localizeImage),
+  }));
 }
 
 export function getProjects(lang: Locale): Project[] {

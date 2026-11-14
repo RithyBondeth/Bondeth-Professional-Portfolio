@@ -7,6 +7,7 @@ export const km: Dictionary = {
     skills: "ជំនាញ",
     experience: "បទពិសោធន៍",
     education: "ការសិក្សា",
+    recognition: "ការទទួលស្គាល់",
     services: "សេវាកម្ម",
     projects: "គម្រោង",
     contact: "ទំនាក់ទំនង",
@@ -92,6 +93,15 @@ export const km: Dictionary = {
   },
   education: {
     heading: "ប្រវត្តិការសិក្សា",
+  },
+  recognition: {
+    eyebrow: "ការទទួលស្គាល់",
+    heading: "ការទទួលស្គាល់លើស្នាដៃ",
+    blurb:
+      "ការទទួលស្គាល់ជាផ្លូវការចំពោះការងារក្នុងវិស័យសាធារណៈ ដែលបានផ្តល់ផលដល់ប្រជាពលរដ្ឋទូទាំងប្រទេស។",
+    viewCertificate: "មើលបណ្ណសរសើរ",
+    certificateLabel: "បណ្ណសរសើរ",
+    openImage: "បើករូបភាពទំហំពេញ",
   },
   projects: {
     groups: {

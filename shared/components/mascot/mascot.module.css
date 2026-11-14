@@ -65,6 +65,9 @@
 .sectionIcon[data-section-mascot="education"] {
   --section-gesture: section-nod;
 }
+.sectionIcon[data-section-mascot="recognition"] {
+  --section-gesture: section-hop;
+}
 .sectionIcon[data-section-mascot="services"] {
   --section-gesture: section-offer;
 }
