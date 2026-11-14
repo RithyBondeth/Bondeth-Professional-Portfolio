@@ -7,6 +7,7 @@ import LandingCurrentFocus from "@/features/portfolio/components/current-focus/c
 import LandingSkills from "@/features/portfolio/components/skills/skills";
 import LandingExperience from "@/features/portfolio/components/experience/experience";
 import LandingEducation from "@/features/portfolio/components/education/education";
+import LandingRecognition from "@/features/portfolio/components/recognition/recognition";
 import LandingServices from "@/features/portfolio/components/services/services";
 import LandingProjects from "@/features/portfolio/components/projects/projects";
 import LandingGithub from "@/features/portfolio/components/github/github";
@@ -14,7 +15,11 @@ import LandingWriting from "@/features/portfolio/components/writing/writing";
 import LandingMedia from "@/features/portfolio/components/media/media";
 import LandingRecommendations from "@/features/portfolio/components/recommendations/recommendations";
 import LandingContact from "@/features/portfolio/components/contact/contact";
-import { projects, siteConfig } from "@/features/portfolio/data/portfolio";
+import {
+  projects,
+  recognitions,
+  siteConfig,
+} from "@/features/portfolio/data/portfolio";
 import { hasLocale } from "@/shared/i18n";
 import { getSiteConfig } from "@/features/portfolio/data/localized-content";
 
@@ -68,6 +73,9 @@ export default async function IndexPage({ params }: HomePageProps) {
       addressLocality: "Phnom Penh",
       addressCountry: "KH",
     },
+    award: recognitions.map(
+      (item) => `${item.title}, ${item.issuer} (${item.date.slice(0, 4)})`,
+    ),
   };
 
   return (
@@ -96,6 +104,7 @@ export default async function IndexPage({ params }: HomePageProps) {
       <LandingSkills lang={lang} />
       <LandingExperience lang={lang} />
       <LandingEducation lang={lang} />
+      <LandingRecognition lang={lang} />
       <LandingServices lang={lang} />
       <LandingGithub lang={lang} />
       <LandingWriting lang={lang} />

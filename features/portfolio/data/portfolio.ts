@@ -6,6 +6,7 @@ import type {
   SiteConfig,
   Education,
   Organization,
+  Recognition,
   Video,
 } from "@/features/portfolio/domain";
 import { recentProjects } from "@/features/portfolio/data/recent-projects";
@@ -58,6 +59,7 @@ export const navLinks: NavLink[] = [
   { href: "/#skills", label: "Skills" },
   { href: "/#experience", label: "Experience" },
   { href: "/#education", label: "Education" },
+  { href: "/#recognition", label: "Recognition" },
   { href: "/#services", label: "Services" },
   { href: "/#projects", label: "Projects" },
   { href: "/labs", label: "Labs" },
@@ -67,7 +69,7 @@ export const navLinks: NavLink[] = [
 ];
 
 export const primaryNavLinks = navLinks.filter(
-  ({ href }) => href !== "/#education",
+  ({ href }) => href !== "/#education" && href !== "/#recognition",
 );
 
 /**
@@ -83,6 +85,7 @@ const EXPLORE_HREFS = [
   "/#skills",
   "/#experience",
   "/#education",
+  "/#recognition",
   "/#services",
 ];
 export const exploreNavLinks = navLinks.filter(({ href }) =>
@@ -277,6 +280,77 @@ export const educations: Education[] = [
       "Pursued a bachelor's degree in Computer Science with a focus on software engineering, web development, and mobile app development. Graduated as a Techo Scholar.",
     achievements: [
       "Techo Scholar — merit-based scholarship for outstanding students",
+    ],
+  },
+];
+
+/** Newest first. Images live in /public/recognition, resized with EXIF/GPS stripped. */
+export const recognitions: Recognition[] = [
+  {
+    id: "misti-informal-economy-2026",
+    title: "Certificate of Appreciation",
+    titleKm: "បណ្ណសរសើរ",
+    issuer: "Ministry of Industry, Science, Technology & Innovation",
+    issuerKm: "ក្រសួងឧស្សាហកម្ម វិទ្យាសាស្ត្រ បច្ចេកវិទ្យា និងនវានុវត្តន៍",
+    date: "2026-11-12",
+    dateLabel: "12 November 2026",
+    dateLabelKm: "១២ វិច្ឆិកា ២០២៦",
+    location: "Phnom Penh, Cambodia",
+    locationKm: "រាជធានីភ្នំពេញ",
+    description:
+      "Recognized for active work promoting and accelerating the registration of informal-economy workers through the national digital platform, which passed 500,000 registrations by 30 September 2026. Presented at the ministry's partner appreciation ceremony, as staff of the General Secretariat of the Digital Economy and Business Committee.",
+    descriptionKm:
+      "ទទួលបណ្ណសរសើរចំពោះការខិតខំប្រឹងប្រែង និងការចូលរួមចំណែកយ៉ាងសកម្មក្នុងការផ្សព្វផ្សាយ និងជំរុញការចុះឈ្មោះអ្នកសេដ្ឋកិច្ចក្រៅប្រព័ន្ធតាមវេទិកាឌីជីថល ដែលមានអ្នកចុះឈ្មោះសរុបលើសពី ៥០០.០០០ នាក់ គិតត្រឹមថ្ងៃទី៣០ ខែកញ្ញា ឆ្នាំ២០២៦។ ប្រគល់ជូនក្នុងពិធីប្រគល់បណ្ណសរសើរដល់ដៃគូសហការ ក្នុងនាមជាបុគ្គលិកនៃអគ្គលេខាធិការដ្ឋាន គណៈកម្មាធិការសេដ្ឋកិច្ច និងធុរកិច្ចឌីជីថល។",
+    metric: {
+      value: "500,000+",
+      valueKm: "៥០០.០០០+",
+      label: "registrations on the digital platform by 30 Sep 2026",
+      labelKm: "អ្នកចុះឈ្មោះលើវេទិកាឌីជីថល គិតត្រឹម ៣០ កញ្ញា ២០២៦",
+    },
+    link: {
+      href: "https://informal.digitaleconomy.gov.kh/en",
+      hrefKm: "https://informal.digitaleconomy.gov.kh/km",
+      label: "View CamIE platform",
+      labelKm: "មើលវេទិកា CamIE",
+    },
+    cover: {
+      src: "/recognition/award-ceremony.webp",
+      width: 1800,
+      height: 1459,
+      alt: "Bondeth receiving the certificate of appreciation on stage from the Minister at the award ceremony",
+      altKm:
+        "ឫទ្ធីបណ្ឌិតទទួលបណ្ណសរសើរពីឯកឧត្តមរដ្ឋមន្ត្រី នៅលើឆាកក្នុងពិធីប្រគល់បណ្ណសរសើរ",
+    },
+    certificate: {
+      src: "/recognition/certificate.webp",
+      width: 1240,
+      height: 1754,
+      alt: "Scan of the certificate of appreciation from the Ministry of Industry, Science, Technology & Innovation",
+      altKm:
+        "បណ្ណសរសើរពីក្រសួងឧស្សាហកម្ម វិទ្យាសាស្ត្រ បច្ចេកវិទ្យា និងនវានុវត្តន៍",
+    },
+    photos: [
+      {
+        src: "/recognition/portrait-close.webp",
+        width: 1050,
+        height: 1400,
+        alt: "Bondeth holding the framed certificate in front of the ceremony screen",
+        altKm: "ឫទ្ធីបណ្ឌិតកាន់បណ្ណសរសើរនៅមុខអេក្រង់ពិធី",
+      },
+      {
+        src: "/recognition/portrait-hall.webp",
+        width: 1014,
+        height: 1400,
+        alt: "Bondeth with the certificate beside the stage after the ceremony",
+        altKm: "ឫទ្ធីបណ្ឌិតជាមួយបណ្ណសរសើរ ក្បែរឆាកក្រោយពិធី",
+      },
+      {
+        src: "/recognition/portrait-stage.webp",
+        width: 988,
+        height: 1400,
+        alt: "Bondeth standing in the ceremony hall holding the certificate",
+        altKm: "ឫទ្ធីបណ្ឌិតឈរក្នុងសាលពិធី កាន់បណ្ណសរសើរ",
+      },
     ],
   },
 ];
