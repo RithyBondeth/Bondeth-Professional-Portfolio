@@ -15,6 +15,7 @@ const SECTION_MOODS = {
   skills: "idle",
   experience: "happy",
   education: "wink",
+  recognition: "happy",
   services: "wave",
   projects: "happy",
   github: "think",

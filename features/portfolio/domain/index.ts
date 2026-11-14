@@ -10,3 +10,4 @@ export * from "@/features/portfolio/domain/video";
 
 export * from "@/features/portfolio/domain/project-category";
 export * from "@/features/portfolio/domain/project-link-kind";
+export * from "@/features/portfolio/domain/recognition";
