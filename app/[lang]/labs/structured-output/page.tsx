@@ -36,6 +36,7 @@ export default async function StructuredOutputPage({
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   const { labs } = getDictionary(lang);
+  const liveAvailable = Boolean(process.env.GROQ_API_KEY);
 
   return (
     <main
@@ -57,9 +58,15 @@ export default async function StructuredOutputPage({
             <span className="rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
               {labs.experimental}
             </span>
-            <span className="rounded-full border border-status-success/25 bg-status-success/5 px-3 py-1 text-xs font-medium text-status-success">
-              {labs.playground.localMode}
-            </span>
+            {liveAvailable ? (
+              <span className="rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
+                {labs.playground.hybridMode}
+              </span>
+            ) : (
+              <span className="rounded-full border border-status-success/25 bg-status-success/5 px-3 py-1 text-xs font-medium text-status-success">
+                {labs.playground.localMode}
+              </span>
+            )}
           </div>
 
           <h1 className="mt-5 text-4xl font-bold text-foreground sm:text-5xl">
@@ -71,7 +78,10 @@ export default async function StructuredOutputPage({
         </AnimateIn>
 
         <AnimateIn from="up" delay={0.08} className="mt-10">
-          <StructuredOutputLab labels={labs.playground} />
+          <StructuredOutputLab
+            labels={labs.playground}
+            liveAvailable={liveAvailable}
+          />
         </AnimateIn>
 
         <AnimateIn from="up" delay={0.12}>

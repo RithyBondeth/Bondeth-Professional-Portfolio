@@ -196,12 +196,13 @@ export const en = {
     navLabel: "AI Labs",
     heading: "Interactive AI Labs",
     blurb:
-      "Small, transparent experiments that explain practical AI engineering patterns without hiding limitations or sending your data to external services.",
+      "Small, transparent experiments that explain practical AI engineering patterns without hiding their limitations. Labs that call a live model say so before you run them.",
     experimental: "Experiment",
     costFree: "No API cost",
+    liveModel: "Live model",
     structuredOutputTitle: "Structured Output Playground",
     structuredOutputDescription:
-      "Turn an unstructured project inquiry into predictable JSON, then inspect schema validation and missing fields.",
+      "Run a live model and a rules baseline on the same inquiry, validate both against a strict schema, and watch failed output get repaired.",
     signatureDemo: "Signature demo",
     ragTitle: "RAG Retrieval Visualizer",
     ragDescription:
@@ -213,12 +214,20 @@ export const en = {
     backToLabs: "back to all labs",
     playground: {
       intro:
-        "Enter a project inquiry in English or Khmer. The local demo endpoint extracts contact details, service intent, and urgency, then validates the result against a fixed schema.",
+        "Enter a project inquiry in English or Khmer. A live model and a regex baseline both extract contact details, service, and urgency. A strict schema validator checks every reply, and output that fails is sent back to the model once with the exact issues to fix.",
       localMode: "Local demo mode",
+      hybridMode: "Rules + live model",
       inputLabel: "Input",
       inputHeading: "Describe a project inquiry",
       privacy:
         "Processed locally by this site. No external AI provider is called.",
+      privacyModel:
+        "Your text is sent to Groq for this run. Don't paste anything private.",
+      modeLabel: "Extraction mode",
+      modeRules: "Rules only",
+      modeRulesHint: "Regex baseline, runs on this site",
+      modeModel: "Model vs. rules",
+      modeModelHint: "Live model, checked against the baseline",
       run: "Extract structured data",
       running: "Extracting...",
       outputHeading: "Validated result",
@@ -231,6 +240,31 @@ export const en = {
       missingFields: "Missing required fields",
       schema: "Expected schema",
       error: "The extraction could not be completed. Please try again.",
+      modelError:
+        "The live model could not answer right now, so only the rules result is shown.",
+      repaired: "Repaired on retry",
+      failedValidation: "Failed validation",
+      cached: "cached",
+      tokens: "tokens",
+      trace: "Validation trace",
+      attempt: "Attempt",
+      attemptValid: "Passed the schema",
+      issues: {
+        "parse-failed": "Reply was not valid JSON",
+        "not-object": "Reply was not a JSON object",
+        "missing-key": "Missing key",
+        "unknown-key": "Unexpected key",
+        "wrong-type": "Wrong type",
+        "invalid-email": "Not a valid email",
+        "not-in-enum": "Value outside the allowed list",
+      },
+      comparison: "Model vs. rules",
+      field: "Field",
+      rules: "Rules",
+      model: "Model",
+      agree: "Agree",
+      differ: "Differ",
+      comparisonSummary: "{count} of 4 fields differ",
       presets: [
         {
           label: "English example",
@@ -247,21 +281,32 @@ export const en = {
           value:
             "We are considering a website for our organization sometime next month.",
         },
+        {
+          label: "Messy example",
+          value:
+            "hey! Dara here, dara.k@example.org. our shop gets the same customer questions on Telegram all day, could a bot answer them? no huge rush, sometime after the holidays is fine",
+        },
+        {
+          label: "Needs repair",
+          value:
+            "I am Vanna, vanna(at)example(dot)com. We want a Shopify plugin and a mobile app, and the deadline is in 3 days.",
+        },
       ],
       steps: [
         {
           title: "Extract",
-          description: "Identify candidate values from natural-language input.",
-        },
-        {
-          title: "Normalize",
           description:
-            "Map varied wording into stable service and urgency values.",
+            "The model reads the inquiry in JSON mode; the regex baseline runs on the same text.",
         },
         {
           title: "Validate",
           description:
-            "Check required fields before another system consumes the result.",
+            "A strict schema check rejects missing keys, extra keys, invalid emails, and values outside the allowed lists.",
+        },
+        {
+          title: "Repair",
+          description:
+            "Failed output goes back to the model once with the exact issues. If it still fails, the lab says so instead of guessing.",
         },
       ],
       relatedReading: "Related technical article",

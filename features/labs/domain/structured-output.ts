@@ -1,8 +1,100 @@
-interface StructuredContact {
+export const SERVICE_VALUES = [
+  "AI assistant",
+  "mobile application",
+  "API development",
+  "website development",
+] as const;
+export const URGENCY_VALUES = ["high", "normal", "low"] as const;
+export const CONTACT_FIELDS = ["name", "email", "service", "urgency"] as const;
+
+export interface StructuredContact {
   name: string | null;
   email: string | null;
-  service: string | null;
-  urgency: "high" | "normal" | "low" | null;
+  service: (typeof SERVICE_VALUES)[number] | null;
+  urgency: (typeof URGENCY_VALUES)[number] | null;
+}
+
+export type ContactField = (typeof CONTACT_FIELDS)[number];
+
+export type SchemaIssueCode =
+  | "parse-failed"
+  | "not-object"
+  | "missing-key"
+  | "unknown-key"
+  | "wrong-type"
+  | "invalid-email"
+  | "not-in-enum";
+
+export interface SchemaIssue {
+  code: SchemaIssueCode;
+  /** The offending key; absent for whole-document issues. */
+  field?: string;
+}
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/**
+ * Strict check of a model's raw text against the contact schema. Reports every
+ * issue rather than the first, because the list is what the repair prompt
+ * sends back to the model.
+ */
+export function validateContactJson(raw: string): {
+  data: StructuredContact | null;
+  issues: SchemaIssue[];
+} {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return { data: null, issues: [{ code: "parse-failed" }] };
+  }
+  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+    return { data: null, issues: [{ code: "not-object" }] };
+  }
+
+  const record = parsed as Record<string, unknown>;
+  const issues: SchemaIssue[] = [];
+  for (const key of Object.keys(record)) {
+    if (!(CONTACT_FIELDS as readonly string[]).includes(key)) {
+      issues.push({ code: "unknown-key", field: key });
+    }
+  }
+  for (const field of CONTACT_FIELDS) {
+    if (!(field in record)) {
+      issues.push({ code: "missing-key", field });
+      continue;
+    }
+    const value = record[field];
+    if (value === null) continue;
+    if (typeof value !== "string" || !value.trim()) {
+      issues.push({ code: "wrong-type", field });
+    } else if (field === "email" && !EMAIL_PATTERN.test(value)) {
+      issues.push({ code: "invalid-email", field });
+    } else if (
+      (field === "service" &&
+        !(SERVICE_VALUES as readonly string[]).includes(value)) ||
+      (field === "urgency" &&
+        !(URGENCY_VALUES as readonly string[]).includes(value))
+    ) {
+      issues.push({ code: "not-in-enum", field });
+    }
+  }
+
+  if (issues.length) return { data: null, issues };
+  return {
+    data: {
+      name: (record.name as string | null)?.trim() ?? null,
+      email: (record.email as string | null)?.trim() ?? null,
+      service: record.service as StructuredContact["service"],
+      urgency: record.urgency as StructuredContact["urgency"],
+    },
+    issues: [],
+  };
+}
+
+/** Fields the schema allows as null but a usable inquiry still needs. */
+export function missingContactFields(data: StructuredContact): ContactField[] {
+  return CONTACT_FIELDS.filter((field) => data[field] === null);
 }
 
 export interface StructuredOutputResult {
@@ -49,7 +141,7 @@ function extractName(input: string): string | null {
   return khmer?.[1]?.trim() ?? null;
 }
 
-function extractService(input: string): string | null {
+function extractService(input: string): StructuredContact["service"] {
   return (
     SERVICE_PATTERNS.find(({ pattern }) => pattern.test(input))?.value ?? null
   );
@@ -85,13 +177,7 @@ export function extractStructuredContact(
     urgency: extractUrgency(input),
   };
 
-  const missingFields = (
-    Object.entries(data) as Array<
-      [keyof StructuredContact, StructuredContact[keyof StructuredContact]]
-    >
-  )
-    .filter(([, value]) => value === null)
-    .map(([key]) => key);
+  const missingFields = missingContactFields(data);
 
   return {
     data,

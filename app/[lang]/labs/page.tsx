@@ -81,9 +81,15 @@ export default async function LabsPage({ params }: LabsPageProps) {
                       <span className="rounded-full bg-primary/10 px-3 py-1 text-primary">
                         {lab.featured ?? labs.experimental}
                       </span>
-                      <span className="rounded-full bg-status-success/10 px-3 py-1 text-status-success">
-                        {labs.costFree}
-                      </span>
+                      {lab.usesLiveModel ? (
+                        <span className="rounded-full bg-primary/10 px-3 py-1 text-primary">
+                          {labs.liveModel}
+                        </span>
+                      ) : (
+                        <span className="rounded-full bg-status-success/10 px-3 py-1 text-status-success">
+                          {labs.costFree}
+                        </span>
+                      )}
                     </div>
                     <h2 className="mt-5 text-xl font-bold text-foreground">
                       {lab.title}

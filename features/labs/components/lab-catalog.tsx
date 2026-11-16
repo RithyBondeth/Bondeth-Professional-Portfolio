@@ -9,6 +9,8 @@ export interface LabEntry {
   title: string;
   featured?: string;
   description: string;
+  /** True when a run calls a hosted model rather than local code. */
+  usesLiveModel?: boolean;
   icon: LucideIcon;
   /** Small illustration of what the lab shows, for its card. */
   visual: React.ReactNode;

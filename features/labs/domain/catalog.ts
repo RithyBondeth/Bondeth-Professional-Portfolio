@@ -6,6 +6,8 @@ export function getLabDefinitions(labs: Dictionary["labs"]) {
     "structured-output": {
       path: "/labs/structured-output",
       title: labs.structuredOutputTitle,
+      /** Calls a hosted model, so it is not free to run like the others. */
+      usesLiveModel: true,
       description: labs.structuredOutputDescription,
     },
     "rag-retrieval": {
