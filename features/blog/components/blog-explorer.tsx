@@ -9,15 +9,16 @@ import Link from "next/link";
 import { gsap } from "@/shared/lib/motion/gsap";
 import { Flip } from "@/shared/lib/motion/gsap-flip";
 import { BlogCover } from "@/features/blog/components/blog-cover";
-import type { Post } from "@/features/blog/domain/types";
-import type { CategoryCount, TagCount } from "@/features/blog/server";
+import type {
+  BlogListPost,
+  CategoryCount,
+  TagCount,
+} from "@/features/blog/server";
 import type { Dictionary, Locale } from "@/shared/i18n";
 import { Search, X } from "lucide-react";
 
-type ListPost = Omit<Post, "content">;
-
 interface BlogExplorerProps {
-  posts: ListPost[];
+  posts: BlogListPost[];
   categories: CategoryCount[];
   tags: TagCount[];
   lang: Locale;
@@ -302,12 +303,7 @@ export function BlogExplorer({
                       The category used to be a second stacked pill; folding it
                       in here reclaims a whole line of vertical space. */}
                   <div className="mb-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
-                    <time>
-                      {new Date(post.date).toLocaleDateString(
-                        lang === "km" ? "km-KH" : "en-US",
-                        { month: "short", day: "numeric", year: "numeric" },
-                      )}
-                    </time>
+                    <time dateTime={post.date}>{post.dateLabel}</time>
                     <span aria-hidden className="text-muted-foreground/40">
                       ·
                     </span>

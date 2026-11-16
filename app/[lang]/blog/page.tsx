@@ -3,6 +3,7 @@ import {
   getAllCategories,
   getAllPosts,
   getAllTags,
+  getBlogListPosts,
 } from "@/features/blog/server";
 import { AnimateIn } from "@/shared/components/motion/animate-in";
 import { BlogExplorer } from "@/features/blog/components/blog-explorer";
@@ -20,32 +21,7 @@ export default async function BlogPage({ params }: BlogPageProps) {
   const categories = await getAllCategories(lang);
   const tags = await getAllTags(lang);
 
-  // Strip MDX content before crossing to the client — the list only needs metadata.
-  const listPosts = posts.map(
-    ({
-      slug,
-      title,
-      date,
-      excerpt,
-      category,
-      tags,
-      cover,
-      coverAlt,
-      readingTime,
-      format,
-    }) => ({
-      slug,
-      title,
-      date,
-      excerpt,
-      category,
-      tags,
-      cover,
-      coverAlt,
-      readingTime,
-      format,
-    }),
-  );
+  const listPosts = getBlogListPosts(posts, lang);
 
   return (
     <main

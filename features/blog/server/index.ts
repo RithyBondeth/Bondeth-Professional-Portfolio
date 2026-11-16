@@ -10,6 +10,7 @@ import "server-only";
  */
 
 export * from "@/features/blog/server/get-all-posts";
+export * from "@/features/blog/server/get-blog-list-posts";
 export * from "@/features/blog/server/get-categories";
 export * from "@/features/blog/server/get-post-by-slug";
 export * from "@/features/blog/server/get-related-posts";
