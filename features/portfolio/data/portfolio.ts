@@ -402,6 +402,7 @@ export const projects: Project[] = [
     tier: "production",
     year: "2026",
     role: "Sole developer",
+    featuredResult: "Cut CPU use from 12–14% to 3% while playing music.",
     visibility: "public",
     links: [{ kind: "site", url: "https://bondex-notch.bondeth.site" }],
     // Sourced from the project's own repositories (READMEs, docs, tests, and
@@ -472,6 +473,8 @@ export const projects: Project[] = [
     tier: "production",
     year: "2025 – present",
     role: "Sole developer",
+    featuredResult:
+      "Restored the database in 3.7 seconds in a point-in-time recovery drill.",
     visibility: "public",
     links: [{ kind: "app", url: "https://talent.apsara.social" }],
     // Sourced from the project's own repositories (READMEs, docs, tests, and

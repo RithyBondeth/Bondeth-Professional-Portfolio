@@ -73,7 +73,7 @@ export default function LandingProjects(props: { lang: Locale }) {
               delay={index * 0.08}
               className="min-w-0"
             >
-              <ProjectCard project={project} dict={dict} lang={lang} />
+              <ProjectCard project={project} dict={dict} lang={lang} featured />
             </AnimateIn>
           ))}
         </div>

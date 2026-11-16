@@ -6,6 +6,7 @@ import {
 import { ProjectCardSurface } from "@/features/portfolio/components/projects/project-card-surface";
 import { TechBadges } from "@/features/portfolio/components/projects/tech-badges";
 import { ProjectLinkIcon } from "@/features/portfolio/components/projects/project-link-icon";
+import { ProjectSummary } from "@/features/portfolio/components/projects/project-summary";
 import {
   getLinkLabel,
   getMediaBadge,
@@ -19,9 +20,13 @@ export function ProjectCard(props: {
   dict: Dictionary;
   lang: Locale;
   eagerPreview?: boolean;
+  featured?: boolean;
 }) {
-  const { project, dict, lang, eagerPreview } = props;
+  const { project, dict, lang, eagerPreview, featured } = props;
   const primary = getPrimaryLink(project);
+  const featuredResult =
+    project.visibility === "public" ? project.featuredResult : undefined;
+  const detailHref = `/${lang}/projects/${project.slug}`;
   const badge = project.status
     ? { label: dict.projects.status[project.status], live: false }
     : getMediaBadge(project);
@@ -70,7 +75,7 @@ export function ProjectCard(props: {
                   project.title
                 ) : (
                   <Link
-                    href={`/${lang}/projects/${project.slug}`}
+                    href={detailHref}
                     className="rounded-sm hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                   >
                     {project.title}
@@ -87,18 +92,31 @@ export function ProjectCard(props: {
             )}
           </div>
 
-          <p className="flex-1 text-xs leading-relaxed text-muted-foreground">
-            {project.visibility === "confidential"
-              ? dict.projects.confidentialCard
-              : project.description}
-          </p>
+          <div className="flex-1 space-y-3">
+            <p className="text-xs leading-relaxed text-muted-foreground">
+              {project.visibility === "confidential"
+                ? dict.projects.confidentialCard
+                : project.description}
+            </p>
+            {featured && featuredResult && (
+              <ProjectSummary
+                role={project.role}
+                result={featuredResult}
+                labels={dict.projects}
+              />
+            )}
+          </div>
 
           <TechBadges tags={project.tags.slice(0, 6)} />
 
           <div className="flex items-center gap-2 border-t border-border/40 pt-3">
             {project.visibility !== "confidential" && (
               <Link
-                href={`/${lang}/projects/${project.slug}${project.caseStudy ? "#project-case-study" : ""}`}
+                href={
+                  project.caseStudy && !featuredResult
+                    ? `${detailHref}#project-case-study`
+                    : detailHref
+                }
                 aria-label={`${
                   project.caseStudy
                     ? dict.projects.caseStudy.read
