@@ -199,12 +199,13 @@ export const km: Dictionary = {
     navLabel: "ពិសោធន៍ AI",
     heading: "មន្ទីរពិសោធន៍ AI អន្តរកម្ម",
     blurb:
-      "ការពិសោធន៍តូចៗ និងមានតម្លាភាព ដែលពន្យល់ពីលំនាំវិស្វកម្ម AI ជាក់ស្តែង ដោយមិនលាក់ដែនកំណត់ ឬផ្ញើទិន្នន័យរបស់អ្នកទៅសេវាខាងក្រៅ។",
+      "ការពិសោធន៍តូចៗ និងមានតម្លាភាព ដែលពន្យល់ពីលំនាំវិស្វកម្ម AI ជាក់ស្តែង ដោយមិនលាក់ដែនកំណត់។ Lab ណាដែលហៅ model ផ្ទាល់ នឹងប្រាប់អ្នកមុនពេលដំណើរការ។",
     experimental: "ការពិសោធន៍",
+    liveModel: "Model ផ្ទាល់",
     costFree: "គ្មានថ្លៃ API",
     structuredOutputTitle: "Structured Output Playground",
     structuredOutputDescription:
-      "បម្លែងសំណើគម្រោងដែលមិនមានរចនាសម្ព័ន្ធទៅជា JSON ដែលអាចព្យាករបាន ហើយពិនិត្យ schema និងទិន្នន័យដែលខ្វះ។",
+      "ដំណើរការ model ផ្ទាល់ និង baseline តាមច្បាប់លើសំណើតែមួយ ផ្ទៀងផ្ទាត់ទាំងពីរជាមួយ schema តឹងរ៉ឹង ហើយមើលការជួសជុលលទ្ធផលដែលខុស។",
     signatureDemo: "Demo ពិសេស",
     ragTitle: "RAG Retrieval Visualizer",
     ragDescription:
@@ -216,12 +217,20 @@ export const km: Dictionary = {
     backToLabs: "ត្រឡប់ទៅ Labs ទាំងអស់",
     playground: {
       intro:
-        "បញ្ចូលសំណើគម្រោងជាភាសាអង់គ្លេស ឬខ្មែរ។ Demo endpoint ក្នុងតំបន់នឹងស្រង់ព័ត៌មានទំនាក់ទំនង ប្រភេទសេវា និងភាពបន្ទាន់ បន្ទាប់មកផ្ទៀងផ្ទាត់លទ្ធផលជាមួយ schema ថេរ។",
+        "បញ្ចូលសំណើគម្រោងជាភាសាអង់គ្លេស ឬខ្មែរ។ Model ផ្ទាល់ និង baseline regex ទាំងពីរស្រង់ព័ត៌មានទំនាក់ទំនង សេវា និងភាពបន្ទាន់។ Schema តឹងរ៉ឹងពិនិត្យចម្លើយនីមួយៗ ហើយលទ្ធផលដែលមិនឆ្លងកាត់ត្រូវបានផ្ញើត្រឡប់ទៅ model ម្តង ជាមួយបញ្ហាដែលត្រូវកែ។",
       localMode: "Local demo mode",
+      hybridMode: "ច្បាប់ + model ផ្ទាល់",
       inputLabel: "ទិន្នន័យបញ្ចូល",
       inputHeading: "ពិពណ៌នាអំពីសំណើគម្រោង",
       privacy:
         "ដំណើរការក្នុងគេហទំព័រនេះ។ មិនមានការហៅទៅកាន់ AI provider ខាងក្រៅទេ។",
+      privacyModel:
+        "អត្ថបទរបស់អ្នកនឹងត្រូវផ្ញើទៅ Groq សម្រាប់ការដំណើរការនេះ។ កុំបិទភ្ជាប់ព័ត៌មានឯកជន។",
+      modeLabel: "របៀបស្រង់ទិន្នន័យ",
+      modeRules: "ច្បាប់តែប៉ុណ្ណោះ",
+      modeRulesHint: "Baseline regex ដំណើរការក្នុងគេហទំព័រនេះ",
+      modeModel: "Model ធៀបនឹងច្បាប់",
+      modeModelHint: "Model ផ្ទាល់ ពិនិត្យធៀបនឹង baseline",
       run: "ស្រង់ទិន្នន័យមានរចនាសម្ព័ន្ធ",
       running: "កំពុងស្រង់...",
       outputHeading: "លទ្ធផលដែលបានផ្ទៀងផ្ទាត់",
@@ -233,6 +242,31 @@ export const km: Dictionary = {
       missingFields: "ទិន្នន័យចាំបាច់ដែលខ្វះ",
       schema: "Schema ដែលរំពឹងទុក",
       error: "មិនអាចបញ្ចប់ការស្រង់ទិន្នន័យបានទេ។ សូមព្យាយាមម្តងទៀត។",
+      modelError:
+        "Model ផ្ទាល់មិនអាចឆ្លើយបានទេពេលនេះ ដូច្នេះបង្ហាញតែលទ្ធផលតាមច្បាប់។",
+      repaired: "បានជួសជុលពេលព្យាយាមម្តងទៀត",
+      failedValidation: "មិនឆ្លងកាត់ការផ្ទៀងផ្ទាត់",
+      cached: "cache",
+      tokens: "tokens",
+      trace: "ដំណើរការផ្ទៀងផ្ទាត់",
+      attempt: "ការព្យាយាម",
+      attemptValid: "ឆ្លងកាត់ schema",
+      issues: {
+        "parse-failed": "ចម្លើយមិនមែនជា JSON ត្រឹមត្រូវ",
+        "not-object": "ចម្លើយមិនមែនជា JSON object",
+        "missing-key": "ខ្វះ key",
+        "unknown-key": "Key មិនរំពឹងទុក",
+        "wrong-type": "ប្រភេទទិន្នន័យខុស",
+        "invalid-email": "អ៊ីមែលមិនត្រឹមត្រូវ",
+        "not-in-enum": "តម្លៃក្រៅបញ្ជីដែលអនុញ្ញាត",
+      },
+      comparison: "Model ធៀបនឹងច្បាប់",
+      field: "Field",
+      rules: "ច្បាប់",
+      model: "Model",
+      agree: "ដូចគ្នា",
+      differ: "ខុសគ្នា",
+      comparisonSummary: "{count} ក្នុងចំណោម 4 field ខុសគ្នា",
       presets: [
         {
           label: "ឧទាហរណ៍អង់គ្លេស",
@@ -248,20 +282,32 @@ export const km: Dictionary = {
           label: "ឧទាហរណ៍មិនពេញលេញ",
           value: "យើងកំពុងពិចារណាបង្កើតគេហទំព័រសម្រាប់អង្គការរបស់យើងនៅខែក្រោយ។",
         },
+        {
+          label: "ឧទាហរណ៍រញ៉េរញ៉ៃ",
+          value:
+            "សួស្តី! ខ្ញុំ ដារ៉ា (dara.k@example.org)។ ហាងយើងទទួលសំណួរដដែលៗពីអតិថិជនតាម Telegram ពេញមួយថ្ងៃ តើ bot អាចឆ្លើយជំនួសបានទេ? មិនប្រញាប់ទេ ក្រោយបុណ្យក៏បាន",
+        },
+        {
+          label: "ត្រូវការជួសជុល",
+          value:
+            "I am Vanna, vanna(at)example(dot)com. We want a Shopify plugin and a mobile app, and the deadline is in 3 days.",
+        },
       ],
       steps: [
         {
           title: "ស្រង់ទិន្នន័យ",
-          description: "កំណត់តម្លៃដែលអាចប្រើបានពីភាសាធម្មជាតិ។",
-        },
-        {
-          title: "ធ្វើឱ្យស្តង់ដារ",
-          description: "បម្លែងពាក្យផ្សេងៗទៅជាតម្លៃសេវា និងភាពបន្ទាន់ដែលថេរ។",
+          description:
+            "Model អានសំណើក្នុង JSON mode ហើយ baseline regex ដំណើរការលើអត្ថបទដូចគ្នា។",
         },
         {
           title: "ផ្ទៀងផ្ទាត់",
           description:
-            "ពិនិត្យទិន្នន័យចាំបាច់ មុនពេលប្រព័ន្ធផ្សេងប្រើប្រាស់លទ្ធផល។",
+            "Schema តឹងរ៉ឹងបដិសេធ key ដែលខ្វះ key លើស អ៊ីមែលខុស និងតម្លៃក្រៅបញ្ជីដែលអនុញ្ញាត។",
+        },
+        {
+          title: "ជួសជុល",
+          description:
+            "លទ្ធផលដែលខុសត្រូវផ្ញើត្រឡប់ទៅ model ម្តង ជាមួយបញ្ហាជាក់លាក់។ បើនៅតែខុស lab នឹងប្រាប់ត្រង់ៗ ជាជាងទាយ។",
         },
       ],
       relatedReading: "អត្ថបទបច្ចេកទេសពាក់ព័ន្ធ",
