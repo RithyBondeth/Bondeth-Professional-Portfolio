@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getPostsByTag } from "@/features/blog/server";
+import { getBlogListPosts, getPostsByTag } from "@/features/blog/server";
 import { AnimateIn } from "@/shared/components/motion/animate-in";
 import { BlogExplorer } from "@/features/blog/components/blog-explorer";
 import { hasLocale, getDictionary } from "@/shared/i18n";
@@ -18,32 +18,7 @@ export default async function TagPage({ params }: TagPageProps) {
 
   if (!tag) notFound();
 
-  // Strip MDX content before crossing to the client.
-  const listPosts = posts.map(
-    ({
-      slug,
-      title,
-      date,
-      excerpt,
-      category,
-      tags,
-      cover,
-      coverAlt,
-      readingTime,
-      format,
-    }) => ({
-      slug,
-      title,
-      date,
-      excerpt,
-      category,
-      tags,
-      cover,
-      coverAlt,
-      readingTime,
-      format,
-    }),
-  );
+  const listPosts = getBlogListPosts(posts, lang);
 
   return (
     <main

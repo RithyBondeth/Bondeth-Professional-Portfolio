@@ -6,6 +6,7 @@ import {
   type ReactNode,
 } from "react";
 import { slugifyHeading } from "@/features/blog/domain/get-table-of-contents";
+import { cn } from "@/shared/lib/utils";
 
 function getTextContent(node: ReactNode): string {
   return Children.toArray(node)
@@ -49,27 +50,59 @@ function AnchoredHeading({
   );
 }
 
-/* Custom renderers for elements produced by MDX content. Images become framed
-   figures with an optional caption drawn from their alt text, so screenshots
-   and diagrams inside a post look intentional rather than dumped inline. */
+type ImageProps = ComponentPropsWithoutRef<"img">;
+
+function MdxImage({ alt, ...props }: ImageProps) {
+  return (
+    // Markdown images have no intrinsic dimensions in the source.
+    // eslint-disable-next-line @next/next/no-img-element
+    <img {...props} alt={alt ?? ""} />
+  );
+}
+
+function MdxParagraph({
+  children,
+  className,
+  ...props
+}: ComponentPropsWithoutRef<"p">) {
+  const items = Children.toArray(children);
+  const image = items[0];
+
+  // Markdown wraps a standalone image in a paragraph. Replace the whole
+  // paragraph so the figure is valid HTML and inline images can stay inline.
+  if (
+    items.length === 1 &&
+    isValidElement<ImageProps>(image) &&
+    image.type === MdxImage
+  ) {
+    return (
+      <figure {...props} className={cn("my-8 not-prose", className)}>
+        <MdxImage
+          {...image.props}
+          className={cn(
+            "w-full rounded-lg border border-border bg-card",
+            image.props.className,
+          )}
+        />
+        {image.props.alt ? (
+          <figcaption className="mt-3 text-center font-mono text-xs text-muted-foreground">
+            {image.props.alt}
+          </figcaption>
+        ) : null}
+      </figure>
+    );
+  }
+
+  return (
+    <p {...props} className={className}>
+      {children}
+    </p>
+  );
+}
+
 export const mdxComponents: MDXComponents = {
   h2: (props) => <AnchoredHeading level={2} {...props} />,
   h3: (props) => <AnchoredHeading level={3} {...props} />,
-  img: ({ src, alt }) => (
-    <figure className="my-8 not-prose">
-      {/* Content images have no known dimensions, so a plain img is correct
-          here rather than next/image. */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={typeof src === "string" ? src : ""}
-        alt={alt ?? ""}
-        className="w-full rounded-lg border border-border bg-card"
-      />
-      {alt ? (
-        <figcaption className="mt-3 text-center font-mono text-xs text-muted-foreground">
-          {alt}
-        </figcaption>
-      ) : null}
-    </figure>
-  ),
+  img: MdxImage,
+  p: MdxParagraph,
 };

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Link2, Mail, Share2 } from "lucide-react";
+import { useMounted } from "@/shared/hooks/use-mounted";
 
 interface BlogShareLabels {
   heading: string;
@@ -20,6 +21,8 @@ interface BlogShareProps {
 
 export function BlogShare({ title, excerpt, url, labels }: BlogShareProps) {
   const [copied, setCopied] = useState(false);
+  const mounted = useMounted();
+  const canShare = mounted && typeof navigator.share === "function";
 
   const handleCopyLink = async () => {
     try {
@@ -57,7 +60,7 @@ export function BlogShare({ title, excerpt, url, labels }: BlogShareProps) {
         {labels.heading}
       </p>
       <div className="flex flex-wrap items-center gap-2">
-        {typeof navigator !== "undefined" && "share" in navigator && (
+        {canShare && (
           <button
             type="button"
             onClick={handleNativeShare}
