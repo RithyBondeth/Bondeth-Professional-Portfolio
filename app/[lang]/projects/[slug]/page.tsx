@@ -21,6 +21,7 @@ import { getProjects } from "@/features/portfolio/data/localized-content";
 import { getDictionary, hasLocale, locales, type Locale } from "@/shared/i18n";
 import { ProjectArtwork } from "@/features/portfolio/components/projects/project-artwork";
 import { ProjectCard } from "@/features/portfolio/components/projects/project-card";
+import { ProjectSummary } from "@/features/portfolio/components/projects/project-summary";
 
 interface ProjectPageProps {
   params: Promise<{ lang: string; slug: string }>;
@@ -79,6 +80,8 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
   const dict = getDictionary(lang);
   const caseStudy = project.caseStudy;
+  const featuredResult =
+    project.visibility === "public" ? project.featuredResult : undefined;
   // The case study's problem section stands in for the overview card, and the
   // sections after it keep counting from where it stops.
   const firstSection = caseStudy ? countCaseStudySections(caseStudy) + 1 : 1;
@@ -192,6 +195,14 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               <p className="mt-6 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
                 {project.description}
               </p>
+              {featuredResult && (
+                <ProjectSummary
+                  role={project.role}
+                  result={featuredResult}
+                  labels={dict.projects}
+                  className="mt-6 max-w-2xl gap-3 sm:grid-cols-[auto_1fr] sm:gap-6 sm:text-sm"
+                />
+              )}
             </AnimateIn>
           </div>
 
@@ -275,7 +286,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               </h2>
               <TechBadges tags={project.tags} size="md" className="mt-5" />
 
-              {project.role && (
+              {project.role && !featuredResult && (
                 <div className="mt-6 border-t border-border/50 pt-5">
                   <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
                     {dict.projects.myRole}
