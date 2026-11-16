@@ -880,7 +880,7 @@
   }
 }
 
-@media (max-width: 520px) {
+@media (width < 48rem) {
   .chatbot {
     right: 0.75rem;
     bottom: 0.75rem;
@@ -907,10 +907,7 @@
   }
 
   .launcher {
-    width: 72px;
-    height: 76px;
-    transform: scale(0.94);
-    transform-origin: right bottom;
+    display: none;
   }
 }
 

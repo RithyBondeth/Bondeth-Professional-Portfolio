@@ -17,6 +17,7 @@ export const km: Dictionary = {
     resume: "ប្រវត្តិរូប",
     resumeMobile: "ប្រវត្តិរូប (PDF)",
     world3d: "ពិភព 3D",
+    askByte: "សួរ Byte",
     toggleMenu: "បើក/បិទម៉ឺនុយ",
     toggleTheme: "ប្តូរផ្ទៃពណ៌",
     toggleLanguage: "ប្តូរភាសា",
@@ -135,6 +136,7 @@ export const km: Dictionary = {
         "រូបគម្រប និងរូបបង្ហាញមុខងារចំនួនបី រចនាតាមផ្ទៃប្រើប្រាស់ និងពណ៌របស់ផលិតផល។ ជ្រើសរើសរូបណាមួយដើម្បីមើលពេញអេក្រង់។",
     },
     caseStudy: {
+      onThisPage: "ក្នុងទំព័រនេះ",
       screenshotSource: "ប្រភពរូបថតអេក្រង់",
       englishOriginal: "ករណីសិក្សានេះបង្ហាញជាភាសាអង់គ្លេសដើម។",
       badge: "ករណីសិក្សា",
@@ -162,6 +164,7 @@ export const km: Dictionary = {
     featuredBlurb:
       "គម្រោងបីផ្នែកជ្រើសរើសបុគ្គលិក ឧបករណ៍ macOS ដើម និងការផលិតវីដេអូ។ ស្វែងយល់ពីបញ្ហា ការសម្រេចចិត្តបច្ចេកទេស និងលទ្ធផលនៃគម្រោងនីមួយៗ។",
     viewAllProjects: "មើលគម្រោងទាំងអស់",
+    projectProfiles: "គម្រោងក្នុងបញ្ជី",
     allProjectsHeading: "គម្រោងទាំងអស់",
     allProjectsBlurb:
       "រកមើលគម្រោងសាធារណៈ និងព័ត៌មានគម្រោងវិស័យសាធារណៈដែលបានអនុញ្ញាត។ ព័ត៌មានអនុវត្តដែលរសើបនៅតែរក្សាជាឯកជន។",

@@ -93,6 +93,8 @@ export interface Project {
   year?: string | null;
   /** What you personally owned, in a few words. */
   role?: string | null;
+  /** A short, supported result for the featured card and detail introduction. */
+  featuredResult?: string;
   /**
    * What the work actually achieved — users reached, volume handled, a number
    * that moved, a decision it unblocked. One short line each.

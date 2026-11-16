@@ -6,6 +6,7 @@ import {
 import { ProjectCardSurface } from "@/features/portfolio/components/projects/project-card-surface";
 import { TechBadges } from "@/features/portfolio/components/projects/tech-badges";
 import { ProjectLinkIcon } from "@/features/portfolio/components/projects/project-link-icon";
+import { ProjectSummary } from "@/features/portfolio/components/projects/project-summary";
 import {
   getLinkLabel,
   getMediaBadge,
@@ -19,9 +20,13 @@ export function ProjectCard(props: {
   dict: Dictionary;
   lang: Locale;
   eagerPreview?: boolean;
+  featured?: boolean;
 }) {
-  const { project, dict, lang, eagerPreview } = props;
+  const { project, dict, lang, eagerPreview, featured } = props;
   const primary = getPrimaryLink(project);
+  const featuredResult =
+    project.visibility === "public" ? project.featuredResult : undefined;
+  const detailHref = `/${lang}/projects/${project.slug}`;
   const badge = project.status
     ? { label: dict.projects.status[project.status], live: false }
     : getMediaBadge(project);
@@ -45,11 +50,13 @@ export function ProjectCard(props: {
               }`}
             >
               {badge.live && (
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                <span className="h-1.5 w-1.5 rounded-full bg-status-success" />
               )}
               <span
                 className={`font-mono text-[9px] ${
-                  badge.live ? "text-emerald-400" : "text-muted-foreground"
+                  badge.live
+                    ? "text-status-success"
+                    : "text-field-muted-foreground"
                 }`}
               >
                 {badge.label}
@@ -62,7 +69,7 @@ export function ProjectCard(props: {
           <div className="flex items-center gap-3">
             <ProjectLogo project={project} />
             <div className="min-w-0">
-              <p className="mb-1 text-[10px] leading-snug text-muted-foreground">
+              <p className="mb-1 text-[10px] leading-snug text-field-muted-foreground">
                 {dict.projects.groups[project.group]} · {project.category}
               </p>
               <h3 className="project-card-title text-base font-semibold leading-snug text-foreground">
@@ -70,7 +77,7 @@ export function ProjectCard(props: {
                   project.title
                 ) : (
                   <Link
-                    href={`/${lang}/projects/${project.slug}`}
+                    href={detailHref}
                     className="rounded-sm hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                   >
                     {project.title}
@@ -87,24 +94,37 @@ export function ProjectCard(props: {
             )}
           </div>
 
-          <p className="flex-1 text-xs leading-relaxed text-muted-foreground">
-            {project.visibility === "confidential"
-              ? dict.projects.confidentialCard
-              : project.description}
-          </p>
+          <div className="flex-1 space-y-3">
+            <p className="text-sm leading-relaxed text-field-muted-foreground">
+              {project.visibility === "confidential"
+                ? dict.projects.confidentialCard
+                : project.description}
+            </p>
+            {featured && featuredResult && (
+              <ProjectSummary
+                role={project.role}
+                result={featuredResult}
+                labels={dict.projects}
+              />
+            )}
+          </div>
 
           <TechBadges tags={project.tags.slice(0, 6)} />
 
-          <div className="flex items-center gap-2 border-t border-border/40 pt-3">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-border/40 pt-3">
             {project.visibility !== "confidential" && (
               <Link
-                href={`/${lang}/projects/${project.slug}${project.caseStudy ? "#project-case-study" : ""}`}
+                href={
+                  project.caseStudy && !featuredResult
+                    ? `${detailHref}#project-case-study`
+                    : detailHref
+                }
                 aria-label={`${
                   project.caseStudy
                     ? dict.projects.caseStudy.read
                     : dict.projects.viewDetails
                 }: ${project.title}`}
-                className="project-card-link btn-fx btn-fx-outline inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-border/50 bg-muted/40 px-3 font-mono text-xs text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                className="btn-fx btn-fx-primary inline-flex min-h-11 items-center gap-1.5 rounded-lg bg-primary-fill px-3 text-xs font-semibold text-primary-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
               >
                 {project.caseStudy
                   ? dict.projects.caseStudy.read
@@ -120,15 +140,16 @@ export function ProjectCard(props: {
                 href={primary.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-fx btn-fx-primary ml-auto flex size-11 items-center justify-center rounded-lg bg-primary-fill text-primary-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+                className="inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2 text-xs font-semibold text-field-muted-foreground underline decoration-border underline-offset-4 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                 aria-label={`${getLinkLabel(primary.kind, dict)}: ${project.title}`}
               >
-                <span data-btn-glyph>
+                <span aria-hidden="true" className="shrink-0">
                   <ProjectLinkIcon
                     kind={primary.kind}
                     className="h-3.5 w-3.5"
                   />
                 </span>
+                {getLinkLabel(primary.kind, dict)}
               </a>
             ) : project.visibility === "confidential" ? (
               <span className="ml-auto font-mono text-[10px] text-status-warning">

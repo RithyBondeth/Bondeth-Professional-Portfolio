@@ -116,6 +116,9 @@ export const recentProjects: Project[] = [
     tags: ["Remotion", "React", "TypeScript", "Claude", "ElevenLabs"],
     category: "Web",
     domains: ["AI", "Developer Tools"],
+    role: "Creator and developer",
+    featuredResult:
+      "One editable video spec exports captioned MP4s in 9:16 and 16:9.",
     caseStudy: {
       problem:
         "Making an explainer video means coordinating a content plan, a script, narration, captions, and a render. If those stages form one opaque generation step, correcting a scene means losing control over the rest. Bondeth Studio gives creators an editable path from an idea to a finished video.",
