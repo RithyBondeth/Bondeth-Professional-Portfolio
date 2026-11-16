@@ -15,6 +15,7 @@ export const en = {
     resume: "Resume",
     resumeMobile: "Resume",
     world3d: "3D World",
+    askByte: "Ask Byte",
     toggleMenu: "Toggle menu",
     toggleTheme: "Switch theme",
     toggleLanguage: "Switch language",
@@ -132,6 +133,7 @@ export const en = {
         "A cover and three feature panels designed around the product’s interface and colors. Select any image to see it in full.",
     },
     caseStudy: {
+      onThisPage: "On this page",
       screenshotSource: "Screenshot source",
       englishOriginal: "This case study is shown in its original English.",
       badge: "Case study",
@@ -159,6 +161,7 @@ export const en = {
     featuredBlurb:
       "Three builds across hiring, native macOS tools, and video production. Explore the problem, the engineering decisions, and what each delivers.",
     viewAllProjects: "View all projects",
+    projectProfiles: "project profiles",
     allProjectsHeading: "All projects",
     allProjectsBlurb:
       "Browse my public projects and approved public-sector profiles. Sensitive implementation details remain private.",

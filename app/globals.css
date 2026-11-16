@@ -1341,17 +1341,6 @@ main > section:not(:first-of-type, #projects) {
     animation-delay: 300ms;
   }
 
-  .hero-proof {
-    animation: hero-fade-up var(--motion-entrance) var(--motion-ease) both;
-    animation-delay: 300ms;
-  }
-  .hero-proof:nth-child(2) {
-    animation-delay: 360ms;
-  }
-  .hero-proof:nth-child(3) {
-    animation-delay: 420ms;
-  }
-
   .hero-portrait {
     animation: hero-portrait-in var(--motion-entrance) var(--motion-ease) 60ms
       both;
@@ -1986,8 +1975,7 @@ main > section:not(:first-of-type, #projects) {
     color-mix(in oklab, var(--foreground) 25%, transparent);
 }
 
-.project-card:has(:focus-visible) .project-card-title,
-.project-card:has(:focus-visible) .project-card-link {
+.project-card:has(:focus-visible) .project-card-title {
   color: var(--primary);
 }
 
@@ -1999,14 +1987,8 @@ main > section:not(:first-of-type, #projects) {
       0 8px 16px -12px color-mix(in oklab, var(--primary) 30%, transparent);
   }
 
-  .project-card:hover .project-card-title,
-  .project-card:hover .project-card-link {
+  .project-card:hover .project-card-title {
     color: var(--primary);
-  }
-
-  .project-card:hover .project-card-link {
-    border-color: color-mix(in oklab, var(--primary) 35%, var(--border));
-    background-color: color-mix(in oklab, var(--primary) 7%, var(--card));
   }
 }
 
@@ -2466,7 +2448,6 @@ html[data-motion="quiet"]
     .hero-title-line,
     .hero-copy,
     .hero-action,
-    .hero-proof,
     .hero-portrait,
     .hero-portrait-detail,
     .portrait-row,
@@ -2515,7 +2496,6 @@ html[data-motion="quiet"] svg[data-mood] * {
       .hero-title-line,
       .hero-copy,
       .hero-action,
-      .hero-proof,
       .hero-portrait,
       .hero-portrait-detail,
       .portrait-row,

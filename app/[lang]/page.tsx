@@ -15,11 +15,7 @@ import LandingWriting from "@/features/portfolio/components/writing/writing";
 import LandingMedia from "@/features/portfolio/components/media/media";
 import LandingRecommendations from "@/features/portfolio/components/recommendations/recommendations";
 import LandingContact from "@/features/portfolio/components/contact/contact";
-import {
-  projects,
-  recognitions,
-  siteConfig,
-} from "@/features/portfolio/data/portfolio";
+import { recognitions, siteConfig } from "@/features/portfolio/data/portfolio";
 import { hasLocale } from "@/shared/i18n";
 import { getSiteConfig } from "@/features/portfolio/data/localized-content";
 
@@ -90,13 +86,7 @@ export default async function IndexPage({ params }: HomePageProps) {
         }}
       />
 
-      <LandingHero
-        lang={lang}
-        projectCount={
-          projects.filter((project) => project.visibility !== "confidential")
-            .length
-        }
-      />
+      <LandingHero lang={lang} />
       <LandingProjects lang={lang} />
       <LandingShowreel lang={lang} />
       <LandingAbout lang={lang} />

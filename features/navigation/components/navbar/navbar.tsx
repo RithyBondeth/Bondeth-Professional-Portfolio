@@ -20,8 +20,10 @@ import {
 } from "@/features/portfolio/data/portfolio";
 import { MenuIcon, CloseIcon } from "@/shared/components/icons/icons";
 import { Logo } from "@/shared/components/icons/logo";
+import { RobotArt } from "@/shared/components/mascot/robot-art";
 import ThemeToggle from "@/shared/components/theme/theme-toggle";
 import { OPEN_COMMAND_PALETTE } from "@/shared/lib/command-palette-events";
+import { OPEN_CHATBOT } from "@/shared/lib/chatbot-events";
 import {
   locales,
   localizeHref,
@@ -142,6 +144,7 @@ export default function Navbar(props: { lang: Locale }) {
   const indicatorRef = useRef<HTMLSpanElement>(null);
   const exploreRef = useRef<HTMLLIElement>(null);
   const menuOpenRef = useRef(false);
+  const menuToggleRef = useRef<HTMLButtonElement>(null);
   const hiddenRef = useRef(false);
   const lastYRef = useRef(0);
   const onHome = pathname === `/${lang}`;
@@ -482,6 +485,7 @@ export default function Navbar(props: { lang: Locale }) {
           <LanguageSwitcher lang={lang} label={dict.nav.toggleLanguage} />
           <ThemeToggle label={dict.nav.toggleTheme} />
           <button
+            ref={menuToggleRef}
             className="btn-fx btn-fx-icon flex size-11 items-center justify-center rounded-lg text-muted-foreground hover:bg-foreground/5 hover:text-foreground"
             onClick={() => setMenuOpen((o) => !o)}
             aria-label={dict.nav.toggleMenu}
@@ -505,6 +509,23 @@ export default function Navbar(props: { lang: Locale }) {
       >
         <div className="max-h-[calc(100dvh-5.5rem)] overflow-y-auto overscroll-contain">
           <ul className="flex flex-col gap-1 border-t border-border px-6 py-4">
+            <li className="mb-2 md:hidden">
+              <button
+                type="button"
+                onClick={() => {
+                  setMenuOpen(false);
+                  window.dispatchEvent(
+                    new CustomEvent(OPEN_CHATBOT, {
+                      detail: menuToggleRef.current,
+                    }),
+                  );
+                }}
+                className="flex min-h-11 w-full items-center gap-2.5 rounded-lg border border-border bg-card px-3 text-left text-sm font-semibold text-foreground hover:border-primary/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              >
+                <RobotArt variant="head" className="w-5 shrink-0" />
+                {dict.nav.askByte}
+              </button>
+            </li>
             {navLinks.map(({ href }) => {
               const id = href.replace("/#", "").replace("/", "");
               const isActive = activeSection === id;

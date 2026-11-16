@@ -9,9 +9,21 @@ export function countCaseStudySections(caseStudy: ProjectCaseStudy) {
   return 2 + (hasOutcome ? 1 : 0) + (caseStudy.gallery?.length ? 1 : 0);
 }
 
-function SectionTitle({ index, label }: { index: number; label: string }) {
+function SectionTitle({
+  id,
+  index,
+  label,
+}: {
+  id: string;
+  index: number;
+  label: string;
+}) {
   return (
-    <h3 className="flex items-baseline gap-3 text-xl font-semibold tracking-tight text-foreground">
+    <h3
+      id={id}
+      tabIndex={-1}
+      className="flex scroll-mt-32 items-baseline gap-3 text-xl font-semibold tracking-tight text-foreground"
+    >
       <span aria-hidden className="font-mono text-xs text-primary">
         {String(index).padStart(2, "0")}
       </span>
@@ -21,6 +33,12 @@ function SectionTitle({ index, label }: { index: number; label: string }) {
 }
 
 const PANEL = "min-w-0 rounded-xl border border-border/60 bg-card p-5 sm:p-7";
+const SECTION_ID = {
+  problem: "project-problem",
+  decisions: "project-decisions",
+  outcome: "project-outcome",
+  gallery: "project-gallery",
+} as const;
 
 export function CaseStudy({
   caseStudy,
@@ -40,10 +58,19 @@ export function CaseStudy({
     constraints,
     outcome,
     metrics,
-    gallery,
+    gallery = [],
     language,
   } = caseStudy;
   const hasOutcome = Boolean(outcome || metrics?.length);
+  const hasGallery = gallery.length > 0;
+  const sections: { id: string; label: string }[] = [
+    { id: SECTION_ID.problem, label: labels.problem },
+    { id: SECTION_ID.decisions, label: labels.decisions },
+  ];
+  if (hasOutcome)
+    sections.push({ id: SECTION_ID.outcome, label: labels.outcome });
+  if (hasGallery)
+    sections.push({ id: SECTION_ID.gallery, label: labels.gallery });
 
   return (
     <section
@@ -64,11 +91,39 @@ export function CaseStudy({
         )}
       </header>
 
+      <nav
+        aria-labelledby="case-study-contents"
+        className="rounded-xl border border-border/60 bg-card px-4 py-3 sm:px-5"
+      >
+        <p
+          id="case-study-contents"
+          className="text-sm font-semibold text-foreground"
+        >
+          {labels.onThisPage}
+        </p>
+        <ul className="mt-1 flex flex-wrap gap-x-2 gap-y-1">
+          {sections.map(({ id, label }) => (
+            <li key={id}>
+              <a
+                href={`#${id}`}
+                className="inline-flex min-h-11 items-center rounded-lg px-2 text-sm font-medium text-field-muted-foreground underline decoration-border underline-offset-4 hover:bg-muted/50 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              >
+                {label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
       <div
         className={`grid gap-4 ${constraints?.length ? "lg:grid-cols-[1.25fr_0.75fr]" : ""}`}
       >
         <section className={PANEL}>
-          <SectionTitle index={1} label={labels.problem} />
+          <SectionTitle
+            id={SECTION_ID.problem}
+            index={1}
+            label={labels.problem}
+          />
           <p
             lang={language}
             className="mt-4 max-w-prose text-base leading-7 text-foreground sm:text-lg sm:leading-8"
@@ -95,7 +150,11 @@ export function CaseStudy({
       </div>
 
       <section className="pt-3">
-        <SectionTitle index={2} label={labels.decisions} />
+        <SectionTitle
+          id={SECTION_ID.decisions}
+          index={2}
+          label={labels.decisions}
+        />
         <ol
           className={`mt-4 grid gap-4 ${decisions.length > 1 ? "md:grid-cols-2" : ""}`}
         >
@@ -139,7 +198,11 @@ export function CaseStudy({
 
       {hasOutcome && (
         <section className={PANEL}>
-          <SectionTitle index={3} label={labels.outcome} />
+          <SectionTitle
+            id={SECTION_ID.outcome}
+            index={3}
+            label={labels.outcome}
+          />
           {metrics && metrics.length > 0 && (
             <dl
               lang={language}
@@ -171,9 +234,13 @@ export function CaseStudy({
         </section>
       )}
 
-      {gallery && gallery.length > 0 && (
+      {hasGallery && (
         <section className="pt-3">
-          <SectionTitle index={hasOutcome ? 4 : 3} label={labels.gallery} />
+          <SectionTitle
+            id={SECTION_ID.gallery}
+            index={hasOutcome ? 4 : 3}
+            label={labels.gallery}
+          />
           <div
             className={`mt-4 grid items-start gap-5 ${gallery.length > 1 ? "sm:grid-cols-2" : ""}`}
           >

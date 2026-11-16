@@ -4,13 +4,13 @@ import { useReducedMotion } from "@/shared/hooks/use-reduced-motion";
 import { useEffect, useState, type CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowDown, ArrowUpRight, Box, FileText, Mail } from "lucide-react";
+import { ArrowDown, ArrowUpRight, FileText, Mail } from "lucide-react";
 import { skillGroups } from "@/features/portfolio/data/portfolio";
 import { skillIconId } from "@/features/portfolio/components/skills/skill-icon-id";
 import { Magnetic } from "@/shared/components/motion/magnetic";
 import { scrollToSection } from "@/shared/components/motion/smooth-scroll";
 import { TiltCard } from "@/shared/components/motion/tilt-card";
-import { formatCount, getDictionary, type Locale } from "@/shared/i18n";
+import { getDictionary, type Locale } from "@/shared/i18n";
 import { getSiteConfig } from "@/features/portfolio/data/localized-content";
 
 function useRoleTypewriter(firstRole: string, secondRole: string) {
@@ -122,34 +122,16 @@ function PortraitTechnologies() {
   );
 }
 
-export default function LandingHero({
-  lang,
-  projectCount,
-}: {
-  lang: Locale;
-  projectCount: number;
-}) {
+export default function LandingHero({ lang }: { lang: Locale }) {
   const dict = getDictionary(lang);
   const localized = getSiteConfig(lang);
   const typedRole = useRoleTypewriter(dict.hero.titles[0], dict.hero.titles[1]);
-  const proofPoints =
-    lang === "km"
-      ? [
-          ["០៦", "តួនាទីការងារ"],
-          [formatCount(projectCount, lang), "គម្រោងក្នុងបញ្ជី"],
-          ["Web · Mobile · AI", "វិស័យជំនាញ"],
-        ]
-      : [
-          ["06", "roles across teams"],
-          [formatCount(projectCount, lang), "project profiles"],
-          ["Web · Mobile · AI", "product range"],
-        ];
 
   return (
-    <section className="relative isolate flex min-h-screen items-center overflow-hidden px-6 py-28 text-foreground">
-      <div className="relative mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-12 lg:grid-cols-[1.08fr_.92fr] lg:gap-16">
+    <section className="relative isolate flex items-center overflow-hidden px-6 pt-28 pb-8 text-foreground lg:min-h-screen lg:py-28">
+      <div className="relative mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-6 lg:grid-cols-[1.08fr_.92fr] lg:gap-16">
         <div className="text-center lg:text-left">
-          <p className="hero-kicker mb-6 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+          <p className="hero-kicker mb-6 hidden text-xs font-semibold uppercase tracking-[0.2em] text-primary lg:block">
             {lang === "km"
               ? "ផលិតផល · បទពិសោធន៍ · បច្ចេកវិទ្យា"
               : "Products · Experiences · Technology"}
@@ -159,17 +141,23 @@ export default function LandingHero({
               Latin display type. */}
           <h1
             lang="en"
-            className="mb-7 text-5xl font-semibold leading-[.95] tracking-[-.055em] sm:text-7xl xl:text-8xl"
+            className="mb-4 text-4xl font-semibold leading-[.95] tracking-[-.055em] sm:text-5xl lg:mb-7 lg:text-7xl xl:text-8xl"
           >
             <span className="block overflow-hidden pb-[.04em]">
               <span className="hero-title-line block">{localized.name}</span>
             </span>
-            <span className="sr-only">
+            <span
+              lang={lang}
+              className="mt-2 block text-lg leading-snug tracking-normal text-primary sm:text-xl lg:hidden"
+            >
+              {localized.title}
+            </span>
+            <span className="sr-only hidden lg:block">
               {dict.hero.titles[0]} · {dict.hero.titles[1]}
             </span>
             <span
               aria-hidden
-              className="block min-h-[1.9em] overflow-hidden pb-2"
+              className="hidden min-h-[1.9em] overflow-hidden pb-2 lg:block"
             >
               <span
                 className="hero-title-line block font-semibold not-italic text-primary"
@@ -180,10 +168,10 @@ export default function LandingHero({
               </span>
             </span>
           </h1>
-          <p className="hero-copy mx-auto max-w-xl text-base leading-relaxed text-field-muted-foreground lg:mx-0 sm:text-lg">
+          <p className="hero-copy mx-auto max-w-xl text-sm leading-relaxed text-field-muted-foreground sm:text-base lg:mx-0 lg:text-lg">
             {localized.tagline}
           </p>
-          <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row lg:justify-start">
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 lg:mt-9 lg:justify-start">
             <Magnetic strength={0.25} className="hero-action">
               <a
                 href="#projects"
@@ -191,7 +179,7 @@ export default function LandingHero({
                   event.preventDefault();
                   scrollToSection("projects");
                 }}
-                className="btn-fx btn-fx-primary flex min-h-12 items-center justify-center gap-2 rounded-full bg-primary-fill px-6 text-sm font-semibold text-primary-foreground"
+                className="btn-fx btn-fx-primary flex min-h-11 items-center justify-center gap-2 rounded-full bg-primary-fill px-4 text-sm font-semibold text-primary-foreground lg:min-h-12 lg:px-6"
               >
                 {dict.hero.viewWork}
                 <ArrowDown size={16} />
@@ -200,13 +188,13 @@ export default function LandingHero({
             <Magnetic strength={0.25} className="hero-action">
               <Link
                 href={`/${lang}/resume`}
-                className="btn-fx flex min-h-12 items-center justify-center gap-2 rounded-full border border-border/70 px-6 text-sm font-semibold text-foreground hover:border-primary/50 hover:text-primary"
+                className="btn-fx flex min-h-11 items-center justify-center gap-1.5 rounded-full px-2 text-sm font-semibold text-foreground underline decoration-primary/50 underline-offset-4 hover:text-primary lg:min-h-12 lg:gap-2 lg:border lg:border-border/70 lg:px-6 lg:no-underline lg:hover:border-primary/50"
               >
                 <FileText size={16} />
                 {dict.hero.resume}
               </Link>
             </Magnetic>
-            <Magnetic strength={0.25} className="hero-action">
+            <Magnetic strength={0.25} className="hero-action hidden lg:block">
               <a
                 href="#contact"
                 onClick={(event) => {
@@ -221,42 +209,12 @@ export default function LandingHero({
               </a>
             </Magnetic>
           </div>
-
-          {/* Leaves the site, so it opens in a new tab and keeps this one. */}
-          <a
-            href={localized.world3d}
-            target="_blank"
-            rel="noopener"
-            className="hero-action mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-foreground underline decoration-primary/50 underline-offset-4 hover:text-primary hover:decoration-primary focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
-          >
-            <Box size={14} aria-hidden="true" />
-            {dict.hero.world3d}
-            <ArrowUpRight size={14} aria-hidden="true" />
-          </a>
-
-          <dl className="mx-auto mt-9 grid max-w-xl grid-cols-3 border-y border-border/55 py-4 text-left lg:mx-0">
-            {proofPoints.map(([value, label], index) => (
-              <div
-                key={label}
-                className={`hero-proof min-w-0 px-3 first:pl-0 last:pr-0 sm:px-5 ${
-                  index > 0 ? "border-l border-border/55" : ""
-                }`}
-              >
-                <dt className="text-sm font-bold leading-tight text-foreground sm:text-base">
-                  {value}
-                </dt>
-                <dd className="mt-1 text-[10px] leading-snug text-field-muted-foreground sm:text-xs">
-                  {label}
-                </dd>
-              </div>
-            ))}
-          </dl>
         </div>
 
         <TiltCard
           maxTilt={4.5}
           hoverScale={1.008}
-          className="hero-portrait group relative mx-auto aspect-[.84] w-full max-w-[29rem] rounded-2xl lg:mx-0 lg:ml-auto"
+          className="hero-portrait group relative mx-auto aspect-[1.2] w-full max-w-[15rem] rounded-2xl lg:mx-0 lg:ml-auto lg:aspect-[.84] lg:max-w-[29rem]"
         >
           <div
             aria-hidden
@@ -271,13 +229,13 @@ export default function LandingHero({
               alt={lang === "km" ? "ហែម ឫទ្ធីបណ្ឌិត" : "Rithy Bondeth"}
               fill
               priority
-              sizes="(max-width:1024px) 80vw, 40vw"
+              sizes="(max-width: 1023px) 240px, (max-width: 1279px) 40vw, 465px"
               className="portrait-image z-10 object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.025] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
             />
             <span aria-hidden className="portrait-scan z-30" />
           </div>
 
-          <div className="hero-portrait-detail absolute bottom-[2%] right-0 rounded-full border border-border/60 bg-background/92 px-4 py-2.5 shadow-[0_12px_30px_rgb(0_0_0/.12)] backdrop-blur-xl sm:px-5">
+          <div className="hero-portrait-detail absolute bottom-[2%] right-0 rounded-full border border-border/60 bg-background/92 px-3 py-1.5 shadow-[0_12px_30px_rgb(0_0_0/.12)] backdrop-blur-xl lg:px-5 lg:py-2.5">
             <div className="flex items-center gap-2.5">
               <span className="size-2.5 shrink-0 rounded-full bg-emerald-500" />
               <p className="text-xs font-semibold text-foreground sm:text-sm">
@@ -289,7 +247,7 @@ export default function LandingHero({
       </div>
       <button
         onClick={() => scrollToSection("projects")}
-        className="hero-scroll absolute bottom-7 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 text-[10px] font-semibold uppercase tracking-[.2em] text-field-muted-foreground"
+        className="hero-scroll absolute bottom-7 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 text-[10px] font-semibold uppercase tracking-[.2em] text-field-muted-foreground lg:flex"
         aria-label={dict.hero.scroll}
       >
         {dict.hero.scroll}

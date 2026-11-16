@@ -21,12 +21,16 @@ export function ProjectSummary({
     >
       {role && (
         <div>
-          <dt className="font-medium text-muted-foreground">{labels.myRole}</dt>
+          <dt className="font-medium text-field-muted-foreground">
+            {labels.myRole}
+          </dt>
           <dd className="font-semibold text-foreground">{role}</dd>
         </div>
       )}
       <div>
-        <dt className="font-medium text-muted-foreground">{labels.outcome}</dt>
+        <dt className="font-medium text-field-muted-foreground">
+          {labels.outcome}
+        </dt>
         <dd className="font-semibold text-foreground">{result}</dd>
       </div>
     </dl>

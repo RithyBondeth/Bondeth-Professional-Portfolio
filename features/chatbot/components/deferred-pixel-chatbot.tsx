@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { MascotBuddy } from "@/shared/components/mascot/mascot-buddy";
 import type { ChatTour } from "@/features/chatbot/domain/types";
+import { OPEN_CHATBOT } from "@/shared/lib/chatbot-events";
 import styles from "@/features/chatbot/components/pixel-chatbot.module.css";
 
 const PixelChatbot = dynamic(
@@ -37,10 +38,41 @@ export default function DeferredPixelChatbot({
   lang: string;
   tours: ChatTour[];
 }) {
-  const [requested, setRequested] = useState(false);
+  const [isOpen, setIsOpen] = useState<boolean | null>(null);
+  const mobileReturnFocus = useRef<HTMLElement | null>(null);
   const text = lang === "km" ? launcherCopy.km : launcherCopy.en;
 
-  if (requested) return <PixelChatbot lang={lang} tours={tours} initialOpen />;
+  useEffect(() => {
+    const openFromMenu = (event: Event) => {
+      mobileReturnFocus.current = (
+        event as CustomEvent<HTMLElement | null>
+      ).detail;
+      setIsOpen(true);
+    };
+    window.addEventListener(OPEN_CHATBOT, openFromMenu);
+    return () => window.removeEventListener(OPEN_CHATBOT, openFromMenu);
+  }, []);
+
+  const handleOpenChange = useCallback(
+    (open: boolean, restoreFocus = false) => {
+      setIsOpen(open);
+      if (!open && restoreFocus) {
+        mobileReturnFocus.current?.focus({ preventScroll: true });
+      }
+    },
+    [],
+  );
+
+  if (isOpen !== null) {
+    return (
+      <PixelChatbot
+        lang={lang}
+        tours={tours}
+        isOpen={isOpen}
+        onOpenChange={handleOpenChange}
+      />
+    );
+  }
 
   return (
     <aside className={styles.chatbot} aria-label={text.label}>
@@ -49,7 +81,7 @@ export default function DeferredPixelChatbot({
         className={styles.launcher}
         aria-label={text.label}
         aria-expanded="false"
-        onClick={() => setRequested(true)}
+        onClick={() => setIsOpen(true)}
       >
         <span className={styles.launcherGlow} />
         <MascotBuddy
