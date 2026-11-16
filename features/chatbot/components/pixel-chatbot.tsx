@@ -138,7 +138,7 @@ const copy = {
 const MAX_API_MESSAGES = 12;
 const MAX_MESSAGE_LENGTH = 1_000;
 /** Below this the panel covers the page, so scrolling behind it is pointless. */
-const FULLSCREEN_PANEL_WIDTH = 520;
+const FULLSCREEN_PANEL_WIDTH = 768;
 
 /** Same-tab navigation for the site's own pages; new tab for everything else. */
 function isInternalHref(href: string | undefined): href is string {
@@ -183,7 +183,9 @@ function calculateDocking(
     vertical: y + height / 2 < viewportHeight / 2 ? "top" : "bottom",
   };
 
-  if (viewportWidth <= 520) return { dock, shift: { x: 0, y: 0 } };
+  if (viewportWidth < FULLSCREEN_PANEL_WIDTH) {
+    return { dock, shift: { x: 0, y: 0 } };
+  }
 
   const margin = 12;
   const panelWidth = Math.min(388, viewportWidth - 32);
@@ -211,16 +213,17 @@ function calculateDocking(
 export default function PixelChatbot({
   lang,
   tours,
-  initialOpen = false,
+  isOpen,
+  onOpenChange,
 }: {
   lang: string;
   tours: ChatTour[];
-  initialOpen?: boolean;
+  isOpen: boolean;
+  onOpenChange: (open: boolean, restoreFocus?: boolean) => void;
 }) {
   const text = lang === "km" ? copy.km : copy.en;
   const locale = lang === "km" ? "km" : "en";
   const pathname = usePathname();
-  const [isOpen, setIsOpen] = useState(initialOpen);
   const [draft, setDraft] = useState("");
   const [messages, setMessages] = useState<Message[]>([
     { id: 1, role: "assistant", content: text.greeting },
@@ -287,7 +290,7 @@ export default function PixelChatbot({
       );
     }, 180);
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setIsOpen(false);
+      if (event.key === "Escape") onOpenChange(false, true);
     };
 
     window.addEventListener("keydown", onKeyDown);
@@ -295,7 +298,7 @@ export default function PixelChatbot({
       window.clearTimeout(focusTimer);
       window.removeEventListener("keydown", onKeyDown);
     };
-  }, [isOpen]);
+  }, [isOpen, onOpenChange]);
 
   useEffect(() => {
     return () => dragState.current?.cleanup?.();
@@ -627,14 +630,14 @@ export default function PixelChatbot({
    */
   const jumpToSection = (section: string, fromClick: boolean) => {
     const onHomepage = pathname === `/${locale}` || pathname === `/${locale}/`;
-    const panelCoversPage = window.innerWidth <= FULLSCREEN_PANEL_WIDTH;
+    const panelCoversPage = window.innerWidth < FULLSCREEN_PANEL_WIDTH;
     if (!onHomepage) return false;
     if (!fromClick && panelCoversPage) return false;
 
     const target = document.getElementById(section);
     if (!target) return false;
 
-    if (fromClick && panelCoversPage) setIsOpen(false);
+    if (fromClick && panelCoversPage) onOpenChange(false);
     const reduceMotion = isMotionReduced();
     target.scrollIntoView({
       behavior: reduceMotion ? "auto" : "smooth",
@@ -688,7 +691,7 @@ export default function PixelChatbot({
   };
 
   const closePanelOnMobile = () => {
-    if (window.innerWidth <= FULLSCREEN_PANEL_WIDTH) setIsOpen(false);
+    if (window.innerWidth < FULLSCREEN_PANEL_WIDTH) onOpenChange(false);
   };
 
   const handleLauncherClick = () => {
@@ -697,7 +700,7 @@ export default function PixelChatbot({
       return;
     }
 
-    setIsOpen((current) => !current);
+    onOpenChange(!isOpen);
   };
 
   const positionStyle: CSSProperties | undefined = position
@@ -745,7 +748,7 @@ export default function PixelChatbot({
             type="button"
             className={styles.minimize}
             aria-label={text.close}
-            onClick={() => setIsOpen(false)}
+            onClick={() => onOpenChange(false, true)}
           >
             <Minus aria-hidden="true" />
           </button>
