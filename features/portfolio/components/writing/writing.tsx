@@ -106,7 +106,7 @@ export default async function LandingWriting(props: { lang: Locale }) {
                 <div className="flex flex-1 flex-col p-5">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-primary/80">
                     {lab.featured ?? `${labs.experimental} 0${index + 1}`} ·{" "}
-                    {labs.costFree}
+                    {lab.usesLiveModel ? labs.liveModel : labs.costFree}
                   </p>
                   <h4 className="mt-2 text-lg font-semibold text-foreground">
                     {lab.title}
